@@ -3,14 +3,15 @@ import urllib.parse
 from typing import Any
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
+
 logger = logging.getLogger(__name__)
 
-class GoogleSearchconsoleApp(APIApplication):
 
-    def __init__(self, integration: Integration=None, **kwargs) -> None:
-        super().__init__(name='google_searchconsole', integration=integration, **kwargs)
-        self.webmasters_base_url = 'https://www.googleapis.com/webmasters/v3'
-        self.searchconsole_base_url = 'https://searchconsole.googleapis.com/v1'
+class GoogleSearchconsoleApp(APIApplication):
+    def __init__(self, integration: Integration = None, **kwargs) -> None:
+        super().__init__(name="google_searchconsole", integration=integration, **kwargs)
+        self.webmasters_base_url = "https://www.googleapis.com/webmasters/v3"
+        self.searchconsole_base_url = "https://searchconsole.googleapis.com/v1"
 
     async def delete_sitemap(self, siteUrl: str, feedpath: str) -> None:
         """
@@ -26,9 +27,9 @@ class GoogleSearchconsoleApp(APIApplication):
         Tags:
             sitemap_management
         """
-        siteUrl_encoded = urllib.parse.quote(siteUrl, safe='')
-        feedpath_encoded = urllib.parse.quote(feedpath, safe='')
-        url = f'{self.webmasters_base_url}/sites/{siteUrl_encoded}/sitemaps/{feedpath_encoded}'
+        siteUrl_encoded = urllib.parse.quote(siteUrl, safe="")
+        feedpath_encoded = urllib.parse.quote(feedpath, safe="")
+        url = f"{self.webmasters_base_url}/sites/{siteUrl_encoded}/sitemaps/{feedpath_encoded}"
         response = await self._adelete(url)
         response.raise_for_status()
 
@@ -46,14 +47,14 @@ class GoogleSearchconsoleApp(APIApplication):
         Tags:
             sitemap_management
         """
-        siteUrl_encoded = urllib.parse.quote(siteUrl, safe='')
-        feedpath_encoded = urllib.parse.quote(feedpath, safe='')
-        url = f'{self.webmasters_base_url}/sites/{siteUrl_encoded}/sitemaps/{feedpath_encoded}'
+        siteUrl_encoded = urllib.parse.quote(siteUrl, safe="")
+        feedpath_encoded = urllib.parse.quote(feedpath, safe="")
+        url = f"{self.webmasters_base_url}/sites/{siteUrl_encoded}/sitemaps/{feedpath_encoded}"
         response = await self._aget(url)
         response.raise_for_status()
         return response.json()
 
-    async def list_sitemaps(self, siteUrl: str, sitemapIndex: str | None=None) -> dict[str, Any]:
+    async def list_sitemaps(self, siteUrl: str, sitemapIndex: str | None = None) -> dict[str, Any]:
         """
         Retrieves a list of sitemaps for a specific site property. It can optionally list sitemaps contained within a specified sitemap index file. This function contrasts with `get_sitemap`, which fetches details for only a single, specified sitemap rather than a collection.
 
@@ -68,11 +69,11 @@ class GoogleSearchconsoleApp(APIApplication):
         Tags:
             sitemap_management, important
         """
-        siteUrl_encoded = urllib.parse.quote(siteUrl, safe='')
-        url = f'{self.webmasters_base_url}/sites/{siteUrl_encoded}/sitemaps'
+        siteUrl_encoded = urllib.parse.quote(siteUrl, safe="")
+        url = f"{self.webmasters_base_url}/sites/{siteUrl_encoded}/sitemaps"
         query_params = {}
         if sitemapIndex is not None:
-            query_params['sitemapIndex'] = sitemapIndex
+            query_params["sitemapIndex"] = sitemapIndex
         response = await self._aget(url, params=query_params if query_params else None)
         response.raise_for_status()
         return response.json()
@@ -91,9 +92,9 @@ class GoogleSearchconsoleApp(APIApplication):
         Tags:
             sitemap_management
         """
-        siteUrl_encoded = urllib.parse.quote(siteUrl, safe='')
-        feedpath_encoded = urllib.parse.quote(feedpath, safe='')
-        url = f'{self.webmasters_base_url}/sites/{siteUrl_encoded}/sitemaps/{feedpath_encoded}'
+        siteUrl_encoded = urllib.parse.quote(siteUrl, safe="")
+        feedpath_encoded = urllib.parse.quote(feedpath, safe="")
+        url = f"{self.webmasters_base_url}/sites/{siteUrl_encoded}/sitemaps/{feedpath_encoded}"
         response = await self._aput(url, data=None)
         response.raise_for_status()
 
@@ -110,8 +111,8 @@ class GoogleSearchconsoleApp(APIApplication):
         Tags:
             site_management, important
         """
-        siteUrl_encoded = urllib.parse.quote(siteUrl, safe='')
-        url = f'{self.webmasters_base_url}/sites/{siteUrl_encoded}'
+        siteUrl_encoded = urllib.parse.quote(siteUrl, safe="")
+        url = f"{self.webmasters_base_url}/sites/{siteUrl_encoded}"
         response = await self._aput(url, data=None)
         response.raise_for_status()
         return response.json()
@@ -129,8 +130,8 @@ class GoogleSearchconsoleApp(APIApplication):
         Tags:
             site_management
         """
-        siteUrl_encoded = urllib.parse.quote(siteUrl, safe='')
-        url = f'{self.webmasters_base_url}/sites/{siteUrl_encoded}'
+        siteUrl_encoded = urllib.parse.quote(siteUrl, safe="")
+        url = f"{self.webmasters_base_url}/sites/{siteUrl_encoded}"
         response = await self._adelete(url)
         response.raise_for_status()
 
@@ -147,8 +148,8 @@ class GoogleSearchconsoleApp(APIApplication):
         Tags:
             site_management
         """
-        siteUrl_encoded = urllib.parse.quote(siteUrl, safe='')
-        url = f'{self.webmasters_base_url}/sites/{siteUrl_encoded}'
+        siteUrl_encoded = urllib.parse.quote(siteUrl, safe="")
+        url = f"{self.webmasters_base_url}/sites/{siteUrl_encoded}"
         response = await self._aget(url)
         response.raise_for_status()
         return response.json()
@@ -163,12 +164,12 @@ class GoogleSearchconsoleApp(APIApplication):
         Tags:
             site_management
         """
-        url = f'{self.webmasters_base_url}/sites'
+        url = f"{self.webmasters_base_url}/sites"
         response = await self._aget(url)
         response.raise_for_status()
         return response.json()
 
-    async def inspect_url(self, inspectionUrl: str, siteUrl: str, languageCode: str | None=None) -> dict[str, Any]:
+    async def inspect_url(self, inspectionUrl: str, siteUrl: str, languageCode: str | None = None) -> dict[str, Any]:
         """
         Retrieves the Google Index status for a specified URL within a given Search Console property. This function queries the URL Inspection API to return detailed information about how Google sees the page, including its indexing eligibility and any detected issues.
 
@@ -184,15 +185,27 @@ class GoogleSearchconsoleApp(APIApplication):
         Tags:
             url_inspection, indexing
         """
-        url = f'{self.searchconsole_base_url}/urlInspection/index:inspect'
-        request_body: dict[str, Any] = {'inspectionUrl': inspectionUrl, 'siteUrl': siteUrl}
+        url = f"{self.searchconsole_base_url}/urlInspection/index:inspect"
+        request_body: dict[str, Any] = {"inspectionUrl": inspectionUrl, "siteUrl": siteUrl}
         if languageCode is not None:
-            request_body['languageCode'] = languageCode
+            request_body["languageCode"] = languageCode
         response = await self._apost(url, data=request_body)
         response.raise_for_status()
         return response.json()
 
-    async def query_search_analytics(self, siteUrl: str, startDate: str, endDate: str, dimensions: list[str] | None=None, dimensionFilterGroups: list[dict[str, Any]] | None=None, aggregationType: str | None=None, rowLimit: int | None=None, startRow: int | None=None, dataState: str | None=None, search_type: str | None=None) -> dict[str, Any]:
+    async def query_search_analytics(
+        self,
+        siteUrl: str,
+        startDate: str,
+        endDate: str,
+        dimensions: list[str] | None = None,
+        dimensionFilterGroups: list[dict[str, Any]] | None = None,
+        aggregationType: str | None = None,
+        rowLimit: int | None = None,
+        startRow: int | None = None,
+        dataState: str | None = None,
+        search_type: str | None = None,
+    ) -> dict[str, Any]:
         """
         Queries and retrieves search traffic data for a specified site within a given date range. Supports advanced filtering, grouping by various dimensions (e.g., query, page, device), and aggregation to customize the analytics report from the Google Search Console API.
 
@@ -232,26 +245,37 @@ class GoogleSearchconsoleApp(APIApplication):
         Tags:
             search_analytics, reporting
         """
-        siteUrl_encoded = urllib.parse.quote(siteUrl, safe='')
-        url = f'{self.webmasters_base_url}/sites/{siteUrl_encoded}/searchAnalytics/query'
-        request_body: dict[str, Any] = {'startDate': startDate, 'endDate': endDate}
+        siteUrl_encoded = urllib.parse.quote(siteUrl, safe="")
+        url = f"{self.webmasters_base_url}/sites/{siteUrl_encoded}/searchAnalytics/query"
+        request_body: dict[str, Any] = {"startDate": startDate, "endDate": endDate}
         if dimensions is not None:
-            request_body['dimensions'] = dimensions
+            request_body["dimensions"] = dimensions
         if dimensionFilterGroups is not None:
-            request_body['dimensionFilterGroups'] = dimensionFilterGroups
+            request_body["dimensionFilterGroups"] = dimensionFilterGroups
         if aggregationType is not None:
-            request_body['aggregationType'] = aggregationType
+            request_body["aggregationType"] = aggregationType
         if rowLimit is not None:
-            request_body['rowLimit'] = rowLimit
+            request_body["rowLimit"] = rowLimit
         if startRow is not None:
-            request_body['startRow'] = startRow
+            request_body["startRow"] = startRow
         if dataState is not None:
-            request_body['dataState'] = dataState
+            request_body["dataState"] = dataState
         if search_type is not None:
-            request_body['type'] = search_type
+            request_body["type"] = search_type
         response = await self._apost(url, data=request_body)
         response.raise_for_status()
         return response.json()
 
     def list_tools(self):
-        return [self.get_sitemap, self.list_sitemaps, self.submit_sitemap, self.delete_sitemap, self.get_site, self.list_sites, self.add_site, self.delete_site, self.inspect_url, self.query_search_analytics]
+        return [
+            self.get_sitemap,
+            self.list_sitemaps,
+            self.submit_sitemap,
+            self.delete_sitemap,
+            self.get_site,
+            self.list_sites,
+            self.add_site,
+            self.delete_site,
+            self.inspect_url,
+            self.query_search_analytics,
+        ]

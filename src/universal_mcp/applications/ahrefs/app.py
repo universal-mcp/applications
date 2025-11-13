@@ -2,11 +2,11 @@ from typing import Any
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
-class AhrefsApp(APIApplication):
 
-    def __init__(self, integration: Integration=None, **kwargs) -> None:
-        super().__init__(name='ahrefs', integration=integration, **kwargs)
-        self.base_url = 'https://api.ahrefs.com/v3'
+class AhrefsApp(APIApplication):
+    def __init__(self, integration: Integration = None, **kwargs) -> None:
+        super().__init__(name="ahrefs", integration=integration, **kwargs)
+        self.base_url = "https://api.ahrefs.com/v3"
 
     async def crawler_ips(self, output=None) -> dict[str, Any]:
         """
@@ -24,8 +24,8 @@ class AhrefsApp(APIApplication):
         Tags:
             fetch, crawler-ips, api
         """
-        url = f'{self.base_url}/public/crawler-ips'
-        query_params = {k: v for k, v in [('output', output)] if v is not None}
+        url = f"{self.base_url}/public/crawler-ips"
+        query_params = {k: v for k, v in [("output", output)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -46,8 +46,8 @@ class AhrefsApp(APIApplication):
         Tags:
             fetch, crawler-ip, network, api, important
         """
-        url = f'{self.base_url}/public/crawler-ip-ranges'
-        query_params = {k: v for k, v in [('output', output)] if v is not None}
+        url = f"{self.base_url}/public/crawler-ip-ranges"
+        query_params = {k: v for k, v in [("output", output)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -68,8 +68,8 @@ class AhrefsApp(APIApplication):
         Tags:
             fetch, limits, usage, subscription, api
         """
-        url = f'{self.base_url}/subscription-info/limits-and-usage'
-        query_params = {k: v for k, v in [('output', output)] if v is not None}
+        url = f"{self.base_url}/subscription-info/limits-and-usage"
+        query_params = {k: v for k, v in [("output", output)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -100,9 +100,16 @@ class AhrefsApp(APIApplication):
             raise ValueError("Missing required parameter 'select'")
         if targets is None:
             raise ValueError("Missing required parameter 'targets'")
-        request_body = {'select': select, 'order_by': order_by, 'country': country, 'volume_mode': volume_mode, 'targets': targets, 'output': output}
+        request_body = {
+            "select": select,
+            "order_by": order_by,
+            "country": country,
+            "volume_mode": volume_mode,
+            "targets": targets,
+            "output": output,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/batch-analysis/batch-analysis'
+        url = f"{self.base_url}/batch-analysis/batch-analysis"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -136,13 +143,38 @@ class AhrefsApp(APIApplication):
             raise ValueError("Missing required parameter 'country'")
         if keyword is None:
             raise ValueError("Missing required parameter 'keyword'")
-        url = f'{self.base_url}/serp-overview/serp-overview'
-        query_params = {k: v for k, v in [('select', select), ('top_positions', top_positions), ('date', date), ('country', country), ('keyword', keyword), ('output', output)] if v is not None}
+        url = f"{self.base_url}/serp-overview/serp-overview"
+        query_params = {
+            k: v
+            for k, v in [
+                ("select", select),
+                ("top_positions", top_positions),
+                ("date", date),
+                ("country", country),
+                ("keyword", keyword),
+                ("output", output),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def overview(self, select, date, device, project_id, timeout=None, offset=None, limit=None, order_by=None, where=None, date_compared=None, volume_mode=None, output=None) -> dict[str, Any]:
+    async def overview(
+        self,
+        select,
+        date,
+        device,
+        project_id,
+        timeout=None,
+        offset=None,
+        limit=None,
+        order_by=None,
+        where=None,
+        date_compared=None,
+        volume_mode=None,
+        output=None,
+    ) -> dict[str, Any]:
         """
         Retrieves rank tracking overview data for a specified project, date, and device.
 
@@ -177,13 +209,44 @@ class AhrefsApp(APIApplication):
             raise ValueError("Missing required parameter 'device'")
         if project_id is None:
             raise ValueError("Missing required parameter 'project_id'")
-        url = f'{self.base_url}/rank-tracker/overview'
-        query_params = {k: v for k, v in [('timeout', timeout), ('offset', offset), ('limit', limit), ('order_by', order_by), ('where', where), ('select', select), ('date_compared', date_compared), ('date', date), ('device', device), ('project_id', project_id), ('volume_mode', volume_mode), ('output', output)] if v is not None}
+        url = f"{self.base_url}/rank-tracker/overview"
+        query_params = {
+            k: v
+            for k, v in [
+                ("timeout", timeout),
+                ("offset", offset),
+                ("limit", limit),
+                ("order_by", order_by),
+                ("where", where),
+                ("select", select),
+                ("date_compared", date_compared),
+                ("date", date),
+                ("device", device),
+                ("project_id", project_id),
+                ("volume_mode", volume_mode),
+                ("output", output),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def competitors_overview(self, select, date, device, project_id, timeout=None, offset=None, limit=None, order_by=None, where=None, date_compared=None, volume_mode=None, output=None) -> dict[str, Any]:
+    async def competitors_overview(
+        self,
+        select,
+        date,
+        device,
+        project_id,
+        timeout=None,
+        offset=None,
+        limit=None,
+        order_by=None,
+        where=None,
+        date_compared=None,
+        volume_mode=None,
+        output=None,
+    ) -> dict[str, Any]:
         """
         Retrieves an overview of competitor rankings for a specified project and criteria.
 
@@ -219,8 +282,25 @@ class AhrefsApp(APIApplication):
             raise ValueError("Missing required parameter 'device'")
         if project_id is None:
             raise ValueError("Missing required parameter 'project_id'")
-        url = f'{self.base_url}/rank-tracker/competitors-overview'
-        query_params = {k: v for k, v in [('timeout', timeout), ('offset', offset), ('limit', limit), ('order_by', order_by), ('where', where), ('select', select), ('date_compared', date_compared), ('date', date), ('device', device), ('project_id', project_id), ('volume_mode', volume_mode), ('output', output)] if v is not None}
+        url = f"{self.base_url}/rank-tracker/competitors-overview"
+        query_params = {
+            k: v
+            for k, v in [
+                ("timeout", timeout),
+                ("offset", offset),
+                ("limit", limit),
+                ("order_by", order_by),
+                ("where", where),
+                ("select", select),
+                ("date_compared", date_compared),
+                ("date", date),
+                ("device", device),
+                ("project_id", project_id),
+                ("volume_mode", volume_mode),
+                ("output", output),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -241,8 +321,8 @@ class AhrefsApp(APIApplication):
         Tags:
             list, projects, api, http-get, site-audit
         """
-        url = f'{self.base_url}/site-audit/projects'
-        query_params = {k: v for k, v in [('output', output)] if v is not None}
+        url = f"{self.base_url}/site-audit/projects"
+        query_params = {k: v for k, v in [("output", output)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -271,8 +351,8 @@ class AhrefsApp(APIApplication):
             raise ValueError("Missing required parameter 'target'")
         if date is None:
             raise ValueError("Missing required parameter 'date'")
-        url = f'{self.base_url}/site-explorer/domain-rating'
-        query_params = {k: v for k, v in [('protocol', protocol), ('target', target), ('date', date), ('output', output)] if v is not None}
+        url = f"{self.base_url}/site-explorer/domain-rating"
+        query_params = {k: v for k, v in [("protocol", protocol), ("target", target), ("date", date), ("output", output)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -302,8 +382,12 @@ class AhrefsApp(APIApplication):
             raise ValueError("Missing required parameter 'target'")
         if date is None:
             raise ValueError("Missing required parameter 'date'")
-        url = f'{self.base_url}/site-explorer/backlinks-stats'
-        query_params = {k: v for k, v in [('protocol', protocol), ('target', target), ('mode', mode), ('date', date), ('output', output)] if v is not None}
+        url = f"{self.base_url}/site-explorer/backlinks-stats"
+        query_params = {
+            k: v
+            for k, v in [("protocol", protocol), ("target", target), ("mode", mode), ("date", date), ("output", output)]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -330,8 +414,8 @@ class AhrefsApp(APIApplication):
         """
         if target is None:
             raise ValueError("Missing required parameter 'target'")
-        url = f'{self.base_url}/site-explorer/outlinks-stats'
-        query_params = {k: v for k, v in [('protocol', protocol), ('mode', mode), ('target', target), ('output', output)] if v is not None}
+        url = f"{self.base_url}/site-explorer/outlinks-stats"
+        query_params = {k: v for k, v in [("protocol", protocol), ("mode", mode), ("target", target), ("output", output)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -363,13 +447,27 @@ class AhrefsApp(APIApplication):
             raise ValueError("Missing required parameter 'target'")
         if date is None:
             raise ValueError("Missing required parameter 'date'")
-        url = f'{self.base_url}/site-explorer/metrics'
-        query_params = {k: v for k, v in [('volume_mode', volume_mode), ('country', country), ('protocol', protocol), ('target', target), ('mode', mode), ('date', date), ('output', output)] if v is not None}
+        url = f"{self.base_url}/site-explorer/metrics"
+        query_params = {
+            k: v
+            for k, v in [
+                ("volume_mode", volume_mode),
+                ("country", country),
+                ("protocol", protocol),
+                ("target", target),
+                ("mode", mode),
+                ("date", date),
+                ("output", output),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def refdomains_history(self, date_from, target, history_grouping=None, date_to=None, protocol=None, mode=None, output=None) -> dict[str, Any]:
+    async def refdomains_history(
+        self, date_from, target, history_grouping=None, date_to=None, protocol=None, mode=None, output=None
+    ) -> dict[str, Any]:
         """
         Retrieves the historical data of reference domains from a specified site.
 
@@ -395,8 +493,20 @@ class AhrefsApp(APIApplication):
             raise ValueError("Missing required parameter 'date_from'")
         if target is None:
             raise ValueError("Missing required parameter 'target'")
-        url = f'{self.base_url}/site-explorer/refdomains-history'
-        query_params = {k: v for k, v in [('history_grouping', history_grouping), ('date_to', date_to), ('date_from', date_from), ('protocol', protocol), ('target', target), ('mode', mode), ('output', output)] if v is not None}
+        url = f"{self.base_url}/site-explorer/refdomains-history"
+        query_params = {
+            k: v
+            for k, v in [
+                ("history_grouping", history_grouping),
+                ("date_to", date_to),
+                ("date_from", date_from),
+                ("protocol", protocol),
+                ("target", target),
+                ("mode", mode),
+                ("output", output),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -426,8 +536,18 @@ class AhrefsApp(APIApplication):
             raise ValueError("Missing required parameter 'date_from'")
         if target is None:
             raise ValueError("Missing required parameter 'target'")
-        url = f'{self.base_url}/site-explorer/domain-rating-history'
-        query_params = {k: v for k, v in [('history_grouping', history_grouping), ('date_to', date_to), ('date_from', date_from), ('target', target), ('output', output)] if v is not None}
+        url = f"{self.base_url}/site-explorer/domain-rating-history"
+        query_params = {
+            k: v
+            for k, v in [
+                ("history_grouping", history_grouping),
+                ("date_to", date_to),
+                ("date_from", date_from),
+                ("target", target),
+                ("output", output),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -457,13 +577,25 @@ class AhrefsApp(APIApplication):
             raise ValueError("Missing required parameter 'date_from'")
         if target is None:
             raise ValueError("Missing required parameter 'target'")
-        url = f'{self.base_url}/site-explorer/url-rating-history'
-        query_params = {k: v for k, v in [('history_grouping', history_grouping), ('date_to', date_to), ('date_from', date_from), ('target', target), ('output', output)] if v is not None}
+        url = f"{self.base_url}/site-explorer/url-rating-history"
+        query_params = {
+            k: v
+            for k, v in [
+                ("history_grouping", history_grouping),
+                ("date_to", date_to),
+                ("date_from", date_from),
+                ("target", target),
+                ("output", output),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def pages_history(self, date_from, target, history_grouping=None, date_to=None, country=None, protocol=None, mode=None, output=None) -> dict[str, Any]:
+    async def pages_history(
+        self, date_from, target, history_grouping=None, date_to=None, country=None, protocol=None, mode=None, output=None
+    ) -> dict[str, Any]:
         """
         Retrieves historical page data for a target using specified filters.
 
@@ -491,13 +623,38 @@ class AhrefsApp(APIApplication):
             raise ValueError("Missing required parameter 'date_from'")
         if target is None:
             raise ValueError("Missing required parameter 'target'")
-        url = f'{self.base_url}/site-explorer/pages-history'
-        query_params = {k: v for k, v in [('history_grouping', history_grouping), ('date_to', date_to), ('date_from', date_from), ('country', country), ('protocol', protocol), ('target', target), ('mode', mode), ('output', output)] if v is not None}
+        url = f"{self.base_url}/site-explorer/pages-history"
+        query_params = {
+            k: v
+            for k, v in [
+                ("history_grouping", history_grouping),
+                ("date_to", date_to),
+                ("date_from", date_from),
+                ("country", country),
+                ("protocol", protocol),
+                ("target", target),
+                ("mode", mode),
+                ("output", output),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def metrics_history(self, date_from, target, select=None, volume_mode=None, history_grouping=None, date_to=None, country=None, protocol=None, mode=None, output=None) -> dict[str, Any]:
+    async def metrics_history(
+        self,
+        date_from,
+        target,
+        select=None,
+        volume_mode=None,
+        history_grouping=None,
+        date_to=None,
+        country=None,
+        protocol=None,
+        mode=None,
+        output=None,
+    ) -> dict[str, Any]:
         """
         Retrieves historical metrics based on specified parameters.
 
@@ -526,13 +683,30 @@ class AhrefsApp(APIApplication):
             raise ValueError("Missing required parameter 'date_from'")
         if target is None:
             raise ValueError("Missing required parameter 'target'")
-        url = f'{self.base_url}/site-explorer/metrics-history'
-        query_params = {k: v for k, v in [('select', select), ('volume_mode', volume_mode), ('history_grouping', history_grouping), ('date_to', date_to), ('date_from', date_from), ('country', country), ('protocol', protocol), ('target', target), ('mode', mode), ('output', output)] if v is not None}
+        url = f"{self.base_url}/site-explorer/metrics-history"
+        query_params = {
+            k: v
+            for k, v in [
+                ("select", select),
+                ("volume_mode", volume_mode),
+                ("history_grouping", history_grouping),
+                ("date_to", date_to),
+                ("date_from", date_from),
+                ("country", country),
+                ("protocol", protocol),
+                ("target", target),
+                ("mode", mode),
+                ("output", output),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def keywords_history(self, date_from, target, select=None, history_grouping=None, date_to=None, country=None, protocol=None, mode=None, output=None) -> dict[str, Any]:
+    async def keywords_history(
+        self, date_from, target, select=None, history_grouping=None, date_to=None, country=None, protocol=None, mode=None, output=None
+    ) -> dict[str, Any]:
         """
         Fetches the historical keyword rankings and performance data for a specified target within an optional date range and set of filters.
 
@@ -561,8 +735,22 @@ class AhrefsApp(APIApplication):
             raise ValueError("Missing required parameter 'date_from'")
         if target is None:
             raise ValueError("Missing required parameter 'target'")
-        url = f'{self.base_url}/site-explorer/keywords-history'
-        query_params = {k: v for k, v in [('select', select), ('history_grouping', history_grouping), ('date_to', date_to), ('date_from', date_from), ('country', country), ('protocol', protocol), ('target', target), ('mode', mode), ('output', output)] if v is not None}
+        url = f"{self.base_url}/site-explorer/keywords-history"
+        query_params = {
+            k: v
+            for k, v in [
+                ("select", select),
+                ("history_grouping", history_grouping),
+                ("date_to", date_to),
+                ("date_from", date_from),
+                ("country", country),
+                ("protocol", protocol),
+                ("target", target),
+                ("mode", mode),
+                ("output", output),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -594,8 +782,20 @@ class AhrefsApp(APIApplication):
             raise ValueError("Missing required parameter 'target'")
         if date is None:
             raise ValueError("Missing required parameter 'date'")
-        url = f'{self.base_url}/site-explorer/metrics-by-country'
-        query_params = {k: v for k, v in [('volume_mode', volume_mode), ('limit', limit), ('protocol', protocol), ('target', target), ('mode', mode), ('date', date), ('output', output)] if v is not None}
+        url = f"{self.base_url}/site-explorer/metrics-by-country"
+        query_params = {
+            k: v
+            for k, v in [
+                ("volume_mode", volume_mode),
+                ("limit", limit),
+                ("protocol", protocol),
+                ("target", target),
+                ("mode", mode),
+                ("date", date),
+                ("output", output),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -624,13 +824,38 @@ class AhrefsApp(APIApplication):
         """
         if target is None:
             raise ValueError("Missing required parameter 'target'")
-        url = f'{self.base_url}/site-explorer/pages-by-traffic'
-        query_params = {k: v for k, v in [('volume_mode', volume_mode), ('country', country), ('protocol', protocol), ('target', target), ('mode', mode), ('output', output)] if v is not None}
+        url = f"{self.base_url}/site-explorer/pages-by-traffic"
+        query_params = {
+            k: v
+            for k, v in [
+                ("volume_mode", volume_mode),
+                ("country", country),
+                ("protocol", protocol),
+                ("target", target),
+                ("mode", mode),
+                ("output", output),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def all_backlinks(self, select, target, timeout=None, offset=None, limit=None, order_by=None, where=None, protocol=None, mode=None, aggregation=None, history=None, output=None) -> dict[str, Any]:
+    async def all_backlinks(
+        self,
+        select,
+        target,
+        timeout=None,
+        offset=None,
+        limit=None,
+        order_by=None,
+        where=None,
+        protocol=None,
+        mode=None,
+        aggregation=None,
+        history=None,
+        output=None,
+    ) -> dict[str, Any]:
         """
         Retrieves all backlinks information for a specified target using various query parameters.
 
@@ -662,13 +887,43 @@ class AhrefsApp(APIApplication):
             raise ValueError("Missing required parameter 'select'")
         if target is None:
             raise ValueError("Missing required parameter 'target'")
-        url = f'{self.base_url}/site-explorer/all-backlinks'
-        query_params = {k: v for k, v in [('timeout', timeout), ('offset', offset), ('limit', limit), ('order_by', order_by), ('where', where), ('select', select), ('protocol', protocol), ('target', target), ('mode', mode), ('aggregation', aggregation), ('history', history), ('output', output)] if v is not None}
+        url = f"{self.base_url}/site-explorer/all-backlinks"
+        query_params = {
+            k: v
+            for k, v in [
+                ("timeout", timeout),
+                ("offset", offset),
+                ("limit", limit),
+                ("order_by", order_by),
+                ("where", where),
+                ("select", select),
+                ("protocol", protocol),
+                ("target", target),
+                ("mode", mode),
+                ("aggregation", aggregation),
+                ("history", history),
+                ("output", output),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def broken_backlinks(self, select, target, timeout=None, offset=None, limit=None, order_by=None, where=None, protocol=None, mode=None, aggregation=None, output=None) -> dict[str, Any]:
+    async def broken_backlinks(
+        self,
+        select,
+        target,
+        timeout=None,
+        offset=None,
+        limit=None,
+        order_by=None,
+        where=None,
+        protocol=None,
+        mode=None,
+        aggregation=None,
+        output=None,
+    ) -> dict[str, Any]:
         """
         Fetches broken backlink data for the specified target from the site explorer API endpoint.
 
@@ -699,13 +954,42 @@ class AhrefsApp(APIApplication):
             raise ValueError("Missing required parameter 'select'")
         if target is None:
             raise ValueError("Missing required parameter 'target'")
-        url = f'{self.base_url}/site-explorer/broken-backlinks'
-        query_params = {k: v for k, v in [('timeout', timeout), ('offset', offset), ('limit', limit), ('order_by', order_by), ('where', where), ('select', select), ('protocol', protocol), ('target', target), ('mode', mode), ('aggregation', aggregation), ('output', output)] if v is not None}
+        url = f"{self.base_url}/site-explorer/broken-backlinks"
+        query_params = {
+            k: v
+            for k, v in [
+                ("timeout", timeout),
+                ("offset", offset),
+                ("limit", limit),
+                ("order_by", order_by),
+                ("where", where),
+                ("select", select),
+                ("protocol", protocol),
+                ("target", target),
+                ("mode", mode),
+                ("aggregation", aggregation),
+                ("output", output),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def refdomains(self, select, target, timeout=None, offset=None, limit=None, order_by=None, where=None, protocol=None, mode=None, history=None, output=None) -> dict[str, Any]:
+    async def refdomains(
+        self,
+        select,
+        target,
+        timeout=None,
+        offset=None,
+        limit=None,
+        order_by=None,
+        where=None,
+        protocol=None,
+        mode=None,
+        history=None,
+        output=None,
+    ) -> dict[str, Any]:
         """
         Retrieves referring domains data for a specified target using the Site Explorer API endpoint.
 
@@ -736,13 +1020,42 @@ class AhrefsApp(APIApplication):
             raise ValueError("Missing required parameter 'select'")
         if target is None:
             raise ValueError("Missing required parameter 'target'")
-        url = f'{self.base_url}/site-explorer/refdomains'
-        query_params = {k: v for k, v in [('timeout', timeout), ('offset', offset), ('limit', limit), ('order_by', order_by), ('where', where), ('select', select), ('protocol', protocol), ('target', target), ('mode', mode), ('history', history), ('output', output)] if v is not None}
+        url = f"{self.base_url}/site-explorer/refdomains"
+        query_params = {
+            k: v
+            for k, v in [
+                ("timeout", timeout),
+                ("offset", offset),
+                ("limit", limit),
+                ("order_by", order_by),
+                ("where", where),
+                ("select", select),
+                ("protocol", protocol),
+                ("target", target),
+                ("mode", mode),
+                ("history", history),
+                ("output", output),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def anchors(self, select, target, timeout=None, offset=None, limit=None, order_by=None, where=None, protocol=None, mode=None, history=None, output=None) -> dict[str, Any]:
+    async def anchors(
+        self,
+        select,
+        target,
+        timeout=None,
+        offset=None,
+        limit=None,
+        order_by=None,
+        where=None,
+        protocol=None,
+        mode=None,
+        history=None,
+        output=None,
+    ) -> dict[str, Any]:
         """
         Fetches anchor text distribution data for a specified target using given query parameters.
 
@@ -773,13 +1086,31 @@ class AhrefsApp(APIApplication):
             raise ValueError("Missing required parameter 'select'")
         if target is None:
             raise ValueError("Missing required parameter 'target'")
-        url = f'{self.base_url}/site-explorer/anchors'
-        query_params = {k: v for k, v in [('timeout', timeout), ('offset', offset), ('limit', limit), ('order_by', order_by), ('where', where), ('select', select), ('protocol', protocol), ('target', target), ('mode', mode), ('history', history), ('output', output)] if v is not None}
+        url = f"{self.base_url}/site-explorer/anchors"
+        query_params = {
+            k: v
+            for k, v in [
+                ("timeout", timeout),
+                ("offset", offset),
+                ("limit", limit),
+                ("order_by", order_by),
+                ("where", where),
+                ("select", select),
+                ("protocol", protocol),
+                ("target", target),
+                ("mode", mode),
+                ("history", history),
+                ("output", output),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def linkeddomains(self, select, target, timeout=None, offset=None, limit=None, order_by=None, where=None, protocol=None, mode=None, output=None) -> dict[str, Any]:
+    async def linkeddomains(
+        self, select, target, timeout=None, offset=None, limit=None, order_by=None, where=None, protocol=None, mode=None, output=None
+    ) -> dict[str, Any]:
         """
         Retrieves linked domains for a specified target using the site explorer API endpoint.
 
@@ -809,13 +1140,30 @@ class AhrefsApp(APIApplication):
             raise ValueError("Missing required parameter 'select'")
         if target is None:
             raise ValueError("Missing required parameter 'target'")
-        url = f'{self.base_url}/site-explorer/linkeddomains'
-        query_params = {k: v for k, v in [('timeout', timeout), ('offset', offset), ('limit', limit), ('order_by', order_by), ('where', where), ('select', select), ('protocol', protocol), ('target', target), ('mode', mode), ('output', output)] if v is not None}
+        url = f"{self.base_url}/site-explorer/linkeddomains"
+        query_params = {
+            k: v
+            for k, v in [
+                ("timeout", timeout),
+                ("offset", offset),
+                ("limit", limit),
+                ("order_by", order_by),
+                ("where", where),
+                ("select", select),
+                ("protocol", protocol),
+                ("target", target),
+                ("mode", mode),
+                ("output", output),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def linked_anchors_external(self, select, target, timeout=None, offset=None, limit=None, order_by=None, where=None, protocol=None, mode=None, output=None) -> dict[str, Any]:
+    async def linked_anchors_external(
+        self, select, target, timeout=None, offset=None, limit=None, order_by=None, where=None, protocol=None, mode=None, output=None
+    ) -> dict[str, Any]:
         """
         Fetch linked external anchor data for a specified target using provided selection and filtering criteria.
 
@@ -845,13 +1193,30 @@ class AhrefsApp(APIApplication):
             raise ValueError("Missing required parameter 'select'")
         if target is None:
             raise ValueError("Missing required parameter 'target'")
-        url = f'{self.base_url}/site-explorer/linked-anchors-external'
-        query_params = {k: v for k, v in [('timeout', timeout), ('offset', offset), ('limit', limit), ('order_by', order_by), ('where', where), ('select', select), ('protocol', protocol), ('target', target), ('mode', mode), ('output', output)] if v is not None}
+        url = f"{self.base_url}/site-explorer/linked-anchors-external"
+        query_params = {
+            k: v
+            for k, v in [
+                ("timeout", timeout),
+                ("offset", offset),
+                ("limit", limit),
+                ("order_by", order_by),
+                ("where", where),
+                ("select", select),
+                ("protocol", protocol),
+                ("target", target),
+                ("mode", mode),
+                ("output", output),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def linked_anchors_internal(self, select, target, timeout=None, offset=None, limit=None, order_by=None, where=None, protocol=None, mode=None, output=None) -> dict[str, Any]:
+    async def linked_anchors_internal(
+        self, select, target, timeout=None, offset=None, limit=None, order_by=None, where=None, protocol=None, mode=None, output=None
+    ) -> dict[str, Any]:
         """
         Fetches internal linked anchor data for a specified target from the site explorer API, applying optional filtering and query parameters.
 
@@ -881,13 +1246,44 @@ class AhrefsApp(APIApplication):
             raise ValueError("Missing required parameter 'select'")
         if target is None:
             raise ValueError("Missing required parameter 'target'")
-        url = f'{self.base_url}/site-explorer/linked-anchors-internal'
-        query_params = {k: v for k, v in [('timeout', timeout), ('offset', offset), ('limit', limit), ('order_by', order_by), ('where', where), ('select', select), ('protocol', protocol), ('target', target), ('mode', mode), ('output', output)] if v is not None}
+        url = f"{self.base_url}/site-explorer/linked-anchors-internal"
+        query_params = {
+            k: v
+            for k, v in [
+                ("timeout", timeout),
+                ("offset", offset),
+                ("limit", limit),
+                ("order_by", order_by),
+                ("where", where),
+                ("select", select),
+                ("protocol", protocol),
+                ("target", target),
+                ("mode", mode),
+                ("output", output),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def organic_keywords(self, select, target, country, date, timeout=None, offset=None, limit=None, order_by=None, where=None, protocol=None, mode=None, date_compared=None, volume_mode=None, output=None) -> dict[str, Any]:
+    async def organic_keywords(
+        self,
+        select,
+        target,
+        country,
+        date,
+        timeout=None,
+        offset=None,
+        limit=None,
+        order_by=None,
+        where=None,
+        protocol=None,
+        mode=None,
+        date_compared=None,
+        volume_mode=None,
+        output=None,
+    ) -> dict[str, Any]:
         """
         Retrieve organic keyword data for a specified target and date from the Site Explorer API endpoint.
 
@@ -925,13 +1321,48 @@ class AhrefsApp(APIApplication):
             raise ValueError("Missing required parameter 'country'")
         if date is None:
             raise ValueError("Missing required parameter 'date'")
-        url = f'{self.base_url}/site-explorer/organic-keywords'
-        query_params = {k: v for k, v in [('timeout', timeout), ('offset', offset), ('limit', limit), ('order_by', order_by), ('where', where), ('select', select), ('protocol', protocol), ('target', target), ('mode', mode), ('country', country), ('date_compared', date_compared), ('date', date), ('volume_mode', volume_mode), ('output', output)] if v is not None}
+        url = f"{self.base_url}/site-explorer/organic-keywords"
+        query_params = {
+            k: v
+            for k, v in [
+                ("timeout", timeout),
+                ("offset", offset),
+                ("limit", limit),
+                ("order_by", order_by),
+                ("where", where),
+                ("select", select),
+                ("protocol", protocol),
+                ("target", target),
+                ("mode", mode),
+                ("country", country),
+                ("date_compared", date_compared),
+                ("date", date),
+                ("volume_mode", volume_mode),
+                ("output", output),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def organic_competitors(self, select, target, country, date, timeout=None, offset=None, limit=None, order_by=None, where=None, protocol=None, mode=None, date_compared=None, volume_mode=None, output=None) -> dict[str, Any]:
+    async def organic_competitors(
+        self,
+        select,
+        target,
+        country,
+        date,
+        timeout=None,
+        offset=None,
+        limit=None,
+        order_by=None,
+        where=None,
+        protocol=None,
+        mode=None,
+        date_compared=None,
+        volume_mode=None,
+        output=None,
+    ) -> dict[str, Any]:
         """
         Retrieves organic competitors data for a specified target using the Site Explorer API.
 
@@ -969,13 +1400,48 @@ class AhrefsApp(APIApplication):
             raise ValueError("Missing required parameter 'country'")
         if date is None:
             raise ValueError("Missing required parameter 'date'")
-        url = f'{self.base_url}/site-explorer/organic-competitors'
-        query_params = {k: v for k, v in [('timeout', timeout), ('offset', offset), ('limit', limit), ('order_by', order_by), ('where', where), ('select', select), ('protocol', protocol), ('target', target), ('mode', mode), ('country', country), ('date_compared', date_compared), ('date', date), ('volume_mode', volume_mode), ('output', output)] if v is not None}
+        url = f"{self.base_url}/site-explorer/organic-competitors"
+        query_params = {
+            k: v
+            for k, v in [
+                ("timeout", timeout),
+                ("offset", offset),
+                ("limit", limit),
+                ("order_by", order_by),
+                ("where", where),
+                ("select", select),
+                ("protocol", protocol),
+                ("target", target),
+                ("mode", mode),
+                ("country", country),
+                ("date_compared", date_compared),
+                ("date", date),
+                ("volume_mode", volume_mode),
+                ("output", output),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def top_pages(self, select, target, date, timeout=None, offset=None, limit=None, order_by=None, where=None, protocol=None, mode=None, country=None, date_compared=None, volume_mode=None, output=None) -> dict[str, Any]:
+    async def top_pages(
+        self,
+        select,
+        target,
+        date,
+        timeout=None,
+        offset=None,
+        limit=None,
+        order_by=None,
+        where=None,
+        protocol=None,
+        mode=None,
+        country=None,
+        date_compared=None,
+        volume_mode=None,
+        output=None,
+    ) -> dict[str, Any]:
         """
         Retrieves top pages data for a specified target and date from the site explorer API with customizable query parameters.
 
@@ -1011,13 +1477,48 @@ class AhrefsApp(APIApplication):
             raise ValueError("Missing required parameter 'target'")
         if date is None:
             raise ValueError("Missing required parameter 'date'")
-        url = f'{self.base_url}/site-explorer/top-pages'
-        query_params = {k: v for k, v in [('timeout', timeout), ('offset', offset), ('limit', limit), ('order_by', order_by), ('where', where), ('select', select), ('protocol', protocol), ('target', target), ('mode', mode), ('country', country), ('date_compared', date_compared), ('date', date), ('volume_mode', volume_mode), ('output', output)] if v is not None}
+        url = f"{self.base_url}/site-explorer/top-pages"
+        query_params = {
+            k: v
+            for k, v in [
+                ("timeout", timeout),
+                ("offset", offset),
+                ("limit", limit),
+                ("order_by", order_by),
+                ("where", where),
+                ("select", select),
+                ("protocol", protocol),
+                ("target", target),
+                ("mode", mode),
+                ("country", country),
+                ("date_compared", date_compared),
+                ("date", date),
+                ("volume_mode", volume_mode),
+                ("output", output),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def paid_pages(self, select, target, date, timeout=None, offset=None, limit=None, order_by=None, where=None, protocol=None, mode=None, country=None, date_compared=None, volume_mode=None, output=None) -> dict[str, Any]:
+    async def paid_pages(
+        self,
+        select,
+        target,
+        date,
+        timeout=None,
+        offset=None,
+        limit=None,
+        order_by=None,
+        where=None,
+        protocol=None,
+        mode=None,
+        country=None,
+        date_compared=None,
+        volume_mode=None,
+        output=None,
+    ) -> dict[str, Any]:
         """
         Fetches paid pages data from the Site Explorer API based on specified filters.
 
@@ -1053,13 +1554,45 @@ class AhrefsApp(APIApplication):
             raise ValueError("Missing required parameter 'target'")
         if date is None:
             raise ValueError("Missing required parameter 'date'")
-        url = f'{self.base_url}/site-explorer/paid-pages'
-        query_params = {k: v for k, v in [('timeout', timeout), ('offset', offset), ('limit', limit), ('order_by', order_by), ('where', where), ('select', select), ('protocol', protocol), ('target', target), ('mode', mode), ('country', country), ('date_compared', date_compared), ('date', date), ('volume_mode', volume_mode), ('output', output)] if v is not None}
+        url = f"{self.base_url}/site-explorer/paid-pages"
+        query_params = {
+            k: v
+            for k, v in [
+                ("timeout", timeout),
+                ("offset", offset),
+                ("limit", limit),
+                ("order_by", order_by),
+                ("where", where),
+                ("select", select),
+                ("protocol", protocol),
+                ("target", target),
+                ("mode", mode),
+                ("country", country),
+                ("date_compared", date_compared),
+                ("date", date),
+                ("volume_mode", volume_mode),
+                ("output", output),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def best_by_external_links(self, select, target, timeout=None, offset=None, limit=None, order_by=None, where=None, protocol=None, mode=None, history=None, output=None) -> dict[str, Any]:
+    async def best_by_external_links(
+        self,
+        select,
+        target,
+        timeout=None,
+        offset=None,
+        limit=None,
+        order_by=None,
+        where=None,
+        protocol=None,
+        mode=None,
+        history=None,
+        output=None,
+    ) -> dict[str, Any]:
         """
         Fetches data about the best-performing pages of a target site based on external links, with various filtering and output options.
 
@@ -1090,13 +1623,31 @@ class AhrefsApp(APIApplication):
             raise ValueError("Missing required parameter 'select'")
         if target is None:
             raise ValueError("Missing required parameter 'target'")
-        url = f'{self.base_url}/site-explorer/best-by-external-links'
-        query_params = {k: v for k, v in [('timeout', timeout), ('offset', offset), ('limit', limit), ('order_by', order_by), ('where', where), ('select', select), ('protocol', protocol), ('target', target), ('mode', mode), ('history', history), ('output', output)] if v is not None}
+        url = f"{self.base_url}/site-explorer/best-by-external-links"
+        query_params = {
+            k: v
+            for k, v in [
+                ("timeout", timeout),
+                ("offset", offset),
+                ("limit", limit),
+                ("order_by", order_by),
+                ("where", where),
+                ("select", select),
+                ("protocol", protocol),
+                ("target", target),
+                ("mode", mode),
+                ("history", history),
+                ("output", output),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def best_by_internal_links(self, select, target, timeout=None, offset=None, limit=None, order_by=None, where=None, protocol=None, mode=None, output=None) -> dict[str, Any]:
+    async def best_by_internal_links(
+        self, select, target, timeout=None, offset=None, limit=None, order_by=None, where=None, protocol=None, mode=None, output=None
+    ) -> dict[str, Any]:
         """
         Retrieves the best-performing internal links for a specified target using the site explorer API endpoint.
 
@@ -1126,13 +1677,40 @@ class AhrefsApp(APIApplication):
             raise ValueError("Missing required parameter 'select'")
         if target is None:
             raise ValueError("Missing required parameter 'target'")
-        url = f'{self.base_url}/site-explorer/best-by-internal-links'
-        query_params = {k: v for k, v in [('timeout', timeout), ('offset', offset), ('limit', limit), ('order_by', order_by), ('where', where), ('select', select), ('protocol', protocol), ('target', target), ('mode', mode), ('output', output)] if v is not None}
+        url = f"{self.base_url}/site-explorer/best-by-internal-links"
+        query_params = {
+            k: v
+            for k, v in [
+                ("timeout", timeout),
+                ("offset", offset),
+                ("limit", limit),
+                ("order_by", order_by),
+                ("where", where),
+                ("select", select),
+                ("protocol", protocol),
+                ("target", target),
+                ("mode", mode),
+                ("output", output),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def total_search_volume_history(self, date_from, target, volume_mode=None, top_positions=None, history_grouping=None, date_to=None, country=None, protocol=None, mode=None, output=None) -> dict[str, Any]:
+    async def total_search_volume_history(
+        self,
+        date_from,
+        target,
+        volume_mode=None,
+        top_positions=None,
+        history_grouping=None,
+        date_to=None,
+        country=None,
+        protocol=None,
+        mode=None,
+        output=None,
+    ) -> dict[str, Any]:
         """
         Fetches the total historical search volume data for a specified target within a given date range and optional filters.
 
@@ -1162,13 +1740,44 @@ class AhrefsApp(APIApplication):
             raise ValueError("Missing required parameter 'date_from'")
         if target is None:
             raise ValueError("Missing required parameter 'target'")
-        url = f'{self.base_url}/site-explorer/total-search-volume-history'
-        query_params = {k: v for k, v in [('volume_mode', volume_mode), ('top_positions', top_positions), ('history_grouping', history_grouping), ('date_to', date_to), ('date_from', date_from), ('country', country), ('protocol', protocol), ('target', target), ('mode', mode), ('output', output)] if v is not None}
+        url = f"{self.base_url}/site-explorer/total-search-volume-history"
+        query_params = {
+            k: v
+            for k, v in [
+                ("volume_mode", volume_mode),
+                ("top_positions", top_positions),
+                ("history_grouping", history_grouping),
+                ("date_to", date_to),
+                ("date_from", date_from),
+                ("country", country),
+                ("protocol", protocol),
+                ("target", target),
+                ("mode", mode),
+                ("output", output),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def keyword_explorer_overview(self, select, country, timeout=None, offset=None, limit=None, order_by=None, where=None, target_mode=None, target=None, target_position=None, search_engine=None, keywords=None, keyword_list_id=None, output=None) -> dict[str, Any]:
+    async def keyword_explorer_overview(
+        self,
+        select,
+        country,
+        timeout=None,
+        offset=None,
+        limit=None,
+        order_by=None,
+        where=None,
+        target_mode=None,
+        target=None,
+        target_position=None,
+        search_engine=None,
+        keywords=None,
+        keyword_list_id=None,
+        output=None,
+    ) -> dict[str, Any]:
         """
         Retrieves an overview of keyword metrics and data from the keywords explorer API endpoint based on the specified filters and parameters.
 
@@ -1202,8 +1811,27 @@ class AhrefsApp(APIApplication):
             raise ValueError("Missing required parameter 'select'")
         if country is None:
             raise ValueError("Missing required parameter 'country'")
-        url = f'{self.base_url}/keywords-explorer/overview'
-        query_params = {k: v for k, v in [('timeout', timeout), ('offset', offset), ('limit', limit), ('order_by', order_by), ('where', where), ('select', select), ('target_mode', target_mode), ('target', target), ('target_position', target_position), ('country', country), ('search_engine', search_engine), ('keywords', keywords), ('keyword_list_id', keyword_list_id), ('output', output)] if v is not None}
+        url = f"{self.base_url}/keywords-explorer/overview"
+        query_params = {
+            k: v
+            for k, v in [
+                ("timeout", timeout),
+                ("offset", offset),
+                ("limit", limit),
+                ("order_by", order_by),
+                ("where", where),
+                ("select", select),
+                ("target_mode", target_mode),
+                ("target", target),
+                ("target_position", target_position),
+                ("country", country),
+                ("search_engine", search_engine),
+                ("keywords", keywords),
+                ("keyword_list_id", keyword_list_id),
+                ("output", output),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -1231,8 +1859,8 @@ class AhrefsApp(APIApplication):
             raise ValueError("Missing required parameter 'country'")
         if keyword is None:
             raise ValueError("Missing required parameter 'keyword'")
-        url = f'{self.base_url}/keywords-explorer/volume-history'
-        query_params = {k: v for k, v in [('country', country), ('keyword', keyword), ('output', output)] if v is not None}
+        url = f"{self.base_url}/keywords-explorer/volume-history"
+        query_params = {k: v for k, v in [("country", country), ("keyword", keyword), ("output", output)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -1258,13 +1886,30 @@ class AhrefsApp(APIApplication):
         """
         if keyword is None:
             raise ValueError("Missing required parameter 'keyword'")
-        url = f'{self.base_url}/keywords-explorer/volume-by-country'
-        query_params = {k: v for k, v in [('limit', limit), ('search_engine', search_engine), ('keyword', keyword), ('output', output)] if v is not None}
+        url = f"{self.base_url}/keywords-explorer/volume-by-country"
+        query_params = {
+            k: v for k, v in [("limit", limit), ("search_engine", search_engine), ("keyword", keyword), ("output", output)] if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def matching_terms(self, select, country, timeout=None, offset=None, limit=None, order_by=None, where=None, search_engine=None, keywords=None, keyword_list_id=None, match_mode=None, terms=None, output=None) -> dict[str, Any]:
+    async def matching_terms(
+        self,
+        select,
+        country,
+        timeout=None,
+        offset=None,
+        limit=None,
+        order_by=None,
+        where=None,
+        search_engine=None,
+        keywords=None,
+        keyword_list_id=None,
+        match_mode=None,
+        terms=None,
+        output=None,
+    ) -> dict[str, Any]:
         """
         Retrieves matching keyword terms from the keywords explorer API based on specified filters and search parameters.
 
@@ -1297,13 +1942,45 @@ class AhrefsApp(APIApplication):
             raise ValueError("Missing required parameter 'select'")
         if country is None:
             raise ValueError("Missing required parameter 'country'")
-        url = f'{self.base_url}/keywords-explorer/matching-terms'
-        query_params = {k: v for k, v in [('timeout', timeout), ('offset', offset), ('limit', limit), ('order_by', order_by), ('where', where), ('select', select), ('country', country), ('search_engine', search_engine), ('keywords', keywords), ('keyword_list_id', keyword_list_id), ('match_mode', match_mode), ('terms', terms), ('output', output)] if v is not None}
+        url = f"{self.base_url}/keywords-explorer/matching-terms"
+        query_params = {
+            k: v
+            for k, v in [
+                ("timeout", timeout),
+                ("offset", offset),
+                ("limit", limit),
+                ("order_by", order_by),
+                ("where", where),
+                ("select", select),
+                ("country", country),
+                ("search_engine", search_engine),
+                ("keywords", keywords),
+                ("keyword_list_id", keyword_list_id),
+                ("match_mode", match_mode),
+                ("terms", terms),
+                ("output", output),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def related_terms(self, select, country, timeout=None, offset=None, limit=None, order_by=None, where=None, keywords=None, keyword_list_id=None, view_for=None, terms=None, output=None) -> dict[str, Any]:
+    async def related_terms(
+        self,
+        select,
+        country,
+        timeout=None,
+        offset=None,
+        limit=None,
+        order_by=None,
+        where=None,
+        keywords=None,
+        keyword_list_id=None,
+        view_for=None,
+        terms=None,
+        output=None,
+    ) -> dict[str, Any]:
         """
         Retrieves related keyword terms for a given selection and country, with optional filtering and pagination.
 
@@ -1334,13 +2011,43 @@ class AhrefsApp(APIApplication):
             raise ValueError("Missing required parameter 'select'")
         if country is None:
             raise ValueError("Missing required parameter 'country'")
-        url = f'{self.base_url}/keywords-explorer/related-terms'
-        query_params = {k: v for k, v in [('timeout', timeout), ('offset', offset), ('limit', limit), ('order_by', order_by), ('where', where), ('select', select), ('country', country), ('keywords', keywords), ('keyword_list_id', keyword_list_id), ('view_for', view_for), ('terms', terms), ('output', output)] if v is not None}
+        url = f"{self.base_url}/keywords-explorer/related-terms"
+        query_params = {
+            k: v
+            for k, v in [
+                ("timeout", timeout),
+                ("offset", offset),
+                ("limit", limit),
+                ("order_by", order_by),
+                ("where", where),
+                ("select", select),
+                ("country", country),
+                ("keywords", keywords),
+                ("keyword_list_id", keyword_list_id),
+                ("view_for", view_for),
+                ("terms", terms),
+                ("output", output),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def search_suggestions(self, select, country, timeout=None, offset=None, limit=None, order_by=None, where=None, search_engine=None, keywords=None, keyword_list_id=None, output=None) -> dict[str, Any]:
+    async def search_suggestions(
+        self,
+        select,
+        country,
+        timeout=None,
+        offset=None,
+        limit=None,
+        order_by=None,
+        where=None,
+        search_engine=None,
+        keywords=None,
+        keyword_list_id=None,
+        output=None,
+    ) -> dict[str, Any]:
         """
         Fetches keyword search suggestions from the keywords explorer API based on the provided filtering and query parameters.
 
@@ -1371,11 +2078,68 @@ class AhrefsApp(APIApplication):
             raise ValueError("Missing required parameter 'select'")
         if country is None:
             raise ValueError("Missing required parameter 'country'")
-        url = f'{self.base_url}/keywords-explorer/search-suggestions'
-        query_params = {k: v for k, v in [('timeout', timeout), ('offset', offset), ('limit', limit), ('order_by', order_by), ('where', where), ('select', select), ('country', country), ('search_engine', search_engine), ('keywords', keywords), ('keyword_list_id', keyword_list_id), ('output', output)] if v is not None}
+        url = f"{self.base_url}/keywords-explorer/search-suggestions"
+        query_params = {
+            k: v
+            for k, v in [
+                ("timeout", timeout),
+                ("offset", offset),
+                ("limit", limit),
+                ("order_by", order_by),
+                ("where", where),
+                ("select", select),
+                ("country", country),
+                ("search_engine", search_engine),
+                ("keywords", keywords),
+                ("keyword_list_id", keyword_list_id),
+                ("output", output),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
     def list_tools(self):
-        return [self.crawler_ips, self.crawler_ip_ranges, self.limits_and_usage, self.batch_analysis, self.serp_overview, self.overview, self.competitors_overview, self.projects, self.domain_rating, self.backlinks_stats, self.outlinks_stats, self.metrics, self.refdomains_history, self.domain_rating_history, self.url_rating_history, self.pages_history, self.metrics_history, self.keywords_history, self.metrics_by_country, self.pages_by_traffic, self.all_backlinks, self.broken_backlinks, self.refdomains, self.anchors, self.linkeddomains, self.linked_anchors_external, self.linked_anchors_internal, self.organic_keywords, self.organic_competitors, self.top_pages, self.paid_pages, self.best_by_external_links, self.best_by_internal_links, self.total_search_volume_history, self.keyword_explorer_overview, self.volume_history, self.volume_by_country, self.matching_terms, self.related_terms, self.search_suggestions]
+        return [
+            self.crawler_ips,
+            self.crawler_ip_ranges,
+            self.limits_and_usage,
+            self.batch_analysis,
+            self.serp_overview,
+            self.overview,
+            self.competitors_overview,
+            self.projects,
+            self.domain_rating,
+            self.backlinks_stats,
+            self.outlinks_stats,
+            self.metrics,
+            self.refdomains_history,
+            self.domain_rating_history,
+            self.url_rating_history,
+            self.pages_history,
+            self.metrics_history,
+            self.keywords_history,
+            self.metrics_by_country,
+            self.pages_by_traffic,
+            self.all_backlinks,
+            self.broken_backlinks,
+            self.refdomains,
+            self.anchors,
+            self.linkeddomains,
+            self.linked_anchors_external,
+            self.linked_anchors_internal,
+            self.organic_keywords,
+            self.organic_competitors,
+            self.top_pages,
+            self.paid_pages,
+            self.best_by_external_links,
+            self.best_by_internal_links,
+            self.total_search_volume_history,
+            self.keyword_explorer_overview,
+            self.volume_history,
+            self.volume_by_country,
+            self.matching_terms,
+            self.related_terms,
+            self.search_suggestions,
+        ]

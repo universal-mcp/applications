@@ -12,6 +12,7 @@ from openai.types.chat import ChatCompletionMessageParam
 from openai.types.file_object import FileObject
 from openai.types.image_model import ImageModel as OpenAiImageModel
 
+
 class OpenaiApp(APIApplication):
     """
     Application for interacting with the OpenAI API (api.openai.com)
@@ -20,20 +21,32 @@ class OpenaiApp(APIApplication):
     Optionally, organization ID and project ID can also be configured.
     """
 
-    def __init__(self, integration: Integration | None=None) -> None:
-        super().__init__(name='openai', integration=integration)
+    def __init__(self, integration: Integration | None = None) -> None:
+        super().__init__(name="openai", integration=integration)
 
     async def _get_client(self) -> AsyncOpenAI:
         """Initializes and returns the AsyncOpenAI client."""
         if not self.integration:
-            raise ValueError('Integration not provided for OpenaiApp.')
+            raise ValueError("Integration not provided for OpenaiApp.")
         creds = self.integration.get_credentials()
-        api_key = creds.get('api_key')
-        organization = creds.get('organization')
-        project = creds.get('project')
+        api_key = creds.get("api_key")
+        organization = creds.get("organization")
+        project = creds.get("project")
         return AsyncOpenAI(api_key=api_key, organization=organization, project=project)
 
-    async def create_chat_completion(self, messages: list[ChatCompletionMessageParam], model: str='gpt-4o', stream: bool=False, temperature: float | None=None, max_tokens: int | None=None, top_p: float | None=None, frequency_penalty: float | None=None, presence_penalty: float | None=None, stop: str | None | list[str]=None, user: str | None=None) -> dict[str, Any] | str:
+    async def create_chat_completion(
+        self,
+        messages: list[ChatCompletionMessageParam],
+        model: str = "gpt-4o",
+        stream: bool = False,
+        temperature: float | None = None,
+        max_tokens: int | None = None,
+        top_p: float | None = None,
+        frequency_penalty: float | None = None,
+        presence_penalty: float | None = None,
+        stop: str | None | list[str] = None,
+        user: str | None = None,
+    ) -> dict[str, Any] | str:
         """
         Generates a model response for a chat conversation. It supports both standard and streaming modes; if streaming, it internally aggregates response chunks into a single complete object, simplifying stream handling. Returns the completion data as a dictionary on success or an error string on failure.
 
@@ -64,7 +77,17 @@ class OpenaiApp(APIApplication):
         """
         try:
             client = await self._get_client()
-            common_params = {'model': model, 'messages': messages, 'temperature': temperature, 'max_tokens': max_tokens, 'top_p': top_p, 'frequency_penalty': frequency_penalty, 'presence_penalty': presence_penalty, 'stop': stop, 'user': user}
+            common_params = {
+                "model": model,
+                "messages": messages,
+                "temperature": temperature,
+                "max_tokens": max_tokens,
+                "top_p": top_p,
+                "frequency_penalty": frequency_penalty,
+                "presence_penalty": presence_penalty,
+                "stop": stop,
+                "user": user,
+            }
             common_params = {k: v for k, v in common_params.items() if v is not None}
             if not stream:
                 response = await client.chat.completions.create(stream=False, **common_params)
@@ -72,12 +95,17 @@ class OpenaiApp(APIApplication):
             else:
                 stream_response = await client.chat.completions.create(stream=True, **common_params)
                 final_content_parts: list[str] = []
-                final_role: str = 'assistant'
+                final_role: str = "assistant"
                 first_chunk_data: dict[str, Any] = {}
                 finish_reason: str | None = None
                 async for chunk in stream_response:
                     if not first_chunk_data and chunk.id:
-                        first_chunk_data = {'id': chunk.id, 'created': chunk.created, 'model': chunk.model, 'system_fingerprint': chunk.system_fingerprint}
+                        first_chunk_data = {
+                            "id": chunk.id,
+                            "created": chunk.created,
+                            "model": chunk.model,
+                            "system_fingerprint": chunk.system_fingerprint,
+                        }
                     if chunk.choices:
                         choice = chunk.choices[0]
                         if choice.delta:
@@ -87,13 +115,17 @@ class OpenaiApp(APIApplication):
                                 final_role = choice.delta.role
                         if choice.finish_reason:
                             finish_reason = choice.finish_reason
-                aggregated_choice = {'message': {'role': final_role, 'content': ''.join(final_content_parts)}, 'finish_reason': finish_reason, 'index': 0}
-                response_dict = {**first_chunk_data, 'object': 'chat.completion', 'choices': [aggregated_choice], 'usage': None}
+                aggregated_choice = {
+                    "message": {"role": final_role, "content": "".join(final_content_parts)},
+                    "finish_reason": finish_reason,
+                    "index": 0,
+                }
+                response_dict = {**first_chunk_data, "object": "chat.completion", "choices": [aggregated_choice], "usage": None}
                 return response_dict
         except OpenAIError as e:
-            return f'OpenAI API error creating chat completion for model {model}: {type(e).__name__} - {e}'
+            return f"OpenAI API error creating chat completion for model {model}: {type(e).__name__} - {e}"
         except Exception as e:
-            return f'Error creating chat completion for model {model}: {type(e).__name__} - {e}'
+            return f"Error creating chat completion for model {model}: {type(e).__name__} - {e}"
 
     async def upload_file(self, file: OpenAiFileTypes, purpose: OpenAiFilePurpose) -> dict[str, Any] | str:
         """
@@ -116,11 +148,13 @@ class OpenaiApp(APIApplication):
             response: FileObject = await client.files.create(file=file, purpose=purpose)
             return response.model_dump()
         except OpenAIError as e:
-            return f'OpenAI API error uploading file: {type(e).__name__} - {e}'
+            return f"OpenAI API error uploading file: {type(e).__name__} - {e}"
         except Exception as e:
-            return f'Error uploading file: {type(e).__name__} - {e}'
+            return f"Error uploading file: {type(e).__name__} - {e}"
 
-    async def list_files(self, purpose: str | None=None, limit: int | None=None, after: str | None=None, order: Literal['asc', 'desc'] | None=None) -> dict[str, Any] | str:
+    async def list_files(
+        self, purpose: str | None = None, limit: int | None = None, after: str | None = None, order: Literal["asc", "desc"] | None = None
+    ) -> dict[str, Any] | str:
         """
         Retrieves a paginated list of files uploaded to the OpenAI account. Allows filtering by purpose and controlling the output with limit, `after` cursor, and sort order parameters to efficiently navigate through the file collection.
 
@@ -141,19 +175,19 @@ class OpenaiApp(APIApplication):
             client = await self._get_client()
             params = {}
             if purpose:
-                params['purpose'] = purpose
+                params["purpose"] = purpose
             if limit:
-                params['limit'] = limit
+                params["limit"] = limit
             if after:
-                params['after'] = after
+                params["after"] = after
             if order:
-                params['order'] = order
+                params["order"] = order
             response_page = await client.files.list(**params)
             return response_page.model_dump()
         except OpenAIError as e:
-            return f'OpenAI API error listing files: {type(e).__name__} - {e}'
+            return f"OpenAI API error listing files: {type(e).__name__} - {e}"
         except Exception as e:
-            return f'Error listing files: {type(e).__name__} - {e}'
+            return f"Error listing files: {type(e).__name__} - {e}"
 
     async def retrieve_file_metadata(self, file_id: str) -> dict[str, Any] | str:
         """
@@ -174,9 +208,9 @@ class OpenaiApp(APIApplication):
             response: FileObject = await client.files.retrieve(file_id=file_id)
             return response.model_dump()
         except OpenAIError as e:
-            return f'OpenAI API error retrieving file {file_id}: {type(e).__name__} - {e}'
+            return f"OpenAI API error retrieving file {file_id}: {type(e).__name__} - {e}"
         except Exception as e:
-            return f'Error retrieving file {file_id}: {type(e).__name__} - {e}'
+            return f"Error retrieving file {file_id}: {type(e).__name__} - {e}"
 
     async def delete_file(self, file_id: str) -> dict[str, Any] | str:
         """
@@ -197,9 +231,9 @@ class OpenaiApp(APIApplication):
             response = await client.files.delete(file_id=file_id)
             return response.model_dump()
         except OpenAIError as e:
-            return f'OpenAI API error deleting file {file_id}: {type(e).__name__} - {e}'
+            return f"OpenAI API error deleting file {file_id}: {type(e).__name__} - {e}"
         except Exception as e:
-            return f'Error deleting file {file_id}: {type(e).__name__} - {e}'
+            return f"Error deleting file {file_id}: {type(e).__name__} - {e}"
 
     async def retrieve_file_content(self, file_id: str) -> dict[str, Any] | str:
         """
@@ -219,24 +253,45 @@ class OpenaiApp(APIApplication):
             client = await self._get_client()
             api_response = await client.files.content(file_id=file_id)
             http_response_headers = api_response.response.headers
-            content_type = http_response_headers.get('Content-Type', '').lower()
-            if 'text' in content_type or 'json' in content_type or 'xml' in content_type or ('javascript' in content_type) or ('csv' in content_type):
+            content_type = http_response_headers.get("Content-Type", "").lower()
+            if (
+                "text" in content_type
+                or "json" in content_type
+                or "xml" in content_type
+                or ("javascript" in content_type)
+                or ("csv" in content_type)
+            ):
                 return api_response.text
             else:
                 binary_content = api_response.content
-                return {'file_id': file_id, 'content_type': content_type, 'content_base64': base64.b64encode(binary_content).decode()}
+                return {"file_id": file_id, "content_type": content_type, "content_base64": base64.b64encode(binary_content).decode()}
         except UnicodeDecodeError:
             client = await self._get_client()
             api_response = await client.files.content(file_id=file_id)
             binary_content = api_response.content
-            content_type = api_response.response.headers.get('Content-Type', '').lower()
-            return {'file_id': file_id, 'content_type': content_type, 'content_base64': base64.b64encode(binary_content).decode(), 'warning': 'Content could not be decoded as text, returned as base64.'}
+            content_type = api_response.response.headers.get("Content-Type", "").lower()
+            return {
+                "file_id": file_id,
+                "content_type": content_type,
+                "content_base64": base64.b64encode(binary_content).decode(),
+                "warning": "Content could not be decoded as text, returned as base64.",
+            }
         except OpenAIError as e:
-            return f'OpenAI API error retrieving content for file {file_id}: {type(e).__name__} - {e}'
+            return f"OpenAI API error retrieving content for file {file_id}: {type(e).__name__} - {e}"
         except Exception as e:
-            return f'Error retrieving content for file {file_id}: {type(e).__name__} - {e}'
+            return f"Error retrieving content for file {file_id}: {type(e).__name__} - {e}"
 
-    async def create_image(self, prompt: str, model: str | OpenAiImageModel | None='dall-e-3', n: int | None=None, quality: Literal['standard', 'hd'] | None=None, response_format: Literal['url', 'b64_json'] | None=None, size: Literal['256x256', '512x512', '1024x1024', '1792x1024', '1024x1792'] | None=None, style: Literal['vivid', 'natural'] | None=None, user: str | None=None) -> dict[str, Any] | str:
+    async def create_image(
+        self,
+        prompt: str,
+        model: str | OpenAiImageModel | None = "dall-e-3",
+        n: int | None = None,
+        quality: Literal["standard", "hd"] | None = None,
+        response_format: Literal["url", "b64_json"] | None = None,
+        size: Literal["256x256", "512x512", "1024x1024", "1792x1024", "1024x1792"] | None = None,
+        style: Literal["vivid", "natural"] | None = None,
+        user: str | None = None,
+    ) -> dict[str, Any] | str:
         """
         Generates new images from a textual prompt using OpenAI's DALL-E models. It allows customization of parameters like image size, quality, style, and response format (URL or base64 JSON). Unlike other image functions in this class, it creates images entirely from scratch based on text.
 
@@ -266,17 +321,36 @@ class OpenaiApp(APIApplication):
         """
         try:
             client = await self._get_client()
-            effective_model = model if model is not None else 'dall-e-3'
-            effective_params = {'prompt': prompt, 'model': effective_model, 'n': n, 'quality': quality, 'response_format': response_format, 'size': size, 'style': style, 'user': user}
+            effective_model = model if model is not None else "dall-e-3"
+            effective_params = {
+                "prompt": prompt,
+                "model": effective_model,
+                "n": n,
+                "quality": quality,
+                "response_format": response_format,
+                "size": size,
+                "style": style,
+                "user": user,
+            }
             effective_params = {k: v for k, v in effective_params.items() if v is not None}
             response = await client.images.generate(**effective_params)
             return response.model_dump()
         except OpenAIError as e:
-            return f'OpenAI API error generating image with model {model}: {type(e).__name__} - {e}'
+            return f"OpenAI API error generating image with model {model}: {type(e).__name__} - {e}"
         except Exception as e:
-            return f'Error generating image with model {model}: {type(e).__name__} - {e}'
+            return f"Error generating image with model {model}: {type(e).__name__} - {e}"
 
-    async def create_image_edit(self, image: OpenAiFileTypes, prompt: str, mask: OpenAiFileTypes | None=None, model: str | OpenAiImageModel | None='dall-e-2', n: int | None=None, response_format: Literal['url', 'b64_json'] | None=None, size: Literal['256x256', '512x512', '1024x1024'] | None=None, user: str | None=None) -> dict[str, Any] | str:
+    async def create_image_edit(
+        self,
+        image: OpenAiFileTypes,
+        prompt: str,
+        mask: OpenAiFileTypes | None = None,
+        model: str | OpenAiImageModel | None = "dall-e-2",
+        n: int | None = None,
+        response_format: Literal["url", "b64_json"] | None = None,
+        size: Literal["256x256", "512x512", "1024x1024"] | None = None,
+        user: str | None = None,
+    ) -> dict[str, Any] | str:
         """
         Modifies a source image using the DALL-E 2 model based on a text prompt. An optional mask can be supplied to specify the exact area for editing. This function is distinct from generating images from scratch (`generate_image`) or creating simple variations (`create_image_variation`).
 
@@ -300,17 +374,34 @@ class OpenaiApp(APIApplication):
         """
         try:
             client = await self._get_client()
-            effective_model = model if model is not None else 'dall-e-2'
-            params = {'image': image, 'prompt': prompt, 'mask': mask, 'model': effective_model, 'n': n, 'response_format': response_format, 'size': size, 'user': user}
+            effective_model = model if model is not None else "dall-e-2"
+            params = {
+                "image": image,
+                "prompt": prompt,
+                "mask": mask,
+                "model": effective_model,
+                "n": n,
+                "response_format": response_format,
+                "size": size,
+                "user": user,
+            }
             params = {k: v for k, v in params.items() if v is not None}
             response = await client.images.edit(**params)
             return response.model_dump()
         except OpenAIError as e:
-            return f'OpenAI API error creating image edit with model {effective_model}: {type(e).__name__} - {e}'
+            return f"OpenAI API error creating image edit with model {effective_model}: {type(e).__name__} - {e}"
         except Exception as e:
-            return f'Error creating image edit with model {effective_model}: {type(e).__name__} - {e}'
+            return f"Error creating image edit with model {effective_model}: {type(e).__name__} - {e}"
 
-    async def create_image_variation(self, image: OpenAiFileTypes, model: str | OpenAiImageModel | None='dall-e-2', n: int | None=None, response_format: Literal['url', 'b64_json'] | None=None, size: Literal['256x256', '512x512', '1024x1024'] | None=None, user: str | None=None) -> dict[str, Any] | str:
+    async def create_image_variation(
+        self,
+        image: OpenAiFileTypes,
+        model: str | OpenAiImageModel | None = "dall-e-2",
+        n: int | None = None,
+        response_format: Literal["url", "b64_json"] | None = None,
+        size: Literal["256x256", "512x512", "1024x1024"] | None = None,
+        user: str | None = None,
+    ) -> dict[str, Any] | str:
         """
         Generates one or more variations of a provided image using the OpenAI API, specifically the DALL-E 2 model. It allows customization of the number, size, and response format of the resulting images. Returns a dictionary with image data on success or an error string on failure.
 
@@ -332,17 +423,28 @@ class OpenaiApp(APIApplication):
         """
         try:
             client = await self._get_client()
-            effective_model = model if model is not None else 'dall-e-2'
-            params = {'image': image, 'model': effective_model, 'n': n, 'response_format': response_format, 'size': size, 'user': user}
+            effective_model = model if model is not None else "dall-e-2"
+            params = {"image": image, "model": effective_model, "n": n, "response_format": response_format, "size": size, "user": user}
             params = {k: v for k, v in params.items() if v is not None}
             response = await client.images.create_variation(**params)
             return response.model_dump()
         except OpenAIError as e:
-            return f'OpenAI API error creating image variation with model {effective_model}: {type(e).__name__} - {e}'
+            return f"OpenAI API error creating image variation with model {effective_model}: {type(e).__name__} - {e}"
         except Exception as e:
-            return f'Error creating image variation with model {effective_model}: {type(e).__name__} - {e}'
+            return f"Error creating image variation with model {effective_model}: {type(e).__name__} - {e}"
 
-    async def transcribe_audio(self, file: OpenAiFileTypes, model: str | OpenAiAudioModel='gpt-4o-transcribe', language: str | None=None, prompt: str | None=None, response_format: Literal['json', 'text', 'srt', 'verbose_json', 'vtt'] | None=None, temperature: float | None=None, timestamp_granularities: list[Literal['word', 'segment']] | None=None, include: list[Literal['logprobs']] | None=None, stream: bool=False) -> dict[str, Any] | str:
+    async def transcribe_audio(
+        self,
+        file: OpenAiFileTypes,
+        model: str | OpenAiAudioModel = "gpt-4o-transcribe",
+        language: str | None = None,
+        prompt: str | None = None,
+        response_format: Literal["json", "text", "srt", "verbose_json", "vtt"] | None = None,
+        temperature: float | None = None,
+        timestamp_granularities: list[Literal["word", "segment"]] | None = None,
+        include: list[Literal["logprobs"]] | None = None,
+        stream: bool = False,
+    ) -> dict[str, Any] | str:
         """
         Transcribes an audio file into text in its original language using models like Whisper or GPT-4o. It supports multiple response formats and internally aggregates streaming data into a final object. This differs from `create_translation`, which translates audio specifically into English text.
 
@@ -372,19 +474,28 @@ class OpenaiApp(APIApplication):
         """
         try:
             client = await self._get_client()
-            params = {'file': file, 'model': model, 'language': language if language is not None else NOT_GIVEN, 'prompt': prompt if prompt is not None else NOT_GIVEN, 'response_format': response_format if response_format is not None else NOT_GIVEN, 'temperature': temperature if temperature is not None else NOT_GIVEN, 'timestamp_granularities': timestamp_granularities if timestamp_granularities is not None else NOT_GIVEN, 'include': include if include is not None else NOT_GIVEN}
+            params = {
+                "file": file,
+                "model": model,
+                "language": language if language is not None else NOT_GIVEN,
+                "prompt": prompt if prompt is not None else NOT_GIVEN,
+                "response_format": response_format if response_format is not None else NOT_GIVEN,
+                "temperature": temperature if temperature is not None else NOT_GIVEN,
+                "timestamp_granularities": timestamp_granularities if timestamp_granularities is not None else NOT_GIVEN,
+                "include": include if include is not None else NOT_GIVEN,
+            }
             if stream:
                 stream_response = await client.audio.transcriptions.create(**params, stream=True)
                 final_transcription_value = None
                 async for event in stream_response:
-                    if hasattr(event, 'value') and isinstance(event.value, Transcription | TranscriptionVerbose):
-                        if event.__class__.__name__ == 'FinalTranscriptionEvent':
+                    if hasattr(event, "value") and isinstance(event.value, Transcription | TranscriptionVerbose):
+                        if event.__class__.__name__ == "FinalTranscriptionEvent":
                             final_transcription_value = event.value
                             break
                 if final_transcription_value:
                     return final_transcription_value.model_dump()
                 else:
-                    return {'error': 'Stream aggregation failed to find final transcription object.'}
+                    return {"error": "Stream aggregation failed to find final transcription object."}
             else:
                 response = await client.audio.transcriptions.create(**params, stream=False)
                 if isinstance(response, Transcription | TranscriptionVerbose):
@@ -392,13 +503,20 @@ class OpenaiApp(APIApplication):
                 elif isinstance(response, str):
                     return response
                 else:
-                    return {'error': 'Unexpected_response_type_from_transcription_api', 'data': str(response)}
+                    return {"error": "Unexpected_response_type_from_transcription_api", "data": str(response)}
         except OpenAIError as e:
-            return f'OpenAI API error creating transcription: {type(e).__name__} - {e}'
+            return f"OpenAI API error creating transcription: {type(e).__name__} - {e}"
         except Exception as e:
-            return f'Error creating transcription: {type(e).__name__} - {e}'
+            return f"Error creating transcription: {type(e).__name__} - {e}"
 
-    async def create_translation(self, file: OpenAiFileTypes, model: str | OpenAiAudioModel='whisper-1', prompt: str | None=None, response_format: Literal['json', 'text', 'srt', 'verbose_json', 'vtt'] | None=None, temperature: float | None=None) -> dict[str, Any] | str:
+    async def create_translation(
+        self,
+        file: OpenAiFileTypes,
+        model: str | OpenAiAudioModel = "whisper-1",
+        prompt: str | None = None,
+        response_format: Literal["json", "text", "srt", "verbose_json", "vtt"] | None = None,
+        temperature: float | None = None,
+    ) -> dict[str, Any] | str:
         """
         Translates audio from any supported language into English text using OpenAI's API. Unlike `create_transcription`, which converts audio to text in its original language, this function's output is always English. It supports various response formats like JSON, text, or SRT for the translated content.
 
@@ -418,20 +536,34 @@ class OpenaiApp(APIApplication):
         """
         try:
             client = await self._get_client()
-            params = {'file': file, 'model': model, 'prompt': prompt if prompt is not None else NOT_GIVEN, 'response_format': response_format if response_format is not None else NOT_GIVEN, 'temperature': temperature if temperature is not None else NOT_GIVEN}
+            params = {
+                "file": file,
+                "model": model,
+                "prompt": prompt if prompt is not None else NOT_GIVEN,
+                "response_format": response_format if response_format is not None else NOT_GIVEN,
+                "temperature": temperature if temperature is not None else NOT_GIVEN,
+            }
             response = await client.audio.translations.create(**params)
             if isinstance(response, Translation | TranslationVerbose):
                 return response.model_dump()
             elif isinstance(response, str):
                 return response
             else:
-                return {'error': 'Unexpected_response_type_from_translation_api', 'data': str(response)}
+                return {"error": "Unexpected_response_type_from_translation_api", "data": str(response)}
         except OpenAIError as e:
-            return f'OpenAI API error creating translation: {type(e).__name__} - {e}'
+            return f"OpenAI API error creating translation: {type(e).__name__} - {e}"
         except Exception as e:
-            return f'Error creating translation: {type(e).__name__} - {e}'
+            return f"Error creating translation: {type(e).__name__} - {e}"
 
-    async def create_speech(self, input_text: str, voice: Literal['alloy', 'ash', 'ballad', 'coral', 'echo', 'fable', 'onyx', 'nova', 'sage', 'shimmer', 'verse'], model: str | OpenAiSpeechModel='tts-1', response_format: Literal['mp3', 'opus', 'aac', 'flac', 'wav', 'pcm'] | None=None, speed: float | None=None, instructions: str | None=None) -> dict[str, Any] | str:
+    async def create_speech(
+        self,
+        input_text: str,
+        voice: Literal["alloy", "ash", "ballad", "coral", "echo", "fable", "onyx", "nova", "sage", "shimmer", "verse"],
+        model: str | OpenAiSpeechModel = "tts-1",
+        response_format: Literal["mp3", "opus", "aac", "flac", "wav", "pcm"] | None = None,
+        speed: float | None = None,
+        instructions: str | None = None,
+    ) -> dict[str, Any] | str:
         """
         Generates audio from input text using a specified TTS model and voice. This text-to-speech function allows customizing audio format and speed. On success, it returns a dictionary containing the base64-encoded audio content and its corresponding MIME type, or an error string on failure.
 
@@ -453,19 +585,51 @@ class OpenaiApp(APIApplication):
         """
         try:
             client = await self._get_client()
-            params = {'input': input_text, 'model': model, 'voice': voice, 'response_format': response_format if response_format is not None else NOT_GIVEN, 'speed': speed if speed is not None else NOT_GIVEN, 'instructions': instructions if instructions is not None else NOT_GIVEN}
+            params = {
+                "input": input_text,
+                "model": model,
+                "voice": voice,
+                "response_format": response_format if response_format is not None else NOT_GIVEN,
+                "speed": speed if speed is not None else NOT_GIVEN,
+                "instructions": instructions if instructions is not None else NOT_GIVEN,
+            }
             api_response = await client.audio.speech.create(**params)
             binary_content = api_response.content
-            actual_content_type = api_response.response.headers.get('Content-Type', 'application/octet-stream')
-            if response_format and actual_content_type == 'application/octet-stream':
-                mime_map = {'mp3': 'audio/mpeg', 'opus': 'audio/opus', 'aac': 'audio/aac', 'flac': 'audio/flac', 'wav': 'audio/wav', 'pcm': 'audio/L16'}
+            actual_content_type = api_response.response.headers.get("Content-Type", "application/octet-stream")
+            if response_format and actual_content_type == "application/octet-stream":
+                mime_map = {
+                    "mp3": "audio/mpeg",
+                    "opus": "audio/opus",
+                    "aac": "audio/aac",
+                    "flac": "audio/flac",
+                    "wav": "audio/wav",
+                    "pcm": "audio/L16",
+                }
                 actual_content_type = mime_map.get(response_format, actual_content_type)
-            return {'model_used': str(model), 'voice_used': voice, 'content_type': actual_content_type, 'content_base64': base64.b64encode(binary_content).decode()}
+            return {
+                "model_used": str(model),
+                "voice_used": voice,
+                "content_type": actual_content_type,
+                "content_base64": base64.b64encode(binary_content).decode(),
+            }
         except OpenAIError as e:
-            return f'OpenAI API error creating speech: {type(e).__name__} - {e}'
+            return f"OpenAI API error creating speech: {type(e).__name__} - {e}"
         except Exception as e:
-            return f'Error creating speech: {type(e).__name__} - {e}'
+            return f"Error creating speech: {type(e).__name__} - {e}"
 
     def list_tools(self) -> list[callable]:
         """Returns a list of methods exposed as tools."""
-        return [self.create_chat_completion, self.upload_file, self.list_files, self.retrieve_file_metadata, self.delete_file, self.retrieve_file_content, self.create_image, self.create_image_edit, self.create_image_variation, self.transcribe_audio, self.create_translation, self.create_speech]
+        return [
+            self.create_chat_completion,
+            self.upload_file,
+            self.list_files,
+            self.retrieve_file_metadata,
+            self.delete_file,
+            self.retrieve_file_content,
+            self.create_image,
+            self.create_image_edit,
+            self.create_image_variation,
+            self.transcribe_audio,
+            self.create_translation,
+            self.create_speech,
+        ]

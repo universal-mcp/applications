@@ -3,10 +3,10 @@ from loguru import logger
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
-class ShopifyApp(APIApplication):
 
-    def __init__(self, integration: Integration=None, **kwargs) -> None:
-        super().__init__(name='shopify', integration=integration, **kwargs)
+class ShopifyApp(APIApplication):
+    def __init__(self, integration: Integration = None, **kwargs) -> None:
+        super().__init__(name="shopify", integration=integration, **kwargs)
         self.base_url = None
 
     @property
@@ -17,11 +17,11 @@ class ShopifyApp(APIApplication):
         """
         if not self._base_url:
             credentials = self.integration.get_credentials()
-            subdomain = credentials.get('subdomain')
+            subdomain = credentials.get("subdomain")
             if not subdomain:
                 logger.error("Integration credentials must include 'subdomain'.")
                 raise ValueError("Integration credentials must include 'subdomain'.")
-            self._base_url = f'https://{subdomain}.myshopify.com'
+            self._base_url = f"https://{subdomain}.myshopify.com"
         return self._base_url
 
     @base_url.setter
@@ -34,7 +34,7 @@ class ShopifyApp(APIApplication):
             base_url: The new base URL to set.
         """
         self._base_url = base_url
-        logger.info(f'Shopify: Base URL set to {self._base_url}')
+        logger.info(f"Shopify: Base URL set to {self._base_url}")
 
     async def get_access_scopes(self) -> dict[str, Any]:
         """
@@ -50,7 +50,7 @@ class ShopifyApp(APIApplication):
         Tags:
             Access, AccessScope
         """
-        url = f'{self.base_url}/admin/oauth/access_scopes.json'
+        url = f"{self.base_url}/admin/oauth/access_scopes.json"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -80,7 +80,7 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/storefront_access_tokens.json'
+        url = f"{self.base_url}/admin/api/{api_version}/storefront_access_tokens.json"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -91,7 +91,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_storefront_token(self, api_version: str, storefront_access_token: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def create_storefront_token(self, api_version: str, storefront_access_token: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Creates a Shopify Storefront API access token for client-side GraphQL requests, enabling access to store data like products, collections, and checkout.
 
@@ -112,11 +112,11 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         request_body_data = None
-        request_body_data = {'storefront_access_token': storefront_access_token}
+        request_body_data = {"storefront_access_token": storefront_access_token}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/storefront_access_tokens.json'
+        url = f"{self.base_url}/admin/api/{api_version}/storefront_access_tokens.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -125,7 +125,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def delete_storefront_access_token(self, api_version: str, storefront_access_token_id: str, body_content: str | None=None) -> Any:
+    async def delete_storefront_access_token(
+        self, api_version: str, storefront_access_token_id: str, body_content: str | None = None
+    ) -> Any:
         """
         Deletes a storefront access token and returns a success status upon completion.
 
@@ -148,7 +150,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if storefront_access_token_id is None:
             raise ValueError("Missing required parameter 'storefront_access_token_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/storefront_access_tokens/{storefront_access_token_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/storefront_access_tokens/{storefront_access_token_id}.json"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -159,7 +161,16 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def retrieves_alist_of_reports(self, api_version: str, ids: str | None=None, limit: str | None=None, since_id: str | None=None, updated_at_min: str | None=None, updated_at_max: str | None=None, fields: str | None=None) -> dict[str, Any]:
+    async def retrieves_alist_of_reports(
+        self,
+        api_version: str,
+        ids: str | None = None,
+        limit: str | None = None,
+        since_id: str | None = None,
+        updated_at_min: str | None = None,
+        updated_at_max: str | None = None,
+        fields: str | None = None,
+    ) -> dict[str, Any]:
         """
         Retrieves reports data for specified parameters, such as IDs, limit, and date ranges, using the GET method.
 
@@ -184,8 +195,19 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/reports.json'
-        query_params = {k: v for k, v in [('ids', ids), ('limit', limit), ('since_id', since_id), ('updated_at_min', updated_at_min), ('updated_at_max', updated_at_max), ('fields', fields)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/reports.json"
+        query_params = {
+            k: v
+            for k, v in [
+                ("ids", ids),
+                ("limit", limit),
+                ("since_id", since_id),
+                ("updated_at_min", updated_at_min),
+                ("updated_at_max", updated_at_max),
+                ("fields", fields),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -195,7 +217,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def creates_anew_report(self, api_version: str, report: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def creates_anew_report(self, api_version: str, report: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Submits a report generation request and returns a success status upon creation.
 
@@ -216,11 +238,11 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         request_body_data = None
-        request_body_data = {'report': report}
+        request_body_data = {"report": report}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/reports.json'
+        url = f"{self.base_url}/admin/api/{api_version}/reports.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -229,7 +251,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def retrieves_asingle_report(self, api_version: str, report_id: str, fields: str | None=None) -> dict[str, Any]:
+    async def retrieves_asingle_report(self, api_version: str, report_id: str, fields: str | None = None) -> dict[str, Any]:
         """
         Retrieves a report by its ID using the specified API version and optionally includes additional fields in the response.
 
@@ -252,8 +274,8 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if report_id is None:
             raise ValueError("Missing required parameter 'report_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/reports/{report_id}.json'
-        query_params = {k: v for k, v in [('fields', fields)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/reports/{report_id}.json"
+        query_params = {k: v for k, v in [("fields", fields)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -263,7 +285,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def updates_areport(self, api_version: str, report_id: str, report: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def updates_areport(self, api_version: str, report_id: str, report: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Updates or replaces a specific report resource at the specified report ID in JSON format using the PUT method.
 
@@ -287,11 +309,11 @@ class ShopifyApp(APIApplication):
         if report_id is None:
             raise ValueError("Missing required parameter 'report_id'.")
         request_body_data = None
-        request_body_data = {'report': report}
+        request_body_data = {"report": report}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/reports/{report_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/reports/{report_id}.json"
         query_params = {}
-        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -300,7 +322,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def deletes_areport(self, api_version: str, report_id: str, body_content: str | None=None) -> dict[str, Any]:
+    async def deletes_areport(self, api_version: str, report_id: str, body_content: str | None = None) -> dict[str, Any]:
         """
         Deletes the specified report using the DELETE method and returns a successful status upon completion.
 
@@ -323,7 +345,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if report_id is None:
             raise ValueError("Missing required parameter 'report_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/reports/{report_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/reports/{report_id}.json"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -334,7 +356,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_application_charges(self, api_version: str, since_id: str | None=None, fields: str | None=None) -> dict[str, Any]:
+    async def get_application_charges(self, api_version: str, since_id: str | None = None, fields: str | None = None) -> dict[str, Any]:
         """
         Retrieves a list of application charges in JSON format, allowing filtering by specific fields and starting from a given ID.
 
@@ -355,8 +377,8 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/application_charges.json'
-        query_params = {k: v for k, v in [('since_id', since_id), ('fields', fields)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/application_charges.json"
+        query_params = {k: v for k, v in [("since_id", since_id), ("fields", fields)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -366,7 +388,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def creates_an_application_charge(self, api_version: str, application_charge: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def creates_an_application_charge(self, api_version: str, application_charge: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Creates a new application charge through the API, returning a success response upon creation or an error if validation fails.
 
@@ -387,11 +409,11 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         request_body_data = None
-        request_body_data = {'application_charge': application_charge}
+        request_body_data = {"application_charge": application_charge}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/application_charges.json'
+        url = f"{self.base_url}/admin/api/{api_version}/application_charges.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -400,7 +422,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def retrieves_an_application_charge(self, api_version: str, application_charge_id: str, fields: str | None=None) -> dict[str, Any]:
+    async def retrieves_an_application_charge(
+        self, api_version: str, application_charge_id: str, fields: str | None = None
+    ) -> dict[str, Any]:
         """
         Retrieves details of a specific application charge transaction using specified fields from the Stripe Connect API.
 
@@ -423,8 +447,8 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if application_charge_id is None:
             raise ValueError("Missing required parameter 'application_charge_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/application_charges/{application_charge_id}.json'
-        query_params = {k: v for k, v in [('fields', fields)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/application_charges/{application_charge_id}.json"
+        query_params = {k: v for k, v in [("fields", fields)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -434,7 +458,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def activates_an_application_charge(self, api_version: str, application_charge_id: str, application_charge: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def activates_an_application_charge(
+        self, api_version: str, application_charge_id: str, application_charge: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         """
         Activates a previously created application charge using the specified ID and returns a success status upon completion.
 
@@ -458,11 +484,11 @@ class ShopifyApp(APIApplication):
         if application_charge_id is None:
             raise ValueError("Missing required parameter 'application_charge_id'.")
         request_body_data = None
-        request_body_data = {'application_charge': application_charge}
+        request_body_data = {"application_charge": application_charge}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/application_charges/{application_charge_id}/activate.json'
+        url = f"{self.base_url}/admin/api/{api_version}/application_charges/{application_charge_id}/activate.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -471,7 +497,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def retrieves_all_application_credits(self, api_version: str, fields: str | None=None) -> dict[str, Any]:
+    async def retrieves_all_application_credits(self, api_version: str, fields: str | None = None) -> dict[str, Any]:
         """
         Retrieves a list of application credits issued to merchants through the Shopify API, allowing optional field filtering via query parameters.
 
@@ -491,8 +517,8 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/application_credits.json'
-        query_params = {k: v for k, v in [('fields', fields)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/application_credits.json"
+        query_params = {k: v for k, v in [("fields", fields)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -502,7 +528,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def creates_an_application_credit(self, api_version: str, application_credit: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def creates_an_application_credit(self, api_version: str, application_credit: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Issues application credits to merchants, which can be used towards future app purchases in Shopify, using the POST method at "/admin/api/{api_version}/application_credits.json".
 
@@ -523,11 +549,11 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         request_body_data = None
-        request_body_data = {'application_credit': application_credit}
+        request_body_data = {"application_credit": application_credit}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/application_credits.json'
+        url = f"{self.base_url}/admin/api/{api_version}/application_credits.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -536,7 +562,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_application_credit_by_id(self, api_version: str, application_credit_id: str, fields: str | None=None) -> dict[str, Any]:
+    async def get_application_credit_by_id(self, api_version: str, application_credit_id: str, fields: str | None = None) -> dict[str, Any]:
         """
         Retrieves a specific application credit from Shopify's admin API, including optional field filtering parameters.
 
@@ -559,8 +585,8 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if application_credit_id is None:
             raise ValueError("Missing required parameter 'application_credit_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/application_credits/{application_credit_id}.json'
-        query_params = {k: v for k, v in [('fields', fields)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/application_credits/{application_credit_id}.json"
+        query_params = {k: v for k, v in [("fields", fields)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -570,7 +596,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_recurring_charges(self, api_version: str, since_id: str | None=None, fields: str | None=None) -> dict[str, Any]:
+    async def get_recurring_charges(self, api_version: str, since_id: str | None = None, fields: str | None = None) -> dict[str, Any]:
         """
         Retrieves a list of recurring application charges with optional filtering by ID and field selection.
 
@@ -591,8 +617,8 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/recurring_application_charges.json'
-        query_params = {k: v for k, v in [('since_id', since_id), ('fields', fields)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/recurring_application_charges.json"
+        query_params = {k: v for k, v in [("since_id", since_id), ("fields", fields)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -602,7 +628,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_recurring_charge(self, api_version: str, recurring_application_charge: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def create_recurring_charge(self, api_version: str, recurring_application_charge: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Creates a new recurring application charge using the API, handling the setup and management of periodic billing.
 
@@ -623,11 +649,11 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         request_body_data = None
-        request_body_data = {'recurring_application_charge': recurring_application_charge}
+        request_body_data = {"recurring_application_charge": recurring_application_charge}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/recurring_application_charges.json'
+        url = f"{self.base_url}/admin/api/{api_version}/recurring_application_charges.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -636,7 +662,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def retrieves_asingle_charge(self, api_version: str, recurring_application_charge_id: str, fields: str | None=None) -> dict[str, Any]:
+    async def retrieves_asingle_charge(
+        self, api_version: str, recurring_application_charge_id: str, fields: str | None = None
+    ) -> dict[str, Any]:
         """
         Retrieves details for a specific recurring application charge by ID using the "GET" method, optionally including additional fields specified in the query parameters.
 
@@ -659,8 +687,8 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if recurring_application_charge_id is None:
             raise ValueError("Missing required parameter 'recurring_application_charge_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/recurring_application_charges/{recurring_application_charge_id}.json'
-        query_params = {k: v for k, v in [('fields', fields)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/recurring_application_charges/{recurring_application_charge_id}.json"
+        query_params = {k: v for k, v in [("fields", fields)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -670,7 +698,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def delete_recurring_charge(self, api_version: str, recurring_application_charge_id: str, body_content: str | None=None) -> Any:
+    async def delete_recurring_charge(self, api_version: str, recurring_application_charge_id: str, body_content: str | None = None) -> Any:
         """
         Cancels an existing recurring application charge for a Shopify store.
 
@@ -693,7 +721,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if recurring_application_charge_id is None:
             raise ValueError("Missing required parameter 'recurring_application_charge_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/recurring_application_charges/{recurring_application_charge_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/recurring_application_charges/{recurring_application_charge_id}.json"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -704,7 +732,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def activate_recurring_charge(self, api_version: str, recurring_application_charge_id: str, recurring_application_charge: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def activate_recurring_charge(
+        self, api_version: str, recurring_application_charge_id: str, recurring_application_charge: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         """
         Activates a recurring application charge using the API and returns a status message in response.
 
@@ -728,11 +758,11 @@ class ShopifyApp(APIApplication):
         if recurring_application_charge_id is None:
             raise ValueError("Missing required parameter 'recurring_application_charge_id'.")
         request_body_data = None
-        request_body_data = {'recurring_application_charge': recurring_application_charge}
+        request_body_data = {"recurring_application_charge": recurring_application_charge}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/recurring_application_charges/{recurring_application_charge_id}/activate.json'
+        url = f"{self.base_url}/admin/api/{api_version}/recurring_application_charges/{recurring_application_charge_id}/activate.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -741,7 +771,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_recurring_charge_custom(self, api_version: str, recurring_application_charge_id: str, body_content: str | None=None) -> dict[str, Any]:
+    async def update_recurring_charge_custom(
+        self, api_version: str, recurring_application_charge_id: str, body_content: str | None = None
+    ) -> dict[str, Any]:
         """
         Updates a Shopify recurring application charge's properties and returns the modified charge details.
 
@@ -766,9 +798,9 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'recurring_application_charge_id'.")
         request_body_data = None
         request_body_data = body_content
-        url = f'{self.base_url}/admin/api/{api_version}/recurring_application_charges/{recurring_application_charge_id}/customize.json'
+        url = f"{self.base_url}/admin/api/{api_version}/recurring_application_charges/{recurring_application_charge_id}/customize.json"
         query_params = {}
-        response = await self._aput(url, data=request_body_data, params=query_params, content_type='text/plain')
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="text/plain")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -777,7 +809,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def retrieves_alist_of_usage_charges(self, api_version: str, recurring_application_charge_id: str, fields: str | None=None) -> dict[str, Any]:
+    async def retrieves_alist_of_usage_charges(
+        self, api_version: str, recurring_application_charge_id: str, fields: str | None = None
+    ) -> dict[str, Any]:
         """
         Retrieves usage charges for a specific recurring application charge via the Shopify Admin API, filtering results based on specified fields.
 
@@ -800,8 +834,8 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if recurring_application_charge_id is None:
             raise ValueError("Missing required parameter 'recurring_application_charge_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/recurring_application_charges/{recurring_application_charge_id}/usage_charges.json'
-        query_params = {k: v for k, v in [('fields', fields)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/recurring_application_charges/{recurring_application_charge_id}/usage_charges.json"
+        query_params = {k: v for k, v in [("fields", fields)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -811,7 +845,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def creates_ausage_charge(self, api_version: str, recurring_application_charge_id: str, usage_charge: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def creates_ausage_charge(
+        self, api_version: str, recurring_application_charge_id: str, usage_charge: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         """
         Creates a usage-based charge on a recurring billing subscription and returns the charge details upon success.
 
@@ -835,11 +871,11 @@ class ShopifyApp(APIApplication):
         if recurring_application_charge_id is None:
             raise ValueError("Missing required parameter 'recurring_application_charge_id'.")
         request_body_data = None
-        request_body_data = {'usage_charge': usage_charge}
+        request_body_data = {"usage_charge": usage_charge}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/recurring_application_charges/{recurring_application_charge_id}/usage_charges.json'
+        url = f"{self.base_url}/admin/api/{api_version}/recurring_application_charges/{recurring_application_charge_id}/usage_charges.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -848,7 +884,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def retrieves_asingle_chargeone(self, api_version: str, recurring_application_charge_id: str, usage_charge_id: str, fields: str | None=None) -> dict[str, Any]:
+    async def retrieves_asingle_chargeone(
+        self, api_version: str, recurring_application_charge_id: str, usage_charge_id: str, fields: str | None = None
+    ) -> dict[str, Any]:
         """
         Retrieves a specific usage charge associated with a recurring application charge for tracking and billing purposes.
 
@@ -874,8 +912,8 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'recurring_application_charge_id'.")
         if usage_charge_id is None:
             raise ValueError("Missing required parameter 'usage_charge_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/recurring_application_charges/{recurring_application_charge_id}/usage_charges/{usage_charge_id}.json'
-        query_params = {k: v for k, v in [('fields', fields)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/recurring_application_charges/{recurring_application_charge_id}/usage_charges/{usage_charge_id}.json"
+        query_params = {k: v for k, v in [("fields", fields)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -907,7 +945,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if customer_id is None:
             raise ValueError("Missing required parameter 'customer_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/customers/{customer_id}/addresses.json'
+        url = f"{self.base_url}/admin/api/{api_version}/customers/{customer_id}/addresses.json"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -918,7 +956,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def creates_anew_address_for_acustomer(self, api_version: str, customer_id: str, address: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def creates_anew_address_for_acustomer(
+        self, api_version: str, customer_id: str, address: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         """
         Creates a new address for a specified customer using the POST method.
 
@@ -942,11 +982,11 @@ class ShopifyApp(APIApplication):
         if customer_id is None:
             raise ValueError("Missing required parameter 'customer_id'.")
         request_body_data = None
-        request_body_data = {'address': address}
+        request_body_data = {"address": address}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/customers/{customer_id}/addresses.json'
+        url = f"{self.base_url}/admin/api/{api_version}/customers/{customer_id}/addresses.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -980,7 +1020,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'customer_id'.")
         if address_id is None:
             raise ValueError("Missing required parameter 'address_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/customers/{customer_id}/addresses/{address_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/customers/{customer_id}/addresses/{address_id}.json"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -991,7 +1031,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_customer_address_by_id(self, api_version: str, customer_id: str, address_id: str, address: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def update_customer_address_by_id(
+        self, api_version: str, customer_id: str, address_id: str, address: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         """
         Updates an existing customer address using the HTTP PUT method at a specified API path, returning a successful status message upon completion.
 
@@ -1018,11 +1060,11 @@ class ShopifyApp(APIApplication):
         if address_id is None:
             raise ValueError("Missing required parameter 'address_id'.")
         request_body_data = None
-        request_body_data = {'address': address}
+        request_body_data = {"address": address}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/customers/{customer_id}/addresses/{address_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/customers/{customer_id}/addresses/{address_id}.json"
         query_params = {}
-        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1031,7 +1073,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def delete_customer_address(self, api_version: str, customer_id: str, address_id: str, body_content: str | None=None) -> dict[str, Any]:
+    async def delete_customer_address(
+        self, api_version: str, customer_id: str, address_id: str, body_content: str | None = None
+    ) -> dict[str, Any]:
         """
         Deletes a customer's address specified by the customer ID and address ID using a DELETE request.
 
@@ -1057,7 +1101,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'customer_id'.")
         if address_id is None:
             raise ValueError("Missing required parameter 'address_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/customers/{customer_id}/addresses/{address_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/customers/{customer_id}/addresses/{address_id}.json"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -1068,7 +1112,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def set_customer_address(self, api_version: str, customer_id: str, body_content: str | None=None) -> dict[str, Any]:
+    async def set_customer_address(self, api_version: str, customer_id: str, body_content: str | None = None) -> dict[str, Any]:
         """
         Updates an existing address for a specified customer using the PUT method, returning a status message upon successful completion.
 
@@ -1093,9 +1137,9 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'customer_id'.")
         request_body_data = None
         request_body_data = body_content
-        url = f'{self.base_url}/admin/api/{api_version}/customers/{customer_id}/addresses/set.json'
+        url = f"{self.base_url}/admin/api/{api_version}/customers/{customer_id}/addresses/set.json"
         query_params = {}
-        response = await self._aput(url, data=request_body_data, params=query_params, content_type='text/plain')
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="text/plain")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1104,7 +1148,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def set_default_address_by_id(self, api_version: str, customer_id: str, address_id: str, body_content: str | None=None) -> dict[str, Any]:
+    async def set_default_address_by_id(
+        self, api_version: str, customer_id: str, address_id: str, body_content: str | None = None
+    ) -> dict[str, Any]:
         """
         Sets the specified address as the default for the customer.
 
@@ -1132,9 +1178,9 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'address_id'.")
         request_body_data = None
         request_body_data = body_content
-        url = f'{self.base_url}/admin/api/{api_version}/customers/{customer_id}/addresses/{address_id}/default.json'
+        url = f"{self.base_url}/admin/api/{api_version}/customers/{customer_id}/addresses/{address_id}/default.json"
         query_params = {}
-        response = await self._aput(url, data=request_body_data, params=query_params, content_type='text/plain')
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="text/plain")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1143,7 +1189,18 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def retrieves_alist_of_customers(self, api_version: str, ids: str | None=None, since_id: str | None=None, created_at_min: str | None=None, created_at_max: str | None=None, updated_at_min: str | None=None, updated_at_max: str | None=None, limit: str | None=None, fields: str | None=None) -> dict[str, Any]:
+    async def retrieves_alist_of_customers(
+        self,
+        api_version: str,
+        ids: str | None = None,
+        since_id: str | None = None,
+        created_at_min: str | None = None,
+        created_at_max: str | None = None,
+        updated_at_min: str | None = None,
+        updated_at_max: str | None = None,
+        limit: str | None = None,
+        fields: str | None = None,
+    ) -> dict[str, Any]:
         """
         Retrieves a list of customers with optional filtering by IDs, creation/update timestamps, and field selection.
 
@@ -1170,8 +1227,21 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/customers.json'
-        query_params = {k: v for k, v in [('ids', ids), ('since_id', since_id), ('created_at_min', created_at_min), ('created_at_max', created_at_max), ('updated_at_min', updated_at_min), ('updated_at_max', updated_at_max), ('limit', limit), ('fields', fields)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/customers.json"
+        query_params = {
+            k: v
+            for k, v in [
+                ("ids", ids),
+                ("since_id", since_id),
+                ("created_at_min", created_at_min),
+                ("created_at_max", created_at_max),
+                ("updated_at_min", updated_at_min),
+                ("updated_at_max", updated_at_max),
+                ("limit", limit),
+                ("fields", fields),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -1181,7 +1251,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def creates_acustomer(self, api_version: str, customer: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def creates_acustomer(self, api_version: str, customer: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Creates a new customer resource using the API and returns a status message upon successful creation.
 
@@ -1202,11 +1272,11 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         request_body_data = None
-        request_body_data = {'customer': customer}
+        request_body_data = {"customer": customer}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/customers.json'
+        url = f"{self.base_url}/admin/api/{api_version}/customers.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1215,7 +1285,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def search_customers(self, api_version: str, order: str | None=None, query: str | None=None, limit: str | None=None, fields: str | None=None) -> dict[str, Any]:
+    async def search_customers(
+        self, api_version: str, order: str | None = None, query: str | None = None, limit: str | None = None, fields: str | None = None
+    ) -> dict[str, Any]:
         """
         Searches customer records using specified filters, sorting options, and field selections, returning matching results in a structured format.
 
@@ -1238,8 +1310,8 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/customers/search.json'
-        query_params = {k: v for k, v in [('order', order), ('query', query), ('limit', limit), ('fields', fields)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/customers/search.json"
+        query_params = {k: v for k, v in [("order", order), ("query", query), ("limit", limit), ("fields", fields)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -1249,7 +1321,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def retrieves_asingle_customer(self, api_version: str, customer_id: str, fields: str | None=None) -> dict[str, Any]:
+    async def retrieves_asingle_customer(self, api_version: str, customer_id: str, fields: str | None = None) -> dict[str, Any]:
         """
         Retrieves a customer's details in JSON format using the specified API version and customer ID, with optional fields specified via the query parameters.
 
@@ -1272,8 +1344,8 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if customer_id is None:
             raise ValueError("Missing required parameter 'customer_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/customers/{customer_id}.json'
-        query_params = {k: v for k, v in [('fields', fields)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/customers/{customer_id}.json"
+        query_params = {k: v for k, v in [("fields", fields)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -1283,7 +1355,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def updates_acustomer(self, api_version: str, customer_id: str, customer: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def updates_acustomer(self, api_version: str, customer_id: str, customer: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Updates or replaces the customer resource at the specified ID and returns the updated entity.
 
@@ -1307,11 +1379,11 @@ class ShopifyApp(APIApplication):
         if customer_id is None:
             raise ValueError("Missing required parameter 'customer_id'.")
         request_body_data = None
-        request_body_data = {'customer': customer}
+        request_body_data = {"customer": customer}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/customers/{customer_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/customers/{customer_id}.json"
         query_params = {}
-        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1320,7 +1392,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def deletes_acustomer(self, api_version: str, customer_id: str, body_content: str | None=None) -> Any:
+    async def deletes_acustomer(self, api_version: str, customer_id: str, body_content: str | None = None) -> Any:
         """
         Deletes a customer's data permanently using the "DELETE" method at the specified API path, immediately canceling any active subscriptions and preventing further operations.
 
@@ -1343,7 +1415,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if customer_id is None:
             raise ValueError("Missing required parameter 'customer_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/customers/{customer_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/customers/{customer_id}.json"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -1354,7 +1426,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def generate_activation_url(self, api_version: str, customer_id: str, request_body: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def generate_activation_url(
+        self, api_version: str, customer_id: str, request_body: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         """
         Generates and returns an account activation URL for a customer via Shopify's API, enabling direct access to activation without manual intervention.
 
@@ -1379,9 +1453,9 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'customer_id'.")
         request_body_data = None
         request_body_data = request_body if request_body is not None else {}
-        url = f'{self.base_url}/admin/api/{api_version}/customers/{customer_id}/account_activation_url.json'
+        url = f"{self.base_url}/admin/api/{api_version}/customers/{customer_id}/account_activation_url.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1390,7 +1464,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def send_customer_invite(self, api_version: str, customer_id: str, customer_invite: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def send_customer_invite(
+        self, api_version: str, customer_id: str, customer_invite: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         """
         Sends an invitation to a specified customer using the "POST" method.
 
@@ -1414,11 +1490,11 @@ class ShopifyApp(APIApplication):
         if customer_id is None:
             raise ValueError("Missing required parameter 'customer_id'.")
         request_body_data = None
-        request_body_data = {'customer_invite': customer_invite}
+        request_body_data = {"customer_invite": customer_invite}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/customers/{customer_id}/send_invite.json'
+        url = f"{self.base_url}/admin/api/{api_version}/customers/{customer_id}/send_invite.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1446,7 +1522,7 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/customers/count.json'
+        url = f"{self.base_url}/admin/api/{api_version}/customers/count.json"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -1479,7 +1555,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if customer_id is None:
             raise ValueError("Missing required parameter 'customer_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/customers/{customer_id}/orders.json'
+        url = f"{self.base_url}/admin/api/{api_version}/customers/{customer_id}/orders.json"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -1490,7 +1566,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def list_customer_saved_searches(self, api_version: str, limit: str | None=None, since_id: str | None=None, fields: str | None=None) -> dict[str, Any]:
+    async def list_customer_saved_searches(
+        self, api_version: str, limit: str | None = None, since_id: str | None = None, fields: str | None = None
+    ) -> dict[str, Any]:
         """
         Retrieves a list of customer-saved searches in JSON format, allowing for optional filtering by limit, since_id, and specific fields.
 
@@ -1512,8 +1590,8 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/customer_saved_searches.json'
-        query_params = {k: v for k, v in [('limit', limit), ('since_id', since_id), ('fields', fields)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/customer_saved_searches.json"
+        query_params = {k: v for k, v in [("limit", limit), ("since_id", since_id), ("fields", fields)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -1523,7 +1601,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def creates_acustomer_saved_search(self, api_version: str, customer_saved_search: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def creates_acustomer_saved_search(self, api_version: str, customer_saved_search: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Creates a new customer saved search entry via the specified API version and returns an empty response on success or validation errors.
 
@@ -1544,11 +1622,11 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         request_body_data = None
-        request_body_data = {'customer_saved_search': customer_saved_search}
+        request_body_data = {"customer_saved_search": customer_saved_search}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/customer_saved_searches.json'
+        url = f"{self.base_url}/admin/api/{api_version}/customer_saved_searches.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1557,7 +1635,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_customer_saved_searches_count(self, api_version: str, since_id: str | None=None) -> dict[str, Any]:
+    async def get_customer_saved_searches_count(self, api_version: str, since_id: str | None = None) -> dict[str, Any]:
         """
         Retrieves a count of customer saved searches with optional filtering by creation time using the "since_id" parameter.
 
@@ -1577,8 +1655,8 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/customer_saved_searches/count.json'
-        query_params = {k: v for k, v in [('since_id', since_id)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/customer_saved_searches/count.json"
+        query_params = {k: v for k, v in [("since_id", since_id)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -1588,7 +1666,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_customer_saved_search_by_id(self, api_version: str, customer_saved_search_id: str, fields: str | None=None) -> dict[str, Any]:
+    async def get_customer_saved_search_by_id(
+        self, api_version: str, customer_saved_search_id: str, fields: str | None = None
+    ) -> dict[str, Any]:
         """
         Retrieves a customer saved search by ID using the Shopify API, optionally specifying fields to include in the response.
 
@@ -1611,8 +1691,8 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if customer_saved_search_id is None:
             raise ValueError("Missing required parameter 'customer_saved_search_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/customer_saved_searches/{customer_saved_search_id}.json'
-        query_params = {k: v for k, v in [('fields', fields)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/customer_saved_searches/{customer_saved_search_id}.json"
+        query_params = {k: v for k, v in [("fields", fields)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -1622,7 +1702,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def updates_acustomer_saved_search(self, api_version: str, customer_saved_search_id: str, customer_saved_search: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def updates_acustomer_saved_search(
+        self, api_version: str, customer_saved_search_id: str, customer_saved_search: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         """
         Updates a customer's saved search identified by the `{customer_saved_search_id}` at the specified `{api_version}`, allowing modifications to its details.
 
@@ -1646,11 +1728,11 @@ class ShopifyApp(APIApplication):
         if customer_saved_search_id is None:
             raise ValueError("Missing required parameter 'customer_saved_search_id'.")
         request_body_data = None
-        request_body_data = {'customer_saved_search': customer_saved_search}
+        request_body_data = {"customer_saved_search": customer_saved_search}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/customer_saved_searches/{customer_saved_search_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/customer_saved_searches/{customer_saved_search_id}.json"
         query_params = {}
-        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1659,7 +1741,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def deletes_acustomer_saved_search(self, api_version: str, customer_saved_search_id: str, body_content: str | None=None) -> dict[str, Any]:
+    async def deletes_acustomer_saved_search(
+        self, api_version: str, customer_saved_search_id: str, body_content: str | None = None
+    ) -> dict[str, Any]:
         """
         Deletes a specified customer saved search using its unique identifier and returns a success status upon completion.
 
@@ -1682,7 +1766,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if customer_saved_search_id is None:
             raise ValueError("Missing required parameter 'customer_saved_search_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/customer_saved_searches/{customer_saved_search_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/customer_saved_searches/{customer_saved_search_id}.json"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -1693,7 +1777,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_customers_by_saved_search(self, api_version: str, customer_saved_search_id: str, order: str | None=None, limit: str | None=None, fields: str | None=None) -> dict[str, Any]:
+    async def get_customers_by_saved_search(
+        self, api_version: str, customer_saved_search_id: str, order: str | None = None, limit: str | None = None, fields: str | None = None
+    ) -> dict[str, Any]:
         """
         Retrieves a list of customers associated with a specific customer saved search, allowing for optional filtering by order, limited results, and customizable fields.
 
@@ -1718,8 +1804,8 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if customer_saved_search_id is None:
             raise ValueError("Missing required parameter 'customer_saved_search_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/customer_saved_searches/{customer_saved_search_id}/customers.json'
-        query_params = {k: v for k, v in [('order', order), ('limit', limit), ('fields', fields)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/customer_saved_searches/{customer_saved_search_id}/customers.json"
+        query_params = {k: v for k, v in [("order", order), ("limit", limit), ("fields", fields)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -1751,7 +1837,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if price_rule_id is None:
             raise ValueError("Missing required parameter 'price_rule_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/price_rules/{price_rule_id}/discount_codes.json'
+        url = f"{self.base_url}/admin/api/{api_version}/price_rules/{price_rule_id}/discount_codes.json"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -1762,7 +1848,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def creates_adiscount_code(self, api_version: str, price_rule_id: str, discount_code: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def creates_adiscount_code(
+        self, api_version: str, price_rule_id: str, discount_code: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         """
         Creates a discount code associated with a specific price rule in Shopify and returns the created resource.
 
@@ -1786,11 +1874,11 @@ class ShopifyApp(APIApplication):
         if price_rule_id is None:
             raise ValueError("Missing required parameter 'price_rule_id'.")
         request_body_data = None
-        request_body_data = {'discount_code': discount_code}
+        request_body_data = {"discount_code": discount_code}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/price_rules/{price_rule_id}/discount_codes.json'
+        url = f"{self.base_url}/admin/api/{api_version}/price_rules/{price_rule_id}/discount_codes.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1824,7 +1912,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'price_rule_id'.")
         if discount_code_id is None:
             raise ValueError("Missing required parameter 'discount_code_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/price_rules/{price_rule_id}/discount_codes/{discount_code_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/price_rules/{price_rule_id}/discount_codes/{discount_code_id}.json"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -1835,7 +1923,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def updates_an_existing_discount_code(self, api_version: str, price_rule_id: str, discount_code_id: str, discount_code: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def updates_an_existing_discount_code(
+        self, api_version: str, price_rule_id: str, discount_code_id: str, discount_code: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         """
         Updates an existing discount code associated with a specified price rule in Shopify, allowing merchants to modify the discount code details within the defined price rule.
 
@@ -1862,11 +1952,11 @@ class ShopifyApp(APIApplication):
         if discount_code_id is None:
             raise ValueError("Missing required parameter 'discount_code_id'.")
         request_body_data = None
-        request_body_data = {'discount_code': discount_code}
+        request_body_data = {"discount_code": discount_code}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/price_rules/{price_rule_id}/discount_codes/{discount_code_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/price_rules/{price_rule_id}/discount_codes/{discount_code_id}.json"
         query_params = {}
-        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1875,7 +1965,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def deletes_adiscount_code(self, api_version: str, price_rule_id: str, discount_code_id: str, body_content: str | None=None) -> Any:
+    async def deletes_adiscount_code(
+        self, api_version: str, price_rule_id: str, discount_code_id: str, body_content: str | None = None
+    ) -> Any:
         """
         Deletes a specific discount code associated with a price rule.
 
@@ -1901,7 +1993,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'price_rule_id'.")
         if discount_code_id is None:
             raise ValueError("Missing required parameter 'discount_code_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/price_rules/{price_rule_id}/discount_codes/{discount_code_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/price_rules/{price_rule_id}/discount_codes/{discount_code_id}.json"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -1931,7 +2023,7 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/discount_codes/lookup.json'
+        url = f"{self.base_url}/admin/api/{api_version}/discount_codes/lookup.json"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -1942,7 +2034,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def post_price_rule_batch(self, api_version: str, price_rule_id: str, discount_codes: list[dict[str, Any]] | None=None) -> dict[str, Any]:
+    async def post_price_rule_batch(
+        self, api_version: str, price_rule_id: str, discount_codes: list[dict[str, Any]] | None = None
+    ) -> dict[str, Any]:
         """
         Applies batch operations to a specific price rule using the POST method, allowing for efficient management of price rules in bulk.
 
@@ -1966,11 +2060,11 @@ class ShopifyApp(APIApplication):
         if price_rule_id is None:
             raise ValueError("Missing required parameter 'price_rule_id'.")
         request_body_data = None
-        request_body_data = {'discount_codes': discount_codes}
+        request_body_data = {"discount_codes": discount_codes}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/price_rules/{price_rule_id}/batch.json'
+        url = f"{self.base_url}/admin/api/{api_version}/price_rules/{price_rule_id}/batch.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2004,7 +2098,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'price_rule_id'.")
         if batch_id is None:
             raise ValueError("Missing required parameter 'batch_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/price_rules/{price_rule_id}/batch/{batch_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/price_rules/{price_rule_id}/batch/{batch_id}.json"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -2040,7 +2134,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'price_rule_id'.")
         if batch_id is None:
             raise ValueError("Missing required parameter 'batch_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/price_rules/{price_rule_id}/batch/{batch_id}/discount_codes.json'
+        url = f"{self.base_url}/admin/api/{api_version}/price_rules/{price_rule_id}/batch/{batch_id}/discount_codes.json"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -2051,7 +2145,21 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def retrieves_alist_of_price_rules(self, api_version: str, limit: str | None=None, since_id: str | None=None, created_at_min: str | None=None, created_at_max: str | None=None, updated_at_min: str | None=None, updated_at_max: str | None=None, starts_at_min: str | None=None, starts_at_max: str | None=None, ends_at_min: str | None=None, ends_at_max: str | None=None, times_used: str | None=None) -> dict[str, Any]:
+    async def retrieves_alist_of_price_rules(
+        self,
+        api_version: str,
+        limit: str | None = None,
+        since_id: str | None = None,
+        created_at_min: str | None = None,
+        created_at_max: str | None = None,
+        updated_at_min: str | None = None,
+        updated_at_max: str | None = None,
+        starts_at_min: str | None = None,
+        starts_at_max: str | None = None,
+        ends_at_min: str | None = None,
+        ends_at_max: str | None = None,
+        times_used: str | None = None,
+    ) -> dict[str, Any]:
         """
         Retrieves a paginated list of price rules with optional filters for time ranges, usage, and creation/modification dates.
 
@@ -2081,8 +2189,24 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/price_rules.json'
-        query_params = {k: v for k, v in [('limit', limit), ('since_id', since_id), ('created_at_min', created_at_min), ('created_at_max', created_at_max), ('updated_at_min', updated_at_min), ('updated_at_max', updated_at_max), ('starts_at_min', starts_at_min), ('starts_at_max', starts_at_max), ('ends_at_min', ends_at_min), ('ends_at_max', ends_at_max), ('times_used', times_used)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/price_rules.json"
+        query_params = {
+            k: v
+            for k, v in [
+                ("limit", limit),
+                ("since_id", since_id),
+                ("created_at_min", created_at_min),
+                ("created_at_max", created_at_max),
+                ("updated_at_min", updated_at_min),
+                ("updated_at_max", updated_at_max),
+                ("starts_at_min", starts_at_min),
+                ("starts_at_max", starts_at_max),
+                ("ends_at_min", ends_at_min),
+                ("ends_at_max", ends_at_max),
+                ("times_used", times_used),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -2092,7 +2216,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def creates_aprice_rule(self, api_version: str, price_rule: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def creates_aprice_rule(self, api_version: str, price_rule: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Creates a new price rule using the POST method, enabling the management of pricing configurations for specific products or customer groups at the specified API endpoint.
 
@@ -2114,11 +2238,11 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         request_body_data = None
-        request_body_data = {'price_rule': price_rule}
+        request_body_data = {"price_rule": price_rule}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/price_rules.json'
+        url = f"{self.base_url}/admin/api/{api_version}/price_rules.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2149,7 +2273,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if price_rule_id is None:
             raise ValueError("Missing required parameter 'price_rule_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/price_rules/{price_rule_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/price_rules/{price_rule_id}.json"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -2160,7 +2284,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def updates_an_existing_aprice_rule(self, api_version: str, price_rule_id: str, price_rule: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def updates_an_existing_aprice_rule(
+        self, api_version: str, price_rule_id: str, price_rule: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         """
         Updates a price rule configuration for a specific ID using the Shopify Admin REST API.
 
@@ -2184,11 +2310,11 @@ class ShopifyApp(APIApplication):
         if price_rule_id is None:
             raise ValueError("Missing required parameter 'price_rule_id'.")
         request_body_data = None
-        request_body_data = {'price_rule': price_rule}
+        request_body_data = {"price_rule": price_rule}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/price_rules/{price_rule_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/price_rules/{price_rule_id}.json"
         query_params = {}
-        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2197,7 +2323,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def remove_an_existing_pricerule(self, api_version: str, price_rule_id: str, body_content: str | None=None) -> Any:
+    async def remove_an_existing_pricerule(self, api_version: str, price_rule_id: str, body_content: str | None = None) -> Any:
         """
         Deletes a specified price rule with the provided ID using the "DELETE" method, returning a successful response with a 204 status code.
 
@@ -2220,7 +2346,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if price_rule_id is None:
             raise ValueError("Missing required parameter 'price_rule_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/price_rules/{price_rule_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/price_rules/{price_rule_id}.json"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -2250,7 +2376,7 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/price_rules/count.json'
+        url = f"{self.base_url}/admin/api/{api_version}/price_rules/count.json"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -2261,7 +2387,17 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def retrieves_alist_of_events(self, api_version: str, limit: str | None=None, since_id: str | None=None, created_at_min: str | None=None, created_at_max: str | None=None, filter: str | None=None, verb: str | None=None, fields: str | None=None) -> dict[str, Any]:
+    async def retrieves_alist_of_events(
+        self,
+        api_version: str,
+        limit: str | None = None,
+        since_id: str | None = None,
+        created_at_min: str | None = None,
+        created_at_max: str | None = None,
+        filter: str | None = None,
+        verb: str | None = None,
+        fields: str | None = None,
+    ) -> dict[str, Any]:
         """
         Retrieves a filtered list of administrative events with parameters for date ranges, pagination, and field selection.
 
@@ -2287,8 +2423,20 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/events.json'
-        query_params = {k: v for k, v in [('limit', limit), ('since_id', since_id), ('created_at_min', created_at_min), ('created_at_max', created_at_max), ('filter', filter), ('verb', verb), ('fields', fields)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/events.json"
+        query_params = {
+            k: v
+            for k, v in [
+                ("limit", limit),
+                ("since_id", since_id),
+                ("created_at_min", created_at_min),
+                ("created_at_max", created_at_max),
+                ("filter", filter),
+                ("verb", verb),
+                ("fields", fields),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -2298,7 +2446,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def retrieves_asingle_event(self, api_version: str, event_id: str, fields: str | None=None) -> dict[str, Any]:
+    async def retrieves_asingle_event(self, api_version: str, event_id: str, fields: str | None = None) -> dict[str, Any]:
         """
         Retrieves event details in JSON format from the admin API for a specified event ID and API version with optional field filtering.
 
@@ -2321,8 +2469,8 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if event_id is None:
             raise ValueError("Missing required parameter 'event_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/events/{event_id}.json'
-        query_params = {k: v for k, v in [('fields', fields)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/events/{event_id}.json"
+        query_params = {k: v for k, v in [("fields", fields)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -2332,7 +2480,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def retrieves_acount_of_events(self, api_version: str, created_at_min: str | None=None, created_at_max: str | None=None) -> dict[str, Any]:
+    async def retrieves_acount_of_events(
+        self, api_version: str, created_at_min: str | None = None, created_at_max: str | None = None
+    ) -> dict[str, Any]:
         """
         Retrieves the count of events using the "GET" method, allowing filtering by creation date range via "created_at_min" and "created_at_max" query parameters.
 
@@ -2353,8 +2503,8 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/events/count.json'
-        query_params = {k: v for k, v in [('created_at_min', created_at_min), ('created_at_max', created_at_max)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/events/count.json"
+        query_params = {k: v for k, v in [("created_at_min", created_at_min), ("created_at_max", created_at_max)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -2364,7 +2514,19 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def retrieves_alist_of_webhooks(self, api_version: str, address: str | None=None, created_at_max: str | None=None, created_at_min: str | None=None, fields: str | None=None, limit: str | None=None, since_id: str | None=None, topic: str | None=None, updated_at_min: str | None=None, updated_at_max: str | None=None) -> dict[str, Any]:
+    async def retrieves_alist_of_webhooks(
+        self,
+        api_version: str,
+        address: str | None = None,
+        created_at_max: str | None = None,
+        created_at_min: str | None = None,
+        fields: str | None = None,
+        limit: str | None = None,
+        since_id: str | None = None,
+        topic: str | None = None,
+        updated_at_min: str | None = None,
+        updated_at_max: str | None = None,
+    ) -> dict[str, Any]:
         """
         Retrieves a list of webhooks in JSON format, allowing filtering by address, creation and update times, specific fields, limit, and topic, using the "GET" method.
 
@@ -2392,8 +2554,22 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/webhooks.json'
-        query_params = {k: v for k, v in [('address', address), ('created_at_max', created_at_max), ('created_at_min', created_at_min), ('fields', fields), ('limit', limit), ('since_id', since_id), ('topic', topic), ('updated_at_min', updated_at_min), ('updated_at_max', updated_at_max)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/webhooks.json"
+        query_params = {
+            k: v
+            for k, v in [
+                ("address", address),
+                ("created_at_max", created_at_max),
+                ("created_at_min", created_at_min),
+                ("fields", fields),
+                ("limit", limit),
+                ("since_id", since_id),
+                ("topic", topic),
+                ("updated_at_min", updated_at_min),
+                ("updated_at_max", updated_at_max),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -2403,7 +2579,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_anew_webhook(self, api_version: str, webhook: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def create_anew_webhook(self, api_version: str, webhook: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Creates a new webhook subscription for event notifications from the admin API.
 
@@ -2424,11 +2600,11 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         request_body_data = None
-        request_body_data = {'webhook': webhook}
+        request_body_data = {"webhook": webhook}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/webhooks.json'
+        url = f"{self.base_url}/admin/api/{api_version}/webhooks.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2437,7 +2613,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def receive_acount_of_all_webhooks(self, api_version: str, address: str | None=None, topic: str | None=None) -> dict[str, Any]:
+    async def receive_acount_of_all_webhooks(
+        self, api_version: str, address: str | None = None, topic: str | None = None
+    ) -> dict[str, Any]:
         """
         Retrieves the count of webhooks for a specified address and topic using the GET method.
 
@@ -2458,8 +2636,8 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/webhooks/count.json'
-        query_params = {k: v for k, v in [('address', address), ('topic', topic)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/webhooks/count.json"
+        query_params = {k: v for k, v in [("address", address), ("topic", topic)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -2469,7 +2647,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def receive_asingle_webhook(self, api_version: str, webhook_id: str, fields: str | None=None) -> dict[str, Any]:
+    async def receive_asingle_webhook(self, api_version: str, webhook_id: str, fields: str | None = None) -> dict[str, Any]:
         """
         Retrieves a specific webhook's details in JSON format using the specified API version and webhook ID from the admin API.
 
@@ -2492,8 +2670,8 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if webhook_id is None:
             raise ValueError("Missing required parameter 'webhook_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/webhooks/{webhook_id}.json'
-        query_params = {k: v for k, v in [('fields', fields)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/webhooks/{webhook_id}.json"
+        query_params = {k: v for k, v in [("fields", fields)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -2503,7 +2681,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def modify_an_existing_webhook(self, api_version: str, webhook_id: str, webhook: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def modify_an_existing_webhook(self, api_version: str, webhook_id: str, webhook: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Updates the specified webhook's configuration using the provided data and returns a success status upon completion.
 
@@ -2527,11 +2705,11 @@ class ShopifyApp(APIApplication):
         if webhook_id is None:
             raise ValueError("Missing required parameter 'webhook_id'.")
         request_body_data = None
-        request_body_data = {'webhook': webhook}
+        request_body_data = {"webhook": webhook}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/webhooks/{webhook_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/webhooks/{webhook_id}.json"
         query_params = {}
-        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2540,7 +2718,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def remove_an_existing_webhook(self, api_version: str, webhook_id: str, body_content: str | None=None) -> dict[str, Any]:
+    async def remove_an_existing_webhook(self, api_version: str, webhook_id: str, body_content: str | None = None) -> dict[str, Any]:
         """
         Deletes a webhook identified by its ID using the DELETE method, effectively removing the webhook endpoint.
 
@@ -2563,7 +2741,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if webhook_id is None:
             raise ValueError("Missing required parameter 'webhook_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/webhooks/{webhook_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/webhooks/{webhook_id}.json"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -2574,7 +2752,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def retrieves_alist_of_inventory_items(self, api_version: str, ids: str | None=None, limit: str | None=None) -> dict[str, Any]:
+    async def retrieves_alist_of_inventory_items(
+        self, api_version: str, ids: str | None = None, limit: str | None = None
+    ) -> dict[str, Any]:
         """
         Retrieves a list of inventory items with support for filtering by IDs and limiting results.
 
@@ -2595,8 +2775,8 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/inventory_items.json'
-        query_params = {k: v for k, v in [('ids', ids), ('limit', limit)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/inventory_items.json"
+        query_params = {k: v for k, v in [("ids", ids), ("limit", limit)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -2628,7 +2808,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if inventory_item_id is None:
             raise ValueError("Missing required parameter 'inventory_item_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/inventory_items/{inventory_item_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/inventory_items/{inventory_item_id}.json"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -2639,7 +2819,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def updates_an_existing_inventory_item(self, api_version: str, inventory_item_id: str, inventory_item: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def updates_an_existing_inventory_item(
+        self, api_version: str, inventory_item_id: str, inventory_item: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         """
         Updates an inventory item with the specified ID by modifying its characteristics or details using the PUT method at the "/admin/api/{api_version}/inventory_items/{inventory_item_id}.json" endpoint.
 
@@ -2663,11 +2845,11 @@ class ShopifyApp(APIApplication):
         if inventory_item_id is None:
             raise ValueError("Missing required parameter 'inventory_item_id'.")
         request_body_data = None
-        request_body_data = {'inventory_item': inventory_item}
+        request_body_data = {"inventory_item": inventory_item}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/inventory_items/{inventory_item_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/inventory_items/{inventory_item_id}.json"
         query_params = {}
-        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2676,7 +2858,14 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_inventory_levels(self, api_version: str, inventory_item_ids: str | None=None, location_ids: str | None=None, limit: str | None=None, updated_at_min: str | None=None) -> dict[str, Any]:
+    async def get_inventory_levels(
+        self,
+        api_version: str,
+        inventory_item_ids: str | None = None,
+        location_ids: str | None = None,
+        limit: str | None = None,
+        updated_at_min: str | None = None,
+    ) -> dict[str, Any]:
         """
         Retrieves inventory level information for specified inventory items and locations using the "GET" method, allowing for filtering by item IDs, location IDs, and update time, and returns the data in JSON format.
 
@@ -2699,8 +2888,17 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/inventory_levels.json'
-        query_params = {k: v for k, v in [('inventory_item_ids', inventory_item_ids), ('location_ids', location_ids), ('limit', limit), ('updated_at_min', updated_at_min)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/inventory_levels.json"
+        query_params = {
+            k: v
+            for k, v in [
+                ("inventory_item_ids", inventory_item_ids),
+                ("location_ids", location_ids),
+                ("limit", limit),
+                ("updated_at_min", updated_at_min),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -2710,7 +2908,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def delete_inventory_levels(self, api_version: str, body_content: str | None=None) -> Any:
+    async def delete_inventory_levels(self, api_version: str, body_content: str | None = None) -> Any:
         """
         Deletes inventory levels from the system and returns a success status without content.
 
@@ -2730,7 +2928,7 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/inventory_levels.json'
+        url = f"{self.base_url}/admin/api/{api_version}/inventory_levels.json"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -2741,7 +2939,13 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def adjust_inventory_level(self, api_version: str, available_adjustment: float | None=None, inventory_item_id: float | None=None, location_id: float | None=None) -> dict[str, Any]:
+    async def adjust_inventory_level(
+        self,
+        api_version: str,
+        available_adjustment: float | None = None,
+        inventory_item_id: float | None = None,
+        location_id: float | None = None,
+    ) -> dict[str, Any]:
         """
         Adjusts the inventory level for a specific item at a location using a relative quantity change.
 
@@ -2764,11 +2968,15 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         request_body_data = None
-        request_body_data = {'available_adjustment': available_adjustment, 'inventory_item_id': inventory_item_id, 'location_id': location_id}
+        request_body_data = {
+            "available_adjustment": available_adjustment,
+            "inventory_item_id": inventory_item_id,
+            "location_id": location_id,
+        }
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/inventory_levels/adjust.json'
+        url = f"{self.base_url}/admin/api/{api_version}/inventory_levels/adjust.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2777,7 +2985,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def connect_inventory_levels(self, api_version: str, inventory_item_id: float | None=None, location_id: float | None=None) -> dict[str, Any]:
+    async def connect_inventory_levels(
+        self, api_version: str, inventory_item_id: float | None = None, location_id: float | None = None
+    ) -> dict[str, Any]:
         """
         Connects inventory levels to a specified location or system and returns a success status upon creation.
 
@@ -2799,11 +3009,11 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         request_body_data = None
-        request_body_data = {'inventory_item_id': inventory_item_id, 'location_id': location_id}
+        request_body_data = {"inventory_item_id": inventory_item_id, "location_id": location_id}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/inventory_levels/connect.json'
+        url = f"{self.base_url}/admin/api/{api_version}/inventory_levels/connect.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2812,7 +3022,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def set_inventory_level(self, api_version: str, available: float | None=None, inventory_item_id: float | None=None, location_id: float | None=None) -> dict[str, Any]:
+    async def set_inventory_level(
+        self, api_version: str, available: float | None = None, inventory_item_id: float | None = None, location_id: float | None = None
+    ) -> dict[str, Any]:
         """
         Updates inventory levels for specific items and returns a success status.
 
@@ -2835,11 +3047,11 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         request_body_data = None
-        request_body_data = {'available': available, 'inventory_item_id': inventory_item_id, 'location_id': location_id}
+        request_body_data = {"available": available, "inventory_item_id": inventory_item_id, "location_id": location_id}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/inventory_levels/set.json'
+        url = f"{self.base_url}/admin/api/{api_version}/inventory_levels/set.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2867,7 +3079,7 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/locations.json'
+        url = f"{self.base_url}/admin/api/{api_version}/locations.json"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -2900,7 +3112,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if location_id is None:
             raise ValueError("Missing required parameter 'location_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/locations/{location_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/locations/{location_id}.json"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -2930,7 +3142,7 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/locations/count.json'
+        url = f"{self.base_url}/admin/api/{api_version}/locations/count.json"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -2963,7 +3175,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if location_id is None:
             raise ValueError("Missing required parameter 'location_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/locations/{location_id}/inventory_levels.json'
+        url = f"{self.base_url}/admin/api/{api_version}/locations/{location_id}/inventory_levels.json"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -2974,7 +3186,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def list_marketing_events(self, api_version: str, limit: str | None=None, offset: str | None=None) -> dict[str, Any]:
+    async def list_marketing_events(self, api_version: str, limit: str | None = None, offset: str | None = None) -> dict[str, Any]:
         """
         Retrieves a paginated list of marketing events using the specified limit and offset parameters.
 
@@ -2995,8 +3207,8 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/marketing_events.json'
-        query_params = {k: v for k, v in [('limit', limit), ('offset', offset)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/marketing_events.json"
+        query_params = {k: v for k, v in [("limit", limit), ("offset", offset)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -3006,7 +3218,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def creates_amarketing_event(self, api_version: str, marketing_event: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def creates_amarketing_event(self, api_version: str, marketing_event: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Creates a marketing event using the specified API version and returns a status message upon successful creation.
 
@@ -3027,11 +3239,11 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         request_body_data = None
-        request_body_data = {'marketing_event': marketing_event}
+        request_body_data = {"marketing_event": marketing_event}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/marketing_events.json'
+        url = f"{self.base_url}/admin/api/{api_version}/marketing_events.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3059,7 +3271,7 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/marketing_events/count.json'
+        url = f"{self.base_url}/admin/api/{api_version}/marketing_events/count.json"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -3092,7 +3304,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if marketing_event_id is None:
             raise ValueError("Missing required parameter 'marketing_event_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/marketing_events/{marketing_event_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/marketing_events/{marketing_event_id}.json"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -3103,7 +3315,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def updates_amarketing_event(self, api_version: str, marketing_event_id: str, marketing_event: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def updates_amarketing_event(
+        self, api_version: str, marketing_event_id: str, marketing_event: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         """
         Updates a marketing event's details via the specified marketing_event_id and returns a success status upon completion.
 
@@ -3127,11 +3341,11 @@ class ShopifyApp(APIApplication):
         if marketing_event_id is None:
             raise ValueError("Missing required parameter 'marketing_event_id'.")
         request_body_data = None
-        request_body_data = {'marketing_event': marketing_event}
+        request_body_data = {"marketing_event": marketing_event}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/marketing_events/{marketing_event_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/marketing_events/{marketing_event_id}.json"
         query_params = {}
-        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3140,7 +3354,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def deletes_amarketing_event(self, api_version: str, marketing_event_id: str, body_content: str | None=None) -> dict[str, Any]:
+    async def deletes_amarketing_event(self, api_version: str, marketing_event_id: str, body_content: str | None = None) -> dict[str, Any]:
         """
         Deletes a specific marketing event using its unique identifier and returns a success status upon removal.
 
@@ -3163,7 +3377,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if marketing_event_id is None:
             raise ValueError("Missing required parameter 'marketing_event_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/marketing_events/{marketing_event_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/marketing_events/{marketing_event_id}.json"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -3174,7 +3388,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_marketing_event_engagement(self, api_version: str, marketing_event_id: str, engagements: list[dict[str, Any]] | None=None) -> dict[str, Any]:
+    async def create_marketing_event_engagement(
+        self, api_version: str, marketing_event_id: str, engagements: list[dict[str, Any]] | None = None
+    ) -> dict[str, Any]:
         """
         Creates an engagement record for a specified marketing event using the POST method.
 
@@ -3198,11 +3414,11 @@ class ShopifyApp(APIApplication):
         if marketing_event_id is None:
             raise ValueError("Missing required parameter 'marketing_event_id'.")
         request_body_data = None
-        request_body_data = {'engagements': engagements}
+        request_body_data = {"engagements": engagements}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/marketing_events/{marketing_event_id}/engagements.json'
+        url = f"{self.base_url}/admin/api/{api_version}/marketing_events/{marketing_event_id}/engagements.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3211,7 +3427,20 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_metafields(self, api_version: str, limit: str | None=None, since_id: str | None=None, created_at_min: str | None=None, created_at_max: str | None=None, updated_at_min: str | None=None, updated_at_max: str | None=None, namespace: str | None=None, key: str | None=None, value_type: str | None=None, fields: str | None=None) -> dict[str, Any]:
+    async def get_metafields(
+        self,
+        api_version: str,
+        limit: str | None = None,
+        since_id: str | None = None,
+        created_at_min: str | None = None,
+        created_at_max: str | None = None,
+        updated_at_min: str | None = None,
+        updated_at_max: str | None = None,
+        namespace: str | None = None,
+        key: str | None = None,
+        value_type: str | None = None,
+        fields: str | None = None,
+    ) -> dict[str, Any]:
         """
         Retrieves a list of metafields across all resources with optional filters like namespace, key, value type, and date ranges.
 
@@ -3240,8 +3469,23 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/metafields.json'
-        query_params = {k: v for k, v in [('limit', limit), ('since_id', since_id), ('created_at_min', created_at_min), ('created_at_max', created_at_max), ('updated_at_min', updated_at_min), ('updated_at_max', updated_at_max), ('namespace', namespace), ('key', key), ('value_type', value_type), ('fields', fields)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/metafields.json"
+        query_params = {
+            k: v
+            for k, v in [
+                ("limit", limit),
+                ("since_id", since_id),
+                ("created_at_min", created_at_min),
+                ("created_at_max", created_at_max),
+                ("updated_at_min", updated_at_min),
+                ("updated_at_max", updated_at_max),
+                ("namespace", namespace),
+                ("key", key),
+                ("value_type", value_type),
+                ("fields", fields),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -3251,7 +3495,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_metafields(self, api_version: str, metafield: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def create_metafields(self, api_version: str, metafield: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Creates a new metafield entry in Shopify's system for storing custom data associated with various resources.
 
@@ -3272,11 +3516,11 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         request_body_data = None
-        request_body_data = {'metafield': metafield}
+        request_body_data = {"metafield": metafield}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/metafields.json'
+        url = f"{self.base_url}/admin/api/{api_version}/metafields.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3304,7 +3548,7 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/metafields/count.json'
+        url = f"{self.base_url}/admin/api/{api_version}/metafields/count.json"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -3315,7 +3559,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_metafield_by_id_json(self, api_version: str, metafield_id: str, fields: str | None=None) -> dict[str, Any]:
+    async def get_metafield_by_id_json(self, api_version: str, metafield_id: str, fields: str | None = None) -> dict[str, Any]:
         """
         Retrieves a specific metafield by its ID using the Shopify API, allowing for optional filtering of returned fields.
 
@@ -3338,8 +3582,8 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if metafield_id is None:
             raise ValueError("Missing required parameter 'metafield_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/metafields/{metafield_id}.json'
-        query_params = {k: v for k, v in [('fields', fields)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/metafields/{metafield_id}.json"
+        query_params = {k: v for k, v in [("fields", fields)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -3349,7 +3593,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def updates_ametafield(self, api_version: str, metafield_id: str, metafield: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def updates_ametafield(self, api_version: str, metafield_id: str, metafield: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Updates an existing metafield's data in Shopify via the specified API endpoint.
 
@@ -3373,11 +3617,11 @@ class ShopifyApp(APIApplication):
         if metafield_id is None:
             raise ValueError("Missing required parameter 'metafield_id'.")
         request_body_data = None
-        request_body_data = {'metafield': metafield}
+        request_body_data = {"metafield": metafield}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/metafields/{metafield_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/metafields/{metafield_id}.json"
         query_params = {}
-        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3386,7 +3630,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def deletes_ametafield_by_its_id(self, api_version: str, metafield_id: str, body_content: str | None=None) -> dict[str, Any]:
+    async def deletes_ametafield_by_its_id(self, api_version: str, metafield_id: str, body_content: str | None = None) -> dict[str, Any]:
         """
         Deletes a metafield by its ID using the Shopify API, removing the specified metafield's data from a store.
 
@@ -3409,7 +3653,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if metafield_id is None:
             raise ValueError("Missing required parameter 'metafield_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/metafields/{metafield_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/metafields/{metafield_id}.json"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -3420,7 +3664,24 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def list_blog_articles_by_params(self, api_version: str, blog_id: str, limit: str | None=None, since_id: str | None=None, created_at_min: str | None=None, created_at_max: str | None=None, updated_at_min: str | None=None, updated_at_max: str | None=None, published_at_min: str | None=None, published_at_max: str | None=None, published_status: str | None=None, handle: str | None=None, tag: str | None=None, author: str | None=None, fields: str | None=None) -> dict[str, Any]:
+    async def list_blog_articles_by_params(
+        self,
+        api_version: str,
+        blog_id: str,
+        limit: str | None = None,
+        since_id: str | None = None,
+        created_at_min: str | None = None,
+        created_at_max: str | None = None,
+        updated_at_min: str | None = None,
+        updated_at_max: str | None = None,
+        published_at_min: str | None = None,
+        published_at_max: str | None = None,
+        published_status: str | None = None,
+        handle: str | None = None,
+        tag: str | None = None,
+        author: str | None = None,
+        fields: str | None = None,
+    ) -> dict[str, Any]:
         """
         Retrieves a list of articles from a specified blog using the GET method with optional filtering by parameters such as creation date, publication status, author, and tags.
 
@@ -3455,8 +3716,26 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if blog_id is None:
             raise ValueError("Missing required parameter 'blog_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/blogs/{blog_id}/articles.json'
-        query_params = {k: v for k, v in [('limit', limit), ('since_id', since_id), ('created_at_min', created_at_min), ('created_at_max', created_at_max), ('updated_at_min', updated_at_min), ('updated_at_max', updated_at_max), ('published_at_min', published_at_min), ('published_at_max', published_at_max), ('published_status', published_status), ('handle', handle), ('tag', tag), ('author', author), ('fields', fields)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/blogs/{blog_id}/articles.json"
+        query_params = {
+            k: v
+            for k, v in [
+                ("limit", limit),
+                ("since_id", since_id),
+                ("created_at_min", created_at_min),
+                ("created_at_max", created_at_max),
+                ("updated_at_min", updated_at_min),
+                ("updated_at_max", updated_at_max),
+                ("published_at_min", published_at_min),
+                ("published_at_max", published_at_max),
+                ("published_status", published_status),
+                ("handle", handle),
+                ("tag", tag),
+                ("author", author),
+                ("fields", fields),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -3466,7 +3745,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def creates_an_article_for_ablog(self, api_version: str, blog_id: str, article: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def creates_an_article_for_ablog(self, api_version: str, blog_id: str, article: dict[str, Any] | None = None) -> dict[str, Any]:
         """
                 Creates a new article in the specified blog using the Blogger API and returns the created article on success.
 
@@ -3491,11 +3770,11 @@ class ShopifyApp(APIApplication):
         if blog_id is None:
             raise ValueError("Missing required parameter 'blog_id'.")
         request_body_data = None
-        request_body_data = {'article': article}
+        request_body_data = {"article": article}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/blogs/{blog_id}/articles.json'
+        url = f"{self.base_url}/admin/api/{api_version}/blogs/{blog_id}/articles.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3504,7 +3783,18 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_article_count(self, api_version: str, blog_id: str, created_at_min: str | None=None, created_at_max: str | None=None, updated_at_min: str | None=None, updated_at_max: str | None=None, published_at_min: str | None=None, published_at_max: str | None=None, published_status: str | None=None) -> dict[str, Any]:
+    async def get_article_count(
+        self,
+        api_version: str,
+        blog_id: str,
+        created_at_min: str | None = None,
+        created_at_max: str | None = None,
+        updated_at_min: str | None = None,
+        updated_at_max: str | None = None,
+        published_at_min: str | None = None,
+        published_at_max: str | None = None,
+        published_status: str | None = None,
+    ) -> dict[str, Any]:
         """
         Retrieves the count of articles in a specific blog with optional time-based and status filters.
 
@@ -3533,8 +3823,20 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if blog_id is None:
             raise ValueError("Missing required parameter 'blog_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/blogs/{blog_id}/articles/count.json'
-        query_params = {k: v for k, v in [('created_at_min', created_at_min), ('created_at_max', created_at_max), ('updated_at_min', updated_at_min), ('updated_at_max', updated_at_max), ('published_at_min', published_at_min), ('published_at_max', published_at_max), ('published_status', published_status)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/blogs/{blog_id}/articles/count.json"
+        query_params = {
+            k: v
+            for k, v in [
+                ("created_at_min", created_at_min),
+                ("created_at_max", created_at_max),
+                ("updated_at_min", updated_at_min),
+                ("updated_at_max", updated_at_max),
+                ("published_at_min", published_at_min),
+                ("published_at_max", published_at_max),
+                ("published_status", published_status),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -3544,7 +3846,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def receive_asingle_article(self, api_version: str, blog_id: str, article_id: str, fields: str | None=None) -> dict[str, Any]:
+    async def receive_asingle_article(self, api_version: str, blog_id: str, article_id: str, fields: str | None = None) -> dict[str, Any]:
         """
         Retrieves a specific article from a blog by its ID, returning the requested fields in the response.
 
@@ -3570,8 +3872,8 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'blog_id'.")
         if article_id is None:
             raise ValueError("Missing required parameter 'article_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/blogs/{blog_id}/articles/{article_id}.json'
-        query_params = {k: v for k, v in [('fields', fields)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/blogs/{blog_id}/articles/{article_id}.json"
+        query_params = {k: v for k, v in [("fields", fields)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -3581,7 +3883,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def updates_an_article(self, api_version: str, blog_id: str, article_id: str, article: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def updates_an_article(
+        self, api_version: str, blog_id: str, article_id: str, article: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         """
         Updates an article in a blog using the "PUT" method, replacing the existing resource with a new representation at the specified API path.
 
@@ -3608,11 +3912,11 @@ class ShopifyApp(APIApplication):
         if article_id is None:
             raise ValueError("Missing required parameter 'article_id'.")
         request_body_data = None
-        request_body_data = {'article': article}
+        request_body_data = {"article": article}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/blogs/{blog_id}/articles/{article_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/blogs/{blog_id}/articles/{article_id}.json"
         query_params = {}
-        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3621,7 +3925,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def deletes_an_article(self, api_version: str, blog_id: str, article_id: str, body_content: str | None=None) -> dict[str, Any]:
+    async def deletes_an_article(self, api_version: str, blog_id: str, article_id: str, body_content: str | None = None) -> dict[str, Any]:
         """
         Deletes a specific article from a blog using the provided blog and article identifiers and returns a success status upon completion.
 
@@ -3647,7 +3951,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'blog_id'.")
         if article_id is None:
             raise ValueError("Missing required parameter 'article_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/blogs/{blog_id}/articles/{article_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/blogs/{blog_id}/articles/{article_id}.json"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -3677,7 +3981,7 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/articles/authors.json'
+        url = f"{self.base_url}/admin/api/{api_version}/articles/authors.json"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -3688,7 +3992,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def retrieves_alist_of_all_article_tags(self, api_version: str, limit: str | None=None, popular: str | None=None) -> dict[str, Any]:
+    async def retrieves_alist_of_all_article_tags(
+        self, api_version: str, limit: str | None = None, popular: str | None = None
+    ) -> dict[str, Any]:
         """
         Retrieves article tags with optional parameters for limiting results and filtering by popularity.
 
@@ -3709,8 +4015,8 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/articles/tags.json'
-        query_params = {k: v for k, v in [('limit', limit), ('popular', popular)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/articles/tags.json"
+        query_params = {k: v for k, v in [("limit", limit), ("popular", popular)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -3720,7 +4026,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_theme_assets_json(self, api_version: str, theme_id: str, fields: str | None=None) -> dict[str, Any]:
+    async def get_theme_assets_json(self, api_version: str, theme_id: str, fields: str | None = None) -> dict[str, Any]:
         """
         Retrieves a list of theme assets for a specified theme in Shopify using the GET method at the "/admin/api/{api_version}/themes/{theme_id}/assets.json" endpoint, optionally filtering the response by fields specified in the query parameters.
 
@@ -3743,8 +4049,8 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if theme_id is None:
             raise ValueError("Missing required parameter 'theme_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/themes/{theme_id}/assets.json'
-        query_params = {k: v for k, v in [('fields', fields)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/themes/{theme_id}/assets.json"
+        query_params = {k: v for k, v in [("fields", fields)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -3754,7 +4060,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_theme_asset(self, api_version: str, theme_id: str, asset: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def update_theme_asset(self, api_version: str, theme_id: str, asset: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Updates or creates theme assets in Shopify stores using the Asset REST API, enabling modification of theme files like Liquid templates or CSS.
 
@@ -3778,11 +4084,11 @@ class ShopifyApp(APIApplication):
         if theme_id is None:
             raise ValueError("Missing required parameter 'theme_id'.")
         request_body_data = None
-        request_body_data = {'asset': asset}
+        request_body_data = {"asset": asset}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/themes/{theme_id}/assets.json'
+        url = f"{self.base_url}/admin/api/{api_version}/themes/{theme_id}/assets.json"
         query_params = {}
-        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3791,7 +4097,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def deletes_an_asset_from_atheme(self, api_version: str, theme_id: str, body_content: str | None=None) -> dict[str, Any]:
+    async def deletes_an_asset_from_atheme(self, api_version: str, theme_id: str, body_content: str | None = None) -> dict[str, Any]:
         """
         Deletes a theme asset in a Shopify store using the "DELETE" method at the specified API path, returning a status message based on the outcome of the deletion request.
 
@@ -3814,7 +4120,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if theme_id is None:
             raise ValueError("Missing required parameter 'theme_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/themes/{theme_id}/assets.json'
+        url = f"{self.base_url}/admin/api/{api_version}/themes/{theme_id}/assets.json"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -3825,7 +4131,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def retrieve_alist_of_all_blogs(self, api_version: str, limit: str | None=None, since_id: str | None=None, handle: str | None=None, fields: str | None=None) -> dict[str, Any]:
+    async def retrieve_alist_of_all_blogs(
+        self, api_version: str, limit: str | None = None, since_id: str | None = None, handle: str | None = None, fields: str | None = None
+    ) -> dict[str, Any]:
         """
         Retrieves a list of blogs with configurable filters (limit, handle, etc.) and optional field selection in the specified API version.
 
@@ -3848,8 +4156,10 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/blogs.json'
-        query_params = {k: v for k, v in [('limit', limit), ('since_id', since_id), ('handle', handle), ('fields', fields)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/blogs.json"
+        query_params = {
+            k: v for k, v in [("limit", limit), ("since_id", since_id), ("handle", handle), ("fields", fields)] if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -3859,7 +4169,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_anew_blog(self, api_version: str, blog: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def create_anew_blog(self, api_version: str, blog: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Creates a new blog using the API at "/admin/api/{api_version}/blogs.json" with the "POST" method, returning a status indicating success or failure.
 
@@ -3880,11 +4190,11 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         request_body_data = None
-        request_body_data = {'blog': blog}
+        request_body_data = {"blog": blog}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/blogs.json'
+        url = f"{self.base_url}/admin/api/{api_version}/blogs.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3912,7 +4222,7 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/blogs/count.json'
+        url = f"{self.base_url}/admin/api/{api_version}/blogs/count.json"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -3923,7 +4233,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def receive_asingle_blog(self, api_version: str, blog_id: str, fields: str | None=None) -> dict[str, Any]:
+    async def receive_asingle_blog(self, api_version: str, blog_id: str, fields: str | None = None) -> dict[str, Any]:
         """
         Retrieves a blog with the specified ID and optional fields using the "GET" method.
 
@@ -3946,8 +4256,8 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if blog_id is None:
             raise ValueError("Missing required parameter 'blog_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/blogs/{blog_id}.json'
-        query_params = {k: v for k, v in [('fields', fields)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/blogs/{blog_id}.json"
+        query_params = {k: v for k, v in [("fields", fields)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -3957,7 +4267,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def modify_an_existing_blog(self, api_version: str, blog_id: str, blog: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def modify_an_existing_blog(self, api_version: str, blog_id: str, blog: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Updates or replaces an entire blog entry at the specified blog ID using the provided data and returns a success status.
 
@@ -3981,11 +4291,11 @@ class ShopifyApp(APIApplication):
         if blog_id is None:
             raise ValueError("Missing required parameter 'blog_id'.")
         request_body_data = None
-        request_body_data = {'blog': blog}
+        request_body_data = {"blog": blog}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/blogs/{blog_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/blogs/{blog_id}.json"
         query_params = {}
-        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3994,7 +4304,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def remove_an_existing_blog(self, api_version: str, blog_id: str, body_content: str | None=None) -> dict[str, Any]:
+    async def remove_an_existing_blog(self, api_version: str, blog_id: str, body_content: str | None = None) -> dict[str, Any]:
         """
         Deletes a blog with the specified ID using the DELETE method via the API endpoint "/admin/api/{api_version}/blogs/{blog_id}.json" and returns a successful status message if the operation is completed.
 
@@ -4017,7 +4327,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if blog_id is None:
             raise ValueError("Missing required parameter 'blog_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/blogs/{blog_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/blogs/{blog_id}.json"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -4028,7 +4338,21 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def retrieves_alist_of_comments(self, api_version: str, limit: str | None=None, since_id: str | None=None, created_at_min: str | None=None, created_at_max: str | None=None, updated_at_min: str | None=None, updated_at_max: str | None=None, published_at_min: str | None=None, published_at_max: str | None=None, fields: str | None=None, published_status: str | None=None, status: str | None=None) -> dict[str, Any]:
+    async def retrieves_alist_of_comments(
+        self,
+        api_version: str,
+        limit: str | None = None,
+        since_id: str | None = None,
+        created_at_min: str | None = None,
+        created_at_max: str | None = None,
+        updated_at_min: str | None = None,
+        updated_at_max: str | None = None,
+        published_at_min: str | None = None,
+        published_at_max: str | None = None,
+        fields: str | None = None,
+        published_status: str | None = None,
+        status: str | None = None,
+    ) -> dict[str, Any]:
         """
         Retrieves a list of comments with filtering by date ranges, status, and field selection parameters via a GET request.
 
@@ -4058,8 +4382,24 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/comments.json'
-        query_params = {k: v for k, v in [('limit', limit), ('since_id', since_id), ('created_at_min', created_at_min), ('created_at_max', created_at_max), ('updated_at_min', updated_at_min), ('updated_at_max', updated_at_max), ('published_at_min', published_at_min), ('published_at_max', published_at_max), ('fields', fields), ('published_status', published_status), ('status', status)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/comments.json"
+        query_params = {
+            k: v
+            for k, v in [
+                ("limit", limit),
+                ("since_id", since_id),
+                ("created_at_min", created_at_min),
+                ("created_at_max", created_at_max),
+                ("updated_at_min", updated_at_min),
+                ("updated_at_max", updated_at_max),
+                ("published_at_min", published_at_min),
+                ("published_at_max", published_at_max),
+                ("fields", fields),
+                ("published_status", published_status),
+                ("status", status),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -4069,7 +4409,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def creates_acomment_for_an_article(self, api_version: str, comment: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def creates_acomment_for_an_article(self, api_version: str, comment: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Creates comments through an administrative API endpoint.
 
@@ -4090,11 +4430,11 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         request_body_data = None
-        request_body_data = {'comment': comment}
+        request_body_data = {"comment": comment}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/comments.json'
+        url = f"{self.base_url}/admin/api/{api_version}/comments.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4103,7 +4443,18 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def retrieves_acount_of_comments(self, api_version: str, created_at_min: str | None=None, created_at_max: str | None=None, updated_at_min: str | None=None, updated_at_max: str | None=None, published_at_min: str | None=None, published_at_max: str | None=None, published_status: str | None=None, status: str | None=None) -> dict[str, Any]:
+    async def retrieves_acount_of_comments(
+        self,
+        api_version: str,
+        created_at_min: str | None = None,
+        created_at_max: str | None = None,
+        updated_at_min: str | None = None,
+        updated_at_max: str | None = None,
+        published_at_min: str | None = None,
+        published_at_max: str | None = None,
+        published_status: str | None = None,
+        status: str | None = None,
+    ) -> dict[str, Any]:
         """
         Retrieves the count of comments filtered by creation, update, and publication timestamps or status using specific query parameters.
 
@@ -4130,8 +4481,21 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/comments/count.json'
-        query_params = {k: v for k, v in [('created_at_min', created_at_min), ('created_at_max', created_at_max), ('updated_at_min', updated_at_min), ('updated_at_max', updated_at_max), ('published_at_min', published_at_min), ('published_at_max', published_at_max), ('published_status', published_status), ('status', status)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/comments/count.json"
+        query_params = {
+            k: v
+            for k, v in [
+                ("created_at_min", created_at_min),
+                ("created_at_max", created_at_max),
+                ("updated_at_min", updated_at_min),
+                ("updated_at_max", updated_at_max),
+                ("published_at_min", published_at_min),
+                ("published_at_max", published_at_max),
+                ("published_status", published_status),
+                ("status", status),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -4141,7 +4505,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def retrieves_asingle_comment_by_its_id(self, api_version: str, comment_id: str, fields: str | None=None) -> dict[str, Any]:
+    async def retrieves_asingle_comment_by_its_id(self, api_version: str, comment_id: str, fields: str | None = None) -> dict[str, Any]:
         """
         Retrieves a specific comment's details by its ID in the GitHub API, supporting optional field filtering.
 
@@ -4164,8 +4528,8 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if comment_id is None:
             raise ValueError("Missing required parameter 'comment_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/comments/{comment_id}.json'
-        query_params = {k: v for k, v in [('fields', fields)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/comments/{comment_id}.json"
+        query_params = {k: v for k, v in [("fields", fields)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -4175,7 +4539,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def updates_acomment_of_an_article(self, api_version: str, comment_id: str, comment: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def updates_acomment_of_an_article(
+        self, api_version: str, comment_id: str, comment: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         """
         Updates a comment identified by `{comment_id}` using the "PUT" method, enabling modifications to existing comments in a structured API environment.
 
@@ -4199,11 +4565,11 @@ class ShopifyApp(APIApplication):
         if comment_id is None:
             raise ValueError("Missing required parameter 'comment_id'.")
         request_body_data = None
-        request_body_data = {'comment': comment}
+        request_body_data = {"comment": comment}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/comments/{comment_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/comments/{comment_id}.json"
         query_params = {}
-        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4212,7 +4578,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def marks_acomment_as_spam(self, api_version: str, comment_id: str, request_body: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def marks_acomment_as_spam(self, api_version: str, comment_id: str, request_body: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Marks a comment as spam in the admin system and returns a success status.
 
@@ -4237,9 +4603,9 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'comment_id'.")
         request_body_data = None
         request_body_data = request_body if request_body is not None else {}
-        url = f'{self.base_url}/admin/api/{api_version}/comments/{comment_id}/spam.json'
+        url = f"{self.base_url}/admin/api/{api_version}/comments/{comment_id}/spam.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4248,7 +4614,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def marks_acomment_as_not_spam(self, api_version: str, comment_id: str, request_body: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def marks_acomment_as_not_spam(
+        self, api_version: str, comment_id: str, request_body: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         """
         Marks a comment as not spam in the admin API and returns a success status.
 
@@ -4273,9 +4641,9 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'comment_id'.")
         request_body_data = None
         request_body_data = request_body if request_body is not None else {}
-        url = f'{self.base_url}/admin/api/{api_version}/comments/{comment_id}/not_spam.json'
+        url = f"{self.base_url}/admin/api/{api_version}/comments/{comment_id}/not_spam.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4284,7 +4652,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def approves_acomment(self, api_version: str, comment_id: str, request_body: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def approves_acomment(self, api_version: str, comment_id: str, request_body: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Approves a specified comment via a POST request and returns a success status upon approval.
 
@@ -4309,9 +4677,9 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'comment_id'.")
         request_body_data = None
         request_body_data = request_body if request_body is not None else {}
-        url = f'{self.base_url}/admin/api/{api_version}/comments/{comment_id}/approve.json'
+        url = f"{self.base_url}/admin/api/{api_version}/comments/{comment_id}/approve.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4320,7 +4688,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def removes_acomment(self, api_version: str, comment_id: str, request_body: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def removes_acomment(self, api_version: str, comment_id: str, request_body: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Removes a comment via the API, identified by its ID, using a POST request at the specified path.
 
@@ -4345,9 +4713,9 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'comment_id'.")
         request_body_data = None
         request_body_data = request_body if request_body is not None else {}
-        url = f'{self.base_url}/admin/api/{api_version}/comments/{comment_id}/remove.json'
+        url = f"{self.base_url}/admin/api/{api_version}/comments/{comment_id}/remove.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4356,7 +4724,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def restore_comment(self, api_version: str, comment_id: str, request_body: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def restore_comment(self, api_version: str, comment_id: str, request_body: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Restores a deleted comment using the specified API version and returns a success status.
 
@@ -4381,9 +4749,9 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'comment_id'.")
         request_body_data = None
         request_body_data = request_body if request_body is not None else {}
-        url = f'{self.base_url}/admin/api/{api_version}/comments/{comment_id}/restore.json'
+        url = f"{self.base_url}/admin/api/{api_version}/comments/{comment_id}/restore.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4392,7 +4760,22 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def retrieves_alist_of_pages(self, api_version: str, limit: str | None=None, since_id: str | None=None, title: str | None=None, handle: str | None=None, created_at_min: str | None=None, created_at_max: str | None=None, updated_at_min: str | None=None, updated_at_max: str | None=None, published_at_min: str | None=None, published_at_max: str | None=None, fields: str | None=None, published_status: str | None=None) -> dict[str, Any]:
+    async def retrieves_alist_of_pages(
+        self,
+        api_version: str,
+        limit: str | None = None,
+        since_id: str | None = None,
+        title: str | None = None,
+        handle: str | None = None,
+        created_at_min: str | None = None,
+        created_at_max: str | None = None,
+        updated_at_min: str | None = None,
+        updated_at_max: str | None = None,
+        published_at_min: str | None = None,
+        published_at_max: str | None = None,
+        fields: str | None = None,
+        published_status: str | None = None,
+    ) -> dict[str, Any]:
         """
         Retrieves a list of pages in JSON format using the Shopify API, allowing filtering by parameters such as limit, title, handle, creation and update dates, and publication status.
 
@@ -4423,8 +4806,25 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/pages.json'
-        query_params = {k: v for k, v in [('limit', limit), ('since_id', since_id), ('title', title), ('handle', handle), ('created_at_min', created_at_min), ('created_at_max', created_at_max), ('updated_at_min', updated_at_min), ('updated_at_max', updated_at_max), ('published_at_min', published_at_min), ('published_at_max', published_at_max), ('fields', fields), ('published_status', published_status)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/pages.json"
+        query_params = {
+            k: v
+            for k, v in [
+                ("limit", limit),
+                ("since_id", since_id),
+                ("title", title),
+                ("handle", handle),
+                ("created_at_min", created_at_min),
+                ("created_at_max", created_at_max),
+                ("updated_at_min", updated_at_min),
+                ("updated_at_max", updated_at_max),
+                ("published_at_min", published_at_min),
+                ("published_at_max", published_at_max),
+                ("fields", fields),
+                ("published_status", published_status),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -4434,7 +4834,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_anew_page(self, api_version: str, page: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def create_anew_page(self, api_version: str, page: dict[str, Any] | None = None) -> dict[str, Any]:
         """
                 Creates a new page in the Shopify admin using the POST method and returns a status message.
 
@@ -4456,11 +4856,11 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         request_body_data = None
-        request_body_data = {'page': page}
+        request_body_data = {"page": page}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/pages.json'
+        url = f"{self.base_url}/admin/api/{api_version}/pages.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4469,7 +4869,18 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def retrieves_apage_count(self, api_version: str, title: str | None=None, created_at_min: str | None=None, created_at_max: str | None=None, updated_at_min: str | None=None, updated_at_max: str | None=None, published_at_min: str | None=None, published_at_max: str | None=None, published_status: str | None=None) -> dict[str, Any]:
+    async def retrieves_apage_count(
+        self,
+        api_version: str,
+        title: str | None = None,
+        created_at_min: str | None = None,
+        created_at_max: str | None = None,
+        updated_at_min: str | None = None,
+        updated_at_max: str | None = None,
+        published_at_min: str | None = None,
+        published_at_max: str | None = None,
+        published_status: str | None = None,
+    ) -> dict[str, Any]:
         """
         Retrieves the count of pages in a Shopify store based on specified criteria such as title, creation date, update date, publication date, and publication status using the GET method.
 
@@ -4496,8 +4907,21 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/pages/count.json'
-        query_params = {k: v for k, v in [('title', title), ('created_at_min', created_at_min), ('created_at_max', created_at_max), ('updated_at_min', updated_at_min), ('updated_at_max', updated_at_max), ('published_at_min', published_at_min), ('published_at_max', published_at_max), ('published_status', published_status)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/pages/count.json"
+        query_params = {
+            k: v
+            for k, v in [
+                ("title", title),
+                ("created_at_min", created_at_min),
+                ("created_at_max", created_at_max),
+                ("updated_at_min", updated_at_min),
+                ("updated_at_max", updated_at_max),
+                ("published_at_min", published_at_min),
+                ("published_at_max", published_at_max),
+                ("published_status", published_status),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -4507,7 +4931,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def retrieves_asingle_page_by_its_id(self, api_version: str, page_id: str, fields: str | None=None) -> dict[str, Any]:
+    async def retrieves_asingle_page_by_its_id(self, api_version: str, page_id: str, fields: str | None = None) -> dict[str, Any]:
         """
         Retrieves a specific page's details from the admin API, filtered by the requested fields, and returns the structured data in JSON format.
 
@@ -4530,8 +4954,8 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if page_id is None:
             raise ValueError("Missing required parameter 'page_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/pages/{page_id}.json'
-        query_params = {k: v for k, v in [('fields', fields)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/pages/{page_id}.json"
+        query_params = {k: v for k, v in [("fields", fields)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -4541,7 +4965,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def updates_apage(self, api_version: str, page_id: str, page: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def updates_apage(self, api_version: str, page_id: str, page: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Updates a specific page with the given ID using the PUT method, replacing its existing content with new data.
 
@@ -4565,11 +4989,11 @@ class ShopifyApp(APIApplication):
         if page_id is None:
             raise ValueError("Missing required parameter 'page_id'.")
         request_body_data = None
-        request_body_data = {'page': page}
+        request_body_data = {"page": page}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/pages/{page_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/pages/{page_id}.json"
         query_params = {}
-        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4578,7 +5002,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def deletes_apage(self, api_version: str, page_id: str, body_content: str | None=None) -> dict[str, Any]:
+    async def deletes_apage(self, api_version: str, page_id: str, body_content: str | None = None) -> dict[str, Any]:
         """
         Deletes a page identified by the given page ID using the DELETE method, returning a status message upon successful deletion.
 
@@ -4601,7 +5025,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if page_id is None:
             raise ValueError("Missing required parameter 'page_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/pages/{page_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/pages/{page_id}.json"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -4612,7 +5036,15 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def retrieves_alist_of_url_redirects(self, api_version: str, limit: str | None=None, since_id: str | None=None, path: str | None=None, target: str | None=None, fields: str | None=None) -> dict[str, Any]:
+    async def retrieves_alist_of_url_redirects(
+        self,
+        api_version: str,
+        limit: str | None = None,
+        since_id: str | None = None,
+        path: str | None = None,
+        target: str | None = None,
+        fields: str | None = None,
+    ) -> dict[str, Any]:
         """
         Retrieves a list of redirects in JSON format using the "GET" method at the "/admin/api/{api_version}/redirects.json" endpoint, allowing filtering by parameters such as limit, since_id, path, target, and fields.
 
@@ -4636,8 +5068,12 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/redirects.json'
-        query_params = {k: v for k, v in [('limit', limit), ('since_id', since_id), ('path', path), ('target', target), ('fields', fields)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/redirects.json"
+        query_params = {
+            k: v
+            for k, v in [("limit", limit), ("since_id", since_id), ("path", path), ("target", target), ("fields", fields)]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -4647,7 +5083,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def creates_aredirect(self, api_version: str, redirect: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def creates_aredirect(self, api_version: str, redirect: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Creates a new URL redirect using the API, returning a successful response with a status code of 201 upon completion, or an error response with a status code of 422 if validation fails.
 
@@ -4668,11 +5104,11 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         request_body_data = None
-        request_body_data = {'redirect': redirect}
+        request_body_data = {"redirect": redirect}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/redirects.json'
+        url = f"{self.base_url}/admin/api/{api_version}/redirects.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4681,7 +5117,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def retrieves_acount_of_url_redirects(self, api_version: str, path: str | None=None, target: str | None=None) -> dict[str, Any]:
+    async def retrieves_acount_of_url_redirects(
+        self, api_version: str, path: str | None = None, target: str | None = None
+    ) -> dict[str, Any]:
         """
         Retrieves the count of redirects for a specified path using the GET method at "/admin/api/{api_version}/redirects/count.json".
 
@@ -4702,8 +5140,8 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/redirects/count.json'
-        query_params = {k: v for k, v in [('path', path), ('target', target)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/redirects/count.json"
+        query_params = {k: v for k, v in [("path", path), ("target", target)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -4713,7 +5151,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def retrieves_asingle_redirect(self, api_version: str, redirect_id: str, fields: str | None=None) -> dict[str, Any]:
+    async def retrieves_asingle_redirect(self, api_version: str, redirect_id: str, fields: str | None = None) -> dict[str, Any]:
         """
         Retrieves details of a specific redirect ID in JSON format, allowing optional field selection via query parameters.
 
@@ -4736,8 +5174,8 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if redirect_id is None:
             raise ValueError("Missing required parameter 'redirect_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/redirects/{redirect_id}.json'
-        query_params = {k: v for k, v in [('fields', fields)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/redirects/{redirect_id}.json"
+        query_params = {k: v for k, v in [("fields", fields)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -4747,7 +5185,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def updates_an_existing_redirect(self, api_version: str, redirect_id: str, redirect: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def updates_an_existing_redirect(
+        self, api_version: str, redirect_id: str, redirect: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         """
         Updates or replaces a specific redirect resource identified by `{redirect_id}` using the REST API, returning a status message if successful.
 
@@ -4771,11 +5211,11 @@ class ShopifyApp(APIApplication):
         if redirect_id is None:
             raise ValueError("Missing required parameter 'redirect_id'.")
         request_body_data = None
-        request_body_data = {'redirect': redirect}
+        request_body_data = {"redirect": redirect}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/redirects/{redirect_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/redirects/{redirect_id}.json"
         query_params = {}
-        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4784,7 +5224,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def deletes_aredirect(self, api_version: str, redirect_id: str, body_content: str | None=None) -> dict[str, Any]:
+    async def deletes_aredirect(self, api_version: str, redirect_id: str, body_content: str | None = None) -> dict[str, Any]:
         """
         Deletes a specific URL redirect identified by the provided `redirect_id`, removing the associated redirection rule from the system.
 
@@ -4807,7 +5247,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if redirect_id is None:
             raise ValueError("Missing required parameter 'redirect_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/redirects/{redirect_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/redirects/{redirect_id}.json"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -4818,7 +5258,18 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def retrieves_alist_of_all_script_tags(self, api_version: str, limit: str | None=None, since_id: str | None=None, created_at_min: str | None=None, created_at_max: str | None=None, updated_at_min: str | None=None, updated_at_max: str | None=None, src: str | None=None, fields: str | None=None) -> dict[str, Any]:
+    async def retrieves_alist_of_all_script_tags(
+        self,
+        api_version: str,
+        limit: str | None = None,
+        since_id: str | None = None,
+        created_at_min: str | None = None,
+        created_at_max: str | None = None,
+        updated_at_min: str | None = None,
+        updated_at_max: str | None = None,
+        src: str | None = None,
+        fields: str | None = None,
+    ) -> dict[str, Any]:
         """
         Retrieves a list of script tags using the Shopify API, allowing filtering by parameters such as creation and update times, source URL, and specific fields.
 
@@ -4845,8 +5296,21 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/script_tags.json'
-        query_params = {k: v for k, v in [('limit', limit), ('since_id', since_id), ('created_at_min', created_at_min), ('created_at_max', created_at_max), ('updated_at_min', updated_at_min), ('updated_at_max', updated_at_max), ('src', src), ('fields', fields)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/script_tags.json"
+        query_params = {
+            k: v
+            for k, v in [
+                ("limit", limit),
+                ("since_id", since_id),
+                ("created_at_min", created_at_min),
+                ("created_at_max", created_at_max),
+                ("updated_at_min", updated_at_min),
+                ("updated_at_max", updated_at_max),
+                ("src", src),
+                ("fields", fields),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -4856,7 +5320,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def creates_anew_script_tag(self, api_version: str, script_tag: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def creates_anew_script_tag(self, api_version: str, script_tag: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Creates a script tag for loading remote JavaScript into a storefront or checkout page via the Shopify Admin API.
 
@@ -4877,11 +5341,11 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         request_body_data = None
-        request_body_data = {'script_tag': script_tag}
+        request_body_data = {"script_tag": script_tag}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/script_tags.json'
+        url = f"{self.base_url}/admin/api/{api_version}/script_tags.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4890,7 +5354,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def retrieves_acount_of_all_script_tags(self, api_version: str, src: str | None=None) -> dict[str, Any]:
+    async def retrieves_acount_of_all_script_tags(self, api_version: str, src: str | None = None) -> dict[str, Any]:
         """
         Retrieves the count of script tags using the "GET" method, with an optional query parameter "src" to refine the request.
 
@@ -4910,8 +5374,8 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/script_tags/count.json'
-        query_params = {k: v for k, v in [('src', src)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/script_tags/count.json"
+        query_params = {k: v for k, v in [("src", src)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -4921,7 +5385,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def retrieves_asingle_script_tag(self, api_version: str, script_tag_id: str, fields: str | None=None) -> dict[str, Any]:
+    async def retrieves_asingle_script_tag(self, api_version: str, script_tag_id: str, fields: str | None = None) -> dict[str, Any]:
         """
         Retrieves a script tag by its ID using the API, allowing for optional specification of fields to include in the response.
 
@@ -4944,8 +5408,8 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if script_tag_id is None:
             raise ValueError("Missing required parameter 'script_tag_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/script_tags/{script_tag_id}.json'
-        query_params = {k: v for k, v in [('fields', fields)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/script_tags/{script_tag_id}.json"
+        query_params = {k: v for k, v in [("fields", fields)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -4955,7 +5419,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def updates_ascript_tag(self, api_version: str, script_tag_id: str, script_tag: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def updates_ascript_tag(self, api_version: str, script_tag_id: str, script_tag: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Updates a script tag by its ID using the PUT method and returns a successful response with a status code of 200.
 
@@ -4979,11 +5443,11 @@ class ShopifyApp(APIApplication):
         if script_tag_id is None:
             raise ValueError("Missing required parameter 'script_tag_id'.")
         request_body_data = None
-        request_body_data = {'script_tag': script_tag}
+        request_body_data = {"script_tag": script_tag}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/script_tags/{script_tag_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/script_tags/{script_tag_id}.json"
         query_params = {}
-        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4992,7 +5456,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def deletes_ascript_tag(self, api_version: str, script_tag_id: str, body_content: str | None=None) -> dict[str, Any]:
+    async def deletes_ascript_tag(self, api_version: str, script_tag_id: str, body_content: str | None = None) -> dict[str, Any]:
         """
         Deletes a specified script tag from a Shopify store using the provided script tag ID.
 
@@ -5015,7 +5479,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if script_tag_id is None:
             raise ValueError("Missing required parameter 'script_tag_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/script_tags/{script_tag_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/script_tags/{script_tag_id}.json"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -5026,7 +5490,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def retrieves_alist_of_themes(self, api_version: str, fields: str | None=None) -> dict[str, Any]:
+    async def retrieves_alist_of_themes(self, api_version: str, fields: str | None = None) -> dict[str, Any]:
         """
         Retrieves a list of store themes (including active, unpublished, and legacy themes) with optional field filtering via query parameters.
 
@@ -5046,8 +5510,8 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/themes.json'
-        query_params = {k: v for k, v in [('fields', fields)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/themes.json"
+        query_params = {k: v for k, v in [("fields", fields)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -5057,7 +5521,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def creates_atheme(self, api_version: str, theme: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def creates_atheme(self, api_version: str, theme: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Creates a new theme in a Shopify store via the Admin API, returning a success status on creation or validation errors.
 
@@ -5078,11 +5542,11 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         request_body_data = None
-        request_body_data = {'theme': theme}
+        request_body_data = {"theme": theme}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/themes.json'
+        url = f"{self.base_url}/admin/api/{api_version}/themes.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5091,7 +5555,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def retrieves_asingle_theme(self, api_version: str, theme_id: str, fields: str | None=None) -> dict[str, Any]:
+    async def retrieves_asingle_theme(self, api_version: str, theme_id: str, fields: str | None = None) -> dict[str, Any]:
         """
         Retrieves detailed information about a specific theme by ID from the Shopify admin, including customizable fields.
 
@@ -5114,8 +5578,8 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if theme_id is None:
             raise ValueError("Missing required parameter 'theme_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/themes/{theme_id}.json'
-        query_params = {k: v for k, v in [('fields', fields)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/themes/{theme_id}.json"
+        query_params = {k: v for k, v in [("fields", fields)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -5125,7 +5589,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def modify_an_existing_theme(self, api_version: str, theme_id: str, theme: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def modify_an_existing_theme(self, api_version: str, theme_id: str, theme: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Updates a theme resource by replacing or modifying it using the provided JSON data.
 
@@ -5149,11 +5613,11 @@ class ShopifyApp(APIApplication):
         if theme_id is None:
             raise ValueError("Missing required parameter 'theme_id'.")
         request_body_data = None
-        request_body_data = {'theme': theme}
+        request_body_data = {"theme": theme}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/themes/{theme_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/themes/{theme_id}.json"
         query_params = {}
-        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5162,7 +5626,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def remove_an_existing_theme(self, api_version: str, theme_id: str, body_content: str | None=None) -> dict[str, Any]:
+    async def remove_an_existing_theme(self, api_version: str, theme_id: str, body_content: str | None = None) -> dict[str, Any]:
         """
         Deletes a specified theme and returns a success status upon completion.
 
@@ -5185,7 +5649,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if theme_id is None:
             raise ValueError("Missing required parameter 'theme_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/themes/{theme_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/themes/{theme_id}.json"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -5196,7 +5660,16 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def retrieves_acount_of_checkouts(self, api_version: str, since_id: str | None=None, created_at_min: str | None=None, created_at_max: str | None=None, updated_at_min: str | None=None, updated_at_max: str | None=None, status: str | None=None) -> dict[str, Any]:
+    async def retrieves_acount_of_checkouts(
+        self,
+        api_version: str,
+        since_id: str | None = None,
+        created_at_min: str | None = None,
+        created_at_max: str | None = None,
+        updated_at_min: str | None = None,
+        updated_at_max: str | None = None,
+        status: str | None = None,
+    ) -> dict[str, Any]:
         """
         Retrieves the count of checkouts using the "GET" method at "/admin/api/{api_version}/checkouts/count.json", allowing filtering by parameters such as since_id, creation date, update date, and status.
 
@@ -5221,8 +5694,19 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/checkouts/count.json'
-        query_params = {k: v for k, v in [('since_id', since_id), ('created_at_min', created_at_min), ('created_at_max', created_at_max), ('updated_at_min', updated_at_min), ('updated_at_max', updated_at_max), ('status', status)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/checkouts/count.json"
+        query_params = {
+            k: v
+            for k, v in [
+                ("since_id", since_id),
+                ("created_at_min", created_at_min),
+                ("created_at_max", created_at_max),
+                ("updated_at_min", updated_at_min),
+                ("updated_at_max", updated_at_max),
+                ("status", status),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -5232,7 +5716,17 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_checkouts(self, api_version: str, limit: str | None=None, since_id: str | None=None, created_at_min: str | None=None, created_at_max: str | None=None, updated_at_min: str | None=None, updated_at_max: str | None=None, status: str | None=None) -> dict[str, Any]:
+    async def get_checkouts(
+        self,
+        api_version: str,
+        limit: str | None = None,
+        since_id: str | None = None,
+        created_at_min: str | None = None,
+        created_at_max: str | None = None,
+        updated_at_min: str | None = None,
+        updated_at_max: str | None = None,
+        status: str | None = None,
+    ) -> dict[str, Any]:
         """
         Retrieves a list of checkouts with optional filters like date ranges, status, and pagination controls.
 
@@ -5258,8 +5752,20 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/checkouts.json'
-        query_params = {k: v for k, v in [('limit', limit), ('since_id', since_id), ('created_at_min', created_at_min), ('created_at_max', created_at_max), ('updated_at_min', updated_at_min), ('updated_at_max', updated_at_max), ('status', status)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/checkouts.json"
+        query_params = {
+            k: v
+            for k, v in [
+                ("limit", limit),
+                ("since_id", since_id),
+                ("created_at_min", created_at_min),
+                ("created_at_max", created_at_max),
+                ("updated_at_min", updated_at_min),
+                ("updated_at_max", updated_at_max),
+                ("status", status),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -5269,7 +5775,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def creates_acheckout(self, api_version: str, checkout: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def creates_acheckout(self, api_version: str, checkout: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Creates a new checkout session for processing payments and managing order details.
 
@@ -5290,11 +5796,11 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         request_body_data = None
-        request_body_data = {'checkout': checkout}
+        request_body_data = {"checkout": checkout}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/checkouts.json'
+        url = f"{self.base_url}/admin/api/{api_version}/checkouts.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5303,7 +5809,17 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def retrieves_alist_of_draft_orders(self, api_version: str, fields: str | None=None, limit: str | None=None, since_id: str | None=None, updated_at_min: str | None=None, updated_at_max: str | None=None, ids: str | None=None, status: str | None=None) -> dict[str, Any]:
+    async def retrieves_alist_of_draft_orders(
+        self,
+        api_version: str,
+        fields: str | None = None,
+        limit: str | None = None,
+        since_id: str | None = None,
+        updated_at_min: str | None = None,
+        updated_at_max: str | None = None,
+        ids: str | None = None,
+        status: str | None = None,
+    ) -> dict[str, Any]:
         """
         Retrieves a list of draft orders from a Shopify store, allowing specification of fields, limits, and filters by ID, status, and update time, using the GET method.
 
@@ -5329,8 +5845,20 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/draft_orders.json'
-        query_params = {k: v for k, v in [('fields', fields), ('limit', limit), ('since_id', since_id), ('updated_at_min', updated_at_min), ('updated_at_max', updated_at_max), ('ids', ids), ('status', status)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/draft_orders.json"
+        query_params = {
+            k: v
+            for k, v in [
+                ("fields", fields),
+                ("limit", limit),
+                ("since_id", since_id),
+                ("updated_at_min", updated_at_min),
+                ("updated_at_max", updated_at_max),
+                ("ids", ids),
+                ("status", status),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -5340,7 +5868,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_anew_draftorder(self, api_version: str, draft_order: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def create_anew_draftorder(self, api_version: str, draft_order: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Creates a new draft order in a Shopify store, allowing merchants to generate provisional sales transactions for custom or wholesale purchases, manage inventory, and facilitate secure payment processing when the order is finalized.
 
@@ -5361,11 +5889,11 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         request_body_data = None
-        request_body_data = {'draft_order': draft_order}
+        request_body_data = {"draft_order": draft_order}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/draft_orders.json'
+        url = f"{self.base_url}/admin/api/{api_version}/draft_orders.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5374,7 +5902,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def receive_asingle_draftorder(self, api_version: str, draft_order_id: str, fields: str | None=None) -> dict[str, Any]:
+    async def receive_asingle_draftorder(self, api_version: str, draft_order_id: str, fields: str | None = None) -> dict[str, Any]:
         """
         Retrieves a specific draft order by its ID using the GET method, allowing optional filtering by specific fields to customize the response.
 
@@ -5397,8 +5925,8 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if draft_order_id is None:
             raise ValueError("Missing required parameter 'draft_order_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/draft_orders/{draft_order_id}.json'
-        query_params = {k: v for k, v in [('fields', fields)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/draft_orders/{draft_order_id}.json"
+        query_params = {k: v for k, v in [("fields", fields)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -5408,7 +5936,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def modify_an_existing_draftorder(self, api_version: str, draft_order_id: str, draft_order: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def modify_an_existing_draftorder(
+        self, api_version: str, draft_order_id: str, draft_order: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         """
         Updates a specific draft order using the Shopify Draft Order API, allowing for modifications such as changing products, quantities, or applying discounts.
 
@@ -5432,11 +5962,11 @@ class ShopifyApp(APIApplication):
         if draft_order_id is None:
             raise ValueError("Missing required parameter 'draft_order_id'.")
         request_body_data = None
-        request_body_data = {'draft_order': draft_order}
+        request_body_data = {"draft_order": draft_order}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/draft_orders/{draft_order_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/draft_orders/{draft_order_id}.json"
         query_params = {}
-        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5445,7 +5975,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def remove_an_existing_draftorder(self, api_version: str, draft_order_id: str, body_content: str | None=None) -> dict[str, Any]:
+    async def remove_an_existing_draftorder(self, api_version: str, draft_order_id: str, body_content: str | None = None) -> dict[str, Any]:
         """
         Deletes a draft order specified by its ID using the DELETE method, removing it from the system.
 
@@ -5468,7 +5998,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if draft_order_id is None:
             raise ValueError("Missing required parameter 'draft_order_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/draft_orders/{draft_order_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/draft_orders/{draft_order_id}.json"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -5479,7 +6009,14 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def receive_acount_of_all_draftorders(self, api_version: str, since_id: str | None=None, status: str | None=None, updated_at_max: str | None=None, updated_at_min: str | None=None) -> dict[str, Any]:
+    async def receive_acount_of_all_draftorders(
+        self,
+        api_version: str,
+        since_id: str | None = None,
+        status: str | None = None,
+        updated_at_max: str | None = None,
+        updated_at_min: str | None = None,
+    ) -> dict[str, Any]:
         """
         Retrieves the count of draft orders matching specified conditions, such as status, update time, and since ID, using the Shopify API.
 
@@ -5502,8 +6039,12 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/draft_orders/count.json'
-        query_params = {k: v for k, v in [('since_id', since_id), ('status', status), ('updated_at_max', updated_at_max), ('updated_at_min', updated_at_min)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/draft_orders/count.json"
+        query_params = {
+            k: v
+            for k, v in [("since_id", since_id), ("status", status), ("updated_at_max", updated_at_max), ("updated_at_min", updated_at_min)]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -5513,7 +6054,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def send_an_invoice(self, api_version: str, draft_order_id: str, draft_order_invoice: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def send_an_invoice(
+        self, api_version: str, draft_order_id: str, draft_order_invoice: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         """
         Sends an email invoice for a specified draft order using the Shopify Admin API.
 
@@ -5537,11 +6080,11 @@ class ShopifyApp(APIApplication):
         if draft_order_id is None:
             raise ValueError("Missing required parameter 'draft_order_id'.")
         request_body_data = None
-        request_body_data = {'draft_order_invoice': draft_order_invoice}
+        request_body_data = {"draft_order_invoice": draft_order_invoice}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/draft_orders/{draft_order_id}/send_invoice.json'
+        url = f"{self.base_url}/admin/api/{api_version}/draft_orders/{draft_order_id}/send_invoice.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5550,7 +6093,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def complete_adraft_order(self, api_version: str, draft_order_id: str, body_content: str | None=None) -> dict[str, Any]:
+    async def complete_adraft_order(self, api_version: str, draft_order_id: str, body_content: str | None = None) -> dict[str, Any]:
         """
         Completes a Shopify draft order via the API, converting it into a finalized order and returning the result.
 
@@ -5575,9 +6118,9 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'draft_order_id'.")
         request_body_data = None
         request_body_data = body_content
-        url = f'{self.base_url}/admin/api/{api_version}/draft_orders/{draft_order_id}/complete.json'
+        url = f"{self.base_url}/admin/api/{api_version}/draft_orders/{draft_order_id}/complete.json"
         query_params = {}
-        response = await self._aput(url, data=request_body_data, params=query_params, content_type='text/plain')
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="text/plain")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5608,7 +6151,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if order_id is None:
             raise ValueError("Missing required parameter 'order_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/orders/{order_id}/risks.json'
+        url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/risks.json"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -5619,7 +6162,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def creates_an_order_risk_for_an_order(self, api_version: str, order_id: str, risk: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def creates_an_order_risk_for_an_order(
+        self, api_version: str, order_id: str, risk: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         """
         Submits a fraud risk assessment for an order to Shopify's deprecated legacy API, returning a 201 status upon creation.
 
@@ -5643,11 +6188,11 @@ class ShopifyApp(APIApplication):
         if order_id is None:
             raise ValueError("Missing required parameter 'order_id'.")
         request_body_data = None
-        request_body_data = {'risk': risk}
+        request_body_data = {"risk": risk}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/orders/{order_id}/risks.json'
+        url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/risks.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5681,7 +6226,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'order_id'.")
         if risk_id is None:
             raise ValueError("Missing required parameter 'risk_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/orders/{order_id}/risks/{risk_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/risks/{risk_id}.json"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -5692,7 +6237,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def updates_an_order_risk(self, api_version: str, order_id: str, risk_id: str, risk: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def updates_an_order_risk(
+        self, api_version: str, order_id: str, risk_id: str, risk: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         """
         Updates or replaces a specific risk associated with an order in the system using the PUT method.
 
@@ -5719,11 +6266,11 @@ class ShopifyApp(APIApplication):
         if risk_id is None:
             raise ValueError("Missing required parameter 'risk_id'.")
         request_body_data = None
-        request_body_data = {'risk': risk}
+        request_body_data = {"risk": risk}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/orders/{order_id}/risks/{risk_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/risks/{risk_id}.json"
         query_params = {}
-        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5732,7 +6279,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def deletes_an_order_risk_for_an_order(self, api_version: str, order_id: str, risk_id: str, body_content: str | None=None) -> dict[str, Any]:
+    async def deletes_an_order_risk_for_an_order(
+        self, api_version: str, order_id: str, risk_id: str, body_content: str | None = None
+    ) -> dict[str, Any]:
         """
         Deletes a specific risk associated with an order using the API endpoint at "/admin/api/{api_version}/orders/{order_id}/risks/{risk_id}.json" via the DELETE method.
 
@@ -5758,7 +6307,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'order_id'.")
         if risk_id is None:
             raise ValueError("Missing required parameter 'risk_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/orders/{order_id}/risks/{risk_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/risks/{risk_id}.json"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -5769,7 +6318,25 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def retrieves_alist_of_orders(self, api_version: str, ids: str | None=None, name: str | None=None, limit: str | None=None, since_id: str | None=None, created_at_min: str | None=None, created_at_max: str | None=None, updated_at_min: str | None=None, updated_at_max: str | None=None, processed_at_min: str | None=None, processed_at_max: str | None=None, attribution_app_id: str | None=None, status: str | None=None, financial_status: str | None=None, fulfillment_status: str | None=None, fields: str | None=None) -> dict[str, Any]:
+    async def retrieves_alist_of_orders(
+        self,
+        api_version: str,
+        ids: str | None = None,
+        name: str | None = None,
+        limit: str | None = None,
+        since_id: str | None = None,
+        created_at_min: str | None = None,
+        created_at_max: str | None = None,
+        updated_at_min: str | None = None,
+        updated_at_max: str | None = None,
+        processed_at_min: str | None = None,
+        processed_at_max: str | None = None,
+        attribution_app_id: str | None = None,
+        status: str | None = None,
+        financial_status: str | None = None,
+        fulfillment_status: str | None = None,
+        fields: str | None = None,
+    ) -> dict[str, Any]:
         """
         Retrieves a list of Shopify orders using the "GET" method at "/admin/api/{api_version}/orders.json," allowing for filtering by various criteria such as order IDs, creation and update times, status, and more.
 
@@ -5803,8 +6370,28 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/orders.json'
-        query_params = {k: v for k, v in [('ids', ids), ('name', name), ('limit', limit), ('since_id', since_id), ('created_at_min', created_at_min), ('created_at_max', created_at_max), ('updated_at_min', updated_at_min), ('updated_at_max', updated_at_max), ('processed_at_min', processed_at_min), ('processed_at_max', processed_at_max), ('attribution_app_id', attribution_app_id), ('status', status), ('financial_status', financial_status), ('fulfillment_status', fulfillment_status), ('fields', fields)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/orders.json"
+        query_params = {
+            k: v
+            for k, v in [
+                ("ids", ids),
+                ("name", name),
+                ("limit", limit),
+                ("since_id", since_id),
+                ("created_at_min", created_at_min),
+                ("created_at_max", created_at_max),
+                ("updated_at_min", updated_at_min),
+                ("updated_at_max", updated_at_max),
+                ("processed_at_min", processed_at_min),
+                ("processed_at_max", processed_at_max),
+                ("attribution_app_id", attribution_app_id),
+                ("status", status),
+                ("financial_status", financial_status),
+                ("fulfillment_status", fulfillment_status),
+                ("fields", fields),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -5814,7 +6401,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def creates_an_order(self, api_version: str, order: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def creates_an_order(self, api_version: str, order: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Creates a new order in a Shopify store using the Admin API, returning a response with a status code based on the operation's success or failure.
 
@@ -5835,11 +6422,11 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         request_body_data = None
-        request_body_data = {'order': order}
+        request_body_data = {"order": order}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/orders.json'
+        url = f"{self.base_url}/admin/api/{api_version}/orders.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5870,7 +6457,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if order_id is None:
             raise ValueError("Missing required parameter 'order_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/orders/{order_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}.json"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -5881,7 +6468,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def updates_an_order(self, api_version: str, order_id: str, order: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def updates_an_order(self, api_version: str, order_id: str, order: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Updates an existing order or creates a new one at the specified order ID using the PUT method.
 
@@ -5905,11 +6492,11 @@ class ShopifyApp(APIApplication):
         if order_id is None:
             raise ValueError("Missing required parameter 'order_id'.")
         request_body_data = None
-        request_body_data = {'order': order}
+        request_body_data = {"order": order}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/orders/{order_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}.json"
         query_params = {}
-        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5918,7 +6505,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def deletes_an_order(self, api_version: str, order_id: str, body_content: str | None=None) -> dict[str, Any]:
+    async def deletes_an_order(self, api_version: str, order_id: str, body_content: str | None = None) -> dict[str, Any]:
         """
         Deletes a specified order using the provided order ID, returning a successful status if the operation is completed.
 
@@ -5941,7 +6528,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if order_id is None:
             raise ValueError("Missing required parameter 'order_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/orders/{order_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}.json"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -5952,7 +6539,17 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def retrieves_an_order_count(self, api_version: str, created_at_min: str | None=None, created_at_max: str | None=None, updated_at_min: str | None=None, updated_at_max: str | None=None, status: str | None=None, financial_status: str | None=None, fulfillment_status: str | None=None) -> dict[str, Any]:
+    async def retrieves_an_order_count(
+        self,
+        api_version: str,
+        created_at_min: str | None = None,
+        created_at_max: str | None = None,
+        updated_at_min: str | None = None,
+        updated_at_max: str | None = None,
+        status: str | None = None,
+        financial_status: str | None = None,
+        fulfillment_status: str | None = None,
+    ) -> dict[str, Any]:
         """
         Retrieves the count of orders from a Shopify store with optional filters for date ranges, status, and fulfillment/financial states.
 
@@ -5978,8 +6575,20 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/orders/count.json'
-        query_params = {k: v for k, v in [('created_at_min', created_at_min), ('created_at_max', created_at_max), ('updated_at_min', updated_at_min), ('updated_at_max', updated_at_max), ('status', status), ('financial_status', financial_status), ('fulfillment_status', fulfillment_status)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/orders/count.json"
+        query_params = {
+            k: v
+            for k, v in [
+                ("created_at_min", created_at_min),
+                ("created_at_max", created_at_max),
+                ("updated_at_min", updated_at_min),
+                ("updated_at_max", updated_at_max),
+                ("status", status),
+                ("financial_status", financial_status),
+                ("fulfillment_status", fulfillment_status),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -5989,7 +6598,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def closes_an_order(self, api_version: str, order_id: str, request_body: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def closes_an_order(self, api_version: str, order_id: str, request_body: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Closes a specified order in the admin API by its ID using the specified API version and returns a success status.
 
@@ -6014,9 +6623,9 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'order_id'.")
         request_body_data = None
         request_body_data = request_body if request_body is not None else {}
-        url = f'{self.base_url}/admin/api/{api_version}/orders/{order_id}/close.json'
+        url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/close.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6025,7 +6634,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def re_opens_aclosed_order(self, api_version: str, order_id: str, request_body: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def re_opens_aclosed_order(self, api_version: str, order_id: str, request_body: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Opens an order with the specified ID using the POST method and returns a successful response upon completion.
 
@@ -6050,9 +6659,9 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'order_id'.")
         request_body_data = None
         request_body_data = request_body if request_body is not None else {}
-        url = f'{self.base_url}/admin/api/{api_version}/orders/{order_id}/open.json'
+        url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/open.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6061,7 +6670,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def cancels_an_order(self, api_version: str, order_id: str, amount: str | None=None, currency: str | None=None, note: str | None=None) -> dict[str, Any]:
+    async def cancels_an_order(
+        self, api_version: str, order_id: str, amount: str | None = None, currency: str | None = None, note: str | None = None
+    ) -> dict[str, Any]:
         """
         Cancels a specified order using a POST request and returns status codes for success (200) or invalid request (422).
 
@@ -6087,11 +6698,11 @@ class ShopifyApp(APIApplication):
         if order_id is None:
             raise ValueError("Missing required parameter 'order_id'.")
         request_body_data = None
-        request_body_data = {'amount': amount, 'currency': currency, 'note': note}
+        request_body_data = {"amount": amount, "currency": currency, "note": note}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/orders/{order_id}/cancel.json'
+        url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/cancel.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6100,7 +6711,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def list_order_refunds(self, api_version: str, order_id: str, limit: str | None=None, fields: str | None=None, in_shop_currency: str | None=None) -> dict[str, Any]:
+    async def list_order_refunds(
+        self, api_version: str, order_id: str, limit: str | None = None, fields: str | None = None, in_shop_currency: str | None = None
+    ) -> dict[str, Any]:
         """
         Retrieves a list of refunds for a specified order, allowing optional filtering by the number of results, specific fields, and currency.
 
@@ -6125,8 +6738,8 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if order_id is None:
             raise ValueError("Missing required parameter 'order_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/orders/{order_id}/refunds.json'
-        query_params = {k: v for k, v in [('limit', limit), ('fields', fields), ('in_shop_currency', in_shop_currency)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/refunds.json"
+        query_params = {k: v for k, v in [("limit", limit), ("fields", fields), ("in_shop_currency", in_shop_currency)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -6136,7 +6749,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def creates_arefund(self, api_version: str, order_id: str, refund: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def creates_arefund(self, api_version: str, order_id: str, refund: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Creates a refund for an order using the specified order ID, allowing merchants to process partial or full refunds through the API.
 
@@ -6160,11 +6773,11 @@ class ShopifyApp(APIApplication):
         if order_id is None:
             raise ValueError("Missing required parameter 'order_id'.")
         request_body_data = None
-        request_body_data = {'refund': refund}
+        request_body_data = {"refund": refund}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/orders/{order_id}/refunds.json'
+        url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/refunds.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6173,7 +6786,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def retrieves_aspecific_refund(self, api_version: str, order_id: str, refund_id: str, fields: str | None=None, in_shop_currency: str | None=None) -> dict[str, Any]:
+    async def retrieves_aspecific_refund(
+        self, api_version: str, order_id: str, refund_id: str, fields: str | None = None, in_shop_currency: str | None = None
+    ) -> dict[str, Any]:
         """
         Retrieves a specific refund associated with an order by its ID, allowing customization of the response with optional fields and currency settings.
 
@@ -6200,8 +6815,8 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'order_id'.")
         if refund_id is None:
             raise ValueError("Missing required parameter 'refund_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/orders/{order_id}/refunds/{refund_id}.json'
-        query_params = {k: v for k, v in [('fields', fields), ('in_shop_currency', in_shop_currency)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/refunds/{refund_id}.json"
+        query_params = {k: v for k, v in [("fields", fields), ("in_shop_currency", in_shop_currency)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -6211,7 +6826,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def calculates_arefund(self, api_version: str, order_id: str, refund: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def calculates_arefund(self, api_version: str, order_id: str, refund: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Calculates refund amounts for an order, including line items, shipping, and taxes, based on specified criteria.
 
@@ -6235,11 +6850,11 @@ class ShopifyApp(APIApplication):
         if order_id is None:
             raise ValueError("Missing required parameter 'order_id'.")
         request_body_data = None
-        request_body_data = {'refund': refund}
+        request_body_data = {"refund": refund}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/orders/{order_id}/refunds/calculate.json'
+        url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/refunds/calculate.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6248,7 +6863,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def retrieves_alist_of_transactions(self, api_version: str, order_id: str, since_id: str | None=None, fields: str | None=None, in_shop_currency: str | None=None) -> dict[str, Any]:
+    async def retrieves_alist_of_transactions(
+        self, api_version: str, order_id: str, since_id: str | None = None, fields: str | None = None, in_shop_currency: str | None = None
+    ) -> dict[str, Any]:
         """
         Retrieves a list of transactions for a specified order using the Shopify API, optionally filtered by since_id, specified fields, and currency.
 
@@ -6273,8 +6890,10 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if order_id is None:
             raise ValueError("Missing required parameter 'order_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/orders/{order_id}/transactions.json'
-        query_params = {k: v for k, v in [('since_id', since_id), ('fields', fields), ('in_shop_currency', in_shop_currency)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/transactions.json"
+        query_params = {
+            k: v for k, v in [("since_id", since_id), ("fields", fields), ("in_shop_currency", in_shop_currency)] if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -6284,7 +6903,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def creates_atransaction_for_an_order(self, api_version: str, order_id: str, transaction: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def creates_atransaction_for_an_order(
+        self, api_version: str, order_id: str, transaction: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         """
         Creates a new transaction for a specified order using the Shopify Admin API and returns the result with a 201 Created status.
 
@@ -6308,11 +6929,11 @@ class ShopifyApp(APIApplication):
         if order_id is None:
             raise ValueError("Missing required parameter 'order_id'.")
         request_body_data = None
-        request_body_data = {'transaction': transaction}
+        request_body_data = {"transaction": transaction}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/orders/{order_id}/transactions.json'
+        url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/transactions.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6343,7 +6964,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if order_id is None:
             raise ValueError("Missing required parameter 'order_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/orders/{order_id}/transactions/count.json'
+        url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/transactions/count.json"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -6354,7 +6975,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def retrieves_aspecific_transaction(self, api_version: str, order_id: str, transaction_id: str, fields: str | None=None, in_shop_currency: str | None=None) -> dict[str, Any]:
+    async def retrieves_aspecific_transaction(
+        self, api_version: str, order_id: str, transaction_id: str, fields: str | None = None, in_shop_currency: str | None = None
+    ) -> dict[str, Any]:
         """
         Retrieves a specific transaction from an order, optionally filtering response fields and currency format using query parameters.
 
@@ -6381,8 +7004,8 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'order_id'.")
         if transaction_id is None:
             raise ValueError("Missing required parameter 'transaction_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/orders/{order_id}/transactions/{transaction_id}.json'
-        query_params = {k: v for k, v in [('fields', fields), ('in_shop_currency', in_shop_currency)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/transactions/{transaction_id}.json"
+        query_params = {k: v for k, v in [("fields", fields), ("in_shop_currency", in_shop_currency)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -6392,7 +7015,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def retrieves_alist_of_gift_cards(self, api_version: str, status: str | None=None, limit: str | None=None, since_id: str | None=None, fields: str | None=None) -> dict[str, Any]:
+    async def retrieves_alist_of_gift_cards(
+        self, api_version: str, status: str | None = None, limit: str | None = None, since_id: str | None = None, fields: str | None = None
+    ) -> dict[str, Any]:
         """
         Retrieves a list of gift cards in JSON format, allowing filtering by status, limiting the number of results, specifying a starting point with an ID, and selecting specific fields for the response.
 
@@ -6415,8 +7040,10 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/gift_cards.json'
-        query_params = {k: v for k, v in [('status', status), ('limit', limit), ('since_id', since_id), ('fields', fields)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/gift_cards.json"
+        query_params = {
+            k: v for k, v in [("status", status), ("limit", limit), ("since_id", since_id), ("fields", fields)] if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -6426,7 +7053,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def creates_agift_card(self, api_version: str, gift_card: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def creates_agift_card(self, api_version: str, gift_card: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Creates a new gift card and returns the created resource with a 201 status code.
 
@@ -6447,11 +7074,11 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         request_body_data = None
-        request_body_data = {'gift_card': gift_card}
+        request_body_data = {"gift_card": gift_card}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/gift_cards.json'
+        url = f"{self.base_url}/admin/api/{api_version}/gift_cards.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6482,7 +7109,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if gift_card_id is None:
             raise ValueError("Missing required parameter 'gift_card_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/gift_cards/{gift_card_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/gift_cards/{gift_card_id}.json"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -6493,7 +7120,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def updates_an_existing_gift_card(self, api_version: str, gift_card_id: str, gift_card: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def updates_an_existing_gift_card(
+        self, api_version: str, gift_card_id: str, gift_card: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         """
         Updates the details of a specific gift card using the PUT method at the "/admin/api/{api_version}/gift_cards/{gift_card_id}.json" endpoint.
 
@@ -6517,11 +7146,11 @@ class ShopifyApp(APIApplication):
         if gift_card_id is None:
             raise ValueError("Missing required parameter 'gift_card_id'.")
         request_body_data = None
-        request_body_data = {'gift_card': gift_card}
+        request_body_data = {"gift_card": gift_card}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/gift_cards/{gift_card_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/gift_cards/{gift_card_id}.json"
         query_params = {}
-        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6530,7 +7159,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def retrieves_acount_of_gift_cards(self, api_version: str, status: str | None=None) -> dict[str, Any]:
+    async def retrieves_acount_of_gift_cards(self, api_version: str, status: str | None = None) -> dict[str, Any]:
         """
         Retrieves the count of gift cards filtered by status using the Shopify Admin REST API.
 
@@ -6550,8 +7179,8 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/gift_cards/count.json'
-        query_params = {k: v for k, v in [('status', status)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/gift_cards/count.json"
+        query_params = {k: v for k, v in [("status", status)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -6561,7 +7190,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def disables_agift_card(self, api_version: str, gift_card_id: str, gift_card: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def disables_agift_card(self, api_version: str, gift_card_id: str, gift_card: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Deactivates a gift card and invalidates its remaining balance via a POST request.
 
@@ -6585,11 +7214,11 @@ class ShopifyApp(APIApplication):
         if gift_card_id is None:
             raise ValueError("Missing required parameter 'gift_card_id'.")
         request_body_data = None
-        request_body_data = {'gift_card': gift_card}
+        request_body_data = {"gift_card": gift_card}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/gift_cards/{gift_card_id}/disable.json'
+        url = f"{self.base_url}/admin/api/{api_version}/gift_cards/{gift_card_id}/disable.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6598,7 +7227,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def searches_for_gift_cards(self, api_version: str, order: str | None=None, query: str | None=None, limit: str | None=None, fields: str | None=None) -> dict[str, Any]:
+    async def searches_for_gift_cards(
+        self, api_version: str, order: str | None = None, query: str | None = None, limit: str | None = None, fields: str | None = None
+    ) -> dict[str, Any]:
         """
         Retrieves a list of gift cards matching specified criteria such as search query, order, limit, and requested fields.
 
@@ -6621,8 +7252,8 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/gift_cards/search.json'
-        query_params = {k: v for k, v in [('order', order), ('query', query), ('limit', limit), ('fields', fields)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/gift_cards/search.json"
+        query_params = {k: v for k, v in [("order", order), ("query", query), ("limit", limit), ("fields", fields)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -6651,7 +7282,7 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/users.json'
+        url = f"{self.base_url}/admin/api/{api_version}/users.json"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -6684,7 +7315,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if user_id is None:
             raise ValueError("Missing required parameter 'user_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/users/{user_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/users/{user_id}.json"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -6714,7 +7345,7 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/users/current.json'
+        url = f"{self.base_url}/admin/api/{api_version}/users/current.json"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -6725,7 +7356,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def retrieves_alist_of_collects(self, api_version: str, limit: str | None=None, since_id: str | None=None, fields: str | None=None) -> dict[str, Any]:
+    async def retrieves_alist_of_collects(
+        self, api_version: str, limit: str | None = None, since_id: str | None = None, fields: str | None = None
+    ) -> dict[str, Any]:
         """
         Retrieves a list of data collections in JSON format, allowing filtering by limit, since_id, and specific fields.
 
@@ -6747,8 +7380,8 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/collects.json'
-        query_params = {k: v for k, v in [('limit', limit), ('since_id', since_id), ('fields', fields)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/collects.json"
+        query_params = {k: v for k, v in [("limit", limit), ("since_id", since_id), ("fields", fields)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -6758,7 +7391,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_collects_post(self, api_version: str, collect: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def create_collects_post(self, api_version: str, collect: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Creates a new collection in a store using the POST method, returning a status message upon successful creation or an error response if the request is invalid.
 
@@ -6779,11 +7412,11 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         request_body_data = None
-        request_body_data = {'collect': collect}
+        request_body_data = {"collect": collect}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/collects.json'
+        url = f"{self.base_url}/admin/api/{api_version}/collects.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6792,7 +7425,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_collect_details(self, api_version: str, collect_id: str, fields: str | None=None) -> dict[str, Any]:
+    async def get_collect_details(self, api_version: str, collect_id: str, fields: str | None = None) -> dict[str, Any]:
         """
         Retrieves a specific collect entry from the Shopify admin API, returning JSON data with fields optionally filtered by the request.
 
@@ -6815,8 +7448,8 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if collect_id is None:
             raise ValueError("Missing required parameter 'collect_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/collects/{collect_id}.json'
-        query_params = {k: v for k, v in [('fields', fields)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/collects/{collect_id}.json"
+        query_params = {k: v for k, v in [("fields", fields)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -6826,7 +7459,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def removes_aproduct_from_acollection(self, api_version: str, collect_id: str, body_content: str | None=None) -> dict[str, Any]:
+    async def removes_aproduct_from_acollection(self, api_version: str, collect_id: str, body_content: str | None = None) -> dict[str, Any]:
         """
         Deletes a specific collect entry by ID using the specified API version and returns a success status.
 
@@ -6849,7 +7482,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if collect_id is None:
             raise ValueError("Missing required parameter 'collect_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/collects/{collect_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/collects/{collect_id}.json"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -6879,7 +7512,7 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/collects/count.json'
+        url = f"{self.base_url}/admin/api/{api_version}/collects/count.json"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -6890,7 +7523,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def retrieves_asingle_collection(self, api_version: str, collection_id: str, fields: str | None=None) -> dict[str, Any]:
+    async def retrieves_asingle_collection(self, api_version: str, collection_id: str, fields: str | None = None) -> dict[str, Any]:
         """
         Retrieves information about a specific collection using the "GET" method, allowing optional filtering through the "fields" query parameter.
 
@@ -6913,8 +7546,8 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if collection_id is None:
             raise ValueError("Missing required parameter 'collection_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/collections/{collection_id}.json'
-        query_params = {k: v for k, v in [('fields', fields)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/collections/{collection_id}.json"
+        query_params = {k: v for k, v in [("fields", fields)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -6924,7 +7557,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def list_collection_products(self, api_version: str, collection_id: str, limit: str | None=None) -> dict[str, Any]:
+    async def list_collection_products(self, api_version: str, collection_id: str, limit: str | None = None) -> dict[str, Any]:
         """
         Retrieves a list of products from a specific collection using the "GET" method, allowing optional filtering by a limit parameter.
 
@@ -6947,8 +7580,8 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if collection_id is None:
             raise ValueError("Missing required parameter 'collection_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/collections/{collection_id}/products.json'
-        query_params = {k: v for k, v in [('limit', limit)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/collections/{collection_id}/products.json"
+        query_params = {k: v for k, v in [("limit", limit)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -6958,7 +7591,22 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def list_custom_collections(self, api_version: str, limit: str | None=None, ids: str | None=None, since_id: str | None=None, title: str | None=None, product_id: str | None=None, handle: str | None=None, updated_at_min: str | None=None, updated_at_max: str | None=None, published_at_min: str | None=None, published_at_max: str | None=None, published_status: str | None=None, fields: str | None=None) -> dict[str, Any]:
+    async def list_custom_collections(
+        self,
+        api_version: str,
+        limit: str | None = None,
+        ids: str | None = None,
+        since_id: str | None = None,
+        title: str | None = None,
+        product_id: str | None = None,
+        handle: str | None = None,
+        updated_at_min: str | None = None,
+        updated_at_max: str | None = None,
+        published_at_min: str | None = None,
+        published_at_max: str | None = None,
+        published_status: str | None = None,
+        fields: str | None = None,
+    ) -> dict[str, Any]:
         """
         Retrieves a paginated list of custom collections (manually curated product groupings) with optional filtering by parameters like IDs, titles, product associations, and publication status.
 
@@ -6989,8 +7637,25 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/custom_collections.json'
-        query_params = {k: v for k, v in [('limit', limit), ('ids', ids), ('since_id', since_id), ('title', title), ('product_id', product_id), ('handle', handle), ('updated_at_min', updated_at_min), ('updated_at_max', updated_at_max), ('published_at_min', published_at_min), ('published_at_max', published_at_max), ('published_status', published_status), ('fields', fields)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/custom_collections.json"
+        query_params = {
+            k: v
+            for k, v in [
+                ("limit", limit),
+                ("ids", ids),
+                ("since_id", since_id),
+                ("title", title),
+                ("product_id", product_id),
+                ("handle", handle),
+                ("updated_at_min", updated_at_min),
+                ("updated_at_max", updated_at_max),
+                ("published_at_min", published_at_min),
+                ("published_at_max", published_at_max),
+                ("published_status", published_status),
+                ("fields", fields),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -7000,7 +7665,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def creates_acustom_collection(self, api_version: str, custom_collection: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def creates_acustom_collection(self, api_version: str, custom_collection: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Creates a new custom collection in a Shopify store using the API, allowing merchants to group products together for easier navigation.
 
@@ -7021,11 +7686,11 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         request_body_data = None
-        request_body_data = {'custom_collection': custom_collection}
+        request_body_data = {"custom_collection": custom_collection}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/custom_collections.json'
+        url = f"{self.base_url}/admin/api/{api_version}/custom_collections.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7034,7 +7699,17 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_custom_collections_count(self, api_version: str, title: str | None=None, product_id: str | None=None, updated_at_min: str | None=None, updated_at_max: str | None=None, published_at_min: str | None=None, published_at_max: str | None=None, published_status: str | None=None) -> dict[str, Any]:
+    async def get_custom_collections_count(
+        self,
+        api_version: str,
+        title: str | None = None,
+        product_id: str | None = None,
+        updated_at_min: str | None = None,
+        updated_at_max: str | None = None,
+        published_at_min: str | None = None,
+        published_at_max: str | None = None,
+        published_status: str | None = None,
+    ) -> dict[str, Any]:
         """
         Retrieves a count of custom collections in a Shopify store, optionally filtered by title, product association, or publication timestamps.
 
@@ -7060,8 +7735,20 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/custom_collections/count.json'
-        query_params = {k: v for k, v in [('title', title), ('product_id', product_id), ('updated_at_min', updated_at_min), ('updated_at_max', updated_at_max), ('published_at_min', published_at_min), ('published_at_max', published_at_max), ('published_status', published_status)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/custom_collections/count.json"
+        query_params = {
+            k: v
+            for k, v in [
+                ("title", title),
+                ("product_id", product_id),
+                ("updated_at_min", updated_at_min),
+                ("updated_at_max", updated_at_max),
+                ("published_at_min", published_at_min),
+                ("published_at_max", published_at_max),
+                ("published_status", published_status),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -7071,7 +7758,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_custom_collection_by_id(self, api_version: str, custom_collection_id: str, fields: str | None=None) -> dict[str, Any]:
+    async def get_custom_collection_by_id(self, api_version: str, custom_collection_id: str, fields: str | None = None) -> dict[str, Any]:
         """
         Retrieves a specific custom collection and optionally includes specified fields in the response, using the Shopify API.
 
@@ -7094,8 +7781,8 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if custom_collection_id is None:
             raise ValueError("Missing required parameter 'custom_collection_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/custom_collections/{custom_collection_id}.json'
-        query_params = {k: v for k, v in [('fields', fields)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/custom_collections/{custom_collection_id}.json"
+        query_params = {k: v for k, v in [("fields", fields)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -7105,7 +7792,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_custom_collection_by_id(self, api_version: str, custom_collection_id: str, custom_collection: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def update_custom_collection_by_id(
+        self, api_version: str, custom_collection_id: str, custom_collection: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         """
         Updates an existing custom collection by replacing it with the new data provided in the request body, allowing modifications to its attributes such as title and collected products.
 
@@ -7129,11 +7818,11 @@ class ShopifyApp(APIApplication):
         if custom_collection_id is None:
             raise ValueError("Missing required parameter 'custom_collection_id'.")
         request_body_data = None
-        request_body_data = {'custom_collection': custom_collection}
+        request_body_data = {"custom_collection": custom_collection}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/custom_collections/{custom_collection_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/custom_collections/{custom_collection_id}.json"
         query_params = {}
-        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7142,7 +7831,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def deletes_acustom_collection(self, api_version: str, custom_collection_id: str, body_content: str | None=None) -> dict[str, Any]:
+    async def deletes_acustom_collection(
+        self, api_version: str, custom_collection_id: str, body_content: str | None = None
+    ) -> dict[str, Any]:
         """
         Deletes a custom product collection in Shopify using the specified collection ID.
 
@@ -7165,7 +7856,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if custom_collection_id is None:
             raise ValueError("Missing required parameter 'custom_collection_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/custom_collections/{custom_collection_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/custom_collections/{custom_collection_id}.json"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -7176,7 +7867,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def receive_alist_of_all_product_images(self, api_version: str, product_id: str, since_id: str | None=None, fields: str | None=None) -> dict[str, Any]:
+    async def receive_alist_of_all_product_images(
+        self, api_version: str, product_id: str, since_id: str | None = None, fields: str | None = None
+    ) -> dict[str, Any]:
         """
         Retrieves a list of product images for a specified product using the "GET" method at the "/admin/api/{api_version}/products/{product_id}/images.json" path, allowing optional filters by "since_id" and customizable fields.
 
@@ -7200,8 +7893,8 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if product_id is None:
             raise ValueError("Missing required parameter 'product_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/products/{product_id}/images.json'
-        query_params = {k: v for k, v in [('since_id', since_id), ('fields', fields)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/products/{product_id}/images.json"
+        query_params = {k: v for k, v in [("since_id", since_id), ("fields", fields)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -7211,7 +7904,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_anew_product_image(self, api_version: str, product_id: str, image: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def create_anew_product_image(self, api_version: str, product_id: str, image: dict[str, Any] | None = None) -> dict[str, Any]:
         """
                 Creates and manages product images by uploading new images for a specified product using the POST method.
 
@@ -7425,11 +8118,11 @@ class ShopifyApp(APIApplication):
         if product_id is None:
             raise ValueError("Missing required parameter 'product_id'.")
         request_body_data = None
-        request_body_data = {'image': image}
+        request_body_data = {"image": image}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/products/{product_id}/images.json'
+        url = f"{self.base_url}/admin/api/{api_version}/products/{product_id}/images.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7438,7 +8131,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_product_image_count(self, api_version: str, product_id: str, since_id: str | None=None) -> dict[str, Any]:
+    async def get_product_image_count(self, api_version: str, product_id: str, since_id: str | None = None) -> dict[str, Any]:
         """
         Retrieves the count of product images associated with a specific product using the GET method, optionally filtering by a since_id parameter.
 
@@ -7461,8 +8154,8 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if product_id is None:
             raise ValueError("Missing required parameter 'product_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/products/{product_id}/images/count.json'
-        query_params = {k: v for k, v in [('since_id', since_id)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/products/{product_id}/images/count.json"
+        query_params = {k: v for k, v in [("since_id", since_id)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -7472,7 +8165,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def receive_asingle_product_image(self, api_version: str, product_id: str, image_id: str, fields: str | None=None) -> dict[str, Any]:
+    async def receive_asingle_product_image(
+        self, api_version: str, product_id: str, image_id: str, fields: str | None = None
+    ) -> dict[str, Any]:
         """
         Retrieves a specific product image by ID with optional field selection for the API version.
 
@@ -7498,8 +8193,8 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'product_id'.")
         if image_id is None:
             raise ValueError("Missing required parameter 'image_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/products/{product_id}/images/{image_id}.json'
-        query_params = {k: v for k, v in [('fields', fields)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/products/{product_id}/images/{image_id}.json"
+        query_params = {k: v for k, v in [("fields", fields)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -7509,7 +8204,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def modify_an_existing_product_image(self, api_version: str, product_id: str, image_id: str, image: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def modify_an_existing_product_image(
+        self, api_version: str, product_id: str, image_id: str, image: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         """
         Updates an existing product image specified by the product ID and image ID using the PUT method, allowing for modifications to image attributes such as source or metadata.
 
@@ -7536,11 +8233,11 @@ class ShopifyApp(APIApplication):
         if image_id is None:
             raise ValueError("Missing required parameter 'image_id'.")
         request_body_data = None
-        request_body_data = {'image': image}
+        request_body_data = {"image": image}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/products/{product_id}/images/{image_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/products/{product_id}/images/{image_id}.json"
         query_params = {}
-        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7549,7 +8246,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def remove_an_existing_product_image(self, api_version: str, product_id: str, image_id: str, body_content: str | None=None) -> dict[str, Any]:
+    async def remove_an_existing_product_image(
+        self, api_version: str, product_id: str, image_id: str, body_content: str | None = None
+    ) -> dict[str, Any]:
         """
         Deletes a specific product image identified by the `image_id` from a product specified by the `product_id` using the HTTP DELETE method.
 
@@ -7575,7 +8274,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'product_id'.")
         if image_id is None:
             raise ValueError("Missing required parameter 'image_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/products/{product_id}/images/{image_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/products/{product_id}/images/{image_id}.json"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -7586,7 +8285,15 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def list_product_variants(self, api_version: str, product_id: str, limit: str | None=None, presentment_currencies: str | None=None, since_id: str | None=None, fields: str | None=None) -> dict[str, Any]:
+    async def list_product_variants(
+        self,
+        api_version: str,
+        product_id: str,
+        limit: str | None = None,
+        presentment_currencies: str | None = None,
+        since_id: str | None = None,
+        fields: str | None = None,
+    ) -> dict[str, Any]:
         """
         Retrieves a list of product variants for a specified product with optional pagination, currency display, and field filtering.
 
@@ -7612,8 +8319,12 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if product_id is None:
             raise ValueError("Missing required parameter 'product_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/products/{product_id}/variants.json'
-        query_params = {k: v for k, v in [('limit', limit), ('presentment_currencies', presentment_currencies), ('since_id', since_id), ('fields', fields)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/products/{product_id}/variants.json"
+        query_params = {
+            k: v
+            for k, v in [("limit", limit), ("presentment_currencies", presentment_currencies), ("since_id", since_id), ("fields", fields)]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -7623,7 +8334,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_anew_product_variant(self, api_version: str, product_id: str, variant: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def create_anew_product_variant(self, api_version: str, product_id: str, variant: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Creates a new product variant within a specified product using the POST method, returning a successful response when the variant is added.
 
@@ -7647,11 +8358,11 @@ class ShopifyApp(APIApplication):
         if product_id is None:
             raise ValueError("Missing required parameter 'product_id'.")
         request_body_data = None
-        request_body_data = {'variant': variant}
+        request_body_data = {"variant": variant}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/products/{product_id}/variants.json'
+        url = f"{self.base_url}/admin/api/{api_version}/products/{product_id}/variants.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7682,7 +8393,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if product_id is None:
             raise ValueError("Missing required parameter 'product_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/products/{product_id}/variants/count.json'
+        url = f"{self.base_url}/admin/api/{api_version}/products/{product_id}/variants/count.json"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -7693,7 +8404,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def receive_asingle_product_variant(self, api_version: str, variant_id: str, fields: str | None=None) -> dict[str, Any]:
+    async def receive_asingle_product_variant(self, api_version: str, variant_id: str, fields: str | None = None) -> dict[str, Any]:
         """
         Retrieves variant details using the specified API version and variant ID, optionally filtering by specified fields.
 
@@ -7716,8 +8427,8 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if variant_id is None:
             raise ValueError("Missing required parameter 'variant_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/variants/{variant_id}.json'
-        query_params = {k: v for k, v in [('fields', fields)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/variants/{variant_id}.json"
+        query_params = {k: v for k, v in [("fields", fields)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -7727,7 +8438,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def modify_an_existing_product_variant(self, api_version: str, variant_id: str, variant: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def modify_an_existing_product_variant(
+        self, api_version: str, variant_id: str, variant: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         """
         Updates the variant with the specified ID in the API, replacing its current state with the data provided in the request body.
 
@@ -7751,11 +8464,11 @@ class ShopifyApp(APIApplication):
         if variant_id is None:
             raise ValueError("Missing required parameter 'variant_id'.")
         request_body_data = None
-        request_body_data = {'variant': variant}
+        request_body_data = {"variant": variant}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/variants/{variant_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/variants/{variant_id}.json"
         query_params = {}
-        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7764,7 +8477,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def remove_an_existing_product_variant(self, api_version: str, product_id: str, variant_id: str, body_content: str | None=None) -> dict[str, Any]:
+    async def remove_an_existing_product_variant(
+        self, api_version: str, product_id: str, variant_id: str, body_content: str | None = None
+    ) -> dict[str, Any]:
         """
         Deletes a product variant using the Shopify Admin API.
 
@@ -7790,7 +8505,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'product_id'.")
         if variant_id is None:
             raise ValueError("Missing required parameter 'variant_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/products/{product_id}/variants/{variant_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/products/{product_id}/variants/{variant_id}.json"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -7801,7 +8516,27 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def retrieves_alist_of_products(self, api_version: str, ids: str | None=None, limit: str | None=None, since_id: str | None=None, title: str | None=None, vendor: str | None=None, handle: str | None=None, product_type: str | None=None, collection_id: str | None=None, created_at_min: str | None=None, created_at_max: str | None=None, updated_at_min: str | None=None, updated_at_max: str | None=None, published_at_min: str | None=None, published_at_max: str | None=None, published_status: str | None=None, fields: str | None=None, presentment_currencies: str | None=None) -> dict[str, Any]:
+    async def retrieves_alist_of_products(
+        self,
+        api_version: str,
+        ids: str | None = None,
+        limit: str | None = None,
+        since_id: str | None = None,
+        title: str | None = None,
+        vendor: str | None = None,
+        handle: str | None = None,
+        product_type: str | None = None,
+        collection_id: str | None = None,
+        created_at_min: str | None = None,
+        created_at_max: str | None = None,
+        updated_at_min: str | None = None,
+        updated_at_max: str | None = None,
+        published_at_min: str | None = None,
+        published_at_max: str | None = None,
+        published_status: str | None = None,
+        fields: str | None = None,
+        presentment_currencies: str | None = None,
+    ) -> dict[str, Any]:
         """
         Retrieves a list of products from a Shopify store using the Admin API, allowing for filtering based on parameters such as product IDs, title, vendor, and creation or publication dates.
 
@@ -7837,8 +8572,30 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/products.json'
-        query_params = {k: v for k, v in [('ids', ids), ('limit', limit), ('since_id', since_id), ('title', title), ('vendor', vendor), ('handle', handle), ('product_type', product_type), ('collection_id', collection_id), ('created_at_min', created_at_min), ('created_at_max', created_at_max), ('updated_at_min', updated_at_min), ('updated_at_max', updated_at_max), ('published_at_min', published_at_min), ('published_at_max', published_at_max), ('published_status', published_status), ('fields', fields), ('presentment_currencies', presentment_currencies)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/products.json"
+        query_params = {
+            k: v
+            for k, v in [
+                ("ids", ids),
+                ("limit", limit),
+                ("since_id", since_id),
+                ("title", title),
+                ("vendor", vendor),
+                ("handle", handle),
+                ("product_type", product_type),
+                ("collection_id", collection_id),
+                ("created_at_min", created_at_min),
+                ("created_at_max", created_at_max),
+                ("updated_at_min", updated_at_min),
+                ("updated_at_max", updated_at_max),
+                ("published_at_min", published_at_min),
+                ("published_at_max", published_at_max),
+                ("published_status", published_status),
+                ("fields", fields),
+                ("presentment_currencies", presentment_currencies),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -7848,7 +8605,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def creates_anew_product(self, api_version: str, product: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def creates_anew_product(self, api_version: str, product: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Creates a new product in Shopify via the REST Admin API and returns the product details upon successful creation.
 
@@ -7869,11 +8626,11 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         request_body_data = None
-        request_body_data = {'product': product}
+        request_body_data = {"product": product}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/products.json'
+        url = f"{self.base_url}/admin/api/{api_version}/products.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7882,7 +8639,20 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def retrieves_acount_of_products(self, api_version: str, vendor: str | None=None, product_type: str | None=None, collection_id: str | None=None, created_at_min: str | None=None, created_at_max: str | None=None, updated_at_min: str | None=None, updated_at_max: str | None=None, published_at_min: str | None=None, published_at_max: str | None=None, published_status: str | None=None) -> dict[str, Any]:
+    async def retrieves_acount_of_products(
+        self,
+        api_version: str,
+        vendor: str | None = None,
+        product_type: str | None = None,
+        collection_id: str | None = None,
+        created_at_min: str | None = None,
+        created_at_max: str | None = None,
+        updated_at_min: str | None = None,
+        updated_at_max: str | None = None,
+        published_at_min: str | None = None,
+        published_at_max: str | None = None,
+        published_status: str | None = None,
+    ) -> dict[str, Any]:
         """
         Retrieves the count of products in a Shopify store using the specified API version, allowing optional filtering by vendor, product type, collection ID, creation date, update date, publication date, and publication status.
 
@@ -7911,8 +8681,23 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/products/count.json'
-        query_params = {k: v for k, v in [('vendor', vendor), ('product_type', product_type), ('collection_id', collection_id), ('created_at_min', created_at_min), ('created_at_max', created_at_max), ('updated_at_min', updated_at_min), ('updated_at_max', updated_at_max), ('published_at_min', published_at_min), ('published_at_max', published_at_max), ('published_status', published_status)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/products/count.json"
+        query_params = {
+            k: v
+            for k, v in [
+                ("vendor", vendor),
+                ("product_type", product_type),
+                ("collection_id", collection_id),
+                ("created_at_min", created_at_min),
+                ("created_at_max", created_at_max),
+                ("updated_at_min", updated_at_min),
+                ("updated_at_max", updated_at_max),
+                ("published_at_min", published_at_min),
+                ("published_at_max", published_at_max),
+                ("published_status", published_status),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -7922,7 +8707,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def retrieves_asingle_product(self, api_version: str, product_id: str, fields: str | None=None) -> dict[str, Any]:
+    async def retrieves_asingle_product(self, api_version: str, product_id: str, fields: str | None = None) -> dict[str, Any]:
         """
         Retrieves product details in JSON format for a specified product using the "GET" method, allowing optional filtering by specifying fields via query parameters.
 
@@ -7945,8 +8730,8 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if product_id is None:
             raise ValueError("Missing required parameter 'product_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/products/{product_id}.json'
-        query_params = {k: v for k, v in [('fields', fields)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/products/{product_id}.json"
+        query_params = {k: v for k, v in [("fields", fields)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -7956,7 +8741,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def updates_aproduct(self, api_version: str, product_id: str, product: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def updates_aproduct(self, api_version: str, product_id: str, product: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Replaces an entire product entry in the admin system with a new version, returning a success status upon completion.
 
@@ -7980,11 +8765,11 @@ class ShopifyApp(APIApplication):
         if product_id is None:
             raise ValueError("Missing required parameter 'product_id'.")
         request_body_data = None
-        request_body_data = {'product': product}
+        request_body_data = {"product": product}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/products/{product_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/products/{product_id}.json"
         query_params = {}
-        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7993,7 +8778,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def deletes_aproduct(self, api_version: str, product_id: str, body_content: str | None=None) -> dict[str, Any]:
+    async def deletes_aproduct(self, api_version: str, product_id: str, body_content: str | None = None) -> dict[str, Any]:
         """
         Deletes a product along with its associated variants and media from the system using the provided product ID.
 
@@ -8016,7 +8801,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if product_id is None:
             raise ValueError("Missing required parameter 'product_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/products/{product_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/products/{product_id}.json"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -8027,7 +8812,22 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def list_smart_collections(self, api_version: str, limit: str | None=None, ids: str | None=None, since_id: str | None=None, title: str | None=None, product_id: str | None=None, handle: str | None=None, updated_at_min: str | None=None, updated_at_max: str | None=None, published_at_min: str | None=None, published_at_max: str | None=None, published_status: str | None=None, fields: str | None=None) -> dict[str, Any]:
+    async def list_smart_collections(
+        self,
+        api_version: str,
+        limit: str | None = None,
+        ids: str | None = None,
+        since_id: str | None = None,
+        title: str | None = None,
+        product_id: str | None = None,
+        handle: str | None = None,
+        updated_at_min: str | None = None,
+        updated_at_max: str | None = None,
+        published_at_min: str | None = None,
+        published_at_max: str | None = None,
+        published_status: str | None = None,
+        fields: str | None = None,
+    ) -> dict[str, Any]:
         """
         Retrieves a list of smart collections from a Shopify store, allowing for filtering by various parameters such as IDs, titles, product IDs, and publication status.
 
@@ -8058,8 +8858,25 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/smart_collections.json'
-        query_params = {k: v for k, v in [('limit', limit), ('ids', ids), ('since_id', since_id), ('title', title), ('product_id', product_id), ('handle', handle), ('updated_at_min', updated_at_min), ('updated_at_max', updated_at_max), ('published_at_min', published_at_min), ('published_at_max', published_at_max), ('published_status', published_status), ('fields', fields)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/smart_collections.json"
+        query_params = {
+            k: v
+            for k, v in [
+                ("limit", limit),
+                ("ids", ids),
+                ("since_id", since_id),
+                ("title", title),
+                ("product_id", product_id),
+                ("handle", handle),
+                ("updated_at_min", updated_at_min),
+                ("updated_at_max", updated_at_max),
+                ("published_at_min", published_at_min),
+                ("published_at_max", published_at_max),
+                ("published_status", published_status),
+                ("fields", fields),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -8069,7 +8886,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def creates_asmart_collection(self, api_version: str, smart_collection: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def creates_asmart_collection(self, api_version: str, smart_collection: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Creates a new Shopify smart collection with automated product inclusion rules and returns the collection details upon successful creation.
 
@@ -8090,11 +8907,11 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         request_body_data = None
-        request_body_data = {'smart_collection': smart_collection}
+        request_body_data = {"smart_collection": smart_collection}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/smart_collections.json'
+        url = f"{self.base_url}/admin/api/{api_version}/smart_collections.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8103,7 +8920,17 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def count_smart_collections(self, api_version: str, title: str | None=None, product_id: str | None=None, updated_at_min: str | None=None, updated_at_max: str | None=None, published_at_min: str | None=None, published_at_max: str | None=None, published_status: str | None=None) -> dict[str, Any]:
+    async def count_smart_collections(
+        self,
+        api_version: str,
+        title: str | None = None,
+        product_id: str | None = None,
+        updated_at_min: str | None = None,
+        updated_at_max: str | None = None,
+        published_at_min: str | None = None,
+        published_at_max: str | None = None,
+        published_status: str | None = None,
+    ) -> dict[str, Any]:
         """
         Retrieves a count of smart collections in a Shopify store, optionally filtered by title, product ID, update or publication dates, and publication status.
 
@@ -8129,8 +8956,20 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/smart_collections/count.json'
-        query_params = {k: v for k, v in [('title', title), ('product_id', product_id), ('updated_at_min', updated_at_min), ('updated_at_max', updated_at_max), ('published_at_min', published_at_min), ('published_at_max', published_at_max), ('published_status', published_status)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/smart_collections/count.json"
+        query_params = {
+            k: v
+            for k, v in [
+                ("title", title),
+                ("product_id", product_id),
+                ("updated_at_min", updated_at_min),
+                ("updated_at_max", updated_at_max),
+                ("published_at_min", published_at_min),
+                ("published_at_max", published_at_max),
+                ("published_status", published_status),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -8140,7 +8979,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_smart_collection(self, api_version: str, smart_collection_id: str, fields: str | None=None) -> dict[str, Any]:
+    async def get_smart_collection(self, api_version: str, smart_collection_id: str, fields: str | None = None) -> dict[str, Any]:
         """
         Retrieves a smart collection by its ID using the Shopify API, optionally specifying fields to include in the response.
 
@@ -8163,8 +9002,8 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if smart_collection_id is None:
             raise ValueError("Missing required parameter 'smart_collection_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/smart_collections/{smart_collection_id}.json'
-        query_params = {k: v for k, v in [('fields', fields)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/smart_collections/{smart_collection_id}.json"
+        query_params = {k: v for k, v in [("fields", fields)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -8174,7 +9013,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_smart_collection(self, api_version: str, smart_collection_id: str, smart_collection: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def update_smart_collection(
+        self, api_version: str, smart_collection_id: str, smart_collection: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         """
                 Updates a specific smart collection's configuration and rules via the Shopify Admin API, returning a success status on completion.
 
@@ -8388,11 +9229,11 @@ class ShopifyApp(APIApplication):
         if smart_collection_id is None:
             raise ValueError("Missing required parameter 'smart_collection_id'.")
         request_body_data = None
-        request_body_data = {'smart_collection': smart_collection}
+        request_body_data = {"smart_collection": smart_collection}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/smart_collections/{smart_collection_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/smart_collections/{smart_collection_id}.json"
         query_params = {}
-        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8401,7 +9242,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def removes_asmart_collection(self, api_version: str, smart_collection_id: str, body_content: str | None=None) -> dict[str, Any]:
+    async def removes_asmart_collection(
+        self, api_version: str, smart_collection_id: str, body_content: str | None = None
+    ) -> dict[str, Any]:
         """
         Deletes the specified smart collection and returns a successful response upon completion.
 
@@ -8424,7 +9267,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if smart_collection_id is None:
             raise ValueError("Missing required parameter 'smart_collection_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/smart_collections/{smart_collection_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/smart_collections/{smart_collection_id}.json"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -8435,7 +9278,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_smart_collection_order(self, api_version: str, smart_collection_id: str, request_body: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def update_smart_collection_order(
+        self, api_version: str, smart_collection_id: str, request_body: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         """
         Updates the sort order of products in a Shopify smart collection and returns a success status upon completion.
 
@@ -8460,9 +9305,9 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'smart_collection_id'.")
         request_body_data = None
         request_body_data = request_body if request_body is not None else {}
-        url = f'{self.base_url}/admin/api/{api_version}/smart_collections/{smart_collection_id}/order.json'
+        url = f"{self.base_url}/admin/api/{api_version}/smart_collections/{smart_collection_id}/order.json"
         query_params = {}
-        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8471,7 +9316,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def completes_acheckout(self, api_version: str, token: str, request_body: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def completes_acheckout(self, api_version: str, token: str, request_body: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Completes a checkout process for a specified token, returning an Accepted status upon successful submission.
 
@@ -8496,9 +9341,9 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'token'.")
         request_body_data = None
         request_body_data = request_body if request_body is not None else {}
-        url = f'{self.base_url}/admin/api/{api_version}/checkouts/{token}/complete.json'
+        url = f"{self.base_url}/admin/api/{api_version}/checkouts/{token}/complete.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8529,7 +9374,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if token is None:
             raise ValueError("Missing required parameter 'token'.")
-        url = f'{self.base_url}/admin/api/{api_version}/checkouts/{token}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/checkouts/{token}.json"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -8540,7 +9385,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def modifies_an_existing_checkout(self, api_version: str, token: str, checkout: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def modifies_an_existing_checkout(self, api_version: str, token: str, checkout: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Updates a checkout using the provided token, supporting HTTP responses for successful updates (200), successful processing without immediate completion (202), and invalid request data (422).
 
@@ -8564,11 +9409,11 @@ class ShopifyApp(APIApplication):
         if token is None:
             raise ValueError("Missing required parameter 'token'.")
         request_body_data = None
-        request_body_data = {'checkout': checkout}
+        request_body_data = {"checkout": checkout}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/checkouts/{token}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/checkouts/{token}.json"
         query_params = {}
-        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8599,7 +9444,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if token is None:
             raise ValueError("Missing required parameter 'token'.")
-        url = f'{self.base_url}/admin/api/{api_version}/checkouts/{token}/shipping_rates.json'
+        url = f"{self.base_url}/admin/api/{api_version}/checkouts/{token}/shipping_rates.json"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -8610,7 +9455,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_collection_listings(self, api_version: str, limit: str | None=None) -> dict[str, Any]:
+    async def get_collection_listings(self, api_version: str, limit: str | None = None) -> dict[str, Any]:
         """
         Retrieves a list of collection listings in JSON format using the "GET" method, optionally limited by a specified number of entries.
 
@@ -8630,8 +9475,8 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/collection_listings.json'
-        query_params = {k: v for k, v in [('limit', limit)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/collection_listings.json"
+        query_params = {k: v for k, v in [("limit", limit)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -8641,7 +9486,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_product_ids(self, api_version: str, collection_listing_id: str, limit: str | None=None) -> dict[str, Any]:
+    async def get_product_ids(self, api_version: str, collection_listing_id: str, limit: str | None = None) -> dict[str, Any]:
         """
         Retrieves a list of product IDs for a specified collection listing, optionally limited by a query parameter, using the GET method.
 
@@ -8664,8 +9509,8 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if collection_listing_id is None:
             raise ValueError("Missing required parameter 'collection_listing_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/collection_listings/{collection_listing_id}/product_ids.json'
-        query_params = {k: v for k, v in [('limit', limit)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/collection_listings/{collection_listing_id}/product_ids.json"
+        query_params = {k: v for k, v in [("limit", limit)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -8697,7 +9542,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if collection_listing_id is None:
             raise ValueError("Missing required parameter 'collection_listing_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/collection_listings/{collection_listing_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/collection_listings/{collection_listing_id}.json"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -8708,7 +9553,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_collection_listing_by_id(self, api_version: str, collection_listing_id: str, collection_listing: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def update_collection_listing_by_id(
+        self, api_version: str, collection_listing_id: str, collection_listing: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         """
         Updates the specified collection listing resource by replacing its entire representation at the specified ID, returning a success response upon completion.
 
@@ -8732,11 +9579,11 @@ class ShopifyApp(APIApplication):
         if collection_listing_id is None:
             raise ValueError("Missing required parameter 'collection_listing_id'.")
         request_body_data = None
-        request_body_data = {'collection_listing': collection_listing}
+        request_body_data = {"collection_listing": collection_listing}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/collection_listings/{collection_listing_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/collection_listings/{collection_listing_id}.json"
         query_params = {}
-        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8745,7 +9592,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def delete_collection_listing_by_id(self, api_version: str, collection_listing_id: str, body_content: str | None=None) -> Any:
+    async def delete_collection_listing_by_id(self, api_version: str, collection_listing_id: str, body_content: str | None = None) -> Any:
         """
         Deletes a collection listing with the specified ID using the DELETE method.
 
@@ -8768,7 +9615,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if collection_listing_id is None:
             raise ValueError("Missing required parameter 'collection_listing_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/collection_listings/{collection_listing_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/collection_listings/{collection_listing_id}.json"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -8779,7 +9626,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_session(self, credit_card: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def create_session(self, credit_card: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Creates a new user session using the Shopify API at the specified path, enabling secure interactions between the client and server.
 
@@ -8797,11 +9644,11 @@ class ShopifyApp(APIApplication):
             Sales channels, Payment
         """
         request_body_data = None
-        request_body_data = {'credit_card': credit_card}
+        request_body_data = {"credit_card": credit_card}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/https:/elb.deposit.shopifycs.com/sessions'
+        url = f"{self.base_url}/https:/elb.deposit.shopifycs.com/sessions"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8832,7 +9679,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if token is None:
             raise ValueError("Missing required parameter 'token'.")
-        url = f'{self.base_url}/admin/api/{api_version}/checkouts/{token}/payments.json'
+        url = f"{self.base_url}/admin/api/{api_version}/checkouts/{token}/payments.json"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -8843,7 +9690,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def creates_anew_payment(self, api_version: str, token: str, payment: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def creates_anew_payment(self, api_version: str, token: str, payment: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Creates a payment for a checkout session using the provided token, returning a status response upon completion.
 
@@ -8867,11 +9714,11 @@ class ShopifyApp(APIApplication):
         if token is None:
             raise ValueError("Missing required parameter 'token'.")
         request_body_data = None
-        request_body_data = {'payment': payment}
+        request_body_data = {"payment": payment}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/checkouts/{token}/payments.json'
+        url = f"{self.base_url}/admin/api/{api_version}/checkouts/{token}/payments.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8905,7 +9752,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'token'.")
         if payment_id is None:
             raise ValueError("Missing required parameter 'payment_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/checkouts/{token}/payments/{payment_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/checkouts/{token}/payments/{payment_id}.json"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -8938,7 +9785,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if token is None:
             raise ValueError("Missing required parameter 'token'.")
-        url = f'{self.base_url}/admin/api/{api_version}/checkouts/{token}/payments/count.json'
+        url = f"{self.base_url}/admin/api/{api_version}/checkouts/{token}/payments/count.json"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -8949,7 +9796,16 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def list_product_listings(self, api_version: str, product_ids: str | None=None, limit: str | None=None, page: str | None=None, collection_id: str | None=None, updated_at_min: str | None=None, handle: str | None=None) -> dict[str, Any]:
+    async def list_product_listings(
+        self,
+        api_version: str,
+        product_ids: str | None = None,
+        limit: str | None = None,
+        page: str | None = None,
+        collection_id: str | None = None,
+        updated_at_min: str | None = None,
+        handle: str | None = None,
+    ) -> dict[str, Any]:
         """
         Retrieves a list of product listings with filtering options such as product identifiers, collection, update timestamps, and handles.
 
@@ -8974,8 +9830,19 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/product_listings.json'
-        query_params = {k: v for k, v in [('product_ids', product_ids), ('limit', limit), ('page', page), ('collection_id', collection_id), ('updated_at_min', updated_at_min), ('handle', handle)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/product_listings.json"
+        query_params = {
+            k: v
+            for k, v in [
+                ("product_ids", product_ids),
+                ("limit", limit),
+                ("page", page),
+                ("collection_id", collection_id),
+                ("updated_at_min", updated_at_min),
+                ("handle", handle),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -8985,7 +9852,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def list_product_ids(self, api_version: str, limit: str | None=None) -> dict[str, Any]:
+    async def list_product_ids(self, api_version: str, limit: str | None = None) -> dict[str, Any]:
         """
         Retrieves a list of product IDs from product listings with optional limit parameter.
 
@@ -9005,8 +9872,8 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/product_listings/product_ids.json'
-        query_params = {k: v for k, v in [('limit', limit)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/product_listings/product_ids.json"
+        query_params = {k: v for k, v in [("limit", limit)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -9035,7 +9902,7 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/product_listings/count.json'
+        url = f"{self.base_url}/admin/api/{api_version}/product_listings/count.json"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -9068,7 +9935,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if product_listing_id is None:
             raise ValueError("Missing required parameter 'product_listing_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/product_listings/{product_listing_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/product_listings/{product_listing_id}.json"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -9079,7 +9946,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_product_listing_by_id(self, api_version: str, product_listing_id: str, product_listing: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def update_product_listing_by_id(
+        self, api_version: str, product_listing_id: str, product_listing: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         """
         Updates a product listing by fully replacing its data at the specified path, using the PUT method.
 
@@ -9103,11 +9972,11 @@ class ShopifyApp(APIApplication):
         if product_listing_id is None:
             raise ValueError("Missing required parameter 'product_listing_id'.")
         request_body_data = None
-        request_body_data = {'product_listing': product_listing}
+        request_body_data = {"product_listing": product_listing}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/product_listings/{product_listing_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/product_listings/{product_listing_id}.json"
         query_params = {}
-        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9116,7 +9985,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def delete_product_listing_by_id(self, api_version: str, product_listing_id: str, body_content: str | None=None) -> Any:
+    async def delete_product_listing_by_id(self, api_version: str, product_listing_id: str, body_content: str | None = None) -> Any:
         """
         Deletes a specific product listing by ID using the specified API version.
 
@@ -9139,7 +10008,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if product_listing_id is None:
             raise ValueError("Missing required parameter 'product_listing_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/product_listings/{product_listing_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/product_listings/{product_listing_id}.json"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -9169,7 +10038,7 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/resource_feedback.json'
+        url = f"{self.base_url}/admin/api/{api_version}/resource_feedback.json"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -9180,7 +10049,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_anew_resourcefeedback(self, api_version: str, resource_feedback: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def create_anew_resourcefeedback(self, api_version: str, resource_feedback: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Submits resource feedback for review and processing, returning status codes for success, conflicts, or validation errors.
 
@@ -9201,11 +10070,11 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         request_body_data = None
-        request_body_data = {'resource_feedback': resource_feedback}
+        request_body_data = {"resource_feedback": resource_feedback}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/resource_feedback.json'
+        url = f"{self.base_url}/admin/api/{api_version}/resource_feedback.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9214,7 +10083,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_assigned_orders(self, api_version: str, assignment_status: str | None=None, location_ids: str | None=None) -> dict[str, Any]:
+    async def get_assigned_orders(
+        self, api_version: str, assignment_status: str | None = None, location_ids: str | None = None
+    ) -> dict[str, Any]:
         """
         Retrieves fulfillment orders assigned to specific locations and filtered by assignment status using query parameters.
 
@@ -9235,8 +10106,8 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/assigned_fulfillment_orders.json'
-        query_params = {k: v for k, v in [('assignment_status', assignment_status), ('location_ids', location_ids)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/assigned_fulfillment_orders.json"
+        query_params = {k: v for k, v in [("assignment_status", assignment_status), ("location_ids", location_ids)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -9246,7 +10117,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def sends_acancellation_request(self, api_version: str, fulfillment_order_id: str, cancellation_request: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def sends_acancellation_request(
+        self, api_version: str, fulfillment_order_id: str, cancellation_request: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         """
         Sends a cancellation request to the fulfillment service for a specific fulfillment order, allowing the cancellation process to be initiated.
 
@@ -9270,11 +10143,11 @@ class ShopifyApp(APIApplication):
         if fulfillment_order_id is None:
             raise ValueError("Missing required parameter 'fulfillment_order_id'.")
         request_body_data = None
-        request_body_data = {'cancellation_request': cancellation_request}
+        request_body_data = {"cancellation_request": cancellation_request}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/fulfillment_orders/{fulfillment_order_id}/cancellation_request.json'
+        url = f"{self.base_url}/admin/api/{api_version}/fulfillment_orders/{fulfillment_order_id}/cancellation_request.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9283,7 +10156,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def accepts_acancellation_request(self, api_version: str, fulfillment_order_id: str, cancellation_request: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def accepts_acancellation_request(
+        self, api_version: str, fulfillment_order_id: str, cancellation_request: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         """
         Accepts a cancellation request for a fulfillment order via a POST request to the specified endpoint.
 
@@ -9307,11 +10182,11 @@ class ShopifyApp(APIApplication):
         if fulfillment_order_id is None:
             raise ValueError("Missing required parameter 'fulfillment_order_id'.")
         request_body_data = None
-        request_body_data = {'cancellation_request': cancellation_request}
+        request_body_data = {"cancellation_request": cancellation_request}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/fulfillment_orders/{fulfillment_order_id}/cancellation_request/accept.json'
+        url = f"{self.base_url}/admin/api/{api_version}/fulfillment_orders/{fulfillment_order_id}/cancellation_request/accept.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9320,7 +10195,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def rejects_acancellation_request(self, api_version: str, fulfillment_order_id: str, cancellation_request: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def rejects_acancellation_request(
+        self, api_version: str, fulfillment_order_id: str, cancellation_request: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         """
         Rejects a cancellation request for a Shopify fulfillment order and returns the updated fulfillment order details.
 
@@ -9344,11 +10221,11 @@ class ShopifyApp(APIApplication):
         if fulfillment_order_id is None:
             raise ValueError("Missing required parameter 'fulfillment_order_id'.")
         request_body_data = None
-        request_body_data = {'cancellation_request': cancellation_request}
+        request_body_data = {"cancellation_request": cancellation_request}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/fulfillment_orders/{fulfillment_order_id}/cancellation_request/reject.json'
+        url = f"{self.base_url}/admin/api/{api_version}/fulfillment_orders/{fulfillment_order_id}/cancellation_request/reject.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9376,7 +10253,7 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/carrier_services.json'
+        url = f"{self.base_url}/admin/api/{api_version}/carrier_services.json"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -9387,7 +10264,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def creates_acarrier_service(self, api_version: str, carrier_service: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def creates_acarrier_service(self, api_version: str, carrier_service: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Creates a custom carrier service in Shopify, enabling third-party shipping rate integration via a callback URL.
 
@@ -9408,11 +10285,11 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         request_body_data = None
-        request_body_data = {'carrier_service': carrier_service}
+        request_body_data = {"carrier_service": carrier_service}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/carrier_services.json'
+        url = f"{self.base_url}/admin/api/{api_version}/carrier_services.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9443,7 +10320,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if carrier_service_id is None:
             raise ValueError("Missing required parameter 'carrier_service_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/carrier_services/{carrier_service_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/carrier_services/{carrier_service_id}.json"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -9454,7 +10331,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def updates_acarrier_service(self, api_version: str, carrier_service_id: str, carrier_service: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def updates_acarrier_service(
+        self, api_version: str, carrier_service_id: str, carrier_service: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         """
         Updates a specific carrier service with the provided ID using the "PUT" method in the Shopify API.
 
@@ -9478,11 +10357,11 @@ class ShopifyApp(APIApplication):
         if carrier_service_id is None:
             raise ValueError("Missing required parameter 'carrier_service_id'.")
         request_body_data = None
-        request_body_data = {'carrier_service': carrier_service}
+        request_body_data = {"carrier_service": carrier_service}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/carrier_services/{carrier_service_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/carrier_services/{carrier_service_id}.json"
         query_params = {}
-        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9491,7 +10370,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def deletes_acarrier_service(self, api_version: str, carrier_service_id: str, body_content: str | None=None) -> dict[str, Any]:
+    async def deletes_acarrier_service(self, api_version: str, carrier_service_id: str, body_content: str | None = None) -> dict[str, Any]:
         """
         Deletes an existing carrier service by ID and returns a success status upon completion.
 
@@ -9514,7 +10393,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if carrier_service_id is None:
             raise ValueError("Missing required parameter 'carrier_service_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/carrier_services/{carrier_service_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/carrier_services/{carrier_service_id}.json"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -9525,7 +10404,18 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_order_fulfillments(self, api_version: str, order_id: str, created_at_max: str | None=None, created_at_min: str | None=None, fields: str | None=None, limit: str | None=None, since_id: str | None=None, updated_at_max: str | None=None, updated_at_min: str | None=None) -> dict[str, Any]:
+    async def get_order_fulfillments(
+        self,
+        api_version: str,
+        order_id: str,
+        created_at_max: str | None = None,
+        created_at_min: str | None = None,
+        fields: str | None = None,
+        limit: str | None = None,
+        since_id: str | None = None,
+        updated_at_max: str | None = None,
+        updated_at_min: str | None = None,
+    ) -> dict[str, Any]:
         """
         Retrieves a list of fulfillments for a specific order with optional filtering by creation/update timestamps and pagination parameters.
 
@@ -9554,8 +10444,20 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if order_id is None:
             raise ValueError("Missing required parameter 'order_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/orders/{order_id}/fulfillments.json'
-        query_params = {k: v for k, v in [('created_at_max', created_at_max), ('created_at_min', created_at_min), ('fields', fields), ('limit', limit), ('since_id', since_id), ('updated_at_max', updated_at_max), ('updated_at_min', updated_at_min)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/fulfillments.json"
+        query_params = {
+            k: v
+            for k, v in [
+                ("created_at_max", created_at_max),
+                ("created_at_min", created_at_min),
+                ("fields", fields),
+                ("limit", limit),
+                ("since_id", since_id),
+                ("updated_at_max", updated_at_max),
+                ("updated_at_min", updated_at_min),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -9565,7 +10467,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_anew_fulfillment(self, api_version: str, order_id: str, fulfillment: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def create_anew_fulfillment(self, api_version: str, order_id: str, fulfillment: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Creates a new fulfillment for an order, typically used to confirm shipment or pickup of items to complete the order process.
 
@@ -9589,11 +10491,11 @@ class ShopifyApp(APIApplication):
         if order_id is None:
             raise ValueError("Missing required parameter 'order_id'.")
         request_body_data = None
-        request_body_data = {'fulfillment': fulfillment}
+        request_body_data = {"fulfillment": fulfillment}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/orders/{order_id}/fulfillments.json'
+        url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/fulfillments.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9602,7 +10504,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_fulfill_order_fulfillments(self, api_version: str, fulfillment_order_id: str, fulfillment_order_id_query: str | None=None) -> dict[str, Any]:
+    async def get_fulfill_order_fulfillments(
+        self, api_version: str, fulfillment_order_id: str, fulfillment_order_id_query: str | None = None
+    ) -> dict[str, Any]:
         """
         Retrieves fulfillment information for a specific fulfillment order by its ID using the Shopify API.
 
@@ -9625,8 +10529,8 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if fulfillment_order_id is None:
             raise ValueError("Missing required parameter 'fulfillment_order_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/fulfillment_orders/{fulfillment_order_id}/fulfillments.json'
-        query_params = {k: v for k, v in [('fulfillment_order_id', fulfillment_order_id_query)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/fulfillment_orders/{fulfillment_order_id}/fulfillments.json"
+        query_params = {k: v for k, v in [("fulfillment_order_id", fulfillment_order_id_query)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -9636,7 +10540,15 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_order_fulfillment_count(self, api_version: str, order_id: str, created_at_min: str | None=None, created_at_max: str | None=None, updated_at_min: str | None=None, updated_at_max: str | None=None) -> dict[str, Any]:
+    async def get_order_fulfillment_count(
+        self,
+        api_version: str,
+        order_id: str,
+        created_at_min: str | None = None,
+        created_at_max: str | None = None,
+        updated_at_min: str | None = None,
+        updated_at_max: str | None = None,
+    ) -> dict[str, Any]:
         """
         Retrieves the count of fulfillments for a specific order based on optional date filters for creation and update times using the GET method.
 
@@ -9662,8 +10574,17 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if order_id is None:
             raise ValueError("Missing required parameter 'order_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/orders/{order_id}/fulfillments/count.json'
-        query_params = {k: v for k, v in [('created_at_min', created_at_min), ('created_at_max', created_at_max), ('updated_at_min', updated_at_min), ('updated_at_max', updated_at_max)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/fulfillments/count.json"
+        query_params = {
+            k: v
+            for k, v in [
+                ("created_at_min", created_at_min),
+                ("created_at_max", created_at_max),
+                ("updated_at_min", updated_at_min),
+                ("updated_at_max", updated_at_max),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -9673,7 +10594,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def receive_asingle_fulfillment(self, api_version: str, order_id: str, fulfillment_id: str, fields: str | None=None) -> dict[str, Any]:
+    async def receive_asingle_fulfillment(
+        self, api_version: str, order_id: str, fulfillment_id: str, fields: str | None = None
+    ) -> dict[str, Any]:
         """
         Retrieves a specific fulfillment for an order using the Shopify Admin API, returning fulfillment details in the response.
 
@@ -9699,8 +10622,8 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'order_id'.")
         if fulfillment_id is None:
             raise ValueError("Missing required parameter 'fulfillment_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/orders/{order_id}/fulfillments/{fulfillment_id}.json'
-        query_params = {k: v for k, v in [('fields', fields)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/fulfillments/{fulfillment_id}.json"
+        query_params = {k: v for k, v in [("fields", fields)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -9710,7 +10633,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def modify_an_existing_fulfillment(self, api_version: str, order_id: str, fulfillment_id: str, fulfillment: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def modify_an_existing_fulfillment(
+        self, api_version: str, order_id: str, fulfillment_id: str, fulfillment: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         """
         Updates a specific fulfillment order in Shopify's admin API for order processing.
 
@@ -9737,11 +10662,11 @@ class ShopifyApp(APIApplication):
         if fulfillment_id is None:
             raise ValueError("Missing required parameter 'fulfillment_id'.")
         request_body_data = None
-        request_body_data = {'fulfillment': fulfillment}
+        request_body_data = {"fulfillment": fulfillment}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/orders/{order_id}/fulfillments/{fulfillment_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/fulfillments/{fulfillment_id}.json"
         query_params = {}
-        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9750,7 +10675,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_fulfillment(self, api_version: str, fulfillment: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def create_fulfillment(self, api_version: str, fulfillment: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Creates a new fulfillment record for an order using the Shopify API, allowing for the inclusion of details such as tracking numbers and shipment status updates.
 
@@ -9771,11 +10696,11 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         request_body_data = None
-        request_body_data = {'fulfillment': fulfillment}
+        request_body_data = {"fulfillment": fulfillment}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/fulfillments.json'
+        url = f"{self.base_url}/admin/api/{api_version}/fulfillments.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9784,7 +10709,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_fulfillment_tracking(self, api_version: str, fulfillment_id: str, fulfillment: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def update_fulfillment_tracking(
+        self, api_version: str, fulfillment_id: str, fulfillment: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         """
         Updates tracking information for a fulfillment using the provided tracking details via a POST request.
 
@@ -9808,11 +10735,11 @@ class ShopifyApp(APIApplication):
         if fulfillment_id is None:
             raise ValueError("Missing required parameter 'fulfillment_id'.")
         request_body_data = None
-        request_body_data = {'fulfillment': fulfillment}
+        request_body_data = {"fulfillment": fulfillment}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/fulfillments/{fulfillment_id}/update_tracking.json'
+        url = f"{self.base_url}/admin/api/{api_version}/fulfillments/{fulfillment_id}/update_tracking.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9821,7 +10748,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def complete_afulfillment(self, api_version: str, order_id: str, fulfillment_id: str, request_body: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def complete_afulfillment(
+        self, api_version: str, order_id: str, fulfillment_id: str, request_body: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         """
         Completes a fulfillment for a specific order in the Shopify API, marking it as processed and returning a success confirmation.
 
@@ -9849,9 +10778,9 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'fulfillment_id'.")
         request_body_data = None
         request_body_data = request_body if request_body is not None else {}
-        url = f'{self.base_url}/admin/api/{api_version}/orders/{order_id}/fulfillments/{fulfillment_id}/complete.json'
+        url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/fulfillments/{fulfillment_id}/complete.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9860,7 +10789,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def post_order_fulfillment_open(self, api_version: str, order_id: str, fulfillment_id: str, request_body: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def post_order_fulfillment_open(
+        self, api_version: str, order_id: str, fulfillment_id: str, request_body: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         """
         Opens a fulfillment for a specific order using the POST method, allowing the order to transition from a pending or scheduled state to being actively fulfilled.
 
@@ -9888,9 +10819,9 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'fulfillment_id'.")
         request_body_data = None
         request_body_data = request_body if request_body is not None else {}
-        url = f'{self.base_url}/admin/api/{api_version}/orders/{order_id}/fulfillments/{fulfillment_id}/open.json'
+        url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/fulfillments/{fulfillment_id}/open.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9899,7 +10830,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def cancel_fulfillment(self, api_version: str, order_id: str, fulfillment_id: str, request_body: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def cancel_fulfillment(
+        self, api_version: str, order_id: str, fulfillment_id: str, request_body: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         """
         Cancels a specific fulfillment by submitting a request to the endpoint "/admin/api/{api_version}/orders/{order_id}/fulfillments/{fulfillment_id}/cancel.json" using the POST method.
 
@@ -9927,9 +10860,9 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'fulfillment_id'.")
         request_body_data = None
         request_body_data = request_body if request_body is not None else {}
-        url = f'{self.base_url}/admin/api/{api_version}/orders/{order_id}/fulfillments/{fulfillment_id}/cancel.json'
+        url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/fulfillments/{fulfillment_id}/cancel.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9938,7 +10871,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def cancels_afulfillment(self, api_version: str, fulfillment_id: str, request_body: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def cancels_afulfillment(
+        self, api_version: str, fulfillment_id: str, request_body: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         """
         Cancels a fulfillment order identified by the `{fulfillment_id}` using the `POST` method, returning a status message indicating the outcome of the cancellation operation.
 
@@ -9963,9 +10898,9 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'fulfillment_id'.")
         request_body_data = None
         request_body_data = request_body if request_body is not None else {}
-        url = f'{self.base_url}/admin/api/{api_version}/fulfillments/{fulfillment_id}/cancel.json'
+        url = f"{self.base_url}/admin/api/{api_version}/fulfillments/{fulfillment_id}/cancel.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9974,7 +10909,14 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_fulfillment_event_by_id(self, api_version: str, order_id: str, fulfillment_id: str, fulfillment_id_query: str | None=None, order_id_query: str | None=None) -> dict[str, Any]:
+    async def get_fulfillment_event_by_id(
+        self,
+        api_version: str,
+        order_id: str,
+        fulfillment_id: str,
+        fulfillment_id_query: str | None = None,
+        order_id_query: str | None = None,
+    ) -> dict[str, Any]:
         """
         Retrieves a list of fulfillment events associated with a specific fulfillment ID within an order using the Shopify API.
 
@@ -10001,8 +10943,8 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'order_id'.")
         if fulfillment_id is None:
             raise ValueError("Missing required parameter 'fulfillment_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/orders/{order_id}/fulfillments/{fulfillment_id}/events.json'
-        query_params = {k: v for k, v in [('fulfillment_id', fulfillment_id_query), ('order_id', order_id_query)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/fulfillments/{fulfillment_id}/events.json"
+        query_params = {k: v for k, v in [("fulfillment_id", fulfillment_id_query), ("order_id", order_id_query)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -10012,7 +10954,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def creates_afulfillment_event(self, api_version: str, order_id: str, fulfillment_id: str, event: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def creates_afulfillment_event(
+        self, api_version: str, order_id: str, fulfillment_id: str, event: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         """
         Creates a new fulfillment event for a specified order and fulfillment, allowing tracking and updating of the fulfillment status.
 
@@ -10039,11 +10983,11 @@ class ShopifyApp(APIApplication):
         if fulfillment_id is None:
             raise ValueError("Missing required parameter 'fulfillment_id'.")
         request_body_data = None
-        request_body_data = {'event': event}
+        request_body_data = {"event": event}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/orders/{order_id}/fulfillments/{fulfillment_id}/events.json'
+        url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/fulfillments/{fulfillment_id}/events.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10052,7 +10996,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_fulfillment_event(self, api_version: str, order_id: str, fulfillment_id: str, event_id: str, event_id_query: str | None=None) -> dict[str, Any]:
+    async def get_fulfillment_event(
+        self, api_version: str, order_id: str, fulfillment_id: str, event_id: str, event_id_query: str | None = None
+    ) -> dict[str, Any]:
         """
         Retrieves a specific event by ID for a fulfillment within an order using the "GET" method.
 
@@ -10081,8 +11027,8 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'fulfillment_id'.")
         if event_id is None:
             raise ValueError("Missing required parameter 'event_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/orders/{order_id}/fulfillments/{fulfillment_id}/events/{event_id}.json'
-        query_params = {k: v for k, v in [('event_id', event_id_query)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/fulfillments/{fulfillment_id}/events/{event_id}.json"
+        query_params = {k: v for k, v in [("event_id", event_id_query)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -10092,7 +11038,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def deletes_afulfillment_event(self, api_version: str, order_id: str, fulfillment_id: str, event_id: str, body_content: str | None=None) -> dict[str, Any]:
+    async def deletes_afulfillment_event(
+        self, api_version: str, order_id: str, fulfillment_id: str, event_id: str, body_content: str | None = None
+    ) -> dict[str, Any]:
         """
         Deletes a specific fulfillment event associated with a fulfillment in an order using the Shopify API, removing its tracking information.
 
@@ -10121,7 +11069,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'fulfillment_id'.")
         if event_id is None:
             raise ValueError("Missing required parameter 'event_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/orders/{order_id}/fulfillments/{fulfillment_id}/events/{event_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/fulfillments/{fulfillment_id}/events/{event_id}.json"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -10132,7 +11080,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_fulfillment_orders(self, api_version: str, order_id: str, order_id_query: str | None=None) -> dict[str, Any]:
+    async def get_fulfillment_orders(self, api_version: str, order_id: str, order_id_query: str | None = None) -> dict[str, Any]:
         """
         Retrieves a list of fulfillment orders associated with a specific order, including fulfillment details and status.
 
@@ -10155,8 +11103,8 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if order_id is None:
             raise ValueError("Missing required parameter 'order_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/orders/{order_id}/fulfillment_orders.json'
-        query_params = {k: v for k, v in [('order_id', order_id_query)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/fulfillment_orders.json"
+        query_params = {k: v for k, v in [("order_id", order_id_query)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -10188,7 +11136,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if fulfillment_order_id is None:
             raise ValueError("Missing required parameter 'fulfillment_order_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/fulfillment_orders/{fulfillment_order_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/fulfillment_orders/{fulfillment_order_id}.json"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -10199,7 +11147,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def cancel_afulfillment_order(self, api_version: str, fulfillment_order_id: str, fulfillment_order: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def cancel_afulfillment_order(
+        self, api_version: str, fulfillment_order_id: str, fulfillment_order: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         """
         Cancels a fulfillment order using the "POST" method at the specified endpoint, allowing for the termination of fulfillment attempts for the associated order.
 
@@ -10223,11 +11173,11 @@ class ShopifyApp(APIApplication):
         if fulfillment_order_id is None:
             raise ValueError("Missing required parameter 'fulfillment_order_id'.")
         request_body_data = None
-        request_body_data = {'fulfillment_order': fulfillment_order}
+        request_body_data = {"fulfillment_order": fulfillment_order}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/fulfillment_orders/{fulfillment_order_id}/cancel.json'
+        url = f"{self.base_url}/admin/api/{api_version}/fulfillment_orders/{fulfillment_order_id}/cancel.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10236,7 +11186,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def close_fulfillment_order(self, api_version: str, fulfillment_order_id: str, fulfillment_order: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def close_fulfillment_order(
+        self, api_version: str, fulfillment_order_id: str, fulfillment_order: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         """
         Closes a fulfillment order via the Shopify Admin API and returns a success status upon completion.
 
@@ -10260,11 +11212,11 @@ class ShopifyApp(APIApplication):
         if fulfillment_order_id is None:
             raise ValueError("Missing required parameter 'fulfillment_order_id'.")
         request_body_data = None
-        request_body_data = {'fulfillment_order': fulfillment_order}
+        request_body_data = {"fulfillment_order": fulfillment_order}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/fulfillment_orders/{fulfillment_order_id}/close.json'
+        url = f"{self.base_url}/admin/api/{api_version}/fulfillment_orders/{fulfillment_order_id}/close.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10273,7 +11225,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def move_fulfillment_order_post(self, api_version: str, fulfillment_order_id: str, fulfillment_order: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def move_fulfillment_order_post(
+        self, api_version: str, fulfillment_order_id: str, fulfillment_order: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         """
         Moves fulfillment order line items to a new location and returns the updated fulfillment order details.
 
@@ -10297,11 +11251,11 @@ class ShopifyApp(APIApplication):
         if fulfillment_order_id is None:
             raise ValueError("Missing required parameter 'fulfillment_order_id'.")
         request_body_data = None
-        request_body_data = {'fulfillment_order': fulfillment_order}
+        request_body_data = {"fulfillment_order": fulfillment_order}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/fulfillment_orders/{fulfillment_order_id}/move.json'
+        url = f"{self.base_url}/admin/api/{api_version}/fulfillment_orders/{fulfillment_order_id}/move.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10310,7 +11264,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def sends_afulfillment_request(self, api_version: str, fulfillment_order_id: str, fulfillment_request: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def sends_afulfillment_request(
+        self, api_version: str, fulfillment_order_id: str, fulfillment_request: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         """
         Submits a fulfillment request for a specified fulfillment order, allowing for the management and processing of order line items through a fulfillment service.
 
@@ -10334,11 +11290,11 @@ class ShopifyApp(APIApplication):
         if fulfillment_order_id is None:
             raise ValueError("Missing required parameter 'fulfillment_order_id'.")
         request_body_data = None
-        request_body_data = {'fulfillment_request': fulfillment_request}
+        request_body_data = {"fulfillment_request": fulfillment_request}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/fulfillment_orders/{fulfillment_order_id}/fulfillment_request.json'
+        url = f"{self.base_url}/admin/api/{api_version}/fulfillment_orders/{fulfillment_order_id}/fulfillment_request.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10347,7 +11303,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def accepts_afulfillment_request(self, api_version: str, fulfillment_order_id: str, fulfillment_request: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def accepts_afulfillment_request(
+        self, api_version: str, fulfillment_order_id: str, fulfillment_request: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         """
         Accepts a fulfillment request for a specific fulfillment order, transitioning the order status to processing.
 
@@ -10371,11 +11329,11 @@ class ShopifyApp(APIApplication):
         if fulfillment_order_id is None:
             raise ValueError("Missing required parameter 'fulfillment_order_id'.")
         request_body_data = None
-        request_body_data = {'fulfillment_request': fulfillment_request}
+        request_body_data = {"fulfillment_request": fulfillment_request}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/fulfillment_orders/{fulfillment_order_id}/fulfillment_request/accept.json'
+        url = f"{self.base_url}/admin/api/{api_version}/fulfillment_orders/{fulfillment_order_id}/fulfillment_request/accept.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10384,7 +11342,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def rejects_afulfillment_request(self, api_version: str, fulfillment_order_id: str, fulfillment_request: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def rejects_afulfillment_request(
+        self, api_version: str, fulfillment_order_id: str, fulfillment_request: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         """
         Rejects a fulfillment request for a specified fulfillment order, preventing any associated line items from being fulfilled.
 
@@ -10408,11 +11368,11 @@ class ShopifyApp(APIApplication):
         if fulfillment_order_id is None:
             raise ValueError("Missing required parameter 'fulfillment_order_id'.")
         request_body_data = None
-        request_body_data = {'fulfillment_request': fulfillment_request}
+        request_body_data = {"fulfillment_request": fulfillment_request}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/fulfillment_orders/{fulfillment_order_id}/fulfillment_request/reject.json'
+        url = f"{self.base_url}/admin/api/{api_version}/fulfillment_orders/{fulfillment_order_id}/fulfillment_request/reject.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10421,7 +11381,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def list_fulfillment_services(self, api_version: str, scope: str | None=None) -> dict[str, Any]:
+    async def list_fulfillment_services(self, api_version: str, scope: str | None = None) -> dict[str, Any]:
         """
         Retrieves a list of fulfillment services available to a merchant using the Shopify API.
 
@@ -10441,8 +11401,8 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/fulfillment_services.json'
-        query_params = {k: v for k, v in [('scope', scope)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/fulfillment_services.json"
+        query_params = {k: v for k, v in [("scope", scope)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -10452,7 +11412,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_anew_fulfillmentservice(self, api_version: str, fulfillment_service: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def create_anew_fulfillmentservice(self, api_version: str, fulfillment_service: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Registers a new fulfillment service using the Shopify API, allowing third-party warehouses to prepare and ship orders on behalf of store owners.
 
@@ -10473,11 +11433,11 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         request_body_data = None
-        request_body_data = {'fulfillment_service': fulfillment_service}
+        request_body_data = {"fulfillment_service": fulfillment_service}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/fulfillment_services.json'
+        url = f"{self.base_url}/admin/api/{api_version}/fulfillment_services.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10508,7 +11468,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if fulfillment_service_id is None:
             raise ValueError("Missing required parameter 'fulfillment_service_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/fulfillment_services/{fulfillment_service_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/fulfillment_services/{fulfillment_service_id}.json"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -10519,7 +11479,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_fulfillment_service(self, api_version: str, fulfillment_service_id: str, fulfillment_service: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def update_fulfillment_service(
+        self, api_version: str, fulfillment_service_id: str, fulfillment_service: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         """
         Updates a Shopify fulfillment service's configuration, including tracking support and inventory management settings.
 
@@ -10543,11 +11505,11 @@ class ShopifyApp(APIApplication):
         if fulfillment_service_id is None:
             raise ValueError("Missing required parameter 'fulfillment_service_id'.")
         request_body_data = None
-        request_body_data = {'fulfillment_service': fulfillment_service}
+        request_body_data = {"fulfillment_service": fulfillment_service}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/fulfillment_services/{fulfillment_service_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/fulfillment_services/{fulfillment_service_id}.json"
         query_params = {}
-        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10556,7 +11518,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def delete_fulfillment_service_by_id(self, api_version: str, fulfillment_service_id: str, body_content: str | None=None) -> dict[str, Any]:
+    async def delete_fulfillment_service_by_id(
+        self, api_version: str, fulfillment_service_id: str, body_content: str | None = None
+    ) -> dict[str, Any]:
         """
         Deletes a specified fulfillment service from the Shopify admin and returns a success status upon removal.
 
@@ -10579,7 +11543,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if fulfillment_service_id is None:
             raise ValueError("Missing required parameter 'fulfillment_service_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/fulfillment_services/{fulfillment_service_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/fulfillment_services/{fulfillment_service_id}.json"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -10590,7 +11554,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_fulfillment_locations(self, api_version: str, fulfillment_order_id: str, fulfillment_order_id_query: str | None=None) -> dict[str, Any]:
+    async def get_fulfillment_locations(
+        self, api_version: str, fulfillment_order_id: str, fulfillment_order_id_query: str | None = None
+    ) -> dict[str, Any]:
         """
         Retrieves a list of eligible locations where fulfillment order items can be moved for potential fulfillment, sorted alphabetically by location name.
 
@@ -10613,8 +11579,8 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if fulfillment_order_id is None:
             raise ValueError("Missing required parameter 'fulfillment_order_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/fulfillment_orders/{fulfillment_order_id}/locations_for_move.json'
-        query_params = {k: v for k, v in [('fulfillment_order_id', fulfillment_order_id_query)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/fulfillment_orders/{fulfillment_order_id}/locations_for_move.json"
+        query_params = {k: v for k, v in [("fulfillment_order_id", fulfillment_order_id_query)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -10643,7 +11609,7 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/shopify_payments/balance.json'
+        url = f"{self.base_url}/admin/api/{api_version}/shopify_payments/balance.json"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -10654,7 +11620,14 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def return_alist_of_all_disputes(self, api_version: str, since_id: str | None=None, last_id: str | None=None, status: str | None=None, initiated_at: str | None=None) -> dict[str, Any]:
+    async def return_alist_of_all_disputes(
+        self,
+        api_version: str,
+        since_id: str | None = None,
+        last_id: str | None = None,
+        status: str | None = None,
+        initiated_at: str | None = None,
+    ) -> dict[str, Any]:
         """
         Retrieves a list of Shopify Payments disputes based on specified parameters, such as ID, status, and initiation date, using the GET method at the "/admin/api/{api_version}/shopify_payments/disputes.json" endpoint.
 
@@ -10677,8 +11650,12 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/shopify_payments/disputes.json'
-        query_params = {k: v for k, v in [('since_id', since_id), ('last_id', last_id), ('status', status), ('initiated_at', initiated_at)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/shopify_payments/disputes.json"
+        query_params = {
+            k: v
+            for k, v in [("since_id", since_id), ("last_id", last_id), ("status", status), ("initiated_at", initiated_at)]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -10710,7 +11687,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if dispute_id is None:
             raise ValueError("Missing required parameter 'dispute_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/shopify_payments/disputes/{dispute_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/shopify_payments/disputes/{dispute_id}.json"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -10721,7 +11698,16 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def return_alist_of_all_payouts(self, api_version: str, since_id: str | None=None, last_id: str | None=None, date_min: str | None=None, date_max: str | None=None, date: str | None=None, status: str | None=None) -> dict[str, Any]:
+    async def return_alist_of_all_payouts(
+        self,
+        api_version: str,
+        since_id: str | None = None,
+        last_id: str | None = None,
+        date_min: str | None = None,
+        date_max: str | None = None,
+        date: str | None = None,
+        status: str | None = None,
+    ) -> dict[str, Any]:
         """
         Retrieves a list of Shopify Payments payouts, which represent the movement of money from a merchant's Shopify Payments balance to their bank account, based on specified parameters like date range and payout status.
 
@@ -10746,8 +11732,19 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/shopify_payments/payouts.json'
-        query_params = {k: v for k, v in [('since_id', since_id), ('last_id', last_id), ('date_min', date_min), ('date_max', date_max), ('date', date), ('status', status)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/shopify_payments/payouts.json"
+        query_params = {
+            k: v
+            for k, v in [
+                ("since_id", since_id),
+                ("last_id", last_id),
+                ("date_min", date_min),
+                ("date_max", date_max),
+                ("date", date),
+                ("status", status),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -10779,7 +11776,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if payout_id is None:
             raise ValueError("Missing required parameter 'payout_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/shopify_payments/payouts/{payout_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/shopify_payments/payouts/{payout_id}.json"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -10790,7 +11787,15 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def list_shopify_balance_txs(self, api_version: str, since_id: str | None=None, last_id: str | None=None, test: str | None=None, payout_id: str | None=None, payout_status: str | None=None) -> dict[str, Any]:
+    async def list_shopify_balance_txs(
+        self,
+        api_version: str,
+        since_id: str | None = None,
+        last_id: str | None = None,
+        test: str | None = None,
+        payout_id: str | None = None,
+        payout_status: str | None = None,
+    ) -> dict[str, Any]:
         """
         Retrieves Shopify Payments balance transactions associated with payouts, filtered by parameters like payout ID, status, or test mode.
 
@@ -10814,8 +11819,18 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/shopify_payments/balance/transactions.json'
-        query_params = {k: v for k, v in [('since_id', since_id), ('last_id', last_id), ('test', test), ('payout_id', payout_id), ('payout_status', payout_status)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/shopify_payments/balance/transactions.json"
+        query_params = {
+            k: v
+            for k, v in [
+                ("since_id", since_id),
+                ("last_id", last_id),
+                ("test", test),
+                ("payout_id", payout_id),
+                ("payout_status", payout_status),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -10825,7 +11840,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def receive_alist_of_all_countries(self, api_version: str, since_id: str | None=None, fields: str | None=None) -> dict[str, Any]:
+    async def receive_alist_of_all_countries(
+        self, api_version: str, since_id: str | None = None, fields: str | None = None
+    ) -> dict[str, Any]:
         """
         Retrieves country data based on specified parameters such as since_id and fields, returning details in JSON format.
 
@@ -10846,8 +11863,8 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/countries.json'
-        query_params = {k: v for k, v in [('since_id', since_id), ('fields', fields)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/countries.json"
+        query_params = {k: v for k, v in [("since_id", since_id), ("fields", fields)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -10857,7 +11874,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def creates_acountry(self, api_version: str, country: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def creates_acountry(self, api_version: str, country: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Creates a new country entry via the Shopify Admin REST API and returns a success status upon creation.
 
@@ -10878,11 +11895,11 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         request_body_data = None
-        request_body_data = {'country': country}
+        request_body_data = {"country": country}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/countries.json'
+        url = f"{self.base_url}/admin/api/{api_version}/countries.json"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10910,7 +11927,7 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/countries/count.json'
+        url = f"{self.base_url}/admin/api/{api_version}/countries/count.json"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -10921,7 +11938,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def retrieves_aspecific_county(self, api_version: str, country_id: str, fields: str | None=None) -> dict[str, Any]:
+    async def retrieves_aspecific_county(self, api_version: str, country_id: str, fields: str | None = None) -> dict[str, Any]:
         """
         Retrieves country details by ID with optional field filtering.
 
@@ -10944,8 +11961,8 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if country_id is None:
             raise ValueError("Missing required parameter 'country_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/countries/{country_id}.json'
-        query_params = {k: v for k, v in [('fields', fields)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/countries/{country_id}.json"
+        query_params = {k: v for k, v in [("fields", fields)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -10955,7 +11972,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def updates_an_existing_country(self, api_version: str, country_id: str, country: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def updates_an_existing_country(self, api_version: str, country_id: str, country: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Updates or creates a country resource at a specified ID using the "PUT" method, allowing for full replacement or creation of the country data.
 
@@ -10979,11 +11996,11 @@ class ShopifyApp(APIApplication):
         if country_id is None:
             raise ValueError("Missing required parameter 'country_id'.")
         request_body_data = None
-        request_body_data = {'country': country}
+        request_body_data = {"country": country}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/countries/{country_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/countries/{country_id}.json"
         query_params = {}
-        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10992,7 +12009,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def remove_an_existing_country(self, api_version: str, country_id: str, body_content: str | None=None) -> dict[str, Any]:
+    async def remove_an_existing_country(self, api_version: str, country_id: str, body_content: str | None = None) -> dict[str, Any]:
         """
         Deletes a specified country from the system using the DELETE method at the "/admin/api/{api_version}/countries/{country_id}.json" endpoint.
 
@@ -11015,7 +12032,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if country_id is None:
             raise ValueError("Missing required parameter 'country_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/countries/{country_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/countries/{country_id}.json"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -11045,7 +12062,7 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/currencies.json'
+        url = f"{self.base_url}/admin/api/{api_version}/currencies.json"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -11075,7 +12092,7 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/policies.json'
+        url = f"{self.base_url}/admin/api/{api_version}/policies.json"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -11086,7 +12103,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_provinces_by_country_id(self, api_version: str, country_id: str, since_id: str | None=None, fields: str | None=None) -> dict[str, Any]:
+    async def get_provinces_by_country_id(
+        self, api_version: str, country_id: str, since_id: str | None = None, fields: str | None = None
+    ) -> dict[str, Any]:
         """
         Retrieves a list of provinces for a specific country using query parameters like `since_id` and `fields` to filter or format the response.
 
@@ -11110,8 +12129,8 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if country_id is None:
             raise ValueError("Missing required parameter 'country_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/countries/{country_id}/provinces.json'
-        query_params = {k: v for k, v in [('since_id', since_id), ('fields', fields)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/countries/{country_id}/provinces.json"
+        query_params = {k: v for k, v in [("since_id", since_id), ("fields", fields)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -11143,7 +12162,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if country_id is None:
             raise ValueError("Missing required parameter 'country_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/countries/{country_id}/provinces/count.json'
+        url = f"{self.base_url}/admin/api/{api_version}/countries/{country_id}/provinces/count.json"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -11154,7 +12173,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_province_detail_by_id(self, api_version: str, country_id: str, province_id: str, fields: str | None=None) -> dict[str, Any]:
+    async def get_province_detail_by_id(
+        self, api_version: str, country_id: str, province_id: str, fields: str | None = None
+    ) -> dict[str, Any]:
         """
         Retrieves province details for a specific country using the specified API version and includes optional field selection.
 
@@ -11180,8 +12201,8 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'country_id'.")
         if province_id is None:
             raise ValueError("Missing required parameter 'province_id'.")
-        url = f'{self.base_url}/admin/api/{api_version}/countries/{country_id}/provinces/{province_id}.json'
-        query_params = {k: v for k, v in [('fields', fields)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/countries/{country_id}/provinces/{province_id}.json"
+        query_params = {k: v for k, v in [("fields", fields)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -11191,7 +12212,9 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_province_by_id_json(self, api_version: str, country_id: str, province_id: str, province: dict[str, Any] | None=None) -> dict[str, Any]:
+    async def update_province_by_id_json(
+        self, api_version: str, country_id: str, province_id: str, province: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         """
         Updates a specific province's details for a given country via the Shopify Admin REST API and returns a success status upon completion.
 
@@ -11218,11 +12241,11 @@ class ShopifyApp(APIApplication):
         if province_id is None:
             raise ValueError("Missing required parameter 'province_id'.")
         request_body_data = None
-        request_body_data = {'province': province}
+        request_body_data = {"province": province}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/admin/api/{api_version}/countries/{country_id}/provinces/{province_id}.json'
+        url = f"{self.base_url}/admin/api/{api_version}/countries/{country_id}/provinces/{province_id}.json"
         query_params = {}
-        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11231,7 +12254,7 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def retrieves_the_shop_sconfiguration(self, api_version: str, fields: str | None=None) -> dict[str, Any]:
+    async def retrieves_the_shop_sconfiguration(self, api_version: str, fields: str | None = None) -> dict[str, Any]:
         """
         Retrieves shop information in JSON format using the specified API version via the "GET" method at the "/admin/api/{api_version}/shop.json" endpoint, allowing optional specification of fields to include in the response.
 
@@ -11251,8 +12274,8 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/shop.json'
-        query_params = {k: v for k, v in [('fields', fields)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/shop.json"
+        query_params = {k: v for k, v in [("fields", fields)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -11262,7 +12285,16 @@ class ShopifyApp(APIApplication):
         except ValueError:
             return None
 
-    async def list_tender_transactions(self, api_version: str, limit: str | None=None, since_id: str | None=None, processed_at_min: str | None=None, processed_at_max: str | None=None, processed_at: str | None=None, order: str | None=None) -> dict[str, Any]:
+    async def list_tender_transactions(
+        self,
+        api_version: str,
+        limit: str | None = None,
+        since_id: str | None = None,
+        processed_at_min: str | None = None,
+        processed_at_max: str | None = None,
+        processed_at: str | None = None,
+        order: str | None = None,
+    ) -> dict[str, Any]:
         """
         Retrieves a list of tender transactions with optional filtering by processing time, order, and pagination parameters.
 
@@ -11287,8 +12319,19 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = f'{self.base_url}/admin/api/{api_version}/tender_transactions.json'
-        query_params = {k: v for k, v in [('limit', limit), ('since_id', since_id), ('processed_at_min', processed_at_min), ('processed_at_max', processed_at_max), ('processed_at', processed_at), ('order', order)] if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/tender_transactions.json"
+        query_params = {
+            k: v
+            for k, v in [
+                ("limit", limit),
+                ("since_id", since_id),
+                ("processed_at_min", processed_at_min),
+                ("processed_at_max", processed_at_max),
+                ("processed_at", processed_at),
+                ("order", order),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -11299,4 +12342,315 @@ class ShopifyApp(APIApplication):
             return None
 
     def list_tools(self):
-        return [self.get_access_scopes, self.get_storefront_tokens, self.create_storefront_token, self.delete_storefront_access_token, self.retrieves_alist_of_reports, self.creates_anew_report, self.retrieves_asingle_report, self.updates_areport, self.deletes_areport, self.get_application_charges, self.creates_an_application_charge, self.retrieves_an_application_charge, self.activates_an_application_charge, self.retrieves_all_application_credits, self.creates_an_application_credit, self.get_application_credit_by_id, self.get_recurring_charges, self.create_recurring_charge, self.retrieves_asingle_charge, self.delete_recurring_charge, self.activate_recurring_charge, self.update_recurring_charge_custom, self.retrieves_alist_of_usage_charges, self.creates_ausage_charge, self.retrieves_asingle_chargeone, self.list_customer_addresses, self.creates_anew_address_for_acustomer, self.get_single_customer_address, self.update_customer_address_by_id, self.delete_customer_address, self.set_customer_address, self.set_default_address_by_id, self.retrieves_alist_of_customers, self.creates_acustomer, self.search_customers, self.retrieves_asingle_customer, self.updates_acustomer, self.deletes_acustomer, self.generate_activation_url, self.send_customer_invite, self.retrieves_acount_of_customers, self.get_customer_orders, self.list_customer_saved_searches, self.creates_acustomer_saved_search, self.get_customer_saved_searches_count, self.get_customer_saved_search_by_id, self.updates_acustomer_saved_search, self.deletes_acustomer_saved_search, self.get_customers_by_saved_search, self.retrieves_alist_of_discount_codes, self.creates_adiscount_code, self.retrieves_asingle_discount_code, self.updates_an_existing_discount_code, self.deletes_adiscount_code, self.lookup_discount_codes, self.post_price_rule_batch, self.get_price_rule_batch, self.get_discount_codes, self.retrieves_alist_of_price_rules, self.creates_aprice_rule, self.retrieves_asingle_price_rule, self.updates_an_existing_aprice_rule, self.remove_an_existing_pricerule, self.retrieves_acount_of_all_price_rules, self.retrieves_alist_of_events, self.retrieves_asingle_event, self.retrieves_acount_of_events, self.retrieves_alist_of_webhooks, self.create_anew_webhook, self.receive_acount_of_all_webhooks, self.receive_asingle_webhook, self.modify_an_existing_webhook, self.remove_an_existing_webhook, self.retrieves_alist_of_inventory_items, self.get_inventory_item_by_id, self.updates_an_existing_inventory_item, self.get_inventory_levels, self.delete_inventory_levels, self.adjust_inventory_level, self.connect_inventory_levels, self.set_inventory_level, self.retrieves_alist_of_locations, self.get_location_by_id, self.retrieves_acount_of_locations, self.get_inventory_level, self.list_marketing_events, self.creates_amarketing_event, self.get_marketing_events_count, self.retrieves_asingle_marketing_event, self.updates_amarketing_event, self.deletes_amarketing_event, self.create_marketing_event_engagement, self.get_metafields, self.create_metafields, self.get_metafield_count, self.get_metafield_by_id_json, self.updates_ametafield, self.deletes_ametafield_by_its_id, self.list_blog_articles_by_params, self.creates_an_article_for_ablog, self.get_article_count, self.receive_asingle_article, self.updates_an_article, self.deletes_an_article, self.get_authors, self.retrieves_alist_of_all_article_tags, self.get_theme_assets_json, self.update_theme_asset, self.deletes_an_asset_from_atheme, self.retrieve_alist_of_all_blogs, self.create_anew_blog, self.receive_acount_of_all_blogs, self.receive_asingle_blog, self.modify_an_existing_blog, self.remove_an_existing_blog, self.retrieves_alist_of_comments, self.creates_acomment_for_an_article, self.retrieves_acount_of_comments, self.retrieves_asingle_comment_by_its_id, self.updates_acomment_of_an_article, self.marks_acomment_as_spam, self.marks_acomment_as_not_spam, self.approves_acomment, self.removes_acomment, self.restore_comment, self.retrieves_alist_of_pages, self.create_anew_page, self.retrieves_apage_count, self.retrieves_asingle_page_by_its_id, self.updates_apage, self.deletes_apage, self.retrieves_alist_of_url_redirects, self.creates_aredirect, self.retrieves_acount_of_url_redirects, self.retrieves_asingle_redirect, self.updates_an_existing_redirect, self.deletes_aredirect, self.retrieves_alist_of_all_script_tags, self.creates_anew_script_tag, self.retrieves_acount_of_all_script_tags, self.retrieves_asingle_script_tag, self.updates_ascript_tag, self.deletes_ascript_tag, self.retrieves_alist_of_themes, self.creates_atheme, self.retrieves_asingle_theme, self.modify_an_existing_theme, self.remove_an_existing_theme, self.retrieves_acount_of_checkouts, self.get_checkouts, self.creates_acheckout, self.retrieves_alist_of_draft_orders, self.create_anew_draftorder, self.receive_asingle_draftorder, self.modify_an_existing_draftorder, self.remove_an_existing_draftorder, self.receive_acount_of_all_draftorders, self.send_an_invoice, self.complete_adraft_order, self.get_order_risks, self.creates_an_order_risk_for_an_order, self.get_order_risk_by_id, self.updates_an_order_risk, self.deletes_an_order_risk_for_an_order, self.retrieves_alist_of_orders, self.creates_an_order, self.retrieves_aspecific_order, self.updates_an_order, self.deletes_an_order, self.retrieves_an_order_count, self.closes_an_order, self.re_opens_aclosed_order, self.cancels_an_order, self.list_order_refunds, self.creates_arefund, self.retrieves_aspecific_refund, self.calculates_arefund, self.retrieves_alist_of_transactions, self.creates_atransaction_for_an_order, self.get_order_transactions_count, self.retrieves_aspecific_transaction, self.retrieves_alist_of_gift_cards, self.creates_agift_card, self.retrieves_asingle_gift_card, self.updates_an_existing_gift_card, self.retrieves_acount_of_gift_cards, self.disables_agift_card, self.searches_for_gift_cards, self.retrieves_alist_of_all_users, self.retrieves_asingle_user, self.get_current_user, self.retrieves_alist_of_collects, self.create_collects_post, self.get_collect_details, self.removes_aproduct_from_acollection, self.retrieves_acount_of_collects, self.retrieves_asingle_collection, self.list_collection_products, self.list_custom_collections, self.creates_acustom_collection, self.get_custom_collections_count, self.get_custom_collection_by_id, self.update_custom_collection_by_id, self.deletes_acustom_collection, self.receive_alist_of_all_product_images, self.create_anew_product_image, self.get_product_image_count, self.receive_asingle_product_image, self.modify_an_existing_product_image, self.remove_an_existing_product_image, self.list_product_variants, self.create_anew_product_variant, self.get_product_variant_count, self.receive_asingle_product_variant, self.modify_an_existing_product_variant, self.remove_an_existing_product_variant, self.retrieves_alist_of_products, self.creates_anew_product, self.retrieves_acount_of_products, self.retrieves_asingle_product, self.updates_aproduct, self.deletes_aproduct, self.list_smart_collections, self.creates_asmart_collection, self.count_smart_collections, self.get_smart_collection, self.update_smart_collection, self.removes_asmart_collection, self.update_smart_collection_order, self.completes_acheckout, self.retrieves_acheckout, self.modifies_an_existing_checkout, self.retrieves_alist_of_shipping_rates, self.get_collection_listings, self.get_product_ids, self.get_collection_listing, self.update_collection_listing_by_id, self.delete_collection_listing_by_id, self.create_session, self.get_checkout_payments_list, self.creates_anew_payment, self.retrieves_asingle_payment, self.get_checkout_payment_count_by_token, self.list_product_listings, self.list_product_ids, self.get_product_listings_count, self.get_product_listing, self.update_product_listing_by_id, self.delete_product_listing_by_id, self.get_feedback_resource, self.create_anew_resourcefeedback, self.get_assigned_orders, self.sends_acancellation_request, self.accepts_acancellation_request, self.rejects_acancellation_request, self.list_carrier_services, self.creates_acarrier_service, self.retrieves_asingle_carrier_service, self.updates_acarrier_service, self.deletes_acarrier_service, self.get_order_fulfillments, self.create_anew_fulfillment, self.get_fulfill_order_fulfillments, self.get_order_fulfillment_count, self.receive_asingle_fulfillment, self.modify_an_existing_fulfillment, self.create_fulfillment, self.update_fulfillment_tracking, self.complete_afulfillment, self.post_order_fulfillment_open, self.cancel_fulfillment, self.cancels_afulfillment, self.get_fulfillment_event_by_id, self.creates_afulfillment_event, self.get_fulfillment_event, self.deletes_afulfillment_event, self.get_fulfillment_orders, self.get_fulfillment_order_by_id, self.cancel_afulfillment_order, self.close_fulfillment_order, self.move_fulfillment_order_post, self.sends_afulfillment_request, self.accepts_afulfillment_request, self.rejects_afulfillment_request, self.list_fulfillment_services, self.create_anew_fulfillmentservice, self.get_fulfillment_service, self.update_fulfillment_service, self.delete_fulfillment_service_by_id, self.get_fulfillment_locations, self.return_the_current_balance, self.return_alist_of_all_disputes, self.return_asingle_dispute, self.return_alist_of_all_payouts, self.return_asingle_payout, self.list_shopify_balance_txs, self.receive_alist_of_all_countries, self.creates_acountry, self.retrieves_acount_of_countries, self.retrieves_aspecific_county, self.updates_an_existing_country, self.remove_an_existing_country, self.get_currencies, self.get_policies_admin_api, self.get_provinces_by_country_id, self.get_country_provinces_count, self.get_province_detail_by_id, self.update_province_by_id_json, self.retrieves_the_shop_sconfiguration, self.list_tender_transactions]
+        return [
+            self.get_access_scopes,
+            self.get_storefront_tokens,
+            self.create_storefront_token,
+            self.delete_storefront_access_token,
+            self.retrieves_alist_of_reports,
+            self.creates_anew_report,
+            self.retrieves_asingle_report,
+            self.updates_areport,
+            self.deletes_areport,
+            self.get_application_charges,
+            self.creates_an_application_charge,
+            self.retrieves_an_application_charge,
+            self.activates_an_application_charge,
+            self.retrieves_all_application_credits,
+            self.creates_an_application_credit,
+            self.get_application_credit_by_id,
+            self.get_recurring_charges,
+            self.create_recurring_charge,
+            self.retrieves_asingle_charge,
+            self.delete_recurring_charge,
+            self.activate_recurring_charge,
+            self.update_recurring_charge_custom,
+            self.retrieves_alist_of_usage_charges,
+            self.creates_ausage_charge,
+            self.retrieves_asingle_chargeone,
+            self.list_customer_addresses,
+            self.creates_anew_address_for_acustomer,
+            self.get_single_customer_address,
+            self.update_customer_address_by_id,
+            self.delete_customer_address,
+            self.set_customer_address,
+            self.set_default_address_by_id,
+            self.retrieves_alist_of_customers,
+            self.creates_acustomer,
+            self.search_customers,
+            self.retrieves_asingle_customer,
+            self.updates_acustomer,
+            self.deletes_acustomer,
+            self.generate_activation_url,
+            self.send_customer_invite,
+            self.retrieves_acount_of_customers,
+            self.get_customer_orders,
+            self.list_customer_saved_searches,
+            self.creates_acustomer_saved_search,
+            self.get_customer_saved_searches_count,
+            self.get_customer_saved_search_by_id,
+            self.updates_acustomer_saved_search,
+            self.deletes_acustomer_saved_search,
+            self.get_customers_by_saved_search,
+            self.retrieves_alist_of_discount_codes,
+            self.creates_adiscount_code,
+            self.retrieves_asingle_discount_code,
+            self.updates_an_existing_discount_code,
+            self.deletes_adiscount_code,
+            self.lookup_discount_codes,
+            self.post_price_rule_batch,
+            self.get_price_rule_batch,
+            self.get_discount_codes,
+            self.retrieves_alist_of_price_rules,
+            self.creates_aprice_rule,
+            self.retrieves_asingle_price_rule,
+            self.updates_an_existing_aprice_rule,
+            self.remove_an_existing_pricerule,
+            self.retrieves_acount_of_all_price_rules,
+            self.retrieves_alist_of_events,
+            self.retrieves_asingle_event,
+            self.retrieves_acount_of_events,
+            self.retrieves_alist_of_webhooks,
+            self.create_anew_webhook,
+            self.receive_acount_of_all_webhooks,
+            self.receive_asingle_webhook,
+            self.modify_an_existing_webhook,
+            self.remove_an_existing_webhook,
+            self.retrieves_alist_of_inventory_items,
+            self.get_inventory_item_by_id,
+            self.updates_an_existing_inventory_item,
+            self.get_inventory_levels,
+            self.delete_inventory_levels,
+            self.adjust_inventory_level,
+            self.connect_inventory_levels,
+            self.set_inventory_level,
+            self.retrieves_alist_of_locations,
+            self.get_location_by_id,
+            self.retrieves_acount_of_locations,
+            self.get_inventory_level,
+            self.list_marketing_events,
+            self.creates_amarketing_event,
+            self.get_marketing_events_count,
+            self.retrieves_asingle_marketing_event,
+            self.updates_amarketing_event,
+            self.deletes_amarketing_event,
+            self.create_marketing_event_engagement,
+            self.get_metafields,
+            self.create_metafields,
+            self.get_metafield_count,
+            self.get_metafield_by_id_json,
+            self.updates_ametafield,
+            self.deletes_ametafield_by_its_id,
+            self.list_blog_articles_by_params,
+            self.creates_an_article_for_ablog,
+            self.get_article_count,
+            self.receive_asingle_article,
+            self.updates_an_article,
+            self.deletes_an_article,
+            self.get_authors,
+            self.retrieves_alist_of_all_article_tags,
+            self.get_theme_assets_json,
+            self.update_theme_asset,
+            self.deletes_an_asset_from_atheme,
+            self.retrieve_alist_of_all_blogs,
+            self.create_anew_blog,
+            self.receive_acount_of_all_blogs,
+            self.receive_asingle_blog,
+            self.modify_an_existing_blog,
+            self.remove_an_existing_blog,
+            self.retrieves_alist_of_comments,
+            self.creates_acomment_for_an_article,
+            self.retrieves_acount_of_comments,
+            self.retrieves_asingle_comment_by_its_id,
+            self.updates_acomment_of_an_article,
+            self.marks_acomment_as_spam,
+            self.marks_acomment_as_not_spam,
+            self.approves_acomment,
+            self.removes_acomment,
+            self.restore_comment,
+            self.retrieves_alist_of_pages,
+            self.create_anew_page,
+            self.retrieves_apage_count,
+            self.retrieves_asingle_page_by_its_id,
+            self.updates_apage,
+            self.deletes_apage,
+            self.retrieves_alist_of_url_redirects,
+            self.creates_aredirect,
+            self.retrieves_acount_of_url_redirects,
+            self.retrieves_asingle_redirect,
+            self.updates_an_existing_redirect,
+            self.deletes_aredirect,
+            self.retrieves_alist_of_all_script_tags,
+            self.creates_anew_script_tag,
+            self.retrieves_acount_of_all_script_tags,
+            self.retrieves_asingle_script_tag,
+            self.updates_ascript_tag,
+            self.deletes_ascript_tag,
+            self.retrieves_alist_of_themes,
+            self.creates_atheme,
+            self.retrieves_asingle_theme,
+            self.modify_an_existing_theme,
+            self.remove_an_existing_theme,
+            self.retrieves_acount_of_checkouts,
+            self.get_checkouts,
+            self.creates_acheckout,
+            self.retrieves_alist_of_draft_orders,
+            self.create_anew_draftorder,
+            self.receive_asingle_draftorder,
+            self.modify_an_existing_draftorder,
+            self.remove_an_existing_draftorder,
+            self.receive_acount_of_all_draftorders,
+            self.send_an_invoice,
+            self.complete_adraft_order,
+            self.get_order_risks,
+            self.creates_an_order_risk_for_an_order,
+            self.get_order_risk_by_id,
+            self.updates_an_order_risk,
+            self.deletes_an_order_risk_for_an_order,
+            self.retrieves_alist_of_orders,
+            self.creates_an_order,
+            self.retrieves_aspecific_order,
+            self.updates_an_order,
+            self.deletes_an_order,
+            self.retrieves_an_order_count,
+            self.closes_an_order,
+            self.re_opens_aclosed_order,
+            self.cancels_an_order,
+            self.list_order_refunds,
+            self.creates_arefund,
+            self.retrieves_aspecific_refund,
+            self.calculates_arefund,
+            self.retrieves_alist_of_transactions,
+            self.creates_atransaction_for_an_order,
+            self.get_order_transactions_count,
+            self.retrieves_aspecific_transaction,
+            self.retrieves_alist_of_gift_cards,
+            self.creates_agift_card,
+            self.retrieves_asingle_gift_card,
+            self.updates_an_existing_gift_card,
+            self.retrieves_acount_of_gift_cards,
+            self.disables_agift_card,
+            self.searches_for_gift_cards,
+            self.retrieves_alist_of_all_users,
+            self.retrieves_asingle_user,
+            self.get_current_user,
+            self.retrieves_alist_of_collects,
+            self.create_collects_post,
+            self.get_collect_details,
+            self.removes_aproduct_from_acollection,
+            self.retrieves_acount_of_collects,
+            self.retrieves_asingle_collection,
+            self.list_collection_products,
+            self.list_custom_collections,
+            self.creates_acustom_collection,
+            self.get_custom_collections_count,
+            self.get_custom_collection_by_id,
+            self.update_custom_collection_by_id,
+            self.deletes_acustom_collection,
+            self.receive_alist_of_all_product_images,
+            self.create_anew_product_image,
+            self.get_product_image_count,
+            self.receive_asingle_product_image,
+            self.modify_an_existing_product_image,
+            self.remove_an_existing_product_image,
+            self.list_product_variants,
+            self.create_anew_product_variant,
+            self.get_product_variant_count,
+            self.receive_asingle_product_variant,
+            self.modify_an_existing_product_variant,
+            self.remove_an_existing_product_variant,
+            self.retrieves_alist_of_products,
+            self.creates_anew_product,
+            self.retrieves_acount_of_products,
+            self.retrieves_asingle_product,
+            self.updates_aproduct,
+            self.deletes_aproduct,
+            self.list_smart_collections,
+            self.creates_asmart_collection,
+            self.count_smart_collections,
+            self.get_smart_collection,
+            self.update_smart_collection,
+            self.removes_asmart_collection,
+            self.update_smart_collection_order,
+            self.completes_acheckout,
+            self.retrieves_acheckout,
+            self.modifies_an_existing_checkout,
+            self.retrieves_alist_of_shipping_rates,
+            self.get_collection_listings,
+            self.get_product_ids,
+            self.get_collection_listing,
+            self.update_collection_listing_by_id,
+            self.delete_collection_listing_by_id,
+            self.create_session,
+            self.get_checkout_payments_list,
+            self.creates_anew_payment,
+            self.retrieves_asingle_payment,
+            self.get_checkout_payment_count_by_token,
+            self.list_product_listings,
+            self.list_product_ids,
+            self.get_product_listings_count,
+            self.get_product_listing,
+            self.update_product_listing_by_id,
+            self.delete_product_listing_by_id,
+            self.get_feedback_resource,
+            self.create_anew_resourcefeedback,
+            self.get_assigned_orders,
+            self.sends_acancellation_request,
+            self.accepts_acancellation_request,
+            self.rejects_acancellation_request,
+            self.list_carrier_services,
+            self.creates_acarrier_service,
+            self.retrieves_asingle_carrier_service,
+            self.updates_acarrier_service,
+            self.deletes_acarrier_service,
+            self.get_order_fulfillments,
+            self.create_anew_fulfillment,
+            self.get_fulfill_order_fulfillments,
+            self.get_order_fulfillment_count,
+            self.receive_asingle_fulfillment,
+            self.modify_an_existing_fulfillment,
+            self.create_fulfillment,
+            self.update_fulfillment_tracking,
+            self.complete_afulfillment,
+            self.post_order_fulfillment_open,
+            self.cancel_fulfillment,
+            self.cancels_afulfillment,
+            self.get_fulfillment_event_by_id,
+            self.creates_afulfillment_event,
+            self.get_fulfillment_event,
+            self.deletes_afulfillment_event,
+            self.get_fulfillment_orders,
+            self.get_fulfillment_order_by_id,
+            self.cancel_afulfillment_order,
+            self.close_fulfillment_order,
+            self.move_fulfillment_order_post,
+            self.sends_afulfillment_request,
+            self.accepts_afulfillment_request,
+            self.rejects_afulfillment_request,
+            self.list_fulfillment_services,
+            self.create_anew_fulfillmentservice,
+            self.get_fulfillment_service,
+            self.update_fulfillment_service,
+            self.delete_fulfillment_service_by_id,
+            self.get_fulfillment_locations,
+            self.return_the_current_balance,
+            self.return_alist_of_all_disputes,
+            self.return_asingle_dispute,
+            self.return_alist_of_all_payouts,
+            self.return_asingle_payout,
+            self.list_shopify_balance_txs,
+            self.receive_alist_of_all_countries,
+            self.creates_acountry,
+            self.retrieves_acount_of_countries,
+            self.retrieves_aspecific_county,
+            self.updates_an_existing_country,
+            self.remove_an_existing_country,
+            self.get_currencies,
+            self.get_policies_admin_api,
+            self.get_provinces_by_country_id,
+            self.get_country_provinces_count,
+            self.get_province_detail_by_id,
+            self.update_province_by_id_json,
+            self.retrieves_the_shop_sconfiguration,
+            self.list_tender_transactions,
+        ]

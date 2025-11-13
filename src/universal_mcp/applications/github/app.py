@@ -3,20 +3,20 @@ from loguru import logger
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
-class GithubApp(APIApplication):
 
+class GithubApp(APIApplication):
     def __init__(self, integration: Integration) -> None:
-        super().__init__(name='github', integration=integration)
-        self.base_api_url = 'https://api.github.com/repos'
-        self.base_url = 'https://api.github.com'
+        super().__init__(name="github", integration=integration)
+        self.base_api_url = "https://api.github.com/repos"
+        self.base_url = "https://api.github.com"
 
     def _get_headers(self):
         if not self.integration:
-            raise ValueError('Integration not configured')
+            raise ValueError("Integration not configured")
         credentials = self.integration.get_credentials()
-        if 'headers' in credentials:
-            return credentials['headers']
-        return {'Authorization': f"Bearer {credentials['access_token']}", 'Accept': 'application/vnd.github.v3+json'}
+        if "headers" in credentials:
+            return credentials["headers"]
+        return {"Authorization": f"Bearer {credentials['access_token']}", "Accept": "application/vnd.github.v3+json"}
 
     async def star_repository(self, repo_full_name: str) -> str:
         """
@@ -35,15 +35,15 @@ class GithubApp(APIApplication):
         Tags:
             star, github, api, action, social, repository, important
         """
-        url = f'https://api.github.com/user/starred/{repo_full_name}'
+        url = f"https://api.github.com/user/starred/{repo_full_name}"
         response = await self._aput(url, data={})
         if response.status_code == 204:
-            return f'Successfully starred repository {repo_full_name}'
+            return f"Successfully starred repository {repo_full_name}"
         elif response.status_code == 404:
-            return f'Repository {repo_full_name} not found'
+            return f"Repository {repo_full_name} not found"
         else:
             logger.error(response.text)
-            return f'Error starring repository: {response.text}'
+            return f"Error starring repository: {response.text}"
 
     async def list_recent_commits(self, repo_full_name: str) -> str:
         """
@@ -63,18 +63,18 @@ class GithubApp(APIApplication):
             list, read, commits, github, history, api, important
         """
         repo_full_name = repo_full_name.strip()
-        url = f'{self.base_api_url}/{repo_full_name}/commits'
+        url = f"{self.base_api_url}/{repo_full_name}/commits"
         response = await self._aget(url)
         response.raise_for_status()
         commits = response.json()
         if not commits:
-            return f'No commits found for repository {repo_full_name}'
-        result = f'Recent commits for {repo_full_name}:\n\n'
+            return f"No commits found for repository {repo_full_name}"
+        result = f"Recent commits for {repo_full_name}:\n\n"
         for commit in commits[:12]:
-            sha = commit.get('sha', '')[:7]
-            message = commit.get('commit', {}).get('message', '').split('\n')[0]
-            author = commit.get('commit', {}).get('author', {}).get('name', 'Unknown')
-            result += f'- {sha}: {message} (by {author})\n'
+            sha = commit.get("sha", "")[:7]
+            message = commit.get("commit", {}).get("message", "").split("\n")[0]
+            author = commit.get("commit", {}).get("author", {}).get("name", "Unknown")
+            result += f"- {sha}: {message} (by {author})\n"
         return result
 
     async def list_branches(self, repo_full_name: str) -> str:
@@ -95,19 +95,19 @@ class GithubApp(APIApplication):
             list, branches, github, read, api, repository, important
         """
         repo_full_name = repo_full_name.strip()
-        url = f'{self.base_api_url}/{repo_full_name}/branches'
+        url = f"{self.base_api_url}/{repo_full_name}/branches"
         response = await self._aget(url)
         response.raise_for_status()
         branches = response.json()
         if not branches:
-            return f'No branches found for repository {repo_full_name}'
-        result = f'Branches for {repo_full_name}:\n\n'
+            return f"No branches found for repository {repo_full_name}"
+        result = f"Branches for {repo_full_name}:\n\n"
         for branch in branches:
-            branch_name = branch.get('name', 'Unknown')
-            result += f'- {branch_name}\n'
+            branch_name = branch.get("name", "Unknown")
+            result += f"- {branch_name}\n"
         return result
 
-    async def list_pull_requests(self, repo_full_name: str, state: str='open') -> str:
+    async def list_pull_requests(self, repo_full_name: str, state: str = "open") -> str:
         """
         Fetches pull requests for a repository, filtered by state (e.g., 'open'). It returns a formatted string summarizing each PR's details, distinguishing it from `get_pull_request` (single PR) and `search_issues` (raw issue data).
 
@@ -125,23 +125,25 @@ class GithubApp(APIApplication):
             list, pull-request, github, api, read, important, fetch, query
         """
         repo_full_name = repo_full_name.strip()
-        url = f'{self.base_api_url}/{repo_full_name}/pulls'
-        params = {'state': state}
+        url = f"{self.base_api_url}/{repo_full_name}/pulls"
+        params = {"state": state}
         response = await self._aget(url, params=params)
         response.raise_for_status()
         pull_requests = response.json()
         if not pull_requests:
             return f"No pull requests found for repository {repo_full_name} with state '{state}'"
-        result = f'Pull requests for {repo_full_name} (State: {state}):\n\n'
+        result = f"Pull requests for {repo_full_name} (State: {state}):\n\n"
         for pr in pull_requests:
-            pr_title = pr.get('title', 'No Title')
-            pr_number = pr.get('number', 'Unknown')
-            pr_state = pr.get('state', 'Unknown')
-            pr_user = pr.get('user', {}).get('login', 'Unknown')
-            result += f'- PR #{pr_number}: {pr_title} (by {pr_user}, Status: {pr_state})\n'
+            pr_title = pr.get("title", "No Title")
+            pr_number = pr.get("number", "Unknown")
+            pr_state = pr.get("state", "Unknown")
+            pr_user = pr.get("user", {}).get("login", "Unknown")
+            result += f"- PR #{pr_number}: {pr_title} (by {pr_user}, Status: {pr_state})\n"
         return result
 
-    async def search_issues(self, repo_full_name: str, state: str='open', assignee: str=None, labels: str=None, per_page: int=30, page: int=1) -> list[dict[str, Any]]:
+    async def search_issues(
+        self, repo_full_name: str, state: str = "open", assignee: str = None, labels: str = None, per_page: int = 30, page: int = 1
+    ) -> list[dict[str, Any]]:
         """
         Fetches issues from a GitHub repository using specified filters (state, assignee, labels) and pagination. It returns the raw API response as a list of dictionaries, providing detailed issue data for programmatic processing, distinct from other methods that return formatted strings.
 
@@ -164,12 +166,12 @@ class GithubApp(APIApplication):
             list, issues, github, api, read, filter, pagination, important, project-management
         """
         repo_full_name = repo_full_name.strip()
-        url = f'{self.base_api_url}/{repo_full_name}/issues'
-        params = {'state': state, 'per_page': per_page, 'page': page}
+        url = f"{self.base_api_url}/{repo_full_name}/issues"
+        params = {"state": state, "per_page": per_page, "page": page}
         if assignee:
-            params['assignee'] = assignee
+            params["assignee"] = assignee
         if labels:
-            params['labels'] = labels
+            params["labels"] = labels
         response = await self._aget(url, params=params)
         response.raise_for_status()
         return response.json()
@@ -193,19 +195,29 @@ class GithubApp(APIApplication):
             get, read, github, pull-request, api, fetch, format, important
         """
         repo_full_name = repo_full_name.strip()
-        url = f'{self.base_api_url}/{repo_full_name}/pulls/{pull_number}'
+        url = f"{self.base_api_url}/{repo_full_name}/pulls/{pull_number}"
         response = await self._aget(url)
         response.raise_for_status()
         pr = response.json()
-        pr_title = pr.get('title', 'No Title')
-        pr_number = pr.get('number', 'Unknown')
-        pr_state = pr.get('state', 'Unknown')
-        pr_user = pr.get('user', {}).get('login', 'Unknown')
-        pr_body = pr.get('body', 'No description provided.')
-        result = f'Pull Request #{pr_number}: {pr_title}\nCreated by: {pr_user}\nStatus: {pr_state}\nDescription: {pr_body}\n'
+        pr_title = pr.get("title", "No Title")
+        pr_number = pr.get("number", "Unknown")
+        pr_state = pr.get("state", "Unknown")
+        pr_user = pr.get("user", {}).get("login", "Unknown")
+        pr_body = pr.get("body", "No description provided.")
+        result = f"Pull Request #{pr_number}: {pr_title}\nCreated by: {pr_user}\nStatus: {pr_state}\nDescription: {pr_body}\n"
         return result
 
-    async def create_pull_request(self, repo_full_name: str, head: str, base: str, title: str=None, body: str=None, issue: int=None, maintainer_can_modify: bool=True, draft: bool=False) -> dict[str, Any]:
+    async def create_pull_request(
+        self,
+        repo_full_name: str,
+        head: str,
+        base: str,
+        title: str = None,
+        body: str = None,
+        issue: int = None,
+        maintainer_can_modify: bool = True,
+        draft: bool = False,
+    ) -> dict[str, Any]:
         """
         Creates a pull request between specified `head` and `base` branches, or converts an issue into a PR. Unlike read functions that return formatted strings, this write operation returns the raw API response as a dictionary, providing comprehensive data on the newly created pull request.
 
@@ -230,21 +242,21 @@ class GithubApp(APIApplication):
             create, pull-request, github, api, write, important
         """
         repo_full_name = repo_full_name.strip()
-        url = f'{self.base_api_url}/{repo_full_name}/pulls'
-        pull_request_data = {'head': head, 'base': base, 'maintainer_can_modify': maintainer_can_modify, 'draft': draft}
+        url = f"{self.base_api_url}/{repo_full_name}/pulls"
+        pull_request_data = {"head": head, "base": base, "maintainer_can_modify": maintainer_can_modify, "draft": draft}
         if issue is not None:
-            pull_request_data['issue'] = issue
+            pull_request_data["issue"] = issue
         else:
             if title is None:
                 raise ValueError("Either 'title' or 'issue' must be specified")
-            pull_request_data['title'] = title
+            pull_request_data["title"] = title
             if body is not None:
-                pull_request_data['body'] = body
+                pull_request_data["body"] = body
         response = await self._apost(url, pull_request_data)
         response.raise_for_status()
         return response.json()
 
-    async def create_issue(self, repo_full_name: str, title: str, body: str='', labels=None) -> str:
+    async def create_issue(self, repo_full_name: str, title: str, body: str = "", labels=None) -> str:
         """
         Creates a new issue in a GitHub repository using a title, body, and optional labels. It returns a formatted confirmation string with the new issue's number and URL, differing from `update_issue` which modifies existing issues and `search_issues` which returns raw API data.
 
@@ -264,22 +276,22 @@ class GithubApp(APIApplication):
             create, issues, github, api, project-management, write, important
         """
         repo_full_name = repo_full_name.strip()
-        url = f'{self.base_api_url}/{repo_full_name}/issues'
-        issue_data = {'title': title, 'body': body}
+        url = f"{self.base_api_url}/{repo_full_name}/issues"
+        issue_data = {"title": title, "body": body}
         if labels:
             if isinstance(labels, str):
-                labels_list = [label.strip() for label in labels.split(',') if label.strip()]
-                issue_data['labels'] = labels_list
+                labels_list = [label.strip() for label in labels.split(",") if label.strip()]
+                issue_data["labels"] = labels_list
             else:
-                issue_data['labels'] = labels
+                issue_data["labels"] = labels
         response = await self._apost(url, issue_data)
         response.raise_for_status()
         issue = response.json()
-        issue_number = issue.get('number', 'Unknown')
-        issue_url = issue.get('html_url', '')
-        return f'Successfully created issue #{issue_number}:\nTitle: {title}\nURL: {issue_url}'
+        issue_number = issue.get("number", "Unknown")
+        issue_url = issue.get("html_url", "")
+        return f"Successfully created issue #{issue_number}:\nTitle: {title}\nURL: {issue_url}"
 
-    async def list_repo_activities(self, repo_full_name: str, direction: str='desc', per_page: int=30) -> str:
+    async def list_repo_activities(self, repo_full_name: str, direction: str = "desc", per_page: int = 30) -> str:
         """
         Fetches recent events for a GitHub repository and formats them into a human-readable string. It summarizes activities with actors and timestamps, providing a general event feed, unlike other `list_*` functions which retrieve specific resources like commits or issues.
 
@@ -299,23 +311,32 @@ class GithubApp(APIApplication):
             list, activity, github, read, events, api, query, format
         """
         repo_full_name = repo_full_name.strip()
-        url = f'{self.base_api_url}/{repo_full_name}/activity'
-        params = {'direction': direction, 'per_page': per_page}
+        url = f"{self.base_api_url}/{repo_full_name}/activity"
+        params = {"direction": direction, "per_page": per_page}
         response = await self._aget(url, params=params)
         response.raise_for_status()
         activities = response.json()
         if not activities:
-            return f'No activities found for repository {repo_full_name}'
-        result = f'Repository activities for {repo_full_name}:\n\n'
+            return f"No activities found for repository {repo_full_name}"
+        result = f"Repository activities for {repo_full_name}:\n\n"
         for activity in activities:
-            timestamp = activity.get('timestamp', 'Unknown time')
-            actor_name = 'Unknown user'
-            if 'actor' in activity and activity['actor']:
-                actor_name = activity['actor'].get('login', 'Unknown user')
-            result += f'- {actor_name} performed an activity at {timestamp}\n'
+            timestamp = activity.get("timestamp", "Unknown time")
+            actor_name = "Unknown user"
+            if "actor" in activity and activity["actor"]:
+                actor_name = activity["actor"].get("login", "Unknown user")
+            result += f"- {actor_name} performed an activity at {timestamp}\n"
         return result
 
-    async def update_issue(self, repo_full_name: str, issue_number: int, title: str=None, body: str=None, assignee: str=None, state: str=None, state_reason: str=None) -> dict[str, Any]:
+    async def update_issue(
+        self,
+        repo_full_name: str,
+        issue_number: int,
+        title: str = None,
+        body: str = None,
+        assignee: str = None,
+        state: str = None,
+        state_reason: str = None,
+    ) -> dict[str, Any]:
         """
         Modifies an existing GitHub issue, identified by its number within a repository. It can update optional fields like title, body, or state and returns the raw API response as a dictionary, differentiating it from `create_issue` which makes new issues and returns a formatted string.
 
@@ -338,21 +359,32 @@ class GithubApp(APIApplication):
         Tags:
             github, issues, update, api, project-management, write, important
         """
-        url = f'{self.base_api_url}/{repo_full_name}/issues/{issue_number}'
+        url = f"{self.base_api_url}/{repo_full_name}/issues/{issue_number}"
         update_data = {}
         if title is not None:
-            update_data['title'] = title
+            update_data["title"] = title
         if body is not None:
-            update_data['body'] = body
+            update_data["body"] = body
         if assignee is not None:
-            update_data['assignee'] = assignee
+            update_data["assignee"] = assignee
         if state is not None:
-            update_data['state'] = state
+            update_data["state"] = state
         if state_reason is not None:
-            update_data['state_reason'] = state_reason
+            update_data["state_reason"] = state_reason
         response = self._patch(url, update_data)
         response.raise_for_status()
         return response.json()
 
     def list_tools(self):
-        return [self.star_repository, self.list_recent_commits, self.list_branches, self.list_pull_requests, self.search_issues, self.get_pull_request, self.create_pull_request, self.create_issue, self.update_issue, self.list_repo_activities]
+        return [
+            self.star_repository,
+            self.list_recent_commits,
+            self.list_branches,
+            self.list_pull_requests,
+            self.search_issues,
+            self.get_pull_request,
+            self.create_pull_request,
+            self.create_issue,
+            self.update_issue,
+            self.list_repo_activities,
+        ]

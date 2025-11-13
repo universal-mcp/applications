@@ -2,13 +2,13 @@ from typing import Any
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
+
 class WhatsappBusinessApp(APIApplication):
+    def __init__(self, integration: Integration = None, **kwargs) -> None:
+        super().__init__(name="whatsapp_business", integration=integration, **kwargs)
+        self.base_url = "https://graph.facebook.com"
 
-    def __init__(self, integration: Integration=None, **kwargs) -> None:
-        super().__init__(name='whatsapp_business', integration=integration, **kwargs)
-        self.base_url = 'https://graph.facebook.com'
-
-    async def get_whatsapp_business_account(self, api_version: str, waba_id: str, fields: str | None=None) -> dict[str, Any]:
+    async def get_whatsapp_business_account(self, api_version: str, waba_id: str, fields: str | None = None) -> dict[str, Any]:
         """
         Fetches customizable data, primarily analytics, for a specific WhatsApp Business Account (WABA) using its ID. The `fields` parameter allows detailed queries, including date ranges and granularity for metrics like message volume, to refine the returned data.
 
@@ -31,8 +31,8 @@ class WhatsappBusinessApp(APIApplication):
             raise ValueError("Missing required parameter 'api-version'.")
         if waba_id is None:
             raise ValueError("Missing required parameter 'waba-id'.")
-        url = f'{self.base_url}/{api_version}/{waba_id}'
-        query_params = {k: v for k, v in [('fields', fields)] if v is not None}
+        url = f"{self.base_url}/{api_version}/{waba_id}"
+        query_params = {k: v for k, v in [("fields", fields)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -64,7 +64,7 @@ class WhatsappBusinessApp(APIApplication):
             raise ValueError("Missing required parameter 'api-version'.")
         if business_account_id is None:
             raise ValueError("Missing required parameter 'business-account-id'.")
-        url = f'{self.base_url}/{api_version}/{business_account_id}/extendedcredits'
+        url = f"{self.base_url}/{api_version}/{business_account_id}/extendedcredits"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -75,7 +75,7 @@ class WhatsappBusinessApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_business_account(self, api_version: str, business_account_id: str, fields: str | None=None) -> dict[str, Any]:
+    async def get_business_account(self, api_version: str, business_account_id: str, fields: str | None = None) -> dict[str, Any]:
         """
         Fetches details for a specific Meta Business Account using its ID. This function retrieves the core account object, unlike others that get associated resources like owned/shared WhatsApp Business Accounts (WABAs) or credit lines for the same ID. The response payload can be customized using the 'fields' parameter.
 
@@ -98,8 +98,8 @@ class WhatsappBusinessApp(APIApplication):
             raise ValueError("Missing required parameter 'api-version'.")
         if business_account_id is None:
             raise ValueError("Missing required parameter 'business-account-id'.")
-        url = f'{self.base_url}/{api_version}/{business_account_id}'
-        query_params = {k: v for k, v in [('fields', fields)] if v is not None}
+        url = f"{self.base_url}/{api_version}/{business_account_id}"
+        query_params = {k: v for k, v in [("fields", fields)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -131,7 +131,7 @@ class WhatsappBusinessApp(APIApplication):
             raise ValueError("Missing required parameter 'api-version'.")
         if business_phone_number_id is None:
             raise ValueError("Missing required parameter 'business-phone-number-id'.")
-        url = f'{self.base_url}/{api_version}/{business_phone_number_id}/whatsapp_commerce_settings'
+        url = f"{self.base_url}/{api_version}/{business_phone_number_id}/whatsapp_commerce_settings"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -142,7 +142,9 @@ class WhatsappBusinessApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_commerce_settings(self, api_version: str, business_phone_number_id: str, is_cart_enabled: str | None=None, is_catalog_visible: str | None=None) -> dict[str, Any]:
+    async def update_commerce_settings(
+        self, api_version: str, business_phone_number_id: str, is_cart_enabled: str | None = None, is_catalog_visible: str | None = None
+    ) -> dict[str, Any]:
         """
         Updates the commerce settings for a specific business phone number by enabling or disabling cart functionality and catalog visibility. This function differentiates from `get_commerce_settings` by using a POST request to modify data, rather than retrieving it.
 
@@ -167,9 +169,11 @@ class WhatsappBusinessApp(APIApplication):
         if business_phone_number_id is None:
             raise ValueError("Missing required parameter 'business-phone-number-id'.")
         request_body_data = None
-        url = f'{self.base_url}/{api_version}/{business_phone_number_id}/whatsapp_commerce_settings'
-        query_params = {k: v for k, v in [('is_cart_enabled', is_cart_enabled), ('is_catalog_visible', is_catalog_visible)] if v is not None}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        url = f"{self.base_url}/{api_version}/{business_phone_number_id}/whatsapp_commerce_settings"
+        query_params = {
+            k: v for k, v in [("is_cart_enabled", is_cart_enabled), ("is_catalog_visible", is_catalog_visible)] if v is not None
+        }
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -178,7 +182,9 @@ class WhatsappBusinessApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_upload_session(self, api_version: str, app_id: str, file_length: str | None=None, file_type: str | None=None) -> dict[str, Any]:
+    async def create_upload_session(
+        self, api_version: str, app_id: str, file_length: str | None = None, file_type: str | None = None
+    ) -> dict[str, Any]:
         """
         Initiates a resumable upload session by providing file metadata (size, type). This function creates an upload session ID and is the first of a two-step process for uploading media, preceding the actual data transfer performed by `resume_session`.
 
@@ -203,9 +209,9 @@ class WhatsappBusinessApp(APIApplication):
         if app_id is None:
             raise ValueError("Missing required parameter 'app-id'.")
         request_body_data = None
-        url = f'{self.base_url}/{api_version}/{app_id}/uploads'
-        query_params = {k: v for k, v in [('file_length', file_length), ('file_type', file_type)] if v is not None}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        url = f"{self.base_url}/{api_version}/{app_id}/uploads"
+        query_params = {k: v for k, v in [("file_length", file_length), ("file_type", file_type)] if v is not None}
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -234,9 +240,9 @@ class WhatsappBusinessApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api-version'.")
         request_body_data = None
-        url = f'{self.base_url}/{api_version}/<SESSION_ID>'
+        url = f"{self.base_url}/{api_version}/<SESSION_ID>"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -245,7 +251,7 @@ class WhatsappBusinessApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_business_phone_number(self, api_version: str, business_phone_number_id: str, fields: str | None=None) -> dict[str, Any]:
+    async def get_business_phone_number(self, api_version: str, business_phone_number_id: str, fields: str | None = None) -> dict[str, Any]:
         """
         Retrieves details for a specific WhatsApp Business phone number by its unique ID. The optional `fields` parameter allows for customizing the response to include only desired data, differentiating it from `get_all_business_phone_numbers`, which retrieves a list of all numbers for a WABA.
 
@@ -268,8 +274,8 @@ class WhatsappBusinessApp(APIApplication):
             raise ValueError("Missing required parameter 'api-version'.")
         if business_phone_number_id is None:
             raise ValueError("Missing required parameter 'business-phone-number-id'.")
-        url = f'{self.base_url}/{api_version}/{business_phone_number_id}'
-        query_params = {k: v for k, v in [('fields', fields)] if v is not None}
+        url = f"{self.base_url}/{api_version}/{business_phone_number_id}"
+        query_params = {k: v for k, v in [("fields", fields)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -279,7 +285,9 @@ class WhatsappBusinessApp(APIApplication):
         except ValueError:
             return None
 
-    async def list_waba_phone_numbers(self, api_version: str, waba_id: str, fields: str | None=None, filtering: str | None=None) -> list[Any]:
+    async def list_waba_phone_numbers(
+        self, api_version: str, waba_id: str, fields: str | None = None, filtering: str | None = None
+    ) -> list[Any]:
         """
         Fetches a list of phone numbers for a specified WhatsApp Business Account (WABA). This function allows for result filtering and customizable field selection, distinguishing it from `get_business_phone_number` which retrieves a single number by its unique ID.
 
@@ -303,8 +311,8 @@ class WhatsappBusinessApp(APIApplication):
             raise ValueError("Missing required parameter 'api-version'.")
         if waba_id is None:
             raise ValueError("Missing required parameter 'waba-id'.")
-        url = f'{self.base_url}/{api_version}/{waba_id}/phone_numbers'
-        query_params = {k: v for k, v in [('fields', fields), ('filtering', filtering)] if v is not None}
+        url = f"{self.base_url}/{api_version}/{waba_id}/phone_numbers"
+        query_params = {k: v for k, v in [("fields", fields), ("filtering", filtering)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -336,7 +344,7 @@ class WhatsappBusinessApp(APIApplication):
             raise ValueError("Missing required parameter 'api-version'.")
         if business_phone_number_id is None:
             raise ValueError("Missing required parameter 'business-phone-number-id'.")
-        url = f'{self.base_url}/{api_version}/{business_phone_number_id}/message_qrdls/<QR_CODE_ID>'
+        url = f"{self.base_url}/{api_version}/{business_phone_number_id}/message_qrdls/<QR_CODE_ID>"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -369,7 +377,7 @@ class WhatsappBusinessApp(APIApplication):
             raise ValueError("Missing required parameter 'api-version'.")
         if business_phone_number_id is None:
             raise ValueError("Missing required parameter 'business-phone-number-id'.")
-        url = f'{self.base_url}/{api_version}/{business_phone_number_id}/message_qrdls/<QR_CODE_ID>'
+        url = f"{self.base_url}/{api_version}/{business_phone_number_id}/message_qrdls/<QR_CODE_ID>"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -380,7 +388,9 @@ class WhatsappBusinessApp(APIApplication):
         except ValueError:
             return None
 
-    async def list_qr_codes(self, api_version: str, business_phone_number_id: str, fields: str | None=None, code: str | None=None) -> dict[str, Any]:
+    async def list_qr_codes(
+        self, api_version: str, business_phone_number_id: str, fields: str | None = None, code: str | None = None
+    ) -> dict[str, Any]:
         """
         Retrieves a list of QR codes for a business phone number. This function allows optional filtering by a specific QR code identifier and customization of the fields returned in the response, such as the image format.
 
@@ -404,8 +414,8 @@ class WhatsappBusinessApp(APIApplication):
             raise ValueError("Missing required parameter 'api-version'.")
         if business_phone_number_id is None:
             raise ValueError("Missing required parameter 'business-phone-number-id'.")
-        url = f'{self.base_url}/{api_version}/{business_phone_number_id}/message_qrdls'
-        query_params = {k: v for k, v in [('fields', fields), ('code', code)] if v is not None}
+        url = f"{self.base_url}/{api_version}/{business_phone_number_id}/message_qrdls"
+        query_params = {k: v for k, v in [("fields", fields), ("code", code)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -415,7 +425,9 @@ class WhatsappBusinessApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_qr_code(self, api_version: str, business_phone_number_id: str, code: str | None=None, prefilled_message: str | None=None) -> dict[str, Any]:
+    async def create_qr_code(
+        self, api_version: str, business_phone_number_id: str, code: str | None = None, prefilled_message: str | None = None
+    ) -> dict[str, Any]:
         """
         Generates a WhatsApp Business QR code for a specific phone number. This function allows setting a prefilled message for user convenience and can optionally include a custom identifier. It returns the details of the newly created QR code upon successful generation.
 
@@ -440,11 +452,11 @@ class WhatsappBusinessApp(APIApplication):
         if business_phone_number_id is None:
             raise ValueError("Missing required parameter 'business-phone-number-id'.")
         request_body_data = None
-        request_body_data = {'code': code, 'prefilled_message': prefilled_message}
+        request_body_data = {"code": code, "prefilled_message": prefilled_message}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/{api_version}/{business_phone_number_id}/message_qrdls'
+        url = f"{self.base_url}/{api_version}/{business_phone_number_id}/message_qrdls"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -472,7 +484,7 @@ class WhatsappBusinessApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api-version'.")
-        url = f'{self.base_url}/{api_version}/<TEMPLATE_ID>'
+        url = f"{self.base_url}/{api_version}/<TEMPLATE_ID>"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -483,7 +495,14 @@ class WhatsappBusinessApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_template_by_id(self, api_version: str, category: str | None=None, components: list[dict[str, Any]] | None=None, language: str | None=None, name: str | None=None) -> dict[str, Any]:
+    async def update_template_by_id(
+        self,
+        api_version: str,
+        category: str | None = None,
+        components: list[dict[str, Any]] | None = None,
+        language: str | None = None,
+        name: str | None = None,
+    ) -> dict[str, Any]:
         """
         Updates an existing WhatsApp message template, identified by its ID within the request URL. This function modifies the template's category, components, language, and name by submitting new data via a POST request, returning the API response upon successful completion.
 
@@ -507,11 +526,11 @@ class WhatsappBusinessApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api-version'.")
         request_body_data = None
-        request_body_data = {'category': category, 'components': components, 'language': language, 'name': name}
+        request_body_data = {"category": category, "components": components, "language": language, "name": name}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/{api_version}/<TEMPLATE_ID>'
+        url = f"{self.base_url}/{api_version}/<TEMPLATE_ID>"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -520,7 +539,7 @@ class WhatsappBusinessApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_message_templates(self, api_version: str, waba_id: str, name: str | None=None) -> dict[str, Any]:
+    async def get_message_templates(self, api_version: str, waba_id: str, name: str | None = None) -> dict[str, Any]:
         """
         Retrieves message templates for a specific WhatsApp Business Account (WABA). It can list all templates or, if a name is provided, filter for an exact match. This differs from `get_template_by_id_default_fields`, which fetches a single template by its unique ID.
 
@@ -543,8 +562,8 @@ class WhatsappBusinessApp(APIApplication):
             raise ValueError("Missing required parameter 'api-version'.")
         if waba_id is None:
             raise ValueError("Missing required parameter 'waba-id'.")
-        url = f'{self.base_url}/{api_version}/{waba_id}/message_templates'
-        query_params = {k: v for k, v in [('name', name)] if v is not None}
+        url = f"{self.base_url}/{api_version}/{waba_id}/message_templates"
+        query_params = {k: v for k, v in [("name", name)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -554,7 +573,15 @@ class WhatsappBusinessApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_message_template(self, api_version: str, waba_id: str, category: str | None=None, components: list[dict[str, Any]] | None=None, language: str | None=None, name: str | None=None) -> dict[str, Any]:
+    async def create_message_template(
+        self,
+        api_version: str,
+        waba_id: str,
+        category: str | None = None,
+        components: list[dict[str, Any]] | None = None,
+        language: str | None = None,
+        name: str | None = None,
+    ) -> dict[str, Any]:
         """
         Creates a new message template for a specified WhatsApp Business Account (WABA). This function sends a POST request with the template's name, language, category, and structural components, enabling the creation of standardized, reusable messages.
 
@@ -581,11 +608,11 @@ class WhatsappBusinessApp(APIApplication):
         if waba_id is None:
             raise ValueError("Missing required parameter 'waba-id'.")
         request_body_data = None
-        request_body_data = {'category': category, 'components': components, 'language': language, 'name': name}
+        request_body_data = {"category": category, "components": components, "language": language, "name": name}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/{api_version}/{waba_id}/message_templates'
+        url = f"{self.base_url}/{api_version}/{waba_id}/message_templates"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -594,7 +621,9 @@ class WhatsappBusinessApp(APIApplication):
         except ValueError:
             return None
 
-    async def delete_message_template(self, api_version: str, waba_id: str, name: str | None=None, hsm_id: str | None=None) -> dict[str, Any]:
+    async def delete_message_template(
+        self, api_version: str, waba_id: str, name: str | None = None, hsm_id: str | None = None
+    ) -> dict[str, Any]:
         """
         Deletes a message template from a WhatsApp Business Account. Templates can be targeted for deletion by providing either a template name, which deletes all language versions, or a specific template ID (`hsm_id`).
 
@@ -618,8 +647,8 @@ class WhatsappBusinessApp(APIApplication):
             raise ValueError("Missing required parameter 'api-version'.")
         if waba_id is None:
             raise ValueError("Missing required parameter 'waba-id'.")
-        url = f'{self.base_url}/{api_version}/{waba_id}/message_templates'
-        query_params = {k: v for k, v in [('name', name), ('hsm_id', hsm_id)] if v is not None}
+        url = f"{self.base_url}/{api_version}/{waba_id}/message_templates"
+        query_params = {k: v for k, v in [("name", name), ("hsm_id", hsm_id)] if v is not None}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -651,7 +680,7 @@ class WhatsappBusinessApp(APIApplication):
             raise ValueError("Missing required parameter 'api-version'.")
         if waba_id is None:
             raise ValueError("Missing required parameter 'waba-id'.")
-        url = f'{self.base_url}/{api_version}/{waba_id}/subscribed_apps'
+        url = f"{self.base_url}/{api_version}/{waba_id}/subscribed_apps"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -685,9 +714,9 @@ class WhatsappBusinessApp(APIApplication):
         if waba_id is None:
             raise ValueError("Missing required parameter 'waba-id'.")
         request_body_data = None
-        url = f'{self.base_url}/{api_version}/{waba_id}/subscribed_apps'
+        url = f"{self.base_url}/{api_version}/{waba_id}/subscribed_apps"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -718,7 +747,7 @@ class WhatsappBusinessApp(APIApplication):
             raise ValueError("Missing required parameter 'api-version'.")
         if waba_id is None:
             raise ValueError("Missing required parameter 'waba-id'.")
-        url = f'{self.base_url}/{api_version}/{waba_id}/subscribed_apps'
+        url = f"{self.base_url}/{api_version}/{waba_id}/subscribed_apps"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -751,7 +780,7 @@ class WhatsappBusinessApp(APIApplication):
             raise ValueError("Missing required parameter 'api-version'.")
         if business_account_id is None:
             raise ValueError("Missing required parameter 'business-account-id'.")
-        url = f'{self.base_url}/{api_version}/{business_account_id}/client_whatsapp_business_accounts'
+        url = f"{self.base_url}/{api_version}/{business_account_id}/client_whatsapp_business_accounts"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -784,7 +813,7 @@ class WhatsappBusinessApp(APIApplication):
             raise ValueError("Missing required parameter 'api-version'.")
         if business_account_id is None:
             raise ValueError("Missing required parameter 'business-account-id'.")
-        url = f'{self.base_url}/{api_version}/{business_account_id}/owned_whatsapp_business_accounts'
+        url = f"{self.base_url}/{api_version}/{business_account_id}/owned_whatsapp_business_accounts"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -796,4 +825,28 @@ class WhatsappBusinessApp(APIApplication):
             return None
 
     def list_tools(self):
-        return [self.get_whatsapp_business_account, self.get_business_account_credit_lines, self.get_business_account, self.get_commerce_settings, self.update_commerce_settings, self.create_upload_session, self.upload_file_to_session, self.get_business_phone_number, self.list_waba_phone_numbers, self.get_qr_code_by_id, self.delete_qr_code_by_id, self.list_qr_codes, self.create_qr_code, self.get_template_by_id, self.update_template_by_id, self.get_message_templates, self.create_message_template, self.delete_message_template, self.get_subscribed_apps, self.subscribe_app_to_webhooks, self.unsubscribe_app_from_waba, self.get_all_client_wabas, self.get_all_owned_wabas]
+        return [
+            self.get_whatsapp_business_account,
+            self.get_business_account_credit_lines,
+            self.get_business_account,
+            self.get_commerce_settings,
+            self.update_commerce_settings,
+            self.create_upload_session,
+            self.upload_file_to_session,
+            self.get_business_phone_number,
+            self.list_waba_phone_numbers,
+            self.get_qr_code_by_id,
+            self.delete_qr_code_by_id,
+            self.list_qr_codes,
+            self.create_qr_code,
+            self.get_template_by_id,
+            self.update_template_by_id,
+            self.get_message_templates,
+            self.create_message_template,
+            self.delete_message_template,
+            self.get_subscribed_apps,
+            self.subscribe_app_to_webhooks,
+            self.unsubscribe_app_from_waba,
+            self.get_all_client_wabas,
+            self.get_all_owned_wabas,
+        ]

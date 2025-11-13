@@ -2,11 +2,11 @@ from typing import Any
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
-class SupabaseApp(APIApplication):
 
-    def __init__(self, integration: Integration=None, **kwargs) -> None:
-        super().__init__(name='supabase', integration=integration, **kwargs)
-        self.base_url = 'https://api.supabase.com'
+class SupabaseApp(APIApplication):
+    def __init__(self, integration: Integration = None, **kwargs) -> None:
+        super().__init__(name="supabase", integration=integration, **kwargs)
+        self.base_url = "https://api.supabase.com"
 
     async def v1_get_a_branch_config(self, branch_id) -> dict[str, Any]:
         """
@@ -27,13 +27,15 @@ class SupabaseApp(APIApplication):
         """
         if branch_id is None:
             raise ValueError("Missing required parameter 'branch_id'")
-        url = f'{self.base_url}/v1/branches/{branch_id}'
+        url = f"{self.base_url}/v1/branches/{branch_id}"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def v1_update_a_branch_config(self, branch_id, branch_name=None, git_branch=None, reset_on_push=None, persistent=None, status=None) -> dict[str, Any]:
+    async def v1_update_a_branch_config(
+        self, branch_id, branch_name=None, git_branch=None, reset_on_push=None, persistent=None, status=None
+    ) -> dict[str, Any]:
         """
         Updates the configuration of a specified branch by sending a PATCH request with provided configuration fields.
 
@@ -57,9 +59,15 @@ class SupabaseApp(APIApplication):
         """
         if branch_id is None:
             raise ValueError("Missing required parameter 'branch_id'")
-        request_body = {'branch_name': branch_name, 'git_branch': git_branch, 'reset_on_push': reset_on_push, 'persistent': persistent, 'status': status}
+        request_body = {
+            "branch_name": branch_name,
+            "git_branch": git_branch,
+            "reset_on_push": reset_on_push,
+            "persistent": persistent,
+            "status": status,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v1/branches/{branch_id}'
+        url = f"{self.base_url}/v1/branches/{branch_id}"
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -84,7 +92,7 @@ class SupabaseApp(APIApplication):
         """
         if branch_id is None:
             raise ValueError("Missing required parameter 'branch_id'")
-        url = f'{self.base_url}/v1/branches/{branch_id}'
+        url = f"{self.base_url}/v1/branches/{branch_id}"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -109,7 +117,7 @@ class SupabaseApp(APIApplication):
         """
         if branch_id is None:
             raise ValueError("Missing required parameter 'branch_id'")
-        url = f'{self.base_url}/v1/branches/{branch_id}/reset'
+        url = f"{self.base_url}/v1/branches/{branch_id}/reset"
         query_params = {}
         response = await self._apost(url, data={}, params=query_params)
         response.raise_for_status()
@@ -131,13 +139,25 @@ class SupabaseApp(APIApplication):
         Tags:
             list, projects, api
         """
-        url = f'{self.base_url}/v1/projects'
+        url = f"{self.base_url}/v1/projects"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def v1_create_a_project(self, db_pass, name, organization_id, region, plan=None, kps_enabled=None, desired_instance_size=None, template_url=None, release_channel=None, postgres_engine=None) -> dict[str, Any]:
+    async def v1_create_a_project(
+        self,
+        db_pass,
+        name,
+        organization_id,
+        region,
+        plan=None,
+        kps_enabled=None,
+        desired_instance_size=None,
+        template_url=None,
+        release_channel=None,
+        postgres_engine=None,
+    ) -> dict[str, Any]:
         """
         Creates a new project with the specified configuration and returns the project details.
 
@@ -171,9 +191,20 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'organization_id'")
         if region is None:
             raise ValueError("Missing required parameter 'region'")
-        request_body = {'db_pass': db_pass, 'name': name, 'organization_id': organization_id, 'plan': plan, 'region': region, 'kps_enabled': kps_enabled, 'desired_instance_size': desired_instance_size, 'template_url': template_url, 'release_channel': release_channel, 'postgres_engine': postgres_engine}
+        request_body = {
+            "db_pass": db_pass,
+            "name": name,
+            "organization_id": organization_id,
+            "plan": plan,
+            "region": region,
+            "kps_enabled": kps_enabled,
+            "desired_instance_size": desired_instance_size,
+            "template_url": template_url,
+            "release_channel": release_channel,
+            "postgres_engine": postgres_engine,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v1/projects'
+        url = f"{self.base_url}/v1/projects"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -195,7 +226,7 @@ class SupabaseApp(APIApplication):
         Tags:
             list, organizations, api, fetch, important
         """
-        url = f'{self.base_url}/v1/organizations'
+        url = f"{self.base_url}/v1/organizations"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -220,15 +251,25 @@ class SupabaseApp(APIApplication):
         """
         if name is None:
             raise ValueError("Missing required parameter 'name'")
-        request_body = {'name': name}
+        request_body = {"name": name}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v1/organizations'
+        url = f"{self.base_url}/v1/organizations"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def v1_authorize_user(self, client_id, response_type, redirect_uri, scope=None, state=None, response_mode=None, code_challenge=None, code_challenge_method=None) -> Any:
+    async def v1_authorize_user(
+        self,
+        client_id,
+        response_type,
+        redirect_uri,
+        scope=None,
+        state=None,
+        response_mode=None,
+        code_challenge=None,
+        code_challenge_method=None,
+    ) -> Any:
         """
         Initiates the OAuth 2.0 authorization flow by constructing and sending an authorization request to the identity provider.
 
@@ -258,8 +299,21 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'response_type'")
         if redirect_uri is None:
             raise ValueError("Missing required parameter 'redirect_uri'")
-        url = f'{self.base_url}/v1/oauth/authorize'
-        query_params = {k: v for k, v in [('client_id', client_id), ('response_type', response_type), ('redirect_uri', redirect_uri), ('scope', scope), ('state', state), ('response_mode', response_mode), ('code_challenge', code_challenge), ('code_challenge_method', code_challenge_method)] if v is not None}
+        url = f"{self.base_url}/v1/oauth/authorize"
+        query_params = {
+            k: v
+            for k, v in [
+                ("client_id", client_id),
+                ("response_type", response_type),
+                ("redirect_uri", redirect_uri),
+                ("scope", scope),
+                ("state", state),
+                ("response_mode", response_mode),
+                ("code_challenge", code_challenge),
+                ("code_challenge_method", code_challenge_method),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -280,8 +334,8 @@ class SupabaseApp(APIApplication):
         Tags:
             list, snippets, management, api, important
         """
-        url = f'{self.base_url}/v1/snippets'
-        query_params = {k: v for k, v in [('project_ref', project_ref)] if v is not None}
+        url = f"{self.base_url}/v1/snippets"
+        query_params = {k: v for k, v in [("project_ref", project_ref)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -305,7 +359,7 @@ class SupabaseApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/v1/snippets/{id}'
+        url = f"{self.base_url}/v1/snippets/{id}"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -330,7 +384,7 @@ class SupabaseApp(APIApplication):
         """
         if ref is None:
             raise ValueError("Missing required parameter 'ref'")
-        url = f'{self.base_url}/v1/projects/{ref}/api-keys'
+        url = f"{self.base_url}/v1/projects/{ref}/api-keys"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -360,9 +414,9 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'ref'")
         if type is None:
             raise ValueError("Missing required parameter 'type'")
-        request_body = {'type': type, 'description': description, 'secret_jwt_template': secret_jwt_template}
+        request_body = {"type": type, "description": description, "secret_jwt_template": secret_jwt_template}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v1/projects/{ref}/api-keys'
+        url = f"{self.base_url}/v1/projects/{ref}/api-keys"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -392,9 +446,9 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'ref'")
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {'description': description, 'secret_jwt_template': secret_jwt_template}
+        request_body = {"description": description, "secret_jwt_template": secret_jwt_template}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v1/projects/{ref}/api-keys/{id}'
+        url = f"{self.base_url}/v1/projects/{ref}/api-keys/{id}"
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -422,7 +476,7 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'ref'")
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/v1/projects/{ref}/api-keys/{id}'
+        url = f"{self.base_url}/v1/projects/{ref}/api-keys/{id}"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -447,13 +501,23 @@ class SupabaseApp(APIApplication):
         """
         if ref is None:
             raise ValueError("Missing required parameter 'ref'")
-        url = f'{self.base_url}/v1/projects/{ref}/branches'
+        url = f"{self.base_url}/v1/projects/{ref}/branches"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def v1_create_a_branch(self, ref, branch_name, desired_instance_size=None, release_channel=None, postgres_engine=None, git_branch=None, persistent=None, region=None) -> dict[str, Any]:
+    async def v1_create_a_branch(
+        self,
+        ref,
+        branch_name,
+        desired_instance_size=None,
+        release_channel=None,
+        postgres_engine=None,
+        git_branch=None,
+        persistent=None,
+        region=None,
+    ) -> dict[str, Any]:
         """
         Creates a new branch for a specified project, configuring options such as instance size, release channel, and region.
 
@@ -481,9 +545,17 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'ref'")
         if branch_name is None:
             raise ValueError("Missing required parameter 'branch_name'")
-        request_body = {'desired_instance_size': desired_instance_size, 'release_channel': release_channel, 'postgres_engine': postgres_engine, 'branch_name': branch_name, 'git_branch': git_branch, 'persistent': persistent, 'region': region}
+        request_body = {
+            "desired_instance_size": desired_instance_size,
+            "release_channel": release_channel,
+            "postgres_engine": postgres_engine,
+            "branch_name": branch_name,
+            "git_branch": git_branch,
+            "persistent": persistent,
+            "region": region,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v1/projects/{ref}/branches'
+        url = f"{self.base_url}/v1/projects/{ref}/branches"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -508,7 +580,7 @@ class SupabaseApp(APIApplication):
         """
         if ref is None:
             raise ValueError("Missing required parameter 'ref'")
-        url = f'{self.base_url}/v1/projects/{ref}/branches'
+        url = f"{self.base_url}/v1/projects/{ref}/branches"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -533,7 +605,7 @@ class SupabaseApp(APIApplication):
         """
         if ref is None:
             raise ValueError("Missing required parameter 'ref'")
-        url = f'{self.base_url}/v1/projects/{ref}/custom-hostname'
+        url = f"{self.base_url}/v1/projects/{ref}/custom-hostname"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -558,7 +630,7 @@ class SupabaseApp(APIApplication):
         """
         if ref is None:
             raise ValueError("Missing required parameter 'ref'")
-        url = f'{self.base_url}/v1/projects/{ref}/custom-hostname/reverify'
+        url = f"{self.base_url}/v1/projects/{ref}/custom-hostname/reverify"
         query_params = {}
         response = await self._apost(url, data={}, params=query_params)
         response.raise_for_status()
@@ -583,7 +655,7 @@ class SupabaseApp(APIApplication):
         """
         if ref is None:
             raise ValueError("Missing required parameter 'ref'")
-        url = f'{self.base_url}/v1/projects/{ref}/custom-hostname/activate'
+        url = f"{self.base_url}/v1/projects/{ref}/custom-hostname/activate"
         query_params = {}
         response = await self._apost(url, data={}, params=query_params)
         response.raise_for_status()
@@ -608,7 +680,7 @@ class SupabaseApp(APIApplication):
         """
         if ref is None:
             raise ValueError("Missing required parameter 'ref'")
-        url = f'{self.base_url}/v1/projects/{ref}/network-bans/retrieve'
+        url = f"{self.base_url}/v1/projects/{ref}/network-bans/retrieve"
         query_params = {}
         response = await self._apost(url, data={}, params=query_params)
         response.raise_for_status()
@@ -636,9 +708,9 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'ref'")
         if ipv4_addresses is None:
             raise ValueError("Missing required parameter 'ipv4_addresses'")
-        request_body = {'ipv4_addresses': ipv4_addresses}
+        request_body = {"ipv4_addresses": ipv4_addresses}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v1/projects/{ref}/network-bans'
+        url = f"{self.base_url}/v1/projects/{ref}/network-bans"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -663,7 +735,7 @@ class SupabaseApp(APIApplication):
         """
         if ref is None:
             raise ValueError("Missing required parameter 'ref'")
-        url = f'{self.base_url}/v1/projects/{ref}/network-restrictions'
+        url = f"{self.base_url}/v1/projects/{ref}/network-restrictions"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -690,9 +762,9 @@ class SupabaseApp(APIApplication):
         """
         if ref is None:
             raise ValueError("Missing required parameter 'ref'")
-        request_body = {'dbAllowedCidrs': dbAllowedCidrs, 'dbAllowedCidrsV6': dbAllowedCidrsV6}
+        request_body = {"dbAllowedCidrs": dbAllowedCidrs, "dbAllowedCidrsV6": dbAllowedCidrsV6}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v1/projects/{ref}/network-restrictions/apply'
+        url = f"{self.base_url}/v1/projects/{ref}/network-restrictions/apply"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -717,7 +789,7 @@ class SupabaseApp(APIApplication):
         """
         if ref is None:
             raise ValueError("Missing required parameter 'ref'")
-        url = f'{self.base_url}/v1/projects/{ref}/pgsodium'
+        url = f"{self.base_url}/v1/projects/{ref}/pgsodium"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -745,9 +817,9 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'ref'")
         if root_key is None:
             raise ValueError("Missing required parameter 'root_key'")
-        request_body = {'root_key': root_key}
+        request_body = {"root_key": root_key}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v1/projects/{ref}/pgsodium'
+        url = f"{self.base_url}/v1/projects/{ref}/pgsodium"
         query_params = {}
         response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -772,13 +844,15 @@ class SupabaseApp(APIApplication):
         """
         if ref is None:
             raise ValueError("Missing required parameter 'ref'")
-        url = f'{self.base_url}/v1/projects/{ref}/postgrest'
+        url = f"{self.base_url}/v1/projects/{ref}/postgrest"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def v1_update_postgrest_service_config(self, ref, max_rows=None, db_pool=None, db_extra_search_path=None, db_schema=None) -> dict[str, Any]:
+    async def v1_update_postgrest_service_config(
+        self, ref, max_rows=None, db_pool=None, db_extra_search_path=None, db_schema=None
+    ) -> dict[str, Any]:
         """
         Updates the configuration settings for a PostgREST service for a specified project.
 
@@ -801,9 +875,9 @@ class SupabaseApp(APIApplication):
         """
         if ref is None:
             raise ValueError("Missing required parameter 'ref'")
-        request_body = {'max_rows': max_rows, 'db_pool': db_pool, 'db_extra_search_path': db_extra_search_path, 'db_schema': db_schema}
+        request_body = {"max_rows": max_rows, "db_pool": db_pool, "db_extra_search_path": db_extra_search_path, "db_schema": db_schema}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v1/projects/{ref}/postgrest'
+        url = f"{self.base_url}/v1/projects/{ref}/postgrest"
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -828,7 +902,7 @@ class SupabaseApp(APIApplication):
         """
         if ref is None:
             raise ValueError("Missing required parameter 'ref'")
-        url = f'{self.base_url}/v1/projects/{ref}'
+        url = f"{self.base_url}/v1/projects/{ref}"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -853,7 +927,7 @@ class SupabaseApp(APIApplication):
         """
         if ref is None:
             raise ValueError("Missing required parameter 'ref'")
-        url = f'{self.base_url}/v1/projects/{ref}/secrets'
+        url = f"{self.base_url}/v1/projects/{ref}/secrets"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -882,7 +956,7 @@ class SupabaseApp(APIApplication):
         if items is None:
             raise ValueError("Missing required parameter 'items'")
         request_body = items
-        url = f'{self.base_url}/v1/projects/{ref}/secrets'
+        url = f"{self.base_url}/v1/projects/{ref}/secrets"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -910,7 +984,7 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'ref'")
         if items is None:
             raise ValueError("Missing required parameter 'items'")
-        url = f'{self.base_url}/v1/projects/{ref}/secrets'
+        url = f"{self.base_url}/v1/projects/{ref}/secrets"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -935,7 +1009,7 @@ class SupabaseApp(APIApplication):
         """
         if ref is None:
             raise ValueError("Missing required parameter 'ref'")
-        url = f'{self.base_url}/v1/projects/{ref}/ssl-enforcement'
+        url = f"{self.base_url}/v1/projects/{ref}/ssl-enforcement"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -963,9 +1037,9 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'ref'")
         if requestedConfig is None:
             raise ValueError("Missing required parameter 'requestedConfig'")
-        request_body = {'requestedConfig': requestedConfig}
+        request_body = {"requestedConfig": requestedConfig}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v1/projects/{ref}/ssl-enforcement'
+        url = f"{self.base_url}/v1/projects/{ref}/ssl-enforcement"
         query_params = {}
         response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -991,8 +1065,8 @@ class SupabaseApp(APIApplication):
         """
         if ref is None:
             raise ValueError("Missing required parameter 'ref'")
-        url = f'{self.base_url}/v1/projects/{ref}/types/typescript'
-        query_params = {k: v for k, v in [('included_schemas', included_schemas)] if v is not None}
+        url = f"{self.base_url}/v1/projects/{ref}/types/typescript"
+        query_params = {k: v for k, v in [("included_schemas", included_schemas)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -1016,7 +1090,7 @@ class SupabaseApp(APIApplication):
         """
         if ref is None:
             raise ValueError("Missing required parameter 'ref'")
-        url = f'{self.base_url}/v1/projects/{ref}/vanity-subdomain'
+        url = f"{self.base_url}/v1/projects/{ref}/vanity-subdomain"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -1041,7 +1115,7 @@ class SupabaseApp(APIApplication):
         """
         if ref is None:
             raise ValueError("Missing required parameter 'ref'")
-        url = f'{self.base_url}/v1/projects/{ref}/vanity-subdomain'
+        url = f"{self.base_url}/v1/projects/{ref}/vanity-subdomain"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -1069,9 +1143,9 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'ref'")
         if vanity_subdomain is None:
             raise ValueError("Missing required parameter 'vanity_subdomain'")
-        request_body = {'vanity_subdomain': vanity_subdomain}
+        request_body = {"vanity_subdomain": vanity_subdomain}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v1/projects/{ref}/vanity-subdomain/check-availability'
+        url = f"{self.base_url}/v1/projects/{ref}/vanity-subdomain/check-availability"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -1099,9 +1173,9 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'ref'")
         if vanity_subdomain is None:
             raise ValueError("Missing required parameter 'vanity_subdomain'")
-        request_body = {'vanity_subdomain': vanity_subdomain}
+        request_body = {"vanity_subdomain": vanity_subdomain}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v1/projects/{ref}/vanity-subdomain/activate'
+        url = f"{self.base_url}/v1/projects/{ref}/vanity-subdomain/activate"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -1132,9 +1206,9 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'release_channel'")
         if target_version is None:
             raise ValueError("Missing required parameter 'target_version'")
-        request_body = {'release_channel': release_channel, 'target_version': target_version}
+        request_body = {"release_channel": release_channel, "target_version": target_version}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v1/projects/{ref}/upgrade'
+        url = f"{self.base_url}/v1/projects/{ref}/upgrade"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -1159,7 +1233,7 @@ class SupabaseApp(APIApplication):
         """
         if ref is None:
             raise ValueError("Missing required parameter 'ref'")
-        url = f'{self.base_url}/v1/projects/{ref}/upgrade/eligibility'
+        url = f"{self.base_url}/v1/projects/{ref}/upgrade/eligibility"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -1184,7 +1258,7 @@ class SupabaseApp(APIApplication):
         """
         if ref is None:
             raise ValueError("Missing required parameter 'ref'")
-        url = f'{self.base_url}/v1/projects/{ref}/upgrade/status'
+        url = f"{self.base_url}/v1/projects/{ref}/upgrade/status"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -1209,7 +1283,7 @@ class SupabaseApp(APIApplication):
         """
         if ref is None:
             raise ValueError("Missing required parameter 'ref'")
-        url = f'{self.base_url}/v1/projects/{ref}/readonly'
+        url = f"{self.base_url}/v1/projects/{ref}/readonly"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -1234,7 +1308,7 @@ class SupabaseApp(APIApplication):
         """
         if ref is None:
             raise ValueError("Missing required parameter 'ref'")
-        url = f'{self.base_url}/v1/projects/{ref}/readonly/temporary-disable'
+        url = f"{self.base_url}/v1/projects/{ref}/readonly/temporary-disable"
         query_params = {}
         response = await self._apost(url, data={}, params=query_params)
         response.raise_for_status()
@@ -1262,9 +1336,9 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'ref'")
         if read_replica_region is None:
             raise ValueError("Missing required parameter 'read_replica_region'")
-        request_body = {'read_replica_region': read_replica_region}
+        request_body = {"read_replica_region": read_replica_region}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v1/projects/{ref}/read-replicas/setup'
+        url = f"{self.base_url}/v1/projects/{ref}/read-replicas/setup"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -1292,9 +1366,9 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'ref'")
         if database_identifier is None:
             raise ValueError("Missing required parameter 'database_identifier'")
-        request_body = {'database_identifier': database_identifier}
+        request_body = {"database_identifier": database_identifier}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v1/projects/{ref}/read-replicas/remove'
+        url = f"{self.base_url}/v1/projects/{ref}/read-replicas/remove"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -1323,8 +1397,8 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'ref'")
         if services is None:
             raise ValueError("Missing required parameter 'services'")
-        url = f'{self.base_url}/v1/projects/{ref}/health'
-        query_params = {k: v for k, v in [('timeout_ms', timeout_ms), ('services', services)] if v is not None}
+        url = f"{self.base_url}/v1/projects/{ref}/health"
+        query_params = {k: v for k, v in [("timeout_ms", timeout_ms), ("services", services)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -1348,13 +1422,33 @@ class SupabaseApp(APIApplication):
         """
         if ref is None:
             raise ValueError("Missing required parameter 'ref'")
-        url = f'{self.base_url}/v1/projects/{ref}/config/database/postgres'
+        url = f"{self.base_url}/v1/projects/{ref}/config/database/postgres"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def v1_update_postgres_config(self, ref, statement_timeout=None, effective_cache_size=None, maintenance_work_mem=None, max_connections=None, max_locks_per_transaction=None, max_parallel_maintenance_workers=None, max_parallel_workers=None, max_parallel_workers_per_gather=None, max_slot_wal_keep_size=None, max_standby_archive_delay=None, max_standby_streaming_delay=None, max_wal_size=None, max_worker_processes=None, shared_buffers=None, wal_keep_size=None, work_mem=None, session_replication_role=None) -> dict[str, Any]:
+    async def v1_update_postgres_config(
+        self,
+        ref,
+        statement_timeout=None,
+        effective_cache_size=None,
+        maintenance_work_mem=None,
+        max_connections=None,
+        max_locks_per_transaction=None,
+        max_parallel_maintenance_workers=None,
+        max_parallel_workers=None,
+        max_parallel_workers_per_gather=None,
+        max_slot_wal_keep_size=None,
+        max_standby_archive_delay=None,
+        max_standby_streaming_delay=None,
+        max_wal_size=None,
+        max_worker_processes=None,
+        shared_buffers=None,
+        wal_keep_size=None,
+        work_mem=None,
+        session_replication_role=None,
+    ) -> dict[str, Any]:
         """
         Updates PostgreSQL configuration settings for a specified project via a REST API call.
 
@@ -1390,9 +1484,27 @@ class SupabaseApp(APIApplication):
         """
         if ref is None:
             raise ValueError("Missing required parameter 'ref'")
-        request_body = {'statement_timeout': statement_timeout, 'effective_cache_size': effective_cache_size, 'maintenance_work_mem': maintenance_work_mem, 'max_connections': max_connections, 'max_locks_per_transaction': max_locks_per_transaction, 'max_parallel_maintenance_workers': max_parallel_maintenance_workers, 'max_parallel_workers': max_parallel_workers, 'max_parallel_workers_per_gather': max_parallel_workers_per_gather, 'max_slot_wal_keep_size': max_slot_wal_keep_size, 'max_standby_archive_delay': max_standby_archive_delay, 'max_standby_streaming_delay': max_standby_streaming_delay, 'max_wal_size': max_wal_size, 'max_worker_processes': max_worker_processes, 'shared_buffers': shared_buffers, 'wal_keep_size': wal_keep_size, 'work_mem': work_mem, 'session_replication_role': session_replication_role}
+        request_body = {
+            "statement_timeout": statement_timeout,
+            "effective_cache_size": effective_cache_size,
+            "maintenance_work_mem": maintenance_work_mem,
+            "max_connections": max_connections,
+            "max_locks_per_transaction": max_locks_per_transaction,
+            "max_parallel_maintenance_workers": max_parallel_maintenance_workers,
+            "max_parallel_workers": max_parallel_workers,
+            "max_parallel_workers_per_gather": max_parallel_workers_per_gather,
+            "max_slot_wal_keep_size": max_slot_wal_keep_size,
+            "max_standby_archive_delay": max_standby_archive_delay,
+            "max_standby_streaming_delay": max_standby_streaming_delay,
+            "max_wal_size": max_wal_size,
+            "max_worker_processes": max_worker_processes,
+            "shared_buffers": shared_buffers,
+            "wal_keep_size": wal_keep_size,
+            "work_mem": work_mem,
+            "session_replication_role": session_replication_role,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v1/projects/{ref}/config/database/postgres'
+        url = f"{self.base_url}/v1/projects/{ref}/config/database/postgres"
         query_params = {}
         response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -1417,7 +1529,7 @@ class SupabaseApp(APIApplication):
         """
         if ref is None:
             raise ValueError("Missing required parameter 'ref'")
-        url = f'{self.base_url}/v1/projects/{ref}/config/database/pgbouncer'
+        url = f"{self.base_url}/v1/projects/{ref}/config/database/pgbouncer"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -1442,7 +1554,7 @@ class SupabaseApp(APIApplication):
         """
         if ref is None:
             raise ValueError("Missing required parameter 'ref'")
-        url = f'{self.base_url}/v1/projects/{ref}/config/database/pooler'
+        url = f"{self.base_url}/v1/projects/{ref}/config/database/pooler"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -1469,9 +1581,9 @@ class SupabaseApp(APIApplication):
         """
         if ref is None:
             raise ValueError("Missing required parameter 'ref'")
-        request_body = {'default_pool_size': default_pool_size, 'pool_mode': pool_mode}
+        request_body = {"default_pool_size": default_pool_size, "pool_mode": pool_mode}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v1/projects/{ref}/config/database/pooler'
+        url = f"{self.base_url}/v1/projects/{ref}/config/database/pooler"
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -1496,13 +1608,185 @@ class SupabaseApp(APIApplication):
         """
         if ref is None:
             raise ValueError("Missing required parameter 'ref'")
-        url = f'{self.base_url}/v1/projects/{ref}/config/auth'
+        url = f"{self.base_url}/v1/projects/{ref}/config/auth"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def v1_update_auth_service_config(self, ref, site_url=None, disable_signup=None, jwt_exp=None, smtp_admin_email=None, smtp_host=None, smtp_port=None, smtp_user=None, smtp_pass=None, smtp_max_frequency=None, smtp_sender_name=None, mailer_allow_unverified_email_sign_ins=None, mailer_autoconfirm=None, mailer_subjects_invite=None, mailer_subjects_confirmation=None, mailer_subjects_recovery=None, mailer_subjects_email_change=None, mailer_subjects_magic_link=None, mailer_subjects_reauthentication=None, mailer_templates_invite_content=None, mailer_templates_confirmation_content=None, mailer_templates_recovery_content=None, mailer_templates_email_change_content=None, mailer_templates_magic_link_content=None, mailer_templates_reauthentication_content=None, mfa_max_enrolled_factors=None, uri_allow_list=None, external_anonymous_users_enabled=None, external_email_enabled=None, external_phone_enabled=None, saml_enabled=None, saml_external_url=None, security_captcha_enabled=None, security_captcha_provider=None, security_captcha_secret=None, sessions_timebox=None, sessions_inactivity_timeout=None, sessions_single_per_user=None, sessions_tags=None, rate_limit_anonymous_users=None, rate_limit_email_sent=None, rate_limit_sms_sent=None, rate_limit_verify=None, rate_limit_token_refresh=None, rate_limit_otp=None, mailer_secure_email_change_enabled=None, refresh_token_rotation_enabled=None, password_hibp_enabled=None, password_min_length=None, password_required_characters=None, security_manual_linking_enabled=None, security_update_password_require_reauthentication=None, security_refresh_token_reuse_interval=None, mailer_otp_exp=None, mailer_otp_length=None, sms_autoconfirm=None, sms_max_frequency=None, sms_otp_exp=None, sms_otp_length=None, sms_provider=None, sms_messagebird_access_key=None, sms_messagebird_originator=None, sms_test_otp=None, sms_test_otp_valid_until=None, sms_textlocal_api_key=None, sms_textlocal_sender=None, sms_twilio_account_sid=None, sms_twilio_auth_token=None, sms_twilio_content_sid=None, sms_twilio_message_service_sid=None, sms_twilio_verify_account_sid=None, sms_twilio_verify_auth_token=None, sms_twilio_verify_message_service_sid=None, sms_vonage_api_key=None, sms_vonage_api_secret=None, sms_vonage_from=None, sms_template=None, hook_mfa_verification_attempt_enabled=None, hook_mfa_verification_attempt_uri=None, hook_mfa_verification_attempt_secrets=None, hook_password_verification_attempt_enabled=None, hook_password_verification_attempt_uri=None, hook_password_verification_attempt_secrets=None, hook_custom_access_token_enabled=None, hook_custom_access_token_uri=None, hook_custom_access_token_secrets=None, hook_send_sms_enabled=None, hook_send_sms_uri=None, hook_send_sms_secrets=None, hook_send_email_enabled=None, hook_send_email_uri=None, hook_send_email_secrets=None, external_apple_enabled=None, external_apple_client_id=None, external_apple_secret=None, external_apple_additional_client_ids=None, external_azure_enabled=None, external_azure_client_id=None, external_azure_secret=None, external_azure_url=None, external_bitbucket_enabled=None, external_bitbucket_client_id=None, external_bitbucket_secret=None, external_discord_enabled=None, external_discord_client_id=None, external_discord_secret=None, external_facebook_enabled=None, external_facebook_client_id=None, external_facebook_secret=None, external_figma_enabled=None, external_figma_client_id=None, external_figma_secret=None, external_github_enabled=None, external_github_client_id=None, external_github_secret=None, external_gitlab_enabled=None, external_gitlab_client_id=None, external_gitlab_secret=None, external_gitlab_url=None, external_google_enabled=None, external_google_client_id=None, external_google_secret=None, external_google_additional_client_ids=None, external_google_skip_nonce_check=None, external_kakao_enabled=None, external_kakao_client_id=None, external_kakao_secret=None, external_keycloak_enabled=None, external_keycloak_client_id=None, external_keycloak_secret=None, external_keycloak_url=None, external_linkedin_oidc_enabled=None, external_linkedin_oidc_client_id=None, external_linkedin_oidc_secret=None, external_slack_oidc_enabled=None, external_slack_oidc_client_id=None, external_slack_oidc_secret=None, external_notion_enabled=None, external_notion_client_id=None, external_notion_secret=None, external_slack_enabled=None, external_slack_client_id=None, external_slack_secret=None, external_spotify_enabled=None, external_spotify_client_id=None, external_spotify_secret=None, external_twitch_enabled=None, external_twitch_client_id=None, external_twitch_secret=None, external_twitter_enabled=None, external_twitter_client_id=None, external_twitter_secret=None, external_workos_enabled=None, external_workos_client_id=None, external_workos_secret=None, external_workos_url=None, external_zoom_enabled=None, external_zoom_client_id=None, external_zoom_secret=None, db_max_pool_size=None, api_max_request_duration=None, mfa_totp_enroll_enabled=None, mfa_totp_verify_enabled=None, mfa_web_authn_enroll_enabled=None, mfa_web_authn_verify_enabled=None, mfa_phone_enroll_enabled=None, mfa_phone_verify_enabled=None, mfa_phone_max_frequency=None, mfa_phone_otp_length=None, mfa_phone_template=None) -> dict[str, Any]:
+    async def v1_update_auth_service_config(
+        self,
+        ref,
+        site_url=None,
+        disable_signup=None,
+        jwt_exp=None,
+        smtp_admin_email=None,
+        smtp_host=None,
+        smtp_port=None,
+        smtp_user=None,
+        smtp_pass=None,
+        smtp_max_frequency=None,
+        smtp_sender_name=None,
+        mailer_allow_unverified_email_sign_ins=None,
+        mailer_autoconfirm=None,
+        mailer_subjects_invite=None,
+        mailer_subjects_confirmation=None,
+        mailer_subjects_recovery=None,
+        mailer_subjects_email_change=None,
+        mailer_subjects_magic_link=None,
+        mailer_subjects_reauthentication=None,
+        mailer_templates_invite_content=None,
+        mailer_templates_confirmation_content=None,
+        mailer_templates_recovery_content=None,
+        mailer_templates_email_change_content=None,
+        mailer_templates_magic_link_content=None,
+        mailer_templates_reauthentication_content=None,
+        mfa_max_enrolled_factors=None,
+        uri_allow_list=None,
+        external_anonymous_users_enabled=None,
+        external_email_enabled=None,
+        external_phone_enabled=None,
+        saml_enabled=None,
+        saml_external_url=None,
+        security_captcha_enabled=None,
+        security_captcha_provider=None,
+        security_captcha_secret=None,
+        sessions_timebox=None,
+        sessions_inactivity_timeout=None,
+        sessions_single_per_user=None,
+        sessions_tags=None,
+        rate_limit_anonymous_users=None,
+        rate_limit_email_sent=None,
+        rate_limit_sms_sent=None,
+        rate_limit_verify=None,
+        rate_limit_token_refresh=None,
+        rate_limit_otp=None,
+        mailer_secure_email_change_enabled=None,
+        refresh_token_rotation_enabled=None,
+        password_hibp_enabled=None,
+        password_min_length=None,
+        password_required_characters=None,
+        security_manual_linking_enabled=None,
+        security_update_password_require_reauthentication=None,
+        security_refresh_token_reuse_interval=None,
+        mailer_otp_exp=None,
+        mailer_otp_length=None,
+        sms_autoconfirm=None,
+        sms_max_frequency=None,
+        sms_otp_exp=None,
+        sms_otp_length=None,
+        sms_provider=None,
+        sms_messagebird_access_key=None,
+        sms_messagebird_originator=None,
+        sms_test_otp=None,
+        sms_test_otp_valid_until=None,
+        sms_textlocal_api_key=None,
+        sms_textlocal_sender=None,
+        sms_twilio_account_sid=None,
+        sms_twilio_auth_token=None,
+        sms_twilio_content_sid=None,
+        sms_twilio_message_service_sid=None,
+        sms_twilio_verify_account_sid=None,
+        sms_twilio_verify_auth_token=None,
+        sms_twilio_verify_message_service_sid=None,
+        sms_vonage_api_key=None,
+        sms_vonage_api_secret=None,
+        sms_vonage_from=None,
+        sms_template=None,
+        hook_mfa_verification_attempt_enabled=None,
+        hook_mfa_verification_attempt_uri=None,
+        hook_mfa_verification_attempt_secrets=None,
+        hook_password_verification_attempt_enabled=None,
+        hook_password_verification_attempt_uri=None,
+        hook_password_verification_attempt_secrets=None,
+        hook_custom_access_token_enabled=None,
+        hook_custom_access_token_uri=None,
+        hook_custom_access_token_secrets=None,
+        hook_send_sms_enabled=None,
+        hook_send_sms_uri=None,
+        hook_send_sms_secrets=None,
+        hook_send_email_enabled=None,
+        hook_send_email_uri=None,
+        hook_send_email_secrets=None,
+        external_apple_enabled=None,
+        external_apple_client_id=None,
+        external_apple_secret=None,
+        external_apple_additional_client_ids=None,
+        external_azure_enabled=None,
+        external_azure_client_id=None,
+        external_azure_secret=None,
+        external_azure_url=None,
+        external_bitbucket_enabled=None,
+        external_bitbucket_client_id=None,
+        external_bitbucket_secret=None,
+        external_discord_enabled=None,
+        external_discord_client_id=None,
+        external_discord_secret=None,
+        external_facebook_enabled=None,
+        external_facebook_client_id=None,
+        external_facebook_secret=None,
+        external_figma_enabled=None,
+        external_figma_client_id=None,
+        external_figma_secret=None,
+        external_github_enabled=None,
+        external_github_client_id=None,
+        external_github_secret=None,
+        external_gitlab_enabled=None,
+        external_gitlab_client_id=None,
+        external_gitlab_secret=None,
+        external_gitlab_url=None,
+        external_google_enabled=None,
+        external_google_client_id=None,
+        external_google_secret=None,
+        external_google_additional_client_ids=None,
+        external_google_skip_nonce_check=None,
+        external_kakao_enabled=None,
+        external_kakao_client_id=None,
+        external_kakao_secret=None,
+        external_keycloak_enabled=None,
+        external_keycloak_client_id=None,
+        external_keycloak_secret=None,
+        external_keycloak_url=None,
+        external_linkedin_oidc_enabled=None,
+        external_linkedin_oidc_client_id=None,
+        external_linkedin_oidc_secret=None,
+        external_slack_oidc_enabled=None,
+        external_slack_oidc_client_id=None,
+        external_slack_oidc_secret=None,
+        external_notion_enabled=None,
+        external_notion_client_id=None,
+        external_notion_secret=None,
+        external_slack_enabled=None,
+        external_slack_client_id=None,
+        external_slack_secret=None,
+        external_spotify_enabled=None,
+        external_spotify_client_id=None,
+        external_spotify_secret=None,
+        external_twitch_enabled=None,
+        external_twitch_client_id=None,
+        external_twitch_secret=None,
+        external_twitter_enabled=None,
+        external_twitter_client_id=None,
+        external_twitter_secret=None,
+        external_workos_enabled=None,
+        external_workos_client_id=None,
+        external_workos_secret=None,
+        external_workos_url=None,
+        external_zoom_enabled=None,
+        external_zoom_client_id=None,
+        external_zoom_secret=None,
+        db_max_pool_size=None,
+        api_max_request_duration=None,
+        mfa_totp_enroll_enabled=None,
+        mfa_totp_verify_enabled=None,
+        mfa_web_authn_enroll_enabled=None,
+        mfa_web_authn_verify_enabled=None,
+        mfa_phone_enroll_enabled=None,
+        mfa_phone_verify_enabled=None,
+        mfa_phone_max_frequency=None,
+        mfa_phone_otp_length=None,
+        mfa_phone_template=None,
+    ) -> dict[str, Any]:
         """
         Updates the authentication service configuration for a specified project with the provided settings.
 
@@ -1690,9 +1974,179 @@ class SupabaseApp(APIApplication):
         """
         if ref is None:
             raise ValueError("Missing required parameter 'ref'")
-        request_body = {'site_url': site_url, 'disable_signup': disable_signup, 'jwt_exp': jwt_exp, 'smtp_admin_email': smtp_admin_email, 'smtp_host': smtp_host, 'smtp_port': smtp_port, 'smtp_user': smtp_user, 'smtp_pass': smtp_pass, 'smtp_max_frequency': smtp_max_frequency, 'smtp_sender_name': smtp_sender_name, 'mailer_allow_unverified_email_sign_ins': mailer_allow_unverified_email_sign_ins, 'mailer_autoconfirm': mailer_autoconfirm, 'mailer_subjects_invite': mailer_subjects_invite, 'mailer_subjects_confirmation': mailer_subjects_confirmation, 'mailer_subjects_recovery': mailer_subjects_recovery, 'mailer_subjects_email_change': mailer_subjects_email_change, 'mailer_subjects_magic_link': mailer_subjects_magic_link, 'mailer_subjects_reauthentication': mailer_subjects_reauthentication, 'mailer_templates_invite_content': mailer_templates_invite_content, 'mailer_templates_confirmation_content': mailer_templates_confirmation_content, 'mailer_templates_recovery_content': mailer_templates_recovery_content, 'mailer_templates_email_change_content': mailer_templates_email_change_content, 'mailer_templates_magic_link_content': mailer_templates_magic_link_content, 'mailer_templates_reauthentication_content': mailer_templates_reauthentication_content, 'mfa_max_enrolled_factors': mfa_max_enrolled_factors, 'uri_allow_list': uri_allow_list, 'external_anonymous_users_enabled': external_anonymous_users_enabled, 'external_email_enabled': external_email_enabled, 'external_phone_enabled': external_phone_enabled, 'saml_enabled': saml_enabled, 'saml_external_url': saml_external_url, 'security_captcha_enabled': security_captcha_enabled, 'security_captcha_provider': security_captcha_provider, 'security_captcha_secret': security_captcha_secret, 'sessions_timebox': sessions_timebox, 'sessions_inactivity_timeout': sessions_inactivity_timeout, 'sessions_single_per_user': sessions_single_per_user, 'sessions_tags': sessions_tags, 'rate_limit_anonymous_users': rate_limit_anonymous_users, 'rate_limit_email_sent': rate_limit_email_sent, 'rate_limit_sms_sent': rate_limit_sms_sent, 'rate_limit_verify': rate_limit_verify, 'rate_limit_token_refresh': rate_limit_token_refresh, 'rate_limit_otp': rate_limit_otp, 'mailer_secure_email_change_enabled': mailer_secure_email_change_enabled, 'refresh_token_rotation_enabled': refresh_token_rotation_enabled, 'password_hibp_enabled': password_hibp_enabled, 'password_min_length': password_min_length, 'password_required_characters': password_required_characters, 'security_manual_linking_enabled': security_manual_linking_enabled, 'security_update_password_require_reauthentication': security_update_password_require_reauthentication, 'security_refresh_token_reuse_interval': security_refresh_token_reuse_interval, 'mailer_otp_exp': mailer_otp_exp, 'mailer_otp_length': mailer_otp_length, 'sms_autoconfirm': sms_autoconfirm, 'sms_max_frequency': sms_max_frequency, 'sms_otp_exp': sms_otp_exp, 'sms_otp_length': sms_otp_length, 'sms_provider': sms_provider, 'sms_messagebird_access_key': sms_messagebird_access_key, 'sms_messagebird_originator': sms_messagebird_originator, 'sms_test_otp': sms_test_otp, 'sms_test_otp_valid_until': sms_test_otp_valid_until, 'sms_textlocal_api_key': sms_textlocal_api_key, 'sms_textlocal_sender': sms_textlocal_sender, 'sms_twilio_account_sid': sms_twilio_account_sid, 'sms_twilio_auth_token': sms_twilio_auth_token, 'sms_twilio_content_sid': sms_twilio_content_sid, 'sms_twilio_message_service_sid': sms_twilio_message_service_sid, 'sms_twilio_verify_account_sid': sms_twilio_verify_account_sid, 'sms_twilio_verify_auth_token': sms_twilio_verify_auth_token, 'sms_twilio_verify_message_service_sid': sms_twilio_verify_message_service_sid, 'sms_vonage_api_key': sms_vonage_api_key, 'sms_vonage_api_secret': sms_vonage_api_secret, 'sms_vonage_from': sms_vonage_from, 'sms_template': sms_template, 'hook_mfa_verification_attempt_enabled': hook_mfa_verification_attempt_enabled, 'hook_mfa_verification_attempt_uri': hook_mfa_verification_attempt_uri, 'hook_mfa_verification_attempt_secrets': hook_mfa_verification_attempt_secrets, 'hook_password_verification_attempt_enabled': hook_password_verification_attempt_enabled, 'hook_password_verification_attempt_uri': hook_password_verification_attempt_uri, 'hook_password_verification_attempt_secrets': hook_password_verification_attempt_secrets, 'hook_custom_access_token_enabled': hook_custom_access_token_enabled, 'hook_custom_access_token_uri': hook_custom_access_token_uri, 'hook_custom_access_token_secrets': hook_custom_access_token_secrets, 'hook_send_sms_enabled': hook_send_sms_enabled, 'hook_send_sms_uri': hook_send_sms_uri, 'hook_send_sms_secrets': hook_send_sms_secrets, 'hook_send_email_enabled': hook_send_email_enabled, 'hook_send_email_uri': hook_send_email_uri, 'hook_send_email_secrets': hook_send_email_secrets, 'external_apple_enabled': external_apple_enabled, 'external_apple_client_id': external_apple_client_id, 'external_apple_secret': external_apple_secret, 'external_apple_additional_client_ids': external_apple_additional_client_ids, 'external_azure_enabled': external_azure_enabled, 'external_azure_client_id': external_azure_client_id, 'external_azure_secret': external_azure_secret, 'external_azure_url': external_azure_url, 'external_bitbucket_enabled': external_bitbucket_enabled, 'external_bitbucket_client_id': external_bitbucket_client_id, 'external_bitbucket_secret': external_bitbucket_secret, 'external_discord_enabled': external_discord_enabled, 'external_discord_client_id': external_discord_client_id, 'external_discord_secret': external_discord_secret, 'external_facebook_enabled': external_facebook_enabled, 'external_facebook_client_id': external_facebook_client_id, 'external_facebook_secret': external_facebook_secret, 'external_figma_enabled': external_figma_enabled, 'external_figma_client_id': external_figma_client_id, 'external_figma_secret': external_figma_secret, 'external_github_enabled': external_github_enabled, 'external_github_client_id': external_github_client_id, 'external_github_secret': external_github_secret, 'external_gitlab_enabled': external_gitlab_enabled, 'external_gitlab_client_id': external_gitlab_client_id, 'external_gitlab_secret': external_gitlab_secret, 'external_gitlab_url': external_gitlab_url, 'external_google_enabled': external_google_enabled, 'external_google_client_id': external_google_client_id, 'external_google_secret': external_google_secret, 'external_google_additional_client_ids': external_google_additional_client_ids, 'external_google_skip_nonce_check': external_google_skip_nonce_check, 'external_kakao_enabled': external_kakao_enabled, 'external_kakao_client_id': external_kakao_client_id, 'external_kakao_secret': external_kakao_secret, 'external_keycloak_enabled': external_keycloak_enabled, 'external_keycloak_client_id': external_keycloak_client_id, 'external_keycloak_secret': external_keycloak_secret, 'external_keycloak_url': external_keycloak_url, 'external_linkedin_oidc_enabled': external_linkedin_oidc_enabled, 'external_linkedin_oidc_client_id': external_linkedin_oidc_client_id, 'external_linkedin_oidc_secret': external_linkedin_oidc_secret, 'external_slack_oidc_enabled': external_slack_oidc_enabled, 'external_slack_oidc_client_id': external_slack_oidc_client_id, 'external_slack_oidc_secret': external_slack_oidc_secret, 'external_notion_enabled': external_notion_enabled, 'external_notion_client_id': external_notion_client_id, 'external_notion_secret': external_notion_secret, 'external_slack_enabled': external_slack_enabled, 'external_slack_client_id': external_slack_client_id, 'external_slack_secret': external_slack_secret, 'external_spotify_enabled': external_spotify_enabled, 'external_spotify_client_id': external_spotify_client_id, 'external_spotify_secret': external_spotify_secret, 'external_twitch_enabled': external_twitch_enabled, 'external_twitch_client_id': external_twitch_client_id, 'external_twitch_secret': external_twitch_secret, 'external_twitter_enabled': external_twitter_enabled, 'external_twitter_client_id': external_twitter_client_id, 'external_twitter_secret': external_twitter_secret, 'external_workos_enabled': external_workos_enabled, 'external_workos_client_id': external_workos_client_id, 'external_workos_secret': external_workos_secret, 'external_workos_url': external_workos_url, 'external_zoom_enabled': external_zoom_enabled, 'external_zoom_client_id': external_zoom_client_id, 'external_zoom_secret': external_zoom_secret, 'db_max_pool_size': db_max_pool_size, 'api_max_request_duration': api_max_request_duration, 'mfa_totp_enroll_enabled': mfa_totp_enroll_enabled, 'mfa_totp_verify_enabled': mfa_totp_verify_enabled, 'mfa_web_authn_enroll_enabled': mfa_web_authn_enroll_enabled, 'mfa_web_authn_verify_enabled': mfa_web_authn_verify_enabled, 'mfa_phone_enroll_enabled': mfa_phone_enroll_enabled, 'mfa_phone_verify_enabled': mfa_phone_verify_enabled, 'mfa_phone_max_frequency': mfa_phone_max_frequency, 'mfa_phone_otp_length': mfa_phone_otp_length, 'mfa_phone_template': mfa_phone_template}
+        request_body = {
+            "site_url": site_url,
+            "disable_signup": disable_signup,
+            "jwt_exp": jwt_exp,
+            "smtp_admin_email": smtp_admin_email,
+            "smtp_host": smtp_host,
+            "smtp_port": smtp_port,
+            "smtp_user": smtp_user,
+            "smtp_pass": smtp_pass,
+            "smtp_max_frequency": smtp_max_frequency,
+            "smtp_sender_name": smtp_sender_name,
+            "mailer_allow_unverified_email_sign_ins": mailer_allow_unverified_email_sign_ins,
+            "mailer_autoconfirm": mailer_autoconfirm,
+            "mailer_subjects_invite": mailer_subjects_invite,
+            "mailer_subjects_confirmation": mailer_subjects_confirmation,
+            "mailer_subjects_recovery": mailer_subjects_recovery,
+            "mailer_subjects_email_change": mailer_subjects_email_change,
+            "mailer_subjects_magic_link": mailer_subjects_magic_link,
+            "mailer_subjects_reauthentication": mailer_subjects_reauthentication,
+            "mailer_templates_invite_content": mailer_templates_invite_content,
+            "mailer_templates_confirmation_content": mailer_templates_confirmation_content,
+            "mailer_templates_recovery_content": mailer_templates_recovery_content,
+            "mailer_templates_email_change_content": mailer_templates_email_change_content,
+            "mailer_templates_magic_link_content": mailer_templates_magic_link_content,
+            "mailer_templates_reauthentication_content": mailer_templates_reauthentication_content,
+            "mfa_max_enrolled_factors": mfa_max_enrolled_factors,
+            "uri_allow_list": uri_allow_list,
+            "external_anonymous_users_enabled": external_anonymous_users_enabled,
+            "external_email_enabled": external_email_enabled,
+            "external_phone_enabled": external_phone_enabled,
+            "saml_enabled": saml_enabled,
+            "saml_external_url": saml_external_url,
+            "security_captcha_enabled": security_captcha_enabled,
+            "security_captcha_provider": security_captcha_provider,
+            "security_captcha_secret": security_captcha_secret,
+            "sessions_timebox": sessions_timebox,
+            "sessions_inactivity_timeout": sessions_inactivity_timeout,
+            "sessions_single_per_user": sessions_single_per_user,
+            "sessions_tags": sessions_tags,
+            "rate_limit_anonymous_users": rate_limit_anonymous_users,
+            "rate_limit_email_sent": rate_limit_email_sent,
+            "rate_limit_sms_sent": rate_limit_sms_sent,
+            "rate_limit_verify": rate_limit_verify,
+            "rate_limit_token_refresh": rate_limit_token_refresh,
+            "rate_limit_otp": rate_limit_otp,
+            "mailer_secure_email_change_enabled": mailer_secure_email_change_enabled,
+            "refresh_token_rotation_enabled": refresh_token_rotation_enabled,
+            "password_hibp_enabled": password_hibp_enabled,
+            "password_min_length": password_min_length,
+            "password_required_characters": password_required_characters,
+            "security_manual_linking_enabled": security_manual_linking_enabled,
+            "security_update_password_require_reauthentication": security_update_password_require_reauthentication,
+            "security_refresh_token_reuse_interval": security_refresh_token_reuse_interval,
+            "mailer_otp_exp": mailer_otp_exp,
+            "mailer_otp_length": mailer_otp_length,
+            "sms_autoconfirm": sms_autoconfirm,
+            "sms_max_frequency": sms_max_frequency,
+            "sms_otp_exp": sms_otp_exp,
+            "sms_otp_length": sms_otp_length,
+            "sms_provider": sms_provider,
+            "sms_messagebird_access_key": sms_messagebird_access_key,
+            "sms_messagebird_originator": sms_messagebird_originator,
+            "sms_test_otp": sms_test_otp,
+            "sms_test_otp_valid_until": sms_test_otp_valid_until,
+            "sms_textlocal_api_key": sms_textlocal_api_key,
+            "sms_textlocal_sender": sms_textlocal_sender,
+            "sms_twilio_account_sid": sms_twilio_account_sid,
+            "sms_twilio_auth_token": sms_twilio_auth_token,
+            "sms_twilio_content_sid": sms_twilio_content_sid,
+            "sms_twilio_message_service_sid": sms_twilio_message_service_sid,
+            "sms_twilio_verify_account_sid": sms_twilio_verify_account_sid,
+            "sms_twilio_verify_auth_token": sms_twilio_verify_auth_token,
+            "sms_twilio_verify_message_service_sid": sms_twilio_verify_message_service_sid,
+            "sms_vonage_api_key": sms_vonage_api_key,
+            "sms_vonage_api_secret": sms_vonage_api_secret,
+            "sms_vonage_from": sms_vonage_from,
+            "sms_template": sms_template,
+            "hook_mfa_verification_attempt_enabled": hook_mfa_verification_attempt_enabled,
+            "hook_mfa_verification_attempt_uri": hook_mfa_verification_attempt_uri,
+            "hook_mfa_verification_attempt_secrets": hook_mfa_verification_attempt_secrets,
+            "hook_password_verification_attempt_enabled": hook_password_verification_attempt_enabled,
+            "hook_password_verification_attempt_uri": hook_password_verification_attempt_uri,
+            "hook_password_verification_attempt_secrets": hook_password_verification_attempt_secrets,
+            "hook_custom_access_token_enabled": hook_custom_access_token_enabled,
+            "hook_custom_access_token_uri": hook_custom_access_token_uri,
+            "hook_custom_access_token_secrets": hook_custom_access_token_secrets,
+            "hook_send_sms_enabled": hook_send_sms_enabled,
+            "hook_send_sms_uri": hook_send_sms_uri,
+            "hook_send_sms_secrets": hook_send_sms_secrets,
+            "hook_send_email_enabled": hook_send_email_enabled,
+            "hook_send_email_uri": hook_send_email_uri,
+            "hook_send_email_secrets": hook_send_email_secrets,
+            "external_apple_enabled": external_apple_enabled,
+            "external_apple_client_id": external_apple_client_id,
+            "external_apple_secret": external_apple_secret,
+            "external_apple_additional_client_ids": external_apple_additional_client_ids,
+            "external_azure_enabled": external_azure_enabled,
+            "external_azure_client_id": external_azure_client_id,
+            "external_azure_secret": external_azure_secret,
+            "external_azure_url": external_azure_url,
+            "external_bitbucket_enabled": external_bitbucket_enabled,
+            "external_bitbucket_client_id": external_bitbucket_client_id,
+            "external_bitbucket_secret": external_bitbucket_secret,
+            "external_discord_enabled": external_discord_enabled,
+            "external_discord_client_id": external_discord_client_id,
+            "external_discord_secret": external_discord_secret,
+            "external_facebook_enabled": external_facebook_enabled,
+            "external_facebook_client_id": external_facebook_client_id,
+            "external_facebook_secret": external_facebook_secret,
+            "external_figma_enabled": external_figma_enabled,
+            "external_figma_client_id": external_figma_client_id,
+            "external_figma_secret": external_figma_secret,
+            "external_github_enabled": external_github_enabled,
+            "external_github_client_id": external_github_client_id,
+            "external_github_secret": external_github_secret,
+            "external_gitlab_enabled": external_gitlab_enabled,
+            "external_gitlab_client_id": external_gitlab_client_id,
+            "external_gitlab_secret": external_gitlab_secret,
+            "external_gitlab_url": external_gitlab_url,
+            "external_google_enabled": external_google_enabled,
+            "external_google_client_id": external_google_client_id,
+            "external_google_secret": external_google_secret,
+            "external_google_additional_client_ids": external_google_additional_client_ids,
+            "external_google_skip_nonce_check": external_google_skip_nonce_check,
+            "external_kakao_enabled": external_kakao_enabled,
+            "external_kakao_client_id": external_kakao_client_id,
+            "external_kakao_secret": external_kakao_secret,
+            "external_keycloak_enabled": external_keycloak_enabled,
+            "external_keycloak_client_id": external_keycloak_client_id,
+            "external_keycloak_secret": external_keycloak_secret,
+            "external_keycloak_url": external_keycloak_url,
+            "external_linkedin_oidc_enabled": external_linkedin_oidc_enabled,
+            "external_linkedin_oidc_client_id": external_linkedin_oidc_client_id,
+            "external_linkedin_oidc_secret": external_linkedin_oidc_secret,
+            "external_slack_oidc_enabled": external_slack_oidc_enabled,
+            "external_slack_oidc_client_id": external_slack_oidc_client_id,
+            "external_slack_oidc_secret": external_slack_oidc_secret,
+            "external_notion_enabled": external_notion_enabled,
+            "external_notion_client_id": external_notion_client_id,
+            "external_notion_secret": external_notion_secret,
+            "external_slack_enabled": external_slack_enabled,
+            "external_slack_client_id": external_slack_client_id,
+            "external_slack_secret": external_slack_secret,
+            "external_spotify_enabled": external_spotify_enabled,
+            "external_spotify_client_id": external_spotify_client_id,
+            "external_spotify_secret": external_spotify_secret,
+            "external_twitch_enabled": external_twitch_enabled,
+            "external_twitch_client_id": external_twitch_client_id,
+            "external_twitch_secret": external_twitch_secret,
+            "external_twitter_enabled": external_twitter_enabled,
+            "external_twitter_client_id": external_twitter_client_id,
+            "external_twitter_secret": external_twitter_secret,
+            "external_workos_enabled": external_workos_enabled,
+            "external_workos_client_id": external_workos_client_id,
+            "external_workos_secret": external_workos_secret,
+            "external_workos_url": external_workos_url,
+            "external_zoom_enabled": external_zoom_enabled,
+            "external_zoom_client_id": external_zoom_client_id,
+            "external_zoom_secret": external_zoom_secret,
+            "db_max_pool_size": db_max_pool_size,
+            "api_max_request_duration": api_max_request_duration,
+            "mfa_totp_enroll_enabled": mfa_totp_enroll_enabled,
+            "mfa_totp_verify_enabled": mfa_totp_verify_enabled,
+            "mfa_web_authn_enroll_enabled": mfa_web_authn_enroll_enabled,
+            "mfa_web_authn_verify_enabled": mfa_web_authn_verify_enabled,
+            "mfa_phone_enroll_enabled": mfa_phone_enroll_enabled,
+            "mfa_phone_verify_enabled": mfa_phone_verify_enabled,
+            "mfa_phone_max_frequency": mfa_phone_max_frequency,
+            "mfa_phone_otp_length": mfa_phone_otp_length,
+            "mfa_phone_template": mfa_phone_template,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v1/projects/{ref}/config/auth'
+        url = f"{self.base_url}/v1/projects/{ref}/config/auth"
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -1720,9 +2174,9 @@ class SupabaseApp(APIApplication):
         """
         if ref is None:
             raise ValueError("Missing required parameter 'ref'")
-        request_body = {'oidc_issuer_url': oidc_issuer_url, 'jwks_url': jwks_url, 'custom_jwks': custom_jwks}
+        request_body = {"oidc_issuer_url": oidc_issuer_url, "jwks_url": jwks_url, "custom_jwks": custom_jwks}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v1/projects/{ref}/config/auth/third-party-auth'
+        url = f"{self.base_url}/v1/projects/{ref}/config/auth/third-party-auth"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -1747,7 +2201,7 @@ class SupabaseApp(APIApplication):
         """
         if ref is None:
             raise ValueError("Missing required parameter 'ref'")
-        url = f'{self.base_url}/v1/projects/{ref}/config/auth/third-party-auth'
+        url = f"{self.base_url}/v1/projects/{ref}/config/auth/third-party-auth"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -1775,7 +2229,7 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'ref'")
         if tpa_id is None:
             raise ValueError("Missing required parameter 'tpa_id'")
-        url = f'{self.base_url}/v1/projects/{ref}/config/auth/third-party-auth/{tpa_id}'
+        url = f"{self.base_url}/v1/projects/{ref}/config/auth/third-party-auth/{tpa_id}"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -1803,7 +2257,7 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'ref'")
         if tpa_id is None:
             raise ValueError("Missing required parameter 'tpa_id'")
-        url = f'{self.base_url}/v1/projects/{ref}/config/auth/third-party-auth/{tpa_id}'
+        url = f"{self.base_url}/v1/projects/{ref}/config/auth/third-party-auth/{tpa_id}"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -1831,9 +2285,9 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'ref'")
         if query is None:
             raise ValueError("Missing required parameter 'query'")
-        request_body = {'query': query}
+        request_body = {"query": query}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v1/projects/{ref}/database/query'
+        url = f"{self.base_url}/v1/projects/{ref}/database/query"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -1858,7 +2312,7 @@ class SupabaseApp(APIApplication):
         """
         if ref is None:
             raise ValueError("Missing required parameter 'ref'")
-        url = f'{self.base_url}/v1/projects/{ref}/database/webhooks/enable'
+        url = f"{self.base_url}/v1/projects/{ref}/database/webhooks/enable"
         query_params = {}
         response = await self._apost(url, data={}, params=query_params)
         response.raise_for_status()
@@ -1883,7 +2337,7 @@ class SupabaseApp(APIApplication):
         """
         if ref is None:
             raise ValueError("Missing required parameter 'ref'")
-        url = f'{self.base_url}/v1/projects/{ref}/functions'
+        url = f"{self.base_url}/v1/projects/{ref}/functions"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -1911,13 +2365,24 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'ref'")
         if function_slug is None:
             raise ValueError("Missing required parameter 'function_slug'")
-        url = f'{self.base_url}/v1/projects/{ref}/functions/{function_slug}'
+        url = f"{self.base_url}/v1/projects/{ref}/functions/{function_slug}"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def v1_update_a_function(self, ref, function_slug, slug=None, name=None, verify_jwt=None, import_map=None, entrypoint_path=None, import_map_path=None, body=None) -> dict[str, Any]:
+    async def v1_update_a_function(
+        self,
+        ref,
+        function_slug,
+        slug=None,
+        name=None,
+        verify_jwt=None,
+        import_map=None,
+        entrypoint_path=None,
+        import_map_path=None,
+        body=None,
+    ) -> dict[str, Any]:
         """
         Updates the configuration or code for an existing function in the specified project.
 
@@ -1946,10 +2411,21 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'ref'")
         if function_slug is None:
             raise ValueError("Missing required parameter 'function_slug'")
-        request_body = {'name': name, 'body': body, 'verify_jwt': verify_jwt}
+        request_body = {"name": name, "body": body, "verify_jwt": verify_jwt}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v1/projects/{ref}/functions/{function_slug}'
-        query_params = {k: v for k, v in [('slug', slug), ('name', name), ('verify_jwt', verify_jwt), ('import_map', import_map), ('entrypoint_path', entrypoint_path), ('import_map_path', import_map_path)] if v is not None}
+        url = f"{self.base_url}/v1/projects/{ref}/functions/{function_slug}"
+        query_params = {
+            k: v
+            for k, v in [
+                ("slug", slug),
+                ("name", name),
+                ("verify_jwt", verify_jwt),
+                ("import_map", import_map),
+                ("entrypoint_path", entrypoint_path),
+                ("import_map_path", import_map_path),
+            ]
+            if v is not None
+        }
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -1976,7 +2452,7 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'ref'")
         if function_slug is None:
             raise ValueError("Missing required parameter 'function_slug'")
-        url = f'{self.base_url}/v1/projects/{ref}/functions/{function_slug}'
+        url = f"{self.base_url}/v1/projects/{ref}/functions/{function_slug}"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -2004,7 +2480,7 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'ref'")
         if function_slug is None:
             raise ValueError("Missing required parameter 'function_slug'")
-        url = f'{self.base_url}/v1/projects/{ref}/functions/{function_slug}/body'
+        url = f"{self.base_url}/v1/projects/{ref}/functions/{function_slug}/body"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -2029,13 +2505,15 @@ class SupabaseApp(APIApplication):
         """
         if ref is None:
             raise ValueError("Missing required parameter 'ref'")
-        url = f'{self.base_url}/v1/projects/{ref}/storage/buckets'
+        url = f"{self.base_url}/v1/projects/{ref}/storage/buckets"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def v1_create_a_sso_provider(self, ref, type, metadata_xml=None, metadata_url=None, domains=None, attribute_mapping=None) -> dict[str, Any]:
+    async def v1_create_a_sso_provider(
+        self, ref, type, metadata_xml=None, metadata_url=None, domains=None, attribute_mapping=None
+    ) -> dict[str, Any]:
         """
         Creates a new Single Sign-On (SSO) provider configuration for the specified project.
 
@@ -2061,9 +2539,15 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'ref'")
         if type is None:
             raise ValueError("Missing required parameter 'type'")
-        request_body = {'type': type, 'metadata_xml': metadata_xml, 'metadata_url': metadata_url, 'domains': domains, 'attribute_mapping': attribute_mapping}
+        request_body = {
+            "type": type,
+            "metadata_xml": metadata_xml,
+            "metadata_url": metadata_url,
+            "domains": domains,
+            "attribute_mapping": attribute_mapping,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v1/projects/{ref}/config/auth/sso/providers'
+        url = f"{self.base_url}/v1/projects/{ref}/config/auth/sso/providers"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -2088,7 +2572,7 @@ class SupabaseApp(APIApplication):
         """
         if ref is None:
             raise ValueError("Missing required parameter 'ref'")
-        url = f'{self.base_url}/v1/projects/{ref}/config/auth/sso/providers'
+        url = f"{self.base_url}/v1/projects/{ref}/config/auth/sso/providers"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -2116,13 +2600,15 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'ref'")
         if provider_id is None:
             raise ValueError("Missing required parameter 'provider_id'")
-        url = f'{self.base_url}/v1/projects/{ref}/config/auth/sso/providers/{provider_id}'
+        url = f"{self.base_url}/v1/projects/{ref}/config/auth/sso/providers/{provider_id}"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def v1_update_a_sso_provider(self, ref, provider_id, metadata_xml=None, metadata_url=None, domains=None, attribute_mapping=None) -> dict[str, Any]:
+    async def v1_update_a_sso_provider(
+        self, ref, provider_id, metadata_xml=None, metadata_url=None, domains=None, attribute_mapping=None
+    ) -> dict[str, Any]:
         """
         Updates the configuration of an existing SSO provider using the provided metadata and attributes.
 
@@ -2148,9 +2634,14 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'ref'")
         if provider_id is None:
             raise ValueError("Missing required parameter 'provider_id'")
-        request_body = {'metadata_xml': metadata_xml, 'metadata_url': metadata_url, 'domains': domains, 'attribute_mapping': attribute_mapping}
+        request_body = {
+            "metadata_xml": metadata_xml,
+            "metadata_url": metadata_url,
+            "domains": domains,
+            "attribute_mapping": attribute_mapping,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v1/projects/{ref}/config/auth/sso/providers/{provider_id}'
+        url = f"{self.base_url}/v1/projects/{ref}/config/auth/sso/providers/{provider_id}"
         query_params = {}
         response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -2178,7 +2669,7 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'ref'")
         if provider_id is None:
             raise ValueError("Missing required parameter 'provider_id'")
-        url = f'{self.base_url}/v1/projects/{ref}/config/auth/sso/providers/{provider_id}'
+        url = f"{self.base_url}/v1/projects/{ref}/config/auth/sso/providers/{provider_id}"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -2203,7 +2694,7 @@ class SupabaseApp(APIApplication):
         """
         if ref is None:
             raise ValueError("Missing required parameter 'ref'")
-        url = f'{self.base_url}/v1/projects/{ref}/database/backups'
+        url = f"{self.base_url}/v1/projects/{ref}/database/backups"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -2231,9 +2722,9 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'ref'")
         if recovery_time_target_unix is None:
             raise ValueError("Missing required parameter 'recovery_time_target_unix'")
-        request_body = {'recovery_time_target_unix': recovery_time_target_unix}
+        request_body = {"recovery_time_target_unix": recovery_time_target_unix}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v1/projects/{ref}/database/backups/restore-pitr'
+        url = f"{self.base_url}/v1/projects/{ref}/database/backups/restore-pitr"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -2258,7 +2749,7 @@ class SupabaseApp(APIApplication):
         """
         if slug is None:
             raise ValueError("Missing required parameter 'slug'")
-        url = f'{self.base_url}/v1/organizations/{slug}/members'
+        url = f"{self.base_url}/v1/organizations/{slug}/members"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -2283,11 +2774,88 @@ class SupabaseApp(APIApplication):
         """
         if slug is None:
             raise ValueError("Missing required parameter 'slug'")
-        url = f'{self.base_url}/v1/organizations/{slug}'
+        url = f"{self.base_url}/v1/organizations/{slug}"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
     def list_tools(self):
-        return [self.v1_get_a_branch_config, self.v1_update_a_branch_config, self.v1_delete_a_branch, self.v1_reset_a_branch, self.v1_list_all_projects, self.v1_create_a_project, self.v1_list_all_organizations, self.v1_create_an_organization, self.v1_authorize_user, self.v1_list_all_snippets, self.v1_get_a_snippet, self.v1_get_project_api_keys, self.create_api_key, self.update_api_key, self.delete_api_key, self.v1_list_all_branches, self.v1_create_a_branch, self.v1_disable_preview_branching, self.v1_get_hostname_config, self.v1_verify_dns_config, self.v1_activate_custom_hostname, self.v1_list_all_network_bans, self.v1_delete_network_bans, self.v1_get_network_restrictions, self.v1_update_network_restrictions, self.v1_get_pgsodium_config, self.v1_update_pgsodium_config, self.v1_get_postgrest_service_config, self.v1_update_postgrest_service_config, self.v1_delete_a_project, self.v1_list_all_secrets, self.v1_bulk_create_secrets, self.v1_bulk_delete_secrets, self.v1_get_ssl_enforcement_config, self.v1_update_ssl_enforcement_config, self.v1_generate_typescript_types, self.v1_get_vanity_subdomain_config, self.v1_deactivate_vanity_subdomain_config, self.v1_check_vanity_subdomain_availability, self.v1_activate_vanity_subdomain_config, self.v1_upgrade_postgres_version, self.v1_get_postgrest_upgrade_eligibility, self.v1_get_postgrest_upgrade_status, self.v1_get_readonly_mode_status, self.v1_disable_readonly_mode_temporarily, self.v1_setup_a_read_replica, self.v1_remove_a_read_replica, self.v1_get_services_health, self.v1_get_postgres_config, self.v1_update_postgres_config, self.v1_get_project_pgbouncer_config, self.v1_get_supavisor_config, self.v1_update_supavisor_config, self.v1_get_auth_service_config, self.v1_update_auth_service_config, self.create_tpafor_project, self.list_tpafor_project, self.delete_tpafor_project, self.get_tpafor_project, self.v1_run_a_query, self.v1_enable_database_webhook, self.v1_list_all_functions, self.v1_get_a_function, self.v1_update_a_function, self.v1_delete_a_function, self.v1_get_a_function_body, self.v1_list_all_buckets, self.v1_create_a_sso_provider, self.v1_list_all_sso_provider, self.v1_get_a_sso_provider, self.v1_update_a_sso_provider, self.v1_delete_a_sso_provider, self.v1_list_all_backups, self.v1_restore_pitr_backup, self.v1_list_organization_members, self.v1_get_an_organization]
+        return [
+            self.v1_get_a_branch_config,
+            self.v1_update_a_branch_config,
+            self.v1_delete_a_branch,
+            self.v1_reset_a_branch,
+            self.v1_list_all_projects,
+            self.v1_create_a_project,
+            self.v1_list_all_organizations,
+            self.v1_create_an_organization,
+            self.v1_authorize_user,
+            self.v1_list_all_snippets,
+            self.v1_get_a_snippet,
+            self.v1_get_project_api_keys,
+            self.create_api_key,
+            self.update_api_key,
+            self.delete_api_key,
+            self.v1_list_all_branches,
+            self.v1_create_a_branch,
+            self.v1_disable_preview_branching,
+            self.v1_get_hostname_config,
+            self.v1_verify_dns_config,
+            self.v1_activate_custom_hostname,
+            self.v1_list_all_network_bans,
+            self.v1_delete_network_bans,
+            self.v1_get_network_restrictions,
+            self.v1_update_network_restrictions,
+            self.v1_get_pgsodium_config,
+            self.v1_update_pgsodium_config,
+            self.v1_get_postgrest_service_config,
+            self.v1_update_postgrest_service_config,
+            self.v1_delete_a_project,
+            self.v1_list_all_secrets,
+            self.v1_bulk_create_secrets,
+            self.v1_bulk_delete_secrets,
+            self.v1_get_ssl_enforcement_config,
+            self.v1_update_ssl_enforcement_config,
+            self.v1_generate_typescript_types,
+            self.v1_get_vanity_subdomain_config,
+            self.v1_deactivate_vanity_subdomain_config,
+            self.v1_check_vanity_subdomain_availability,
+            self.v1_activate_vanity_subdomain_config,
+            self.v1_upgrade_postgres_version,
+            self.v1_get_postgrest_upgrade_eligibility,
+            self.v1_get_postgrest_upgrade_status,
+            self.v1_get_readonly_mode_status,
+            self.v1_disable_readonly_mode_temporarily,
+            self.v1_setup_a_read_replica,
+            self.v1_remove_a_read_replica,
+            self.v1_get_services_health,
+            self.v1_get_postgres_config,
+            self.v1_update_postgres_config,
+            self.v1_get_project_pgbouncer_config,
+            self.v1_get_supavisor_config,
+            self.v1_update_supavisor_config,
+            self.v1_get_auth_service_config,
+            self.v1_update_auth_service_config,
+            self.create_tpafor_project,
+            self.list_tpafor_project,
+            self.delete_tpafor_project,
+            self.get_tpafor_project,
+            self.v1_run_a_query,
+            self.v1_enable_database_webhook,
+            self.v1_list_all_functions,
+            self.v1_get_a_function,
+            self.v1_update_a_function,
+            self.v1_delete_a_function,
+            self.v1_get_a_function_body,
+            self.v1_list_all_buckets,
+            self.v1_create_a_sso_provider,
+            self.v1_list_all_sso_provider,
+            self.v1_get_a_sso_provider,
+            self.v1_update_a_sso_provider,
+            self.v1_delete_a_sso_provider,
+            self.v1_list_all_backups,
+            self.v1_restore_pitr_backup,
+            self.v1_list_organization_members,
+            self.v1_get_an_organization,
+        ]

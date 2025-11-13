@@ -3,18 +3,18 @@ from typing import Any
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
-class GongApp(APIApplication):
 
-    def __init__(self, integration: Integration=None, **kwargs) -> None:
-        super().__init__(name='gong', integration=integration, **kwargs)
-        self.base_url = 'https://api.gong.io'
+class GongApp(APIApplication):
+    def __init__(self, integration: Integration = None, **kwargs) -> None:
+        super().__init__(name="gong", integration=integration, **kwargs)
+        self.base_url = "https://api.gong.io"
 
     def _get_headers(self) -> dict[str, str]:
         credentials = self.integration.get_credentials()
-        api_key = credentials.get('api_key')
-        secret = credentials.get('secret')
-        api_key_b64 = b64encode(f'{api_key}:{secret}'.encode()).decode()
-        return {'Authorization': f'Basic {api_key_b64}', 'Content-Type': 'application/json', 'Accept': 'application/json'}
+        api_key = credentials.get("api_key")
+        secret = credentials.get("secret")
+        api_key_b64 = b64encode(f"{api_key}:{secret}".encode()).decode()
+        return {"Authorization": f"Basic {api_key_b64}", "Content-Type": "application/json", "Accept": "application/json"}
 
     async def list_calls(self, fromDateTime, toDateTime, cursor=None, workspaceId=None) -> dict[str, Any]:
         """
@@ -40,13 +40,36 @@ class GongApp(APIApplication):
             raise ValueError("Missing required parameter 'fromDateTime'")
         if toDateTime is None:
             raise ValueError("Missing required parameter 'toDateTime'")
-        url = f'{self.base_url}/v2/calls'
-        query_params = {k: v for k, v in [('fromDateTime', fromDateTime), ('toDateTime', toDateTime), ('workspaceId', workspaceId)] if v is not None}
+        url = f"{self.base_url}/v2/calls"
+        query_params = {
+            k: v for k, v in [("fromDateTime", fromDateTime), ("toDateTime", toDateTime), ("workspaceId", workspaceId)] if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def add_call(self, clientUniqueId, actualStart, parties, direction, primaryUser, title=None, purpose=None, scheduledStart=None, scheduledEnd=None, duration=None, disposition=None, context=None, customData=None, speakersTimeline=None, meetingUrl=None, callProviderCode=None, downloadMediaUrl=None, workspaceId=None, languageCode=None) -> dict[str, Any]:
+    async def add_call(
+        self,
+        clientUniqueId,
+        actualStart,
+        parties,
+        direction,
+        primaryUser,
+        title=None,
+        purpose=None,
+        scheduledStart=None,
+        scheduledEnd=None,
+        duration=None,
+        disposition=None,
+        context=None,
+        customData=None,
+        speakersTimeline=None,
+        meetingUrl=None,
+        callProviderCode=None,
+        downloadMediaUrl=None,
+        workspaceId=None,
+        languageCode=None,
+    ) -> dict[str, Any]:
         """
         Creates and submits a new call record with detailed metadata to the remote service.
 
@@ -91,9 +114,29 @@ class GongApp(APIApplication):
             raise ValueError("Missing required parameter 'direction'")
         if primaryUser is None:
             raise ValueError("Missing required parameter 'primaryUser'")
-        request_body = {'clientUniqueId': clientUniqueId, 'title': title, 'purpose': purpose, 'scheduledStart': scheduledStart, 'scheduledEnd': scheduledEnd, 'actualStart': actualStart, 'duration': duration, 'parties': parties, 'direction': direction, 'disposition': disposition, 'context': context, 'customData': customData, 'speakersTimeline': speakersTimeline, 'meetingUrl': meetingUrl, 'callProviderCode': callProviderCode, 'downloadMediaUrl': downloadMediaUrl, 'workspaceId': workspaceId, 'languageCode': languageCode, 'primaryUser': primaryUser}
+        request_body = {
+            "clientUniqueId": clientUniqueId,
+            "title": title,
+            "purpose": purpose,
+            "scheduledStart": scheduledStart,
+            "scheduledEnd": scheduledEnd,
+            "actualStart": actualStart,
+            "duration": duration,
+            "parties": parties,
+            "direction": direction,
+            "disposition": disposition,
+            "context": context,
+            "customData": customData,
+            "speakersTimeline": speakersTimeline,
+            "meetingUrl": meetingUrl,
+            "callProviderCode": callProviderCode,
+            "downloadMediaUrl": downloadMediaUrl,
+            "workspaceId": workspaceId,
+            "languageCode": languageCode,
+            "primaryUser": primaryUser,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/calls'
+        url = f"{self.base_url}/v2/calls"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -118,7 +161,7 @@ class GongApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/v2/calls/{id}'
+        url = f"{self.base_url}/v2/calls/{id}"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -145,9 +188,9 @@ class GongApp(APIApplication):
         """
         if filter is None:
             raise ValueError("Missing required parameter 'filter'")
-        request_body = {'cursor': cursor, 'filter': filter, 'contentSelector': contentSelector}
+        request_body = {"cursor": cursor, "filter": filter, "contentSelector": contentSelector}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/calls/extensive'
+        url = f"{self.base_url}/v2/calls/extensive"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -172,13 +215,65 @@ class GongApp(APIApplication):
         """
         if profileId is None:
             raise ValueError("Missing required parameter 'profileId'")
-        url = f'{self.base_url}/v2/permission-profile'
-        query_params = {k: v for k, v in [('profileId', profileId)] if v is not None}
+        url = f"{self.base_url}/v2/permission-profile"
+        query_params = {k: v for k, v in [("profileId", profileId)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def update_permission_profile(self, profileId, id=None, name=None, description=None, callsAccess=None, libraryFolderAccess=None, dealsAccess=None, forecastPermissions=None, coachingAccess=None, insightsAccess=None, usageAccess=None, emailsAccess=None, scoreCalls=None, overrideScore=None, downloadCallMedia=None, shareCallsWithCustomers=None, manuallyScheduleAndUploadCalls=None, privateCalls=None, deleteCalls=None, trimCalls=None, listenInCalls=None, deleteEmails=None, callsAndSearch=None, library=None, deals=None, createEditAndDeleteDealsBoards=None, dealsInlineEditing=None, account=None, coaching=None, usage=None, teamStats=None, initiatives=None, market=None, activity=None, forecast=None, forecastManage=None, engageManageCompanyTemplates=None, engageManageCompanySequences=None, engageCreateAndManageRulesets=None, engageSnoozeFlowToDosForOthers=None, viewEngageAnalyticsActivity=None, viewEngageAnalyticsPerformance=None, viewEngageAnalyticsFlows=None, manageGeneralBusinessSettings=None, manageScorecards=None, exportCallsAndCoachingDataToCSV=None, crmDataInlineEditing=None, crmDataImport=None, viewRevenueAnalytics=None, manageRevenueAnalytics=None) -> dict[str, Any]:
+    async def update_permission_profile(
+        self,
+        profileId,
+        id=None,
+        name=None,
+        description=None,
+        callsAccess=None,
+        libraryFolderAccess=None,
+        dealsAccess=None,
+        forecastPermissions=None,
+        coachingAccess=None,
+        insightsAccess=None,
+        usageAccess=None,
+        emailsAccess=None,
+        scoreCalls=None,
+        overrideScore=None,
+        downloadCallMedia=None,
+        shareCallsWithCustomers=None,
+        manuallyScheduleAndUploadCalls=None,
+        privateCalls=None,
+        deleteCalls=None,
+        trimCalls=None,
+        listenInCalls=None,
+        deleteEmails=None,
+        callsAndSearch=None,
+        library=None,
+        deals=None,
+        createEditAndDeleteDealsBoards=None,
+        dealsInlineEditing=None,
+        account=None,
+        coaching=None,
+        usage=None,
+        teamStats=None,
+        initiatives=None,
+        market=None,
+        activity=None,
+        forecast=None,
+        forecastManage=None,
+        engageManageCompanyTemplates=None,
+        engageManageCompanySequences=None,
+        engageCreateAndManageRulesets=None,
+        engageSnoozeFlowToDosForOthers=None,
+        viewEngageAnalyticsActivity=None,
+        viewEngageAnalyticsPerformance=None,
+        viewEngageAnalyticsFlows=None,
+        manageGeneralBusinessSettings=None,
+        manageScorecards=None,
+        exportCallsAndCoachingDataToCSV=None,
+        crmDataInlineEditing=None,
+        crmDataImport=None,
+        viewRevenueAnalytics=None,
+        manageRevenueAnalytics=None,
+    ) -> dict[str, Any]:
         """
         Updates an existing permission profile with the specified access settings and permissions.
 
@@ -246,15 +341,117 @@ class GongApp(APIApplication):
         """
         if profileId is None:
             raise ValueError("Missing required parameter 'profileId'")
-        request_body = {'id': id, 'name': name, 'description': description, 'callsAccess': callsAccess, 'libraryFolderAccess': libraryFolderAccess, 'dealsAccess': dealsAccess, 'forecastPermissions': forecastPermissions, 'coachingAccess': coachingAccess, 'insightsAccess': insightsAccess, 'usageAccess': usageAccess, 'emailsAccess': emailsAccess, 'scoreCalls': scoreCalls, 'overrideScore': overrideScore, 'downloadCallMedia': downloadCallMedia, 'shareCallsWithCustomers': shareCallsWithCustomers, 'manuallyScheduleAndUploadCalls': manuallyScheduleAndUploadCalls, 'privateCalls': privateCalls, 'deleteCalls': deleteCalls, 'trimCalls': trimCalls, 'listenInCalls': listenInCalls, 'deleteEmails': deleteEmails, 'callsAndSearch': callsAndSearch, 'library': library, 'deals': deals, 'createEditAndDeleteDealsBoards': createEditAndDeleteDealsBoards, 'dealsInlineEditing': dealsInlineEditing, 'account': account, 'coaching': coaching, 'usage': usage, 'teamStats': teamStats, 'initiatives': initiatives, 'market': market, 'activity': activity, 'forecast': forecast, 'forecastManage': forecastManage, 'engageManageCompanyTemplates': engageManageCompanyTemplates, 'engageManageCompanySequences': engageManageCompanySequences, 'engageCreateAndManageRulesets': engageCreateAndManageRulesets, 'engageSnoozeFlowToDosForOthers': engageSnoozeFlowToDosForOthers, 'viewEngageAnalyticsActivity': viewEngageAnalyticsActivity, 'viewEngageAnalyticsPerformance': viewEngageAnalyticsPerformance, 'viewEngageAnalyticsFlows': viewEngageAnalyticsFlows, 'manageGeneralBusinessSettings': manageGeneralBusinessSettings, 'manageScorecards': manageScorecards, 'exportCallsAndCoachingDataToCSV': exportCallsAndCoachingDataToCSV, 'crmDataInlineEditing': crmDataInlineEditing, 'crmDataImport': crmDataImport, 'viewRevenueAnalytics': viewRevenueAnalytics, 'manageRevenueAnalytics': manageRevenueAnalytics}
+        request_body = {
+            "id": id,
+            "name": name,
+            "description": description,
+            "callsAccess": callsAccess,
+            "libraryFolderAccess": libraryFolderAccess,
+            "dealsAccess": dealsAccess,
+            "forecastPermissions": forecastPermissions,
+            "coachingAccess": coachingAccess,
+            "insightsAccess": insightsAccess,
+            "usageAccess": usageAccess,
+            "emailsAccess": emailsAccess,
+            "scoreCalls": scoreCalls,
+            "overrideScore": overrideScore,
+            "downloadCallMedia": downloadCallMedia,
+            "shareCallsWithCustomers": shareCallsWithCustomers,
+            "manuallyScheduleAndUploadCalls": manuallyScheduleAndUploadCalls,
+            "privateCalls": privateCalls,
+            "deleteCalls": deleteCalls,
+            "trimCalls": trimCalls,
+            "listenInCalls": listenInCalls,
+            "deleteEmails": deleteEmails,
+            "callsAndSearch": callsAndSearch,
+            "library": library,
+            "deals": deals,
+            "createEditAndDeleteDealsBoards": createEditAndDeleteDealsBoards,
+            "dealsInlineEditing": dealsInlineEditing,
+            "account": account,
+            "coaching": coaching,
+            "usage": usage,
+            "teamStats": teamStats,
+            "initiatives": initiatives,
+            "market": market,
+            "activity": activity,
+            "forecast": forecast,
+            "forecastManage": forecastManage,
+            "engageManageCompanyTemplates": engageManageCompanyTemplates,
+            "engageManageCompanySequences": engageManageCompanySequences,
+            "engageCreateAndManageRulesets": engageCreateAndManageRulesets,
+            "engageSnoozeFlowToDosForOthers": engageSnoozeFlowToDosForOthers,
+            "viewEngageAnalyticsActivity": viewEngageAnalyticsActivity,
+            "viewEngageAnalyticsPerformance": viewEngageAnalyticsPerformance,
+            "viewEngageAnalyticsFlows": viewEngageAnalyticsFlows,
+            "manageGeneralBusinessSettings": manageGeneralBusinessSettings,
+            "manageScorecards": manageScorecards,
+            "exportCallsAndCoachingDataToCSV": exportCallsAndCoachingDataToCSV,
+            "crmDataInlineEditing": crmDataInlineEditing,
+            "crmDataImport": crmDataImport,
+            "viewRevenueAnalytics": viewRevenueAnalytics,
+            "manageRevenueAnalytics": manageRevenueAnalytics,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/permission-profile'
-        query_params = {k: v for k, v in [('profileId', profileId)] if v is not None}
+        url = f"{self.base_url}/v2/permission-profile"
+        query_params = {k: v for k, v in [("profileId", profileId)] if v is not None}
         response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def create_permission_profile(self, workspaceId, id=None, name=None, description=None, callsAccess=None, libraryFolderAccess=None, dealsAccess=None, forecastPermissions=None, coachingAccess=None, insightsAccess=None, usageAccess=None, emailsAccess=None, scoreCalls=None, overrideScore=None, downloadCallMedia=None, shareCallsWithCustomers=None, manuallyScheduleAndUploadCalls=None, privateCalls=None, deleteCalls=None, trimCalls=None, listenInCalls=None, deleteEmails=None, callsAndSearch=None, library=None, deals=None, createEditAndDeleteDealsBoards=None, dealsInlineEditing=None, account=None, coaching=None, usage=None, teamStats=None, initiatives=None, market=None, activity=None, forecast=None, forecastManage=None, engageManageCompanyTemplates=None, engageManageCompanySequences=None, engageCreateAndManageRulesets=None, engageSnoozeFlowToDosForOthers=None, viewEngageAnalyticsActivity=None, viewEngageAnalyticsPerformance=None, viewEngageAnalyticsFlows=None, manageGeneralBusinessSettings=None, manageScorecards=None, exportCallsAndCoachingDataToCSV=None, crmDataInlineEditing=None, crmDataImport=None, viewRevenueAnalytics=None, manageRevenueAnalytics=None) -> dict[str, Any]:
+    async def create_permission_profile(
+        self,
+        workspaceId,
+        id=None,
+        name=None,
+        description=None,
+        callsAccess=None,
+        libraryFolderAccess=None,
+        dealsAccess=None,
+        forecastPermissions=None,
+        coachingAccess=None,
+        insightsAccess=None,
+        usageAccess=None,
+        emailsAccess=None,
+        scoreCalls=None,
+        overrideScore=None,
+        downloadCallMedia=None,
+        shareCallsWithCustomers=None,
+        manuallyScheduleAndUploadCalls=None,
+        privateCalls=None,
+        deleteCalls=None,
+        trimCalls=None,
+        listenInCalls=None,
+        deleteEmails=None,
+        callsAndSearch=None,
+        library=None,
+        deals=None,
+        createEditAndDeleteDealsBoards=None,
+        dealsInlineEditing=None,
+        account=None,
+        coaching=None,
+        usage=None,
+        teamStats=None,
+        initiatives=None,
+        market=None,
+        activity=None,
+        forecast=None,
+        forecastManage=None,
+        engageManageCompanyTemplates=None,
+        engageManageCompanySequences=None,
+        engageCreateAndManageRulesets=None,
+        engageSnoozeFlowToDosForOthers=None,
+        viewEngageAnalyticsActivity=None,
+        viewEngageAnalyticsPerformance=None,
+        viewEngageAnalyticsFlows=None,
+        manageGeneralBusinessSettings=None,
+        manageScorecards=None,
+        exportCallsAndCoachingDataToCSV=None,
+        crmDataInlineEditing=None,
+        crmDataImport=None,
+        viewRevenueAnalytics=None,
+        manageRevenueAnalytics=None,
+    ) -> dict[str, Any]:
         """
         Creates a new permission profile in the specified workspace with customizable access and permission settings.
 
@@ -322,10 +519,60 @@ class GongApp(APIApplication):
         """
         if workspaceId is None:
             raise ValueError("Missing required parameter 'workspaceId'")
-        request_body = {'id': id, 'name': name, 'description': description, 'callsAccess': callsAccess, 'libraryFolderAccess': libraryFolderAccess, 'dealsAccess': dealsAccess, 'forecastPermissions': forecastPermissions, 'coachingAccess': coachingAccess, 'insightsAccess': insightsAccess, 'usageAccess': usageAccess, 'emailsAccess': emailsAccess, 'scoreCalls': scoreCalls, 'overrideScore': overrideScore, 'downloadCallMedia': downloadCallMedia, 'shareCallsWithCustomers': shareCallsWithCustomers, 'manuallyScheduleAndUploadCalls': manuallyScheduleAndUploadCalls, 'privateCalls': privateCalls, 'deleteCalls': deleteCalls, 'trimCalls': trimCalls, 'listenInCalls': listenInCalls, 'deleteEmails': deleteEmails, 'callsAndSearch': callsAndSearch, 'library': library, 'deals': deals, 'createEditAndDeleteDealsBoards': createEditAndDeleteDealsBoards, 'dealsInlineEditing': dealsInlineEditing, 'account': account, 'coaching': coaching, 'usage': usage, 'teamStats': teamStats, 'initiatives': initiatives, 'market': market, 'activity': activity, 'forecast': forecast, 'forecastManage': forecastManage, 'engageManageCompanyTemplates': engageManageCompanyTemplates, 'engageManageCompanySequences': engageManageCompanySequences, 'engageCreateAndManageRulesets': engageCreateAndManageRulesets, 'engageSnoozeFlowToDosForOthers': engageSnoozeFlowToDosForOthers, 'viewEngageAnalyticsActivity': viewEngageAnalyticsActivity, 'viewEngageAnalyticsPerformance': viewEngageAnalyticsPerformance, 'viewEngageAnalyticsFlows': viewEngageAnalyticsFlows, 'manageGeneralBusinessSettings': manageGeneralBusinessSettings, 'manageScorecards': manageScorecards, 'exportCallsAndCoachingDataToCSV': exportCallsAndCoachingDataToCSV, 'crmDataInlineEditing': crmDataInlineEditing, 'crmDataImport': crmDataImport, 'viewRevenueAnalytics': viewRevenueAnalytics, 'manageRevenueAnalytics': manageRevenueAnalytics}
+        request_body = {
+            "id": id,
+            "name": name,
+            "description": description,
+            "callsAccess": callsAccess,
+            "libraryFolderAccess": libraryFolderAccess,
+            "dealsAccess": dealsAccess,
+            "forecastPermissions": forecastPermissions,
+            "coachingAccess": coachingAccess,
+            "insightsAccess": insightsAccess,
+            "usageAccess": usageAccess,
+            "emailsAccess": emailsAccess,
+            "scoreCalls": scoreCalls,
+            "overrideScore": overrideScore,
+            "downloadCallMedia": downloadCallMedia,
+            "shareCallsWithCustomers": shareCallsWithCustomers,
+            "manuallyScheduleAndUploadCalls": manuallyScheduleAndUploadCalls,
+            "privateCalls": privateCalls,
+            "deleteCalls": deleteCalls,
+            "trimCalls": trimCalls,
+            "listenInCalls": listenInCalls,
+            "deleteEmails": deleteEmails,
+            "callsAndSearch": callsAndSearch,
+            "library": library,
+            "deals": deals,
+            "createEditAndDeleteDealsBoards": createEditAndDeleteDealsBoards,
+            "dealsInlineEditing": dealsInlineEditing,
+            "account": account,
+            "coaching": coaching,
+            "usage": usage,
+            "teamStats": teamStats,
+            "initiatives": initiatives,
+            "market": market,
+            "activity": activity,
+            "forecast": forecast,
+            "forecastManage": forecastManage,
+            "engageManageCompanyTemplates": engageManageCompanyTemplates,
+            "engageManageCompanySequences": engageManageCompanySequences,
+            "engageCreateAndManageRulesets": engageCreateAndManageRulesets,
+            "engageSnoozeFlowToDosForOthers": engageSnoozeFlowToDosForOthers,
+            "viewEngageAnalyticsActivity": viewEngageAnalyticsActivity,
+            "viewEngageAnalyticsPerformance": viewEngageAnalyticsPerformance,
+            "viewEngageAnalyticsFlows": viewEngageAnalyticsFlows,
+            "manageGeneralBusinessSettings": manageGeneralBusinessSettings,
+            "manageScorecards": manageScorecards,
+            "exportCallsAndCoachingDataToCSV": exportCallsAndCoachingDataToCSV,
+            "crmDataInlineEditing": crmDataInlineEditing,
+            "crmDataImport": crmDataImport,
+            "viewRevenueAnalytics": viewRevenueAnalytics,
+            "manageRevenueAnalytics": manageRevenueAnalytics,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/permission-profile'
-        query_params = {k: v for k, v in [('workspaceId', workspaceId)] if v is not None}
+        url = f"{self.base_url}/v2/permission-profile"
+        query_params = {k: v for k, v in [("workspaceId", workspaceId)] if v is not None}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -362,9 +609,16 @@ class GongApp(APIApplication):
             raise ValueError("Missing required parameter 'invitees'")
         if organizerEmail is None:
             raise ValueError("Missing required parameter 'organizerEmail'")
-        request_body = {'startTime': startTime, 'endTime': endTime, 'title': title, 'invitees': invitees, 'externalId': externalId, 'organizerEmail': organizerEmail}
+        request_body = {
+            "startTime": startTime,
+            "endTime": endTime,
+            "title": title,
+            "invitees": invitees,
+            "externalId": externalId,
+            "organizerEmail": organizerEmail,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/meetings/{meetingId}'
+        url = f"{self.base_url}/v2/meetings/{meetingId}"
         query_params = {}
         response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -390,15 +644,41 @@ class GongApp(APIApplication):
         """
         if meetingId is None:
             raise ValueError("Missing required parameter 'meetingId'")
-        request_body = {'organizerEmail': organizerEmail}
+        request_body = {"organizerEmail": organizerEmail}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/meetings/{meetingId}'
+        url = f"{self.base_url}/v2/meetings/{meetingId}"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def content_viewed(self, reportingSystem, eventTimestamp, contentId, contentUrl, contentTitle, eventId=None, viewActionTitle=None, shareId=None, viewInfoUrl=None, viewer=None, crmContext=None, contentProperties=None, eventProperties=None, userAgent=None, mobileAppId=None, agentPlatform=None, workspaceId=None, trackingId=None, nonCompanyParticipants=None, moreInfoUrl=None, actionName=None, sharer=None, sharingMessageSubject=None, sharingMessageBody=None) -> Any:
+    async def content_viewed(
+        self,
+        reportingSystem,
+        eventTimestamp,
+        contentId,
+        contentUrl,
+        contentTitle,
+        eventId=None,
+        viewActionTitle=None,
+        shareId=None,
+        viewInfoUrl=None,
+        viewer=None,
+        crmContext=None,
+        contentProperties=None,
+        eventProperties=None,
+        userAgent=None,
+        mobileAppId=None,
+        agentPlatform=None,
+        workspaceId=None,
+        trackingId=None,
+        nonCompanyParticipants=None,
+        moreInfoUrl=None,
+        actionName=None,
+        sharer=None,
+        sharingMessageSubject=None,
+        sharingMessageBody=None,
+    ) -> Any:
         """
         Reports a content view event to the customer engagement system with detailed metadata about the event and content.
 
@@ -448,15 +728,65 @@ class GongApp(APIApplication):
             raise ValueError("Missing required parameter 'contentUrl'")
         if contentTitle is None:
             raise ValueError("Missing required parameter 'contentTitle'")
-        request_body = {'reportingSystem': reportingSystem, 'eventTimestamp': eventTimestamp, 'eventId': eventId, 'contentId': contentId, 'contentUrl': contentUrl, 'contentTitle': contentTitle, 'viewActionTitle': viewActionTitle, 'shareId': shareId, 'viewInfoUrl': viewInfoUrl, 'viewer': viewer, 'crmContext': crmContext, 'contentProperties': contentProperties, 'eventProperties': eventProperties, 'userAgent': userAgent, 'mobileAppId': mobileAppId, 'agentPlatform': agentPlatform, 'workspaceId': workspaceId, 'trackingId': trackingId, 'nonCompanyParticipants': nonCompanyParticipants, 'moreInfoUrl': moreInfoUrl, 'actionName': actionName, 'sharer': sharer, 'sharingMessageSubject': sharingMessageSubject, 'sharingMessageBody': sharingMessageBody}
+        request_body = {
+            "reportingSystem": reportingSystem,
+            "eventTimestamp": eventTimestamp,
+            "eventId": eventId,
+            "contentId": contentId,
+            "contentUrl": contentUrl,
+            "contentTitle": contentTitle,
+            "viewActionTitle": viewActionTitle,
+            "shareId": shareId,
+            "viewInfoUrl": viewInfoUrl,
+            "viewer": viewer,
+            "crmContext": crmContext,
+            "contentProperties": contentProperties,
+            "eventProperties": eventProperties,
+            "userAgent": userAgent,
+            "mobileAppId": mobileAppId,
+            "agentPlatform": agentPlatform,
+            "workspaceId": workspaceId,
+            "trackingId": trackingId,
+            "nonCompanyParticipants": nonCompanyParticipants,
+            "moreInfoUrl": moreInfoUrl,
+            "actionName": actionName,
+            "sharer": sharer,
+            "sharingMessageSubject": sharingMessageSubject,
+            "sharingMessageBody": sharingMessageBody,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/customer-engagement/content/viewed'
+        url = f"{self.base_url}/v2/customer-engagement/content/viewed"
         query_params = {}
         response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def content_shared(self, reportingSystem, eventTimestamp, contentId, contentUrl, contentTitle, eventId=None, shareId=None, shareInfoUrl=None, sharingMessageSubject=None, sharingMessageBody=None, sharer=None, recipients=None, crmContext=None, contentProperties=None, eventProperties=None, workspaceId=None, actionName=None, nonCompanyParticipants=None, moreInfoUrl=None, trackingId=None, mobileAppId=None, agentPlatform=None, userAgent=None) -> Any:
+    async def content_shared(
+        self,
+        reportingSystem,
+        eventTimestamp,
+        contentId,
+        contentUrl,
+        contentTitle,
+        eventId=None,
+        shareId=None,
+        shareInfoUrl=None,
+        sharingMessageSubject=None,
+        sharingMessageBody=None,
+        sharer=None,
+        recipients=None,
+        crmContext=None,
+        contentProperties=None,
+        eventProperties=None,
+        workspaceId=None,
+        actionName=None,
+        nonCompanyParticipants=None,
+        moreInfoUrl=None,
+        trackingId=None,
+        mobileAppId=None,
+        agentPlatform=None,
+        userAgent=None,
+    ) -> Any:
         """
         Reports a content sharing event to the customer engagement system with detailed metadata about the shared content, sharer, and recipients.
 
@@ -505,15 +835,64 @@ class GongApp(APIApplication):
             raise ValueError("Missing required parameter 'contentUrl'")
         if contentTitle is None:
             raise ValueError("Missing required parameter 'contentTitle'")
-        request_body = {'reportingSystem': reportingSystem, 'eventTimestamp': eventTimestamp, 'eventId': eventId, 'contentId': contentId, 'contentUrl': contentUrl, 'contentTitle': contentTitle, 'shareId': shareId, 'shareInfoUrl': shareInfoUrl, 'sharingMessageSubject': sharingMessageSubject, 'sharingMessageBody': sharingMessageBody, 'sharer': sharer, 'recipients': recipients, 'crmContext': crmContext, 'contentProperties': contentProperties, 'eventProperties': eventProperties, 'workspaceId': workspaceId, 'actionName': actionName, 'nonCompanyParticipants': nonCompanyParticipants, 'moreInfoUrl': moreInfoUrl, 'trackingId': trackingId, 'mobileAppId': mobileAppId, 'agentPlatform': agentPlatform, 'userAgent': userAgent}
+        request_body = {
+            "reportingSystem": reportingSystem,
+            "eventTimestamp": eventTimestamp,
+            "eventId": eventId,
+            "contentId": contentId,
+            "contentUrl": contentUrl,
+            "contentTitle": contentTitle,
+            "shareId": shareId,
+            "shareInfoUrl": shareInfoUrl,
+            "sharingMessageSubject": sharingMessageSubject,
+            "sharingMessageBody": sharingMessageBody,
+            "sharer": sharer,
+            "recipients": recipients,
+            "crmContext": crmContext,
+            "contentProperties": contentProperties,
+            "eventProperties": eventProperties,
+            "workspaceId": workspaceId,
+            "actionName": actionName,
+            "nonCompanyParticipants": nonCompanyParticipants,
+            "moreInfoUrl": moreInfoUrl,
+            "trackingId": trackingId,
+            "mobileAppId": mobileAppId,
+            "agentPlatform": agentPlatform,
+            "userAgent": userAgent,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/customer-engagement/content/shared'
+        url = f"{self.base_url}/v2/customer-engagement/content/shared"
         query_params = {}
         response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def custom_action(self, reportingSystem, eventTimestamp, eventId=None, contentId=None, contentUrl=None, contentTitle=None, actionName=None, eventInfoUrl=None, actor=None, crmContext=None, contentProperties=None, eventProperties=None, userAgent=None, mobileAppId=None, agentPlatform=None, workspaceId=None, nonCompanyParticipants=None, moreInfoUrl=None, shareId=None, trackingId=None, sharer=None, sharingMessageSubject=None, sharingMessageBody=None) -> Any:
+    async def custom_action(
+        self,
+        reportingSystem,
+        eventTimestamp,
+        eventId=None,
+        contentId=None,
+        contentUrl=None,
+        contentTitle=None,
+        actionName=None,
+        eventInfoUrl=None,
+        actor=None,
+        crmContext=None,
+        contentProperties=None,
+        eventProperties=None,
+        userAgent=None,
+        mobileAppId=None,
+        agentPlatform=None,
+        workspaceId=None,
+        nonCompanyParticipants=None,
+        moreInfoUrl=None,
+        shareId=None,
+        trackingId=None,
+        sharer=None,
+        sharingMessageSubject=None,
+        sharingMessageBody=None,
+    ) -> Any:
         """
         Submits a custom customer engagement action event with detailed reporting and context information to the server.
 
@@ -556,9 +935,33 @@ class GongApp(APIApplication):
             raise ValueError("Missing required parameter 'reportingSystem'")
         if eventTimestamp is None:
             raise ValueError("Missing required parameter 'eventTimestamp'")
-        request_body = {'reportingSystem': reportingSystem, 'eventTimestamp': eventTimestamp, 'eventId': eventId, 'contentId': contentId, 'contentUrl': contentUrl, 'contentTitle': contentTitle, 'actionName': actionName, 'eventInfoUrl': eventInfoUrl, 'actor': actor, 'crmContext': crmContext, 'contentProperties': contentProperties, 'eventProperties': eventProperties, 'userAgent': userAgent, 'mobileAppId': mobileAppId, 'agentPlatform': agentPlatform, 'workspaceId': workspaceId, 'nonCompanyParticipants': nonCompanyParticipants, 'moreInfoUrl': moreInfoUrl, 'shareId': shareId, 'trackingId': trackingId, 'sharer': sharer, 'sharingMessageSubject': sharingMessageSubject, 'sharingMessageBody': sharingMessageBody}
+        request_body = {
+            "reportingSystem": reportingSystem,
+            "eventTimestamp": eventTimestamp,
+            "eventId": eventId,
+            "contentId": contentId,
+            "contentUrl": contentUrl,
+            "contentTitle": contentTitle,
+            "actionName": actionName,
+            "eventInfoUrl": eventInfoUrl,
+            "actor": actor,
+            "crmContext": crmContext,
+            "contentProperties": contentProperties,
+            "eventProperties": eventProperties,
+            "userAgent": userAgent,
+            "mobileAppId": mobileAppId,
+            "agentPlatform": agentPlatform,
+            "workspaceId": workspaceId,
+            "nonCompanyParticipants": nonCompanyParticipants,
+            "moreInfoUrl": moreInfoUrl,
+            "shareId": shareId,
+            "trackingId": trackingId,
+            "sharer": sharer,
+            "sharingMessageSubject": sharingMessageSubject,
+            "sharingMessageBody": sharingMessageBody,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/customer-engagement/action'
+        url = f"{self.base_url}/v2/customer-engagement/action"
         query_params = {}
         response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -580,7 +983,7 @@ class GongApp(APIApplication):
         Tags:
             list, crm, integration, api
         """
-        url = f'{self.base_url}/v2/crm/integrations'
+        url = f"{self.base_url}/v2/crm/integrations"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -608,9 +1011,9 @@ class GongApp(APIApplication):
             raise ValueError("Missing required parameter 'ownerEmail'")
         if name is None:
             raise ValueError("Missing required parameter 'name'")
-        request_body = {'ownerEmail': ownerEmail, 'name': name}
+        request_body = {"ownerEmail": ownerEmail, "name": name}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/crm/integrations'
+        url = f"{self.base_url}/v2/crm/integrations"
         query_params = {}
         response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -638,8 +1041,8 @@ class GongApp(APIApplication):
             raise ValueError("Missing required parameter 'integrationId'")
         if clientRequestId is None:
             raise ValueError("Missing required parameter 'clientRequestId'")
-        url = f'{self.base_url}/v2/crm/integrations'
-        query_params = {k: v for k, v in [('integrationId', integrationId), ('clientRequestId', clientRequestId)] if v is not None}
+        url = f"{self.base_url}/v2/crm/integrations"
+        query_params = {k: v for k, v in [("integrationId", integrationId), ("clientRequestId", clientRequestId)] if v is not None}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -660,9 +1063,9 @@ class GongApp(APIApplication):
         Tags:
             update, calls, users-access, api, management
         """
-        request_body = {'callAccessList': callAccessList}
+        request_body = {"callAccessList": callAccessList}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/calls/users-access'
+        url = f"{self.base_url}/v2/calls/users-access"
         query_params = {}
         response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -687,9 +1090,9 @@ class GongApp(APIApplication):
         """
         if filter is None:
             raise ValueError("Missing required parameter 'filter'")
-        request_body = {'filter': filter}
+        request_body = {"filter": filter}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/calls/users-access'
+        url = f"{self.base_url}/v2/calls/users-access"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -711,9 +1114,9 @@ class GongApp(APIApplication):
         Tags:
             delete, access-management, calls
         """
-        request_body = {'callAccessList': callAccessList}
+        request_body = {"callAccessList": callAccessList}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/calls/users-access'
+        url = f"{self.base_url}/v2/calls/users-access"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -739,9 +1142,9 @@ class GongApp(APIApplication):
         """
         if filter is None:
             raise ValueError("Missing required parameter 'filter'")
-        request_body = {'cursor': cursor, 'filter': filter}
+        request_body = {"cursor": cursor, "filter": filter}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/users/extensive'
+        url = f"{self.base_url}/v2/users/extensive"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -767,9 +1170,9 @@ class GongApp(APIApplication):
         """
         if filter is None:
             raise ValueError("Missing required parameter 'filter'")
-        request_body = {'cursor': cursor, 'filter': filter}
+        request_body = {"cursor": cursor, "filter": filter}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/stats/interaction'
+        url = f"{self.base_url}/v2/stats/interaction"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -795,9 +1198,9 @@ class GongApp(APIApplication):
         """
         if filter is None:
             raise ValueError("Missing required parameter 'filter'")
-        request_body = {'cursor': cursor, 'filter': filter}
+        request_body = {"cursor": cursor, "filter": filter}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/stats/activity/scorecards'
+        url = f"{self.base_url}/v2/stats/activity/scorecards"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -823,9 +1226,9 @@ class GongApp(APIApplication):
         """
         if filter is None:
             raise ValueError("Missing required parameter 'filter'")
-        request_body = {'cursor': cursor, 'filter': filter}
+        request_body = {"cursor": cursor, "filter": filter}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/stats/activity/day-by-day'
+        url = f"{self.base_url}/v2/stats/activity/day-by-day"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -851,9 +1254,9 @@ class GongApp(APIApplication):
         """
         if filter is None:
             raise ValueError("Missing required parameter 'filter'")
-        request_body = {'cursor': cursor, 'filter': filter}
+        request_body = {"cursor": cursor, "filter": filter}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/stats/activity/aggregate'
+        url = f"{self.base_url}/v2/stats/activity/aggregate"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -882,9 +1285,9 @@ class GongApp(APIApplication):
             raise ValueError("Missing required parameter 'filter'")
         if aggregationPeriod is None:
             raise ValueError("Missing required parameter 'aggregationPeriod'")
-        request_body = {'cursor': cursor, 'filter': filter, 'aggregationPeriod': aggregationPeriod}
+        request_body = {"cursor": cursor, "filter": filter, "aggregationPeriod": aggregationPeriod}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/stats/activity/aggregate-by-period'
+        url = f"{self.base_url}/v2/stats/activity/aggregate-by-period"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -920,9 +1323,16 @@ class GongApp(APIApplication):
             raise ValueError("Missing required parameter 'invitees'")
         if organizerEmail is None:
             raise ValueError("Missing required parameter 'organizerEmail'")
-        request_body = {'startTime': startTime, 'endTime': endTime, 'title': title, 'invitees': invitees, 'externalId': externalId, 'organizerEmail': organizerEmail}
+        request_body = {
+            "startTime": startTime,
+            "endTime": endTime,
+            "title": title,
+            "invitees": invitees,
+            "externalId": externalId,
+            "organizerEmail": organizerEmail,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/meetings'
+        url = f"{self.base_url}/v2/meetings"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -944,9 +1354,9 @@ class GongApp(APIApplication):
         Tags:
             integration-status, status, check, api, async-job
         """
-        request_body = {'emails': emails}
+        request_body = {"emails": emails}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/meetings/integration/status'
+        url = f"{self.base_url}/v2/meetings/integration/status"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -971,9 +1381,9 @@ class GongApp(APIApplication):
         """
         if integrationTypeSettings is None:
             raise ValueError("Missing required parameter 'integrationTypeSettings'")
-        request_body = {'integrationTypeSettings': integrationTypeSettings}
+        request_body = {"integrationTypeSettings": integrationTypeSettings}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/integration-settings'
+        url = f"{self.base_url}/v2/integration-settings"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -998,9 +1408,9 @@ class GongApp(APIApplication):
         """
         if crmProspectsIds is None:
             raise ValueError("Missing required parameter 'crmProspectsIds'")
-        request_body = {'crmProspectsIds': crmProspectsIds}
+        request_body = {"crmProspectsIds": crmProspectsIds}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/flows/prospects'
+        url = f"{self.base_url}/v2/flows/prospects"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -1031,15 +1441,27 @@ class GongApp(APIApplication):
             raise ValueError("Missing required parameter 'flowId'")
         if flowInstanceOwnerEmail is None:
             raise ValueError("Missing required parameter 'flowInstanceOwnerEmail'")
-        request_body = {'crmProspectsIds': crmProspectsIds, 'flowId': flowId, 'flowInstanceOwnerEmail': flowInstanceOwnerEmail}
+        request_body = {"crmProspectsIds": crmProspectsIds, "flowId": flowId, "flowInstanceOwnerEmail": flowInstanceOwnerEmail}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/flows/prospects/assign'
+        url = f"{self.base_url}/v2/flows/prospects/assign"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def add_digital_interaction(self, eventId, timestamp, eventType, content, sourceSystemName=None, sessionId=None, device=None, person=None, customFields=None, trackingId=None) -> dict[str, Any]:
+    async def add_digital_interaction(
+        self,
+        eventId,
+        timestamp,
+        eventType,
+        content,
+        sourceSystemName=None,
+        sessionId=None,
+        device=None,
+        person=None,
+        customFields=None,
+        trackingId=None,
+    ) -> dict[str, Any]:
         """
         Submits a digital interaction event record to the API with required metadata and content.
 
@@ -1073,9 +1495,20 @@ class GongApp(APIApplication):
             raise ValueError("Missing required parameter 'eventType'")
         if content is None:
             raise ValueError("Missing required parameter 'content'")
-        request_body = {'eventId': eventId, 'timestamp': timestamp, 'eventType': eventType, 'sourceSystemName': sourceSystemName, 'sessionId': sessionId, 'device': device, 'content': content, 'person': person, 'customFields': customFields, 'trackingId': trackingId}
+        request_body = {
+            "eventId": eventId,
+            "timestamp": timestamp,
+            "eventType": eventType,
+            "sourceSystemName": sourceSystemName,
+            "sessionId": sessionId,
+            "device": device,
+            "content": content,
+            "person": person,
+            "customFields": customFields,
+            "trackingId": trackingId,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/digital-interaction'
+        url = f"{self.base_url}/v2/digital-interaction"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -1100,8 +1533,8 @@ class GongApp(APIApplication):
         """
         if phoneNumber is None:
             raise ValueError("Missing required parameter 'phoneNumber'")
-        url = f'{self.base_url}/v2/data-privacy/erase-data-for-phone-number'
-        query_params = {k: v for k, v in [('phoneNumber', phoneNumber)] if v is not None}
+        url = f"{self.base_url}/v2/data-privacy/erase-data-for-phone-number"
+        query_params = {k: v for k, v in [("phoneNumber", phoneNumber)] if v is not None}
         response = await self._apost(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -1125,8 +1558,8 @@ class GongApp(APIApplication):
         """
         if emailAddress is None:
             raise ValueError("Missing required parameter 'emailAddress'")
-        url = f'{self.base_url}/v2/data-privacy/erase-data-for-email-address'
-        query_params = {k: v for k, v in [('emailAddress', emailAddress)] if v is not None}
+        url = f"{self.base_url}/v2/data-privacy/erase-data-for-email-address"
+        query_params = {k: v for k, v in [("emailAddress", emailAddress)] if v is not None}
         response = await self._apost(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -1153,8 +1586,8 @@ class GongApp(APIApplication):
             raise ValueError("Missing required parameter 'integrationId'")
         if objectType is None:
             raise ValueError("Missing required parameter 'objectType'")
-        url = f'{self.base_url}/v2/crm/entity-schema'
-        query_params = {k: v for k, v in [('integrationId', integrationId), ('objectType', objectType)] if v is not None}
+        url = f"{self.base_url}/v2/crm/entity-schema"
+        query_params = {k: v for k, v in [("integrationId", integrationId), ("objectType", objectType)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -1185,8 +1618,8 @@ class GongApp(APIApplication):
         if items is None:
             raise ValueError("Missing required parameter 'items'")
         request_body = items
-        url = f'{self.base_url}/v2/crm/entity-schema'
-        query_params = {k: v for k, v in [('integrationId', integrationId), ('objectType', objectType)] if v is not None}
+        url = f"{self.base_url}/v2/crm/entity-schema"
+        query_params = {k: v for k, v in [("integrationId", integrationId), ("objectType", objectType)] if v is not None}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -1215,8 +1648,12 @@ class GongApp(APIApplication):
             raise ValueError("Missing required parameter 'objectType'")
         if objectsCrmIds is None:
             raise ValueError("Missing required parameter 'objectsCrmIds'")
-        url = f'{self.base_url}/v2/crm/entities'
-        query_params = {k: v for k, v in [('integrationId', integrationId), ('objectType', objectType), ('objectsCrmIds', objectsCrmIds)] if v is not None}
+        url = f"{self.base_url}/v2/crm/entities"
+        query_params = {
+            k: v
+            for k, v in [("integrationId", integrationId), ("objectType", objectType), ("objectsCrmIds", objectsCrmIds)]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -1241,9 +1678,9 @@ class GongApp(APIApplication):
         """
         if filter is None:
             raise ValueError("Missing required parameter 'filter'")
-        request_body = {'cursor': cursor, 'filter': filter}
+        request_body = {"cursor": cursor, "filter": filter}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/calls/transcript'
+        url = f"{self.base_url}/v2/calls/transcript"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -1262,7 +1699,7 @@ class GongApp(APIApplication):
         Tags:
             list, workspaces, api, retrieve
         """
-        url = f'{self.base_url}/v2/workspaces'
+        url = f"{self.base_url}/v2/workspaces"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -1285,8 +1722,8 @@ class GongApp(APIApplication):
         Tags:
             list, users, api, management
         """
-        url = f'{self.base_url}/v2/users'
-        query_params = {k: v for k, v in [('cursor', cursor), ('includeAvatars', includeAvatars)] if v is not None}
+        url = f"{self.base_url}/v2/users"
+        query_params = {k: v for k, v in [("cursor", cursor), ("includeAvatars", includeAvatars)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -1310,7 +1747,7 @@ class GongApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/v2/users/{id}'
+        url = f"{self.base_url}/v2/users/{id}"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -1335,7 +1772,7 @@ class GongApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/v2/users/{id}/settings-history'
+        url = f"{self.base_url}/v2/users/{id}/settings-history"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -1357,8 +1794,8 @@ class GongApp(APIApplication):
         Tags:
             list, trackers, management, api
         """
-        url = f'{self.base_url}/v2/settings/trackers'
-        query_params = {k: v for k, v in [('workspaceId', workspaceId)] if v is not None}
+        url = f"{self.base_url}/v2/settings/trackers"
+        query_params = {k: v for k, v in [("workspaceId", workspaceId)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -1379,7 +1816,7 @@ class GongApp(APIApplication):
         Tags:
             list, scorecards, settings, api
         """
-        url = f'{self.base_url}/v2/settings/scorecards'
+        url = f"{self.base_url}/v2/settings/scorecards"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -1404,8 +1841,8 @@ class GongApp(APIApplication):
         """
         if profileId is None:
             raise ValueError("Missing required parameter 'profileId'")
-        url = f'{self.base_url}/v2/permission-profile/users'
-        query_params = {k: v for k, v in [('profileId', profileId)] if v is not None}
+        url = f"{self.base_url}/v2/permission-profile/users"
+        query_params = {k: v for k, v in [("profileId", profileId)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -1434,8 +1871,12 @@ class GongApp(APIApplication):
             raise ValueError("Missing required parameter 'logType'")
         if fromDateTime is None:
             raise ValueError("Missing required parameter 'fromDateTime'")
-        url = f'{self.base_url}/v2/logs'
-        query_params = {k: v for k, v in [('logType', logType), ('fromDateTime', fromDateTime), ('toDateTime', toDateTime), ('cursor', cursor)] if v is not None}
+        url = f"{self.base_url}/v2/logs"
+        query_params = {
+            k: v
+            for k, v in [("logType", logType), ("fromDateTime", fromDateTime), ("toDateTime", toDateTime), ("cursor", cursor)]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -1456,8 +1897,8 @@ class GongApp(APIApplication):
         Tags:
             get, library, structure, folders, management
         """
-        url = f'{self.base_url}/v2/library/folders'
-        query_params = {k: v for k, v in [('workspaceId', workspaceId)] if v is not None}
+        url = f"{self.base_url}/v2/library/folders"
+        query_params = {k: v for k, v in [("workspaceId", workspaceId)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -1478,8 +1919,8 @@ class GongApp(APIApplication):
         Tags:
             get, list, calls, folder, api, management
         """
-        url = f'{self.base_url}/v2/library/folder-content'
-        query_params = {k: v for k, v in [('folderId', folderId)] if v is not None}
+        url = f"{self.base_url}/v2/library/folder-content"
+        query_params = {k: v for k, v in [("folderId", folderId)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -1505,8 +1946,10 @@ class GongApp(APIApplication):
         """
         if flowOwnerEmail is None:
             raise ValueError("Missing required parameter 'flowOwnerEmail'")
-        url = f'{self.base_url}/v2/flows'
-        query_params = {k: v for k, v in [('flowOwnerEmail', flowOwnerEmail), ('cursor', cursor), ('workspaceId', workspaceId)] if v is not None}
+        url = f"{self.base_url}/v2/flows"
+        query_params = {
+            k: v for k, v in [("flowOwnerEmail", flowOwnerEmail), ("cursor", cursor), ("workspaceId", workspaceId)] if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -1530,8 +1973,8 @@ class GongApp(APIApplication):
         """
         if phoneNumber is None:
             raise ValueError("Missing required parameter 'phoneNumber'")
-        url = f'{self.base_url}/v2/data-privacy/data-for-phone-number'
-        query_params = {k: v for k, v in [('phoneNumber', phoneNumber)] if v is not None}
+        url = f"{self.base_url}/v2/data-privacy/data-for-phone-number"
+        query_params = {k: v for k, v in [("phoneNumber", phoneNumber)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -1555,8 +1998,8 @@ class GongApp(APIApplication):
         """
         if emailAddress is None:
             raise ValueError("Missing required parameter 'emailAddress'")
-        url = f'{self.base_url}/v2/data-privacy/data-for-email-address'
-        query_params = {k: v for k, v in [('emailAddress', emailAddress)] if v is not None}
+        url = f"{self.base_url}/v2/data-privacy/data-for-email-address"
+        query_params = {k: v for k, v in [("emailAddress", emailAddress)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -1583,8 +2026,8 @@ class GongApp(APIApplication):
             raise ValueError("Missing required parameter 'integrationId'")
         if clientRequestId is None:
             raise ValueError("Missing required parameter 'clientRequestId'")
-        url = f'{self.base_url}/v2/crm/request-status'
-        query_params = {k: v for k, v in [('integrationId', integrationId), ('clientRequestId', clientRequestId)] if v is not None}
+        url = f"{self.base_url}/v2/crm/request-status"
+        query_params = {k: v for k, v in [("integrationId", integrationId), ("clientRequestId", clientRequestId)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -1606,8 +2049,8 @@ class GongApp(APIApplication):
         Tags:
             list, crmcalls, management, async_job
         """
-        url = f'{self.base_url}/v2/calls/manual-crm-associations'
-        query_params = {k: v for k, v in [('fromDateTime', fromDateTime), ('cursor', cursor)] if v is not None}
+        url = f"{self.base_url}/v2/calls/manual-crm-associations"
+        query_params = {k: v for k, v in [("fromDateTime", fromDateTime), ("cursor", cursor)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -1631,11 +2074,64 @@ class GongApp(APIApplication):
         """
         if workspaceId is None:
             raise ValueError("Missing required parameter 'workspaceId'")
-        url = f'{self.base_url}/v2/all-permission-profiles'
-        query_params = {k: v for k, v in [('workspaceId', workspaceId)] if v is not None}
+        url = f"{self.base_url}/v2/all-permission-profiles"
+        query_params = {k: v for k, v in [("workspaceId", workspaceId)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
     def list_tools(self):
-        return [self.list_calls, self.add_call, self.get_call, self.list_calls_extensive, self.get_permission_profile, self.update_permission_profile, self.create_permission_profile, self.update_meeting, self.delete_meeting, self.content_viewed, self.content_shared, self.custom_action, self.list_generic_crm_integration, self.register_generic_crm_integration, self.delete_generic_crm_integration, self.add_users_access_to_calls, self.get_users_access_to_calls, self.delete_users_access_to_calls, self.list_multiple_users, self.list_interaction_stats, self.list_answered_scorecards, self.list_multiple_users_day_by_day_activity, self.list_multiple_users_aggregate_activity, self.list_multiple_users_aggregate_by_period, self.add_meeting, self.integration_status, self.integration_settings, self.get_flows_for_prospects, self.assign_prospects, self.add_digital_interaction, self.purge_phone_number, self.purge_email_address, self.list_crm_schema_fields, self.upload_crm_schema_field, self.get_crm_objects, self.get_call_transcripts, self.list_workspaces, self.list_users, self.get_user, self.get_user_history, self.list_trackers, self.list_scorecards, self.list_permission_profile_users, self.list_logs, self.get_library_structure, self.get_calls_in_specific_folder, self.list_flows, self.find_all_references_to_phone_number, self.find_all_references_to_email_address, self.get_request_status, self.list_crmcalls_manual_association, self.list_permission_profile]
+        return [
+            self.list_calls,
+            self.add_call,
+            self.get_call,
+            self.list_calls_extensive,
+            self.get_permission_profile,
+            self.update_permission_profile,
+            self.create_permission_profile,
+            self.update_meeting,
+            self.delete_meeting,
+            self.content_viewed,
+            self.content_shared,
+            self.custom_action,
+            self.list_generic_crm_integration,
+            self.register_generic_crm_integration,
+            self.delete_generic_crm_integration,
+            self.add_users_access_to_calls,
+            self.get_users_access_to_calls,
+            self.delete_users_access_to_calls,
+            self.list_multiple_users,
+            self.list_interaction_stats,
+            self.list_answered_scorecards,
+            self.list_multiple_users_day_by_day_activity,
+            self.list_multiple_users_aggregate_activity,
+            self.list_multiple_users_aggregate_by_period,
+            self.add_meeting,
+            self.integration_status,
+            self.integration_settings,
+            self.get_flows_for_prospects,
+            self.assign_prospects,
+            self.add_digital_interaction,
+            self.purge_phone_number,
+            self.purge_email_address,
+            self.list_crm_schema_fields,
+            self.upload_crm_schema_field,
+            self.get_crm_objects,
+            self.get_call_transcripts,
+            self.list_workspaces,
+            self.list_users,
+            self.get_user,
+            self.get_user_history,
+            self.list_trackers,
+            self.list_scorecards,
+            self.list_permission_profile_users,
+            self.list_logs,
+            self.get_library_structure,
+            self.get_calls_in_specific_folder,
+            self.list_flows,
+            self.find_all_references_to_phone_number,
+            self.find_all_references_to_email_address,
+            self.get_request_status,
+            self.list_crmcalls_manual_association,
+            self.list_permission_profile,
+        ]

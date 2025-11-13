@@ -2,11 +2,11 @@ from typing import Any
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
-class SpotifyApp(APIApplication):
 
-    def __init__(self, integration: Integration=None, **kwargs) -> None:
-        super().__init__(name='spotify', integration=integration, **kwargs)
-        self.base_url = 'https://api.spotify.com/v1'
+class SpotifyApp(APIApplication):
+    def __init__(self, integration: Integration = None, **kwargs) -> None:
+        super().__init__(name="spotify", integration=integration, **kwargs)
+        self.base_url = "https://api.spotify.com/v1"
 
     async def get_an_album(self, id, market=None) -> Any:
         """
@@ -28,8 +28,8 @@ class SpotifyApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/albums/{id}'
-        query_params = {k: v for k, v in [('market', market)] if v is not None}
+        url = f"{self.base_url}/albums/{id}"
+        query_params = {k: v for k, v in [("market", market)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -54,8 +54,8 @@ class SpotifyApp(APIApplication):
         """
         if ids is None:
             raise ValueError("Missing required parameter 'ids'")
-        url = f'{self.base_url}/albums'
-        query_params = {k: v for k, v in [('ids', ids), ('market', market)] if v is not None}
+        url = f"{self.base_url}/albums"
+        query_params = {k: v for k, v in [("ids", ids), ("market", market)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -82,8 +82,8 @@ class SpotifyApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/albums/{id}/tracks'
-        query_params = {k: v for k, v in [('market', market), ('limit', limit), ('offset', offset)] if v is not None}
+        url = f"{self.base_url}/albums/{id}/tracks"
+        query_params = {k: v for k, v in [("market", market), ("limit", limit), ("offset", offset)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -107,7 +107,7 @@ class SpotifyApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/artists/{id}'
+        url = f"{self.base_url}/artists/{id}"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -132,8 +132,8 @@ class SpotifyApp(APIApplication):
         """
         if ids is None:
             raise ValueError("Missing required parameter 'ids'")
-        url = f'{self.base_url}/artists'
-        query_params = {k: v for k, v in [('ids', ids)] if v is not None}
+        url = f"{self.base_url}/artists"
+        query_params = {k: v for k, v in [("ids", ids)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -161,8 +161,10 @@ class SpotifyApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/artists/{id}/albums'
-        query_params = {k: v for k, v in [('include_groups', include_groups), ('market', market), ('limit', limit), ('offset', offset)] if v is not None}
+        url = f"{self.base_url}/artists/{id}/albums"
+        query_params = {
+            k: v for k, v in [("include_groups", include_groups), ("market", market), ("limit", limit), ("offset", offset)] if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -187,8 +189,8 @@ class SpotifyApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/artists/{id}/top-tracks'
-        query_params = {k: v for k, v in [('market', market)] if v is not None}
+        url = f"{self.base_url}/artists/{id}/top-tracks"
+        query_params = {k: v for k, v in [("market", market)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -212,7 +214,7 @@ class SpotifyApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/artists/{id}/related-artists'
+        url = f"{self.base_url}/artists/{id}/related-artists"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -238,8 +240,8 @@ class SpotifyApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/shows/{id}'
-        query_params = {k: v for k, v in [('market', market)] if v is not None}
+        url = f"{self.base_url}/shows/{id}"
+        query_params = {k: v for k, v in [("market", market)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -264,8 +266,8 @@ class SpotifyApp(APIApplication):
         """
         if ids is None:
             raise ValueError("Missing required parameter 'ids'")
-        url = f'{self.base_url}/shows'
-        query_params = {k: v for k, v in [('market', market), ('ids', ids)] if v is not None}
+        url = f"{self.base_url}/shows"
+        query_params = {k: v for k, v in [("market", market), ("ids", ids)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -292,8 +294,8 @@ class SpotifyApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/shows/{id}/episodes'
-        query_params = {k: v for k, v in [('market', market), ('limit', limit), ('offset', offset)] if v is not None}
+        url = f"{self.base_url}/shows/{id}/episodes"
+        query_params = {k: v for k, v in [("market", market), ("limit", limit), ("offset", offset)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -318,8 +320,8 @@ class SpotifyApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/episodes/{id}'
-        query_params = {k: v for k, v in [('market', market)] if v is not None}
+        url = f"{self.base_url}/episodes/{id}"
+        query_params = {k: v for k, v in [("market", market)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -344,8 +346,8 @@ class SpotifyApp(APIApplication):
         """
         if ids is None:
             raise ValueError("Missing required parameter 'ids'")
-        url = f'{self.base_url}/episodes'
-        query_params = {k: v for k, v in [('ids', ids), ('market', market)] if v is not None}
+        url = f"{self.base_url}/episodes"
+        query_params = {k: v for k, v in [("ids", ids), ("market", market)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -370,8 +372,8 @@ class SpotifyApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/audiobooks/{id}'
-        query_params = {k: v for k, v in [('market', market)] if v is not None}
+        url = f"{self.base_url}/audiobooks/{id}"
+        query_params = {k: v for k, v in [("market", market)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -396,8 +398,8 @@ class SpotifyApp(APIApplication):
         """
         if ids is None:
             raise ValueError("Missing required parameter 'ids'")
-        url = f'{self.base_url}/audiobooks'
-        query_params = {k: v for k, v in [('ids', ids), ('market', market)] if v is not None}
+        url = f"{self.base_url}/audiobooks"
+        query_params = {k: v for k, v in [("ids", ids), ("market", market)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -424,8 +426,8 @@ class SpotifyApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/audiobooks/{id}/chapters'
-        query_params = {k: v for k, v in [('market', market), ('limit', limit), ('offset', offset)] if v is not None}
+        url = f"{self.base_url}/audiobooks/{id}/chapters"
+        query_params = {k: v for k, v in [("market", market), ("limit", limit), ("offset", offset)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -447,8 +449,8 @@ class SpotifyApp(APIApplication):
         Tags:
             get, list, audiobooks, user-data, api
         """
-        url = f'{self.base_url}/me/audiobooks'
-        query_params = {k: v for k, v in [('limit', limit), ('offset', offset)] if v is not None}
+        url = f"{self.base_url}/me/audiobooks"
+        query_params = {k: v for k, v in [("limit", limit), ("offset", offset)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -472,8 +474,8 @@ class SpotifyApp(APIApplication):
         """
         if ids is None:
             raise ValueError("Missing required parameter 'ids'")
-        url = f'{self.base_url}/me/audiobooks'
-        query_params = {k: v for k, v in [('ids', ids)] if v is not None}
+        url = f"{self.base_url}/me/audiobooks"
+        query_params = {k: v for k, v in [("ids", ids)] if v is not None}
         response = await self._aput(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -497,8 +499,8 @@ class SpotifyApp(APIApplication):
         """
         if ids is None:
             raise ValueError("Missing required parameter 'ids'")
-        url = f'{self.base_url}/me/audiobooks'
-        query_params = {k: v for k, v in [('ids', ids)] if v is not None}
+        url = f"{self.base_url}/me/audiobooks"
+        query_params = {k: v for k, v in [("ids", ids)] if v is not None}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -522,8 +524,8 @@ class SpotifyApp(APIApplication):
         """
         if ids is None:
             raise ValueError("Missing required parameter 'ids'")
-        url = f'{self.base_url}/me/audiobooks/contains'
-        query_params = {k: v for k, v in [('ids', ids)] if v is not None}
+        url = f"{self.base_url}/me/audiobooks/contains"
+        query_params = {k: v for k, v in [("ids", ids)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -548,8 +550,8 @@ class SpotifyApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/chapters/{id}'
-        query_params = {k: v for k, v in [('market', market)] if v is not None}
+        url = f"{self.base_url}/chapters/{id}"
+        query_params = {k: v for k, v in [("market", market)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -574,8 +576,8 @@ class SpotifyApp(APIApplication):
         """
         if ids is None:
             raise ValueError("Missing required parameter 'ids'")
-        url = f'{self.base_url}/chapters'
-        query_params = {k: v for k, v in [('ids', ids), ('market', market)] if v is not None}
+        url = f"{self.base_url}/chapters"
+        query_params = {k: v for k, v in [("ids", ids), ("market", market)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -600,8 +602,8 @@ class SpotifyApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/tracks/{id}'
-        query_params = {k: v for k, v in [('market', market)] if v is not None}
+        url = f"{self.base_url}/tracks/{id}"
+        query_params = {k: v for k, v in [("market", market)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -626,8 +628,8 @@ class SpotifyApp(APIApplication):
         """
         if ids is None:
             raise ValueError("Missing required parameter 'ids'")
-        url = f'{self.base_url}/tracks'
-        query_params = {k: v for k, v in [('market', market), ('ids', ids)] if v is not None}
+        url = f"{self.base_url}/tracks"
+        query_params = {k: v for k, v in [("market", market), ("ids", ids)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -658,8 +660,19 @@ class SpotifyApp(APIApplication):
             raise ValueError("Missing required parameter 'q'")
         if type is None:
             raise ValueError("Missing required parameter 'type'")
-        url = f'{self.base_url}/search'
-        query_params = {k: v for k, v in [('q', q), ('type', type), ('market', market), ('limit', limit), ('offset', offset), ('include_external', include_external)] if v is not None}
+        url = f"{self.base_url}/search"
+        query_params = {
+            k: v
+            for k, v in [
+                ("q", q),
+                ("type", type),
+                ("market", market),
+                ("limit", limit),
+                ("offset", offset),
+                ("include_external", include_external),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -680,7 +693,7 @@ class SpotifyApp(APIApplication):
         Tags:
             get, profile, user, api
         """
-        url = f'{self.base_url}/me'
+        url = f"{self.base_url}/me"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -708,8 +721,8 @@ class SpotifyApp(APIApplication):
         """
         if playlist_id is None:
             raise ValueError("Missing required parameter 'playlist_id'")
-        url = f'{self.base_url}/playlists/{playlist_id}'
-        query_params = {k: v for k, v in [('market', market), ('fields', fields), ('additional_types', additional_types)] if v is not None}
+        url = f"{self.base_url}/playlists/{playlist_id}"
+        query_params = {k: v for k, v in [("market", market), ("fields", fields), ("additional_types", additional_types)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -737,9 +750,9 @@ class SpotifyApp(APIApplication):
         """
         if playlist_id is None:
             raise ValueError("Missing required parameter 'playlist_id'")
-        request_body = {'name': name, 'public': public, 'collaborative': collaborative, 'description': description}
+        request_body = {"name": name, "public": public, "collaborative": collaborative, "description": description}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/playlists/{playlist_id}'
+        url = f"{self.base_url}/playlists/{playlist_id}"
         query_params = {}
         response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -769,8 +782,18 @@ class SpotifyApp(APIApplication):
         """
         if playlist_id is None:
             raise ValueError("Missing required parameter 'playlist_id'")
-        url = f'{self.base_url}/playlists/{playlist_id}/tracks'
-        query_params = {k: v for k, v in [('market', market), ('fields', fields), ('limit', limit), ('offset', offset), ('additional_types', additional_types)] if v is not None}
+        url = f"{self.base_url}/playlists/{playlist_id}/tracks"
+        query_params = {
+            k: v
+            for k, v in [
+                ("market", market),
+                ("fields", fields),
+                ("limit", limit),
+                ("offset", offset),
+                ("additional_types", additional_types),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -796,15 +819,17 @@ class SpotifyApp(APIApplication):
         """
         if playlist_id is None:
             raise ValueError("Missing required parameter 'playlist_id'")
-        request_body = {'uris': uris, 'position': position}
+        request_body = {"uris": uris, "position": position}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/playlists/{playlist_id}/tracks'
-        query_params = {k: v for k, v in [('position', position), ('uris', uris)] if v is not None}
+        url = f"{self.base_url}/playlists/{playlist_id}/tracks"
+        query_params = {k: v for k, v in [("position", position), ("uris", uris)] if v is not None}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def reorder_or_replace_playlists_tracks(self, playlist_id, uris=None, range_start=None, insert_before=None, range_length=None, snapshot_id=None) -> Any:
+    async def reorder_or_replace_playlists_tracks(
+        self, playlist_id, uris=None, range_start=None, insert_before=None, range_length=None, snapshot_id=None
+    ) -> Any:
         """
         Reorders or replaces tracks in a playlist by moving, inserting, or replacing track entries using the specified parameters.
 
@@ -828,10 +853,16 @@ class SpotifyApp(APIApplication):
         """
         if playlist_id is None:
             raise ValueError("Missing required parameter 'playlist_id'")
-        request_body = {'uris': uris, 'range_start': range_start, 'insert_before': insert_before, 'range_length': range_length, 'snapshot_id': snapshot_id}
+        request_body = {
+            "uris": uris,
+            "range_start": range_start,
+            "insert_before": insert_before,
+            "range_length": range_length,
+            "snapshot_id": snapshot_id,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/playlists/{playlist_id}/tracks'
-        query_params = {k: v for k, v in [('uris', uris)] if v is not None}
+        url = f"{self.base_url}/playlists/{playlist_id}/tracks"
+        query_params = {k: v for k, v in [("uris", uris)] if v is not None}
         response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -853,8 +884,8 @@ class SpotifyApp(APIApplication):
         Tags:
             list, playlists, user, api
         """
-        url = f'{self.base_url}/me/playlists'
-        query_params = {k: v for k, v in [('limit', limit), ('offset', offset)] if v is not None}
+        url = f"{self.base_url}/me/playlists"
+        query_params = {k: v for k, v in [("limit", limit), ("offset", offset)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -877,8 +908,8 @@ class SpotifyApp(APIApplication):
         Tags:
             get, list, albums, user-library, spotify, api
         """
-        url = f'{self.base_url}/me/albums'
-        query_params = {k: v for k, v in [('limit', limit), ('offset', offset), ('market', market)] if v is not None}
+        url = f"{self.base_url}/me/albums"
+        query_params = {k: v for k, v in [("limit", limit), ("offset", offset), ("market", market)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -902,8 +933,8 @@ class SpotifyApp(APIApplication):
         """
         if ids is None:
             raise ValueError("Missing required parameter 'ids'")
-        url = f'{self.base_url}/me/albums/contains'
-        query_params = {k: v for k, v in [('ids', ids)] if v is not None}
+        url = f"{self.base_url}/me/albums/contains"
+        query_params = {k: v for k, v in [("ids", ids)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -926,8 +957,8 @@ class SpotifyApp(APIApplication):
         Tags:
             list, get, user-data, spotify, tracks, batch
         """
-        url = f'{self.base_url}/me/tracks'
-        query_params = {k: v for k, v in [('market', market), ('limit', limit), ('offset', offset)] if v is not None}
+        url = f"{self.base_url}/me/tracks"
+        query_params = {k: v for k, v in [("market", market), ("limit", limit), ("offset", offset)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -951,10 +982,10 @@ class SpotifyApp(APIApplication):
         """
         if ids is None:
             raise ValueError("Missing required parameter 'ids'")
-        request_body = {'ids': ids}
+        request_body = {"ids": ids}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/me/tracks'
-        query_params = {k: v for k, v in [('ids', ids)] if v is not None}
+        url = f"{self.base_url}/me/tracks"
+        query_params = {k: v for k, v in [("ids", ids)] if v is not None}
         response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -978,8 +1009,8 @@ class SpotifyApp(APIApplication):
         """
         if ids is None:
             raise ValueError("Missing required parameter 'ids'")
-        url = f'{self.base_url}/me/tracks/contains'
-        query_params = {k: v for k, v in [('ids', ids)] if v is not None}
+        url = f"{self.base_url}/me/tracks/contains"
+        query_params = {k: v for k, v in [("ids", ids)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -1002,8 +1033,8 @@ class SpotifyApp(APIApplication):
         Tags:
             get, list, user-content, episodes, ai
         """
-        url = f'{self.base_url}/me/episodes'
-        query_params = {k: v for k, v in [('market', market), ('limit', limit), ('offset', offset)] if v is not None}
+        url = f"{self.base_url}/me/episodes"
+        query_params = {k: v for k, v in [("market", market), ("limit", limit), ("offset", offset)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -1027,10 +1058,10 @@ class SpotifyApp(APIApplication):
         """
         if ids is None:
             raise ValueError("Missing required parameter 'ids'")
-        request_body = {'ids': ids}
+        request_body = {"ids": ids}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/me/episodes'
-        query_params = {k: v for k, v in [('ids', ids)] if v is not None}
+        url = f"{self.base_url}/me/episodes"
+        query_params = {k: v for k, v in [("ids", ids)] if v is not None}
         response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -1054,8 +1085,8 @@ class SpotifyApp(APIApplication):
         """
         if ids is None:
             raise ValueError("Missing required parameter 'ids'")
-        url = f'{self.base_url}/me/episodes/contains'
-        query_params = {k: v for k, v in [('ids', ids)] if v is not None}
+        url = f"{self.base_url}/me/episodes/contains"
+        query_params = {k: v for k, v in [("ids", ids)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -1077,8 +1108,8 @@ class SpotifyApp(APIApplication):
         Tags:
             get, list, shows, spotify, user-content
         """
-        url = f'{self.base_url}/me/shows'
-        query_params = {k: v for k, v in [('limit', limit), ('offset', offset)] if v is not None}
+        url = f"{self.base_url}/me/shows"
+        query_params = {k: v for k, v in [("limit", limit), ("offset", offset)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -1102,8 +1133,8 @@ class SpotifyApp(APIApplication):
         """
         if ids is None:
             raise ValueError("Missing required parameter 'ids'")
-        url = f'{self.base_url}/me/shows/contains'
-        query_params = {k: v for k, v in [('ids', ids)] if v is not None}
+        url = f"{self.base_url}/me/shows/contains"
+        query_params = {k: v for k, v in [("ids", ids)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -1127,7 +1158,7 @@ class SpotifyApp(APIApplication):
         """
         if user_id is None:
             raise ValueError("Missing required parameter 'user_id'")
-        url = f'{self.base_url}/users/{user_id}'
+        url = f"{self.base_url}/users/{user_id}"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -1154,8 +1185,8 @@ class SpotifyApp(APIApplication):
         """
         if user_id is None:
             raise ValueError("Missing required parameter 'user_id'")
-        url = f'{self.base_url}/users/{user_id}/playlists'
-        query_params = {k: v for k, v in [('limit', limit), ('offset', offset)] if v is not None}
+        url = f"{self.base_url}/users/{user_id}/playlists"
+        query_params = {k: v for k, v in [("limit", limit), ("offset", offset)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -1185,9 +1216,9 @@ class SpotifyApp(APIApplication):
             raise ValueError("Missing required parameter 'user_id'")
         if name is None:
             raise ValueError("Missing required parameter 'name'")
-        request_body = {'name': name, 'public': public, 'collaborative': collaborative, 'description': description}
+        request_body = {"name": name, "public": public, "collaborative": collaborative, "description": description}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/users/{user_id}/playlists'
+        url = f"{self.base_url}/users/{user_id}/playlists"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -1213,9 +1244,9 @@ class SpotifyApp(APIApplication):
         """
         if playlist_id is None:
             raise ValueError("Missing required parameter 'playlist_id'")
-        request_body = {'public': public}
+        request_body = {"public": public}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/playlists/{playlist_id}/followers'
+        url = f"{self.base_url}/playlists/{playlist_id}/followers"
         query_params = {}
         response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -1240,7 +1271,7 @@ class SpotifyApp(APIApplication):
         """
         if playlist_id is None:
             raise ValueError("Missing required parameter 'playlist_id'")
-        url = f'{self.base_url}/playlists/{playlist_id}/followers'
+        url = f"{self.base_url}/playlists/{playlist_id}/followers"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -1264,8 +1295,8 @@ class SpotifyApp(APIApplication):
         Tags:
             get, list, playlists, featured, api, music
         """
-        url = f'{self.base_url}/browse/featured-playlists'
-        query_params = {k: v for k, v in [('locale', locale), ('limit', limit), ('offset', offset)] if v is not None}
+        url = f"{self.base_url}/browse/featured-playlists"
+        query_params = {k: v for k, v in [("locale", locale), ("limit", limit), ("offset", offset)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -1288,8 +1319,8 @@ class SpotifyApp(APIApplication):
         Tags:
             get, list, categories, api
         """
-        url = f'{self.base_url}/browse/categories'
-        query_params = {k: v for k, v in [('locale', locale), ('limit', limit), ('offset', offset)] if v is not None}
+        url = f"{self.base_url}/browse/categories"
+        query_params = {k: v for k, v in [("locale", locale), ("limit", limit), ("offset", offset)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -1314,8 +1345,8 @@ class SpotifyApp(APIApplication):
         """
         if category_id is None:
             raise ValueError("Missing required parameter 'category_id'")
-        url = f'{self.base_url}/browse/categories/{category_id}'
-        query_params = {k: v for k, v in [('locale', locale)] if v is not None}
+        url = f"{self.base_url}/browse/categories/{category_id}"
+        query_params = {k: v for k, v in [("locale", locale)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -1341,8 +1372,8 @@ class SpotifyApp(APIApplication):
         """
         if category_id is None:
             raise ValueError("Missing required parameter 'category_id'")
-        url = f'{self.base_url}/browse/categories/{category_id}/playlists'
-        query_params = {k: v for k, v in [('limit', limit), ('offset', offset)] if v is not None}
+        url = f"{self.base_url}/browse/categories/{category_id}/playlists"
+        query_params = {k: v for k, v in [("limit", limit), ("offset", offset)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -1366,7 +1397,7 @@ class SpotifyApp(APIApplication):
         """
         if playlist_id is None:
             raise ValueError("Missing required parameter 'playlist_id'")
-        url = f'{self.base_url}/playlists/{playlist_id}/images'
+        url = f"{self.base_url}/playlists/{playlist_id}/images"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -1389,8 +1420,8 @@ class SpotifyApp(APIApplication):
         Tags:
             get, list, browse, music, async-job, api
         """
-        url = f'{self.base_url}/browse/new-releases'
-        query_params = {k: v for k, v in [('limit', limit), ('offset', offset)] if v is not None}
+        url = f"{self.base_url}/browse/new-releases"
+        query_params = {k: v for k, v in [("limit", limit), ("offset", offset)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -1416,8 +1447,8 @@ class SpotifyApp(APIApplication):
         """
         if type is None:
             raise ValueError("Missing required parameter 'type'")
-        url = f'{self.base_url}/me/following'
-        query_params = {k: v for k, v in [('type', type), ('after', after), ('limit', limit)] if v is not None}
+        url = f"{self.base_url}/me/following"
+        query_params = {k: v for k, v in [("type", type), ("after", after), ("limit", limit)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -1444,10 +1475,10 @@ class SpotifyApp(APIApplication):
             raise ValueError("Missing required parameter 'type'")
         if ids is None:
             raise ValueError("Missing required parameter 'ids'")
-        request_body = {'ids': ids}
+        request_body = {"ids": ids}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/me/following'
-        query_params = {k: v for k, v in [('type', type), ('ids', ids)] if v is not None}
+        url = f"{self.base_url}/me/following"
+        query_params = {k: v for k, v in [("type", type), ("ids", ids)] if v is not None}
         response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -1474,8 +1505,8 @@ class SpotifyApp(APIApplication):
             raise ValueError("Missing required parameter 'type'")
         if ids is None:
             raise ValueError("Missing required parameter 'ids'")
-        url = f'{self.base_url}/me/following/contains'
-        query_params = {k: v for k, v in [('type', type), ('ids', ids)] if v is not None}
+        url = f"{self.base_url}/me/following/contains"
+        query_params = {k: v for k, v in [("type", type), ("ids", ids)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -1502,8 +1533,8 @@ class SpotifyApp(APIApplication):
             raise ValueError("Missing required parameter 'playlist_id'")
         if ids is None:
             raise ValueError("Missing required parameter 'ids'")
-        url = f'{self.base_url}/playlists/{playlist_id}/followers/contains'
-        query_params = {k: v for k, v in [('ids', ids)] if v is not None}
+        url = f"{self.base_url}/playlists/{playlist_id}/followers/contains"
+        query_params = {k: v for k, v in [("ids", ids)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -1527,8 +1558,8 @@ class SpotifyApp(APIApplication):
         """
         if ids is None:
             raise ValueError("Missing required parameter 'ids'")
-        url = f'{self.base_url}/audio-features'
-        query_params = {k: v for k, v in [('ids', ids)] if v is not None}
+        url = f"{self.base_url}/audio-features"
+        query_params = {k: v for k, v in [("ids", ids)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -1552,7 +1583,7 @@ class SpotifyApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/audio-features/{id}'
+        url = f"{self.base_url}/audio-features/{id}"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -1577,13 +1608,62 @@ class SpotifyApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/audio-analysis/{id}'
+        url = f"{self.base_url}/audio-analysis/{id}"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def get_recommendations(self, limit=None, market=None, seed_artists=None, seed_genres=None, seed_tracks=None, min_acousticness=None, max_acousticness=None, target_acousticness=None, min_danceability=None, max_danceability=None, target_danceability=None, min_duration_ms=None, max_duration_ms=None, target_duration_ms=None, min_energy=None, max_energy=None, target_energy=None, min_instrumentalness=None, max_instrumentalness=None, target_instrumentalness=None, min_key=None, max_key=None, target_key=None, min_liveness=None, max_liveness=None, target_liveness=None, min_loudness=None, max_loudness=None, target_loudness=None, min_mode=None, max_mode=None, target_mode=None, min_popularity=None, max_popularity=None, target_popularity=None, min_speechiness=None, max_speechiness=None, target_speechiness=None, min_tempo=None, max_tempo=None, target_tempo=None, min_time_signature=None, max_time_signature=None, target_time_signature=None, min_valence=None, max_valence=None, target_valence=None) -> Any:
+    async def get_recommendations(
+        self,
+        limit=None,
+        market=None,
+        seed_artists=None,
+        seed_genres=None,
+        seed_tracks=None,
+        min_acousticness=None,
+        max_acousticness=None,
+        target_acousticness=None,
+        min_danceability=None,
+        max_danceability=None,
+        target_danceability=None,
+        min_duration_ms=None,
+        max_duration_ms=None,
+        target_duration_ms=None,
+        min_energy=None,
+        max_energy=None,
+        target_energy=None,
+        min_instrumentalness=None,
+        max_instrumentalness=None,
+        target_instrumentalness=None,
+        min_key=None,
+        max_key=None,
+        target_key=None,
+        min_liveness=None,
+        max_liveness=None,
+        target_liveness=None,
+        min_loudness=None,
+        max_loudness=None,
+        target_loudness=None,
+        min_mode=None,
+        max_mode=None,
+        target_mode=None,
+        min_popularity=None,
+        max_popularity=None,
+        target_popularity=None,
+        min_speechiness=None,
+        max_speechiness=None,
+        target_speechiness=None,
+        min_tempo=None,
+        max_tempo=None,
+        target_tempo=None,
+        min_time_signature=None,
+        max_time_signature=None,
+        target_time_signature=None,
+        min_valence=None,
+        max_valence=None,
+        target_valence=None,
+    ) -> Any:
         """
         Retrieves track recommendations based on a combination of seed values and audio feature constraints.
 
@@ -1646,8 +1726,60 @@ class SpotifyApp(APIApplication):
         Tags:
             get, recommendations, ai, music, filter
         """
-        url = f'{self.base_url}/recommendations'
-        query_params = {k: v for k, v in [('limit', limit), ('market', market), ('seed_artists', seed_artists), ('seed_genres', seed_genres), ('seed_tracks', seed_tracks), ('min_acousticness', min_acousticness), ('max_acousticness', max_acousticness), ('target_acousticness', target_acousticness), ('min_danceability', min_danceability), ('max_danceability', max_danceability), ('target_danceability', target_danceability), ('min_duration_ms', min_duration_ms), ('max_duration_ms', max_duration_ms), ('target_duration_ms', target_duration_ms), ('min_energy', min_energy), ('max_energy', max_energy), ('target_energy', target_energy), ('min_instrumentalness', min_instrumentalness), ('max_instrumentalness', max_instrumentalness), ('target_instrumentalness', target_instrumentalness), ('min_key', min_key), ('max_key', max_key), ('target_key', target_key), ('min_liveness', min_liveness), ('max_liveness', max_liveness), ('target_liveness', target_liveness), ('min_loudness', min_loudness), ('max_loudness', max_loudness), ('target_loudness', target_loudness), ('min_mode', min_mode), ('max_mode', max_mode), ('target_mode', target_mode), ('min_popularity', min_popularity), ('max_popularity', max_popularity), ('target_popularity', target_popularity), ('min_speechiness', min_speechiness), ('max_speechiness', max_speechiness), ('target_speechiness', target_speechiness), ('min_tempo', min_tempo), ('max_tempo', max_tempo), ('target_tempo', target_tempo), ('min_time_signature', min_time_signature), ('max_time_signature', max_time_signature), ('target_time_signature', target_time_signature), ('min_valence', min_valence), ('max_valence', max_valence), ('target_valence', target_valence)] if v is not None}
+        url = f"{self.base_url}/recommendations"
+        query_params = {
+            k: v
+            for k, v in [
+                ("limit", limit),
+                ("market", market),
+                ("seed_artists", seed_artists),
+                ("seed_genres", seed_genres),
+                ("seed_tracks", seed_tracks),
+                ("min_acousticness", min_acousticness),
+                ("max_acousticness", max_acousticness),
+                ("target_acousticness", target_acousticness),
+                ("min_danceability", min_danceability),
+                ("max_danceability", max_danceability),
+                ("target_danceability", target_danceability),
+                ("min_duration_ms", min_duration_ms),
+                ("max_duration_ms", max_duration_ms),
+                ("target_duration_ms", target_duration_ms),
+                ("min_energy", min_energy),
+                ("max_energy", max_energy),
+                ("target_energy", target_energy),
+                ("min_instrumentalness", min_instrumentalness),
+                ("max_instrumentalness", max_instrumentalness),
+                ("target_instrumentalness", target_instrumentalness),
+                ("min_key", min_key),
+                ("max_key", max_key),
+                ("target_key", target_key),
+                ("min_liveness", min_liveness),
+                ("max_liveness", max_liveness),
+                ("target_liveness", target_liveness),
+                ("min_loudness", min_loudness),
+                ("max_loudness", max_loudness),
+                ("target_loudness", target_loudness),
+                ("min_mode", min_mode),
+                ("max_mode", max_mode),
+                ("target_mode", target_mode),
+                ("min_popularity", min_popularity),
+                ("max_popularity", max_popularity),
+                ("target_popularity", target_popularity),
+                ("min_speechiness", min_speechiness),
+                ("max_speechiness", max_speechiness),
+                ("target_speechiness", target_speechiness),
+                ("min_tempo", min_tempo),
+                ("max_tempo", max_tempo),
+                ("target_tempo", target_tempo),
+                ("min_time_signature", min_time_signature),
+                ("max_time_signature", max_time_signature),
+                ("target_time_signature", target_time_signature),
+                ("min_valence", min_valence),
+                ("max_valence", max_valence),
+                ("target_valence", target_valence),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -1668,7 +1800,7 @@ class SpotifyApp(APIApplication):
         Tags:
             get, list, api, recommendation, genres
         """
-        url = f'{self.base_url}/recommendations/available-genre-seeds'
+        url = f"{self.base_url}/recommendations/available-genre-seeds"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -1691,8 +1823,8 @@ class SpotifyApp(APIApplication):
         Tags:
             get, playback, user, status, api
         """
-        url = f'{self.base_url}/me/player'
-        query_params = {k: v for k, v in [('market', market), ('additional_types', additional_types)] if v is not None}
+        url = f"{self.base_url}/me/player"
+        query_params = {k: v for k, v in [("market", market), ("additional_types", additional_types)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -1717,9 +1849,9 @@ class SpotifyApp(APIApplication):
         """
         if device_ids is None:
             raise ValueError("Missing required parameter 'device_ids'")
-        request_body = {'device_ids': device_ids, 'play': play}
+        request_body = {"device_ids": device_ids, "play": play}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/me/player'
+        url = f"{self.base_url}/me/player"
         query_params = {}
         response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -1741,7 +1873,7 @@ class SpotifyApp(APIApplication):
         Tags:
             get, list, devices, user, management
         """
-        url = f'{self.base_url}/me/player/devices'
+        url = f"{self.base_url}/me/player/devices"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -1764,8 +1896,8 @@ class SpotifyApp(APIApplication):
         Tags:
             get, track, player, user, async_job
         """
-        url = f'{self.base_url}/me/player/currently-playing'
-        query_params = {k: v for k, v in [('market', market), ('additional_types', additional_types)] if v is not None}
+        url = f"{self.base_url}/me/player/currently-playing"
+        query_params = {k: v for k, v in [("market", market), ("additional_types", additional_types)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -1790,10 +1922,10 @@ class SpotifyApp(APIApplication):
         Tags:
             start, playback, ai, management, async_job
         """
-        request_body = {'context_uri': context_uri, 'uris': uris, 'offset': offset, 'position_ms': position_ms}
+        request_body = {"context_uri": context_uri, "uris": uris, "offset": offset, "position_ms": position_ms}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/me/player/play'
-        query_params = {k: v for k, v in [('device_id', device_id)] if v is not None}
+        url = f"{self.base_url}/me/player/play"
+        query_params = {k: v for k, v in [("device_id", device_id)] if v is not None}
         response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -1814,8 +1946,8 @@ class SpotifyApp(APIApplication):
         Tags:
             pause, playback, control, spotify
         """
-        url = f'{self.base_url}/me/player/pause'
-        query_params = {k: v for k, v in [('device_id', device_id)] if v is not None}
+        url = f"{self.base_url}/me/player/pause"
+        query_params = {k: v for k, v in [("device_id", device_id)] if v is not None}
         response = await self._aput(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -1836,8 +1968,8 @@ class SpotifyApp(APIApplication):
         Tags:
             skip, playback-control, user, spotify-api
         """
-        url = f'{self.base_url}/me/player/next'
-        query_params = {k: v for k, v in [('device_id', device_id)] if v is not None}
+        url = f"{self.base_url}/me/player/next"
+        query_params = {k: v for k, v in [("device_id", device_id)] if v is not None}
         response = await self._apost(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -1858,8 +1990,8 @@ class SpotifyApp(APIApplication):
         Tags:
             playback-control, skip, previous-track, user, api
         """
-        url = f'{self.base_url}/me/player/previous'
-        query_params = {k: v for k, v in [('device_id', device_id)] if v is not None}
+        url = f"{self.base_url}/me/player/previous"
+        query_params = {k: v for k, v in [("device_id", device_id)] if v is not None}
         response = await self._apost(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -1884,8 +2016,8 @@ class SpotifyApp(APIApplication):
         """
         if position_ms is None:
             raise ValueError("Missing required parameter 'position_ms'")
-        url = f'{self.base_url}/me/player/seek'
-        query_params = {k: v for k, v in [('position_ms', position_ms), ('device_id', device_id)] if v is not None}
+        url = f"{self.base_url}/me/player/seek"
+        query_params = {k: v for k, v in [("position_ms", position_ms), ("device_id", device_id)] if v is not None}
         response = await self._aput(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -1910,8 +2042,8 @@ class SpotifyApp(APIApplication):
         """
         if state is None:
             raise ValueError("Missing required parameter 'state'")
-        url = f'{self.base_url}/me/player/repeat'
-        query_params = {k: v for k, v in [('state', state), ('device_id', device_id)] if v is not None}
+        url = f"{self.base_url}/me/player/repeat"
+        query_params = {k: v for k, v in [("state", state), ("device_id", device_id)] if v is not None}
         response = await self._aput(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -1936,8 +2068,8 @@ class SpotifyApp(APIApplication):
         """
         if volume_percent is None:
             raise ValueError("Missing required parameter 'volume_percent'")
-        url = f'{self.base_url}/me/player/volume'
-        query_params = {k: v for k, v in [('volume_percent', volume_percent), ('device_id', device_id)] if v is not None}
+        url = f"{self.base_url}/me/player/volume"
+        query_params = {k: v for k, v in [("volume_percent", volume_percent), ("device_id", device_id)] if v is not None}
         response = await self._aput(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -1962,8 +2094,8 @@ class SpotifyApp(APIApplication):
         """
         if state is None:
             raise ValueError("Missing required parameter 'state'")
-        url = f'{self.base_url}/me/player/shuffle'
-        query_params = {k: v for k, v in [('state', state), ('device_id', device_id)] if v is not None}
+        url = f"{self.base_url}/me/player/shuffle"
+        query_params = {k: v for k, v in [("state", state), ("device_id", device_id)] if v is not None}
         response = await self._aput(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -1986,8 +2118,8 @@ class SpotifyApp(APIApplication):
         Tags:
             get, list, spotify-api, user-library, recently-played
         """
-        url = f'{self.base_url}/me/player/recently-played'
-        query_params = {k: v for k, v in [('limit', limit), ('after', after), ('before', before)] if v is not None}
+        url = f"{self.base_url}/me/player/recently-played"
+        query_params = {k: v for k, v in [("limit", limit), ("after", after), ("before", before)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -2008,7 +2140,7 @@ class SpotifyApp(APIApplication):
         Tags:
             get, queue, api, player
         """
-        url = f'{self.base_url}/me/player/queue'
+        url = f"{self.base_url}/me/player/queue"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -2034,8 +2166,8 @@ class SpotifyApp(APIApplication):
         """
         if uri is None:
             raise ValueError("Missing required parameter 'uri'")
-        url = f'{self.base_url}/me/player/queue'
-        query_params = {k: v for k, v in [('uri', uri), ('device_id', device_id)] if v is not None}
+        url = f"{self.base_url}/me/player/queue"
+        query_params = {k: v for k, v in [("uri", uri), ("device_id", device_id)] if v is not None}
         response = await self._apost(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -2056,7 +2188,7 @@ class SpotifyApp(APIApplication):
         Tags:
             get, markets, api, list, fetch
         """
-        url = f'{self.base_url}/markets'
+        url = f"{self.base_url}/markets"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -2080,8 +2212,8 @@ class SpotifyApp(APIApplication):
         Tags:
             get, list, artists, user, ai, batch
         """
-        url = f'{self.base_url}/me/top/artists'
-        query_params = {k: v for k, v in [('time_range', time_range), ('limit', limit), ('offset', offset)] if v is not None}
+        url = f"{self.base_url}/me/top/artists"
+        query_params = {k: v for k, v in [("time_range", time_range), ("limit", limit), ("offset", offset)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -2104,11 +2236,92 @@ class SpotifyApp(APIApplication):
         Tags:
             get, list, user, tracks, ai
         """
-        url = f'{self.base_url}/me/top/tracks'
-        query_params = {k: v for k, v in [('time_range', time_range), ('limit', limit), ('offset', offset)] if v is not None}
+        url = f"{self.base_url}/me/top/tracks"
+        query_params = {k: v for k, v in [("time_range", time_range), ("limit", limit), ("offset", offset)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
     def list_tools(self):
-        return [self.get_an_album, self.get_multiple_albums, self.get_an_albums_tracks, self.get_an_artist, self.get_multiple_artists, self.get_an_artists_albums, self.get_an_artists_top_tracks, self.get_an_artists_related_artists, self.get_a_show, self.get_multiple_shows, self.get_a_shows_episodes, self.get_an_episode, self.get_multiple_episodes, self.get_an_audiobook, self.get_multiple_audiobooks, self.get_audiobook_chapters, self.get_users_saved_audiobooks, self.save_audiobooks_user, self.remove_audiobooks_user, self.check_users_saved_audiobooks, self.get_a_chapter, self.get_several_chapters, self.get_track, self.get_several_tracks, self.search, self.get_current_users_profile, self.get_playlist, self.change_playlist_details, self.get_playlists_tracks, self.add_tracks_to_playlist, self.reorder_or_replace_playlists_tracks, self.get_a_list_of_current_users_playlists, self.get_users_saved_albums, self.check_users_saved_albums, self.get_users_saved_tracks, self.save_tracks_user, self.check_users_saved_tracks, self.get_users_saved_episodes, self.save_episodes_user, self.check_users_saved_episodes, self.get_users_saved_shows, self.check_users_saved_shows, self.get_users_profile, self.get_list_users_playlists, self.create_playlist, self.follow_playlist, self.unfollow_playlist, self.get_featured_playlists, self.get_categories, self.get_a_category, self.get_a_categories_playlists, self.get_playlist_cover, self.get_new_releases, self.get_followed, self.follow_artists_users, self.check_current_user_follows, self.check_if_user_follows_playlist, self.get_several_audio_features, self.get_audio_features, self.get_audio_analysis, self.get_recommendations, self.get_recommendation_genres, self.get_information_about_the_users_current_playback, self.transfer_a_users_playback, self.get_a_users_available_devices, self.get_the_users_currently_playing_track, self.start_a_users_playback, self.pause_a_users_playback, self.skip_users_playback_to_next_track, self.skip_users_playback_to_previous_track, self.seek_to_position_in_currently_playing_track, self.set_repeat_mode_on_users_playback, self.set_volume_for_users_playback, self.toggle_shuffle_for_users_playback, self.get_recently_played, self.get_queue, self.add_to_queue, self.get_available_markets, self.get_users_top_artists, self.get_users_top_tracks]
+        return [
+            self.get_an_album,
+            self.get_multiple_albums,
+            self.get_an_albums_tracks,
+            self.get_an_artist,
+            self.get_multiple_artists,
+            self.get_an_artists_albums,
+            self.get_an_artists_top_tracks,
+            self.get_an_artists_related_artists,
+            self.get_a_show,
+            self.get_multiple_shows,
+            self.get_a_shows_episodes,
+            self.get_an_episode,
+            self.get_multiple_episodes,
+            self.get_an_audiobook,
+            self.get_multiple_audiobooks,
+            self.get_audiobook_chapters,
+            self.get_users_saved_audiobooks,
+            self.save_audiobooks_user,
+            self.remove_audiobooks_user,
+            self.check_users_saved_audiobooks,
+            self.get_a_chapter,
+            self.get_several_chapters,
+            self.get_track,
+            self.get_several_tracks,
+            self.search,
+            self.get_current_users_profile,
+            self.get_playlist,
+            self.change_playlist_details,
+            self.get_playlists_tracks,
+            self.add_tracks_to_playlist,
+            self.reorder_or_replace_playlists_tracks,
+            self.get_a_list_of_current_users_playlists,
+            self.get_users_saved_albums,
+            self.check_users_saved_albums,
+            self.get_users_saved_tracks,
+            self.save_tracks_user,
+            self.check_users_saved_tracks,
+            self.get_users_saved_episodes,
+            self.save_episodes_user,
+            self.check_users_saved_episodes,
+            self.get_users_saved_shows,
+            self.check_users_saved_shows,
+            self.get_users_profile,
+            self.get_list_users_playlists,
+            self.create_playlist,
+            self.follow_playlist,
+            self.unfollow_playlist,
+            self.get_featured_playlists,
+            self.get_categories,
+            self.get_a_category,
+            self.get_a_categories_playlists,
+            self.get_playlist_cover,
+            self.get_new_releases,
+            self.get_followed,
+            self.follow_artists_users,
+            self.check_current_user_follows,
+            self.check_if_user_follows_playlist,
+            self.get_several_audio_features,
+            self.get_audio_features,
+            self.get_audio_analysis,
+            self.get_recommendations,
+            self.get_recommendation_genres,
+            self.get_information_about_the_users_current_playback,
+            self.transfer_a_users_playback,
+            self.get_a_users_available_devices,
+            self.get_the_users_currently_playing_track,
+            self.start_a_users_playback,
+            self.pause_a_users_playback,
+            self.skip_users_playback_to_next_track,
+            self.skip_users_playback_to_previous_track,
+            self.seek_to_position_in_currently_playing_track,
+            self.set_repeat_mode_on_users_playback,
+            self.set_volume_for_users_playback,
+            self.toggle_shuffle_for_users_playback,
+            self.get_recently_played,
+            self.get_queue,
+            self.add_to_queue,
+            self.get_available_markets,
+            self.get_users_top_artists,
+            self.get_users_top_tracks,
+        ]

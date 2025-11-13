@@ -2,11 +2,11 @@ from typing import Any
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
-class MiroApp(APIApplication):
 
-    def __init__(self, integration: Integration=None, **kwargs) -> None:
-        super().__init__(name='miro', integration=integration, **kwargs)
-        self.base_url = 'https://api.miro.com'
+class MiroApp(APIApplication):
+    def __init__(self, integration: Integration = None, **kwargs) -> None:
+        super().__init__(name="miro", integration=integration, **kwargs)
+        self.base_url = "https://api.miro.com"
 
     async def revoke_token_v1(self, access_token=None) -> Any:
         """
@@ -21,8 +21,8 @@ class MiroApp(APIApplication):
         Tags:
             Tokens
         """
-        url = f'{self.base_url}/v1/oauth/revoke'
-        query_params = {k: v for k, v in [('access_token', access_token)] if v is not None}
+        url = f"{self.base_url}/v1/oauth/revoke"
+        query_params = {k: v for k, v in [("access_token", access_token)] if v is not None}
         response = await self._apost(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -37,7 +37,7 @@ class MiroApp(APIApplication):
         Tags:
             Tokens
         """
-        url = f'{self.base_url}/v1/oauth-token'
+        url = f"{self.base_url}/v1/oauth-token"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -60,8 +60,18 @@ class MiroApp(APIApplication):
         Tags:
             Audit Logs
         """
-        url = f'{self.base_url}/v2/audit/logs'
-        query_params = {k: v for k, v in [('createdAfter', createdAfter), ('createdBefore', createdBefore), ('cursor', cursor), ('limit', limit), ('sorting', sorting)] if v is not None}
+        url = f"{self.base_url}/v2/audit/logs"
+        query_params = {
+            k: v
+            for k, v in [
+                ("createdAfter", createdAfter),
+                ("createdBefore", createdBefore),
+                ("cursor", cursor),
+                ("limit", limit),
+                ("sorting", sorting),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -81,7 +91,7 @@ class MiroApp(APIApplication):
         """
         if org_id is None:
             raise ValueError("Missing required parameter 'org_id'")
-        url = f'{self.base_url}/v2/orgs/{org_id}/data-classification-settings'
+        url = f"{self.base_url}/v2/orgs/{org_id}/data-classification-settings"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -114,9 +124,9 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'org_id'")
         if team_id is None:
             raise ValueError("Missing required parameter 'team_id'")
-        request_body = {'labelId': labelId, 'notClassifiedOnly': notClassifiedOnly}
+        request_body = {"labelId": labelId, "notClassifiedOnly": notClassifiedOnly}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/orgs/{org_id}/teams/{team_id}/data-classification'
+        url = f"{self.base_url}/v2/orgs/{org_id}/teams/{team_id}/data-classification"
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -140,7 +150,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'org_id'")
         if team_id is None:
             raise ValueError("Missing required parameter 'team_id'")
-        url = f'{self.base_url}/v2/orgs/{org_id}/teams/{team_id}/data-classification-settings'
+        url = f"{self.base_url}/v2/orgs/{org_id}/teams/{team_id}/data-classification-settings"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -173,9 +183,9 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'org_id'")
         if team_id is None:
             raise ValueError("Missing required parameter 'team_id'")
-        request_body = {'defaultLabelId': defaultLabelId, 'enabled': enabled}
+        request_body = {"defaultLabelId": defaultLabelId, "enabled": enabled}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/orgs/{org_id}/teams/{team_id}/data-classification-settings'
+        url = f"{self.base_url}/v2/orgs/{org_id}/teams/{team_id}/data-classification-settings"
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -202,7 +212,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'team_id'")
         if board_id is None:
             raise ValueError("Missing required parameter 'board_id'")
-        url = f'{self.base_url}/v2/orgs/{org_id}/teams/{team_id}/boards/{board_id}/data-classification'
+        url = f"{self.base_url}/v2/orgs/{org_id}/teams/{team_id}/boards/{board_id}/data-classification"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -236,9 +246,9 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'team_id'")
         if board_id is None:
             raise ValueError("Missing required parameter 'board_id'")
-        request_body = {'labelId': labelId}
+        request_body = {"labelId": labelId}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/orgs/{org_id}/teams/{team_id}/boards/{board_id}/data-classification'
+        url = f"{self.base_url}/v2/orgs/{org_id}/teams/{team_id}/boards/{board_id}/data-classification"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -261,8 +271,8 @@ class MiroApp(APIApplication):
         """
         if org_id is None:
             raise ValueError("Missing required parameter 'org_id'")
-        url = f'{self.base_url}/v2/orgs/{org_id}/cases'
-        query_params = {k: v for k, v in [('limit', limit), ('cursor', cursor)] if v is not None}
+        url = f"{self.base_url}/v2/orgs/{org_id}/cases"
+        query_params = {k: v for k, v in [("limit", limit), ("cursor", cursor)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -285,7 +295,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'org_id'")
         if case_id is None:
             raise ValueError("Missing required parameter 'case_id'")
-        url = f'{self.base_url}/v2/orgs/{org_id}/cases/{case_id}'
+        url = f"{self.base_url}/v2/orgs/{org_id}/cases/{case_id}"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -311,8 +321,8 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'org_id'")
         if case_id is None:
             raise ValueError("Missing required parameter 'case_id'")
-        url = f'{self.base_url}/v2/orgs/{org_id}/cases/{case_id}/legal-holds'
-        query_params = {k: v for k, v in [('limit', limit), ('cursor', cursor)] if v is not None}
+        url = f"{self.base_url}/v2/orgs/{org_id}/cases/{case_id}/legal-holds"
+        query_params = {k: v for k, v in [("limit", limit), ("cursor", cursor)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -338,7 +348,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'case_id'")
         if legal_hold_id is None:
             raise ValueError("Missing required parameter 'legal_hold_id'")
-        url = f'{self.base_url}/v2/orgs/{org_id}/cases/{case_id}/legal-holds/{legal_hold_id}'
+        url = f"{self.base_url}/v2/orgs/{org_id}/cases/{case_id}/legal-holds/{legal_hold_id}"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -367,8 +377,8 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'case_id'")
         if legal_hold_id is None:
             raise ValueError("Missing required parameter 'legal_hold_id'")
-        url = f'{self.base_url}/v2/orgs/{org_id}/cases/{case_id}/legal-holds/{legal_hold_id}/content-items'
-        query_params = {k: v for k, v in [('limit', limit), ('cursor', cursor)] if v is not None}
+        url = f"{self.base_url}/v2/orgs/{org_id}/cases/{case_id}/legal-holds/{legal_hold_id}/content-items"
+        query_params = {k: v for k, v in [("limit", limit), ("cursor", cursor)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -400,10 +410,10 @@ class MiroApp(APIApplication):
         """
         if org_id is None:
             raise ValueError("Missing required parameter 'org_id'")
-        request_body = {'boardFormat': boardFormat, 'boardIds': boardIds}
+        request_body = {"boardFormat": boardFormat, "boardIds": boardIds}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/orgs/{org_id}/boards/export/jobs'
-        query_params = {k: v for k, v in [('request_id', request_id)] if v is not None}
+        url = f"{self.base_url}/v2/orgs/{org_id}/boards/export/jobs"
+        query_params = {k: v for k, v in [("request_id", request_id)] if v is not None}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -426,7 +436,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'org_id'")
         if job_id is None:
             raise ValueError("Missing required parameter 'job_id'")
-        url = f'{self.base_url}/v2/orgs/{org_id}/boards/export/jobs/{job_id}'
+        url = f"{self.base_url}/v2/orgs/{org_id}/boards/export/jobs/{job_id}"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -450,13 +460,15 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'org_id'")
         if job_id is None:
             raise ValueError("Missing required parameter 'job_id'")
-        url = f'{self.base_url}/v2/orgs/{org_id}/boards/export/jobs/{job_id}/results'
+        url = f"{self.base_url}/v2/orgs/{org_id}/boards/export/jobs/{job_id}/results"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def retrieve_content_change_logs_of_board_items(self, org_id, board_ids=None, emails=None, from_=None, to=None, cursor=None, limit=None, sorting=None) -> Any:
+    async def retrieve_content_change_logs_of_board_items(
+        self, org_id, board_ids=None, emails=None, from_=None, to=None, cursor=None, limit=None, sorting=None
+    ) -> Any:
         """
         Retrieves organization content logs with filtering options such as board IDs, email addresses, date ranges, and pagination parameters.
 
@@ -480,8 +492,20 @@ class MiroApp(APIApplication):
         """
         if org_id is None:
             raise ValueError("Missing required parameter 'org_id'")
-        url = f'{self.base_url}/v2/orgs/{org_id}/content-logs/items'
-        query_params = {k: v for k, v in [('board_ids', board_ids), ('emails', emails), ('from', from_), ('to', to), ('cursor', cursor), ('limit', limit), ('sorting', sorting)] if v is not None}
+        url = f"{self.base_url}/v2/orgs/{org_id}/content-logs/items"
+        query_params = {
+            k: v
+            for k, v in [
+                ("board_ids", board_ids),
+                ("emails", emails),
+                ("from", from_),
+                ("to", to),
+                ("cursor", cursor),
+                ("limit", limit),
+                ("sorting", sorting),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -499,8 +523,8 @@ class MiroApp(APIApplication):
         Tags:
             Reset all sessions of a user
         """
-        url = f'{self.base_url}/v2/sessions/reset_all'
-        query_params = {k: v for k, v in [('email', email)] if v is not None}
+        url = f"{self.base_url}/v2/sessions/reset_all"
+        query_params = {k: v for k, v in [("email", email)] if v is not None}
         response = await self._apost(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -520,7 +544,7 @@ class MiroApp(APIApplication):
         """
         if org_id is None:
             raise ValueError("Missing required parameter 'org_id'")
-        url = f'{self.base_url}/v2/orgs/{org_id}'
+        url = f"{self.base_url}/v2/orgs/{org_id}"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -547,8 +571,12 @@ class MiroApp(APIApplication):
         """
         if org_id is None:
             raise ValueError("Missing required parameter 'org_id'")
-        url = f'{self.base_url}/v2/orgs/{org_id}/members'
-        query_params = {k: v for k, v in [('emails', emails), ('role', role), ('license', license), ('active', active), ('cursor', cursor), ('limit', limit)] if v is not None}
+        url = f"{self.base_url}/v2/orgs/{org_id}/members"
+        query_params = {
+            k: v
+            for k, v in [("emails", emails), ("role", role), ("license", license), ("active", active), ("cursor", cursor), ("limit", limit)]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -571,7 +599,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'org_id'")
         if member_id is None:
             raise ValueError("Missing required parameter 'member_id'")
-        url = f'{self.base_url}/v2/orgs/{org_id}/members/{member_id}'
+        url = f"{self.base_url}/v2/orgs/{org_id}/members/{member_id}"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -596,8 +624,20 @@ class MiroApp(APIApplication):
         Tags:
             Boards
         """
-        url = f'{self.base_url}/v2/boards'
-        query_params = {k: v for k, v in [('team_id', team_id), ('project_id', project_id), ('query', query), ('owner', owner), ('limit', limit), ('offset', offset), ('sort', sort)] if v is not None}
+        url = f"{self.base_url}/v2/boards"
+        query_params = {
+            k: v
+            for k, v in [
+                ("team_id", team_id),
+                ("project_id", project_id),
+                ("query", query),
+                ("owner", owner),
+                ("limit", limit),
+                ("offset", offset),
+                ("sort", sort),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -640,10 +680,10 @@ class MiroApp(APIApplication):
         Tags:
             Boards
         """
-        request_body = {'description': description, 'name': name, 'policy': policy, 'teamId': teamId}
+        request_body = {"description": description, "name": name, "policy": policy, "teamId": teamId}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/boards'
-        query_params = {k: v for k, v in [('copy_from', copy_from)] if v is not None}
+        url = f"{self.base_url}/v2/boards"
+        query_params = {k: v for k, v in [("copy_from", copy_from)] if v is not None}
         response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -687,9 +727,9 @@ class MiroApp(APIApplication):
         Tags:
             Boards
         """
-        request_body = {'description': description, 'name': name, 'policy': policy, 'projectId': projectId, 'teamId': teamId}
+        request_body = {"description": description, "name": name, "policy": policy, "projectId": projectId, "teamId": teamId}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/boards'
+        url = f"{self.base_url}/v2/boards"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -710,7 +750,7 @@ class MiroApp(APIApplication):
         """
         if board_id is None:
             raise ValueError("Missing required parameter 'board_id'")
-        url = f'{self.base_url}/v2/boards/{board_id}'
+        url = f"{self.base_url}/v2/boards/{board_id}"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -731,7 +771,7 @@ class MiroApp(APIApplication):
         """
         if board_id is None:
             raise ValueError("Missing required parameter 'board_id'")
-        url = f'{self.base_url}/v2/boards/{board_id}'
+        url = f"{self.base_url}/v2/boards/{board_id}"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -779,9 +819,9 @@ class MiroApp(APIApplication):
         """
         if board_id is None:
             raise ValueError("Missing required parameter 'board_id'")
-        request_body = {'description': description, 'name': name, 'policy': policy, 'projectId': projectId, 'teamId': teamId}
+        request_body = {"description": description, "name": name, "policy": policy, "projectId": projectId, "teamId": teamId}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/boards/{board_id}'
+        url = f"{self.base_url}/v2/boards/{board_id}"
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -874,9 +914,9 @@ class MiroApp(APIApplication):
         """
         if board_id is None:
             raise ValueError("Missing required parameter 'board_id'")
-        request_body = {'data': data, 'geometry': geometry, 'parent': parent, 'position': position, 'style': style}
+        request_body = {"data": data, "geometry": geometry, "parent": parent, "position": position, "style": style}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/boards/{board_id}/app_cards'
+        url = f"{self.base_url}/v2/boards/{board_id}/app_cards"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -900,7 +940,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'board_id'")
         if item_id is None:
             raise ValueError("Missing required parameter 'item_id'")
-        url = f'{self.base_url}/v2/boards/{board_id}/app_cards/{item_id}'
+        url = f"{self.base_url}/v2/boards/{board_id}/app_cards/{item_id}"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -924,7 +964,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'board_id'")
         if item_id is None:
             raise ValueError("Missing required parameter 'item_id'")
-        url = f'{self.base_url}/v2/boards/{board_id}/app_cards/{item_id}'
+        url = f"{self.base_url}/v2/boards/{board_id}/app_cards/{item_id}"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -1020,9 +1060,9 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'board_id'")
         if item_id is None:
             raise ValueError("Missing required parameter 'item_id'")
-        request_body = {'data': data, 'geometry': geometry, 'parent': parent, 'position': position, 'style': style}
+        request_body = {"data": data, "geometry": geometry, "parent": parent, "position": position, "style": style}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/boards/{board_id}/app_cards/{item_id}'
+        url = f"{self.base_url}/v2/boards/{board_id}/app_cards/{item_id}"
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -1074,9 +1114,9 @@ class MiroApp(APIApplication):
         """
         if board_id is None:
             raise ValueError("Missing required parameter 'board_id'")
-        request_body = {'data': data, 'geometry': geometry, 'parent': parent, 'position': position, 'style': style}
+        request_body = {"data": data, "geometry": geometry, "parent": parent, "position": position, "style": style}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/boards/{board_id}/cards'
+        url = f"{self.base_url}/v2/boards/{board_id}/cards"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -1100,7 +1140,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'board_id'")
         if item_id is None:
             raise ValueError("Missing required parameter 'item_id'")
-        url = f'{self.base_url}/v2/boards/{board_id}/cards/{item_id}'
+        url = f"{self.base_url}/v2/boards/{board_id}/cards/{item_id}"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -1124,7 +1164,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'board_id'")
         if item_id is None:
             raise ValueError("Missing required parameter 'item_id'")
-        url = f'{self.base_url}/v2/boards/{board_id}/cards/{item_id}'
+        url = f"{self.base_url}/v2/boards/{board_id}/cards/{item_id}"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -1179,9 +1219,9 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'board_id'")
         if item_id is None:
             raise ValueError("Missing required parameter 'item_id'")
-        request_body = {'data': data, 'geometry': geometry, 'parent': parent, 'position': position, 'style': style}
+        request_body = {"data": data, "geometry": geometry, "parent": parent, "position": position, "style": style}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/boards/{board_id}/cards/{item_id}'
+        url = f"{self.base_url}/v2/boards/{board_id}/cards/{item_id}"
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -1204,8 +1244,8 @@ class MiroApp(APIApplication):
         """
         if board_id is None:
             raise ValueError("Missing required parameter 'board_id'")
-        url = f'{self.base_url}/v2/boards/{board_id}/connectors'
-        query_params = {k: v for k, v in [('limit', limit), ('cursor', cursor)] if v is not None}
+        url = f"{self.base_url}/v2/boards/{board_id}/connectors"
+        query_params = {k: v for k, v in [("limit", limit), ("cursor", cursor)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -1364,9 +1404,9 @@ class MiroApp(APIApplication):
         """
         if board_id is None:
             raise ValueError("Missing required parameter 'board_id'")
-        request_body = {'captions': captions, 'endItem': endItem, 'shape': shape, 'startItem': startItem, 'style': style}
+        request_body = {"captions": captions, "endItem": endItem, "shape": shape, "startItem": startItem, "style": style}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/boards/{board_id}/connectors'
+        url = f"{self.base_url}/v2/boards/{board_id}/connectors"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -1390,7 +1430,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'board_id'")
         if connector_id is None:
             raise ValueError("Missing required parameter 'connector_id'")
-        url = f'{self.base_url}/v2/boards/{board_id}/connectors/{connector_id}'
+        url = f"{self.base_url}/v2/boards/{board_id}/connectors/{connector_id}"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -1414,7 +1454,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'board_id'")
         if connector_id is None:
             raise ValueError("Missing required parameter 'connector_id'")
-        url = f'{self.base_url}/v2/boards/{board_id}/connectors/{connector_id}'
+        url = f"{self.base_url}/v2/boards/{board_id}/connectors/{connector_id}"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -1577,9 +1617,9 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'board_id'")
         if connector_id is None:
             raise ValueError("Missing required parameter 'connector_id'")
-        request_body = {'captions': captions, 'endItem': endItem, 'shape': shape, 'startItem': startItem, 'style': style}
+        request_body = {"captions": captions, "endItem": endItem, "shape": shape, "startItem": startItem, "style": style}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/boards/{board_id}/connectors/{connector_id}'
+        url = f"{self.base_url}/v2/boards/{board_id}/connectors/{connector_id}"
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -1625,9 +1665,9 @@ class MiroApp(APIApplication):
         """
         if board_id is None:
             raise ValueError("Missing required parameter 'board_id'")
-        request_body = {'data': data, 'geometry': geometry, 'parent': parent, 'position': position}
+        request_body = {"data": data, "geometry": geometry, "parent": parent, "position": position}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/boards/{board_id}/documents'
+        url = f"{self.base_url}/v2/boards/{board_id}/documents"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -1651,7 +1691,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'board_id'")
         if item_id is None:
             raise ValueError("Missing required parameter 'item_id'")
-        url = f'{self.base_url}/v2/boards/{board_id}/documents/{item_id}'
+        url = f"{self.base_url}/v2/boards/{board_id}/documents/{item_id}"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -1675,7 +1715,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'board_id'")
         if item_id is None:
             raise ValueError("Missing required parameter 'item_id'")
-        url = f'{self.base_url}/v2/boards/{board_id}/documents/{item_id}'
+        url = f"{self.base_url}/v2/boards/{board_id}/documents/{item_id}"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -1724,9 +1764,9 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'board_id'")
         if item_id is None:
             raise ValueError("Missing required parameter 'item_id'")
-        request_body = {'data': data, 'geometry': geometry, 'parent': parent, 'position': position}
+        request_body = {"data": data, "geometry": geometry, "parent": parent, "position": position}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/boards/{board_id}/documents/{item_id}'
+        url = f"{self.base_url}/v2/boards/{board_id}/documents/{item_id}"
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -1772,9 +1812,9 @@ class MiroApp(APIApplication):
         """
         if board_id is None:
             raise ValueError("Missing required parameter 'board_id'")
-        request_body = {'data': data, 'geometry': geometry, 'parent': parent, 'position': position}
+        request_body = {"data": data, "geometry": geometry, "parent": parent, "position": position}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/boards/{board_id}/embeds'
+        url = f"{self.base_url}/v2/boards/{board_id}/embeds"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -1798,7 +1838,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'board_id'")
         if item_id is None:
             raise ValueError("Missing required parameter 'item_id'")
-        url = f'{self.base_url}/v2/boards/{board_id}/embeds/{item_id}'
+        url = f"{self.base_url}/v2/boards/{board_id}/embeds/{item_id}"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -1822,7 +1862,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'board_id'")
         if item_id is None:
             raise ValueError("Missing required parameter 'item_id'")
-        url = f'{self.base_url}/v2/boards/{board_id}/embeds/{item_id}'
+        url = f"{self.base_url}/v2/boards/{board_id}/embeds/{item_id}"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -1871,9 +1911,9 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'board_id'")
         if item_id is None:
             raise ValueError("Missing required parameter 'item_id'")
-        request_body = {'data': data, 'geometry': geometry, 'parent': parent, 'position': position}
+        request_body = {"data": data, "geometry": geometry, "parent": parent, "position": position}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/boards/{board_id}/embeds/{item_id}'
+        url = f"{self.base_url}/v2/boards/{board_id}/embeds/{item_id}"
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -1919,9 +1959,9 @@ class MiroApp(APIApplication):
         """
         if board_id is None:
             raise ValueError("Missing required parameter 'board_id'")
-        request_body = {'data': data, 'geometry': geometry, 'parent': parent, 'position': position}
+        request_body = {"data": data, "geometry": geometry, "parent": parent, "position": position}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/boards/{board_id}/images'
+        url = f"{self.base_url}/v2/boards/{board_id}/images"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -1945,7 +1985,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'board_id'")
         if item_id is None:
             raise ValueError("Missing required parameter 'item_id'")
-        url = f'{self.base_url}/v2/boards/{board_id}/images/{item_id}'
+        url = f"{self.base_url}/v2/boards/{board_id}/images/{item_id}"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -1969,7 +2009,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'board_id'")
         if item_id is None:
             raise ValueError("Missing required parameter 'item_id'")
-        url = f'{self.base_url}/v2/boards/{board_id}/images/{item_id}'
+        url = f"{self.base_url}/v2/boards/{board_id}/images/{item_id}"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -2018,9 +2058,9 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'board_id'")
         if item_id is None:
             raise ValueError("Missing required parameter 'item_id'")
-        request_body = {'data': data, 'geometry': geometry, 'parent': parent, 'position': position}
+        request_body = {"data": data, "geometry": geometry, "parent": parent, "position": position}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/boards/{board_id}/images/{item_id}'
+        url = f"{self.base_url}/v2/boards/{board_id}/images/{item_id}"
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -2044,8 +2084,8 @@ class MiroApp(APIApplication):
         """
         if board_id is None:
             raise ValueError("Missing required parameter 'board_id'")
-        url = f'{self.base_url}/v2/boards/{board_id}/items'
-        query_params = {k: v for k, v in [('limit', limit), ('type', type), ('cursor', cursor)] if v is not None}
+        url = f"{self.base_url}/v2/boards/{board_id}/items"
+        query_params = {k: v for k, v in [("limit", limit), ("type", type), ("cursor", cursor)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -2068,7 +2108,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'board_id'")
         if item_id is None:
             raise ValueError("Missing required parameter 'item_id'")
-        url = f'{self.base_url}/v2/boards/{board_id}/items/{item_id}'
+        url = f"{self.base_url}/v2/boards/{board_id}/items/{item_id}"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -2092,7 +2132,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'board_id'")
         if item_id is None:
             raise ValueError("Missing required parameter 'item_id'")
-        url = f'{self.base_url}/v2/boards/{board_id}/items/{item_id}'
+        url = f"{self.base_url}/v2/boards/{board_id}/items/{item_id}"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -2130,9 +2170,9 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'board_id'")
         if item_id is None:
             raise ValueError("Missing required parameter 'item_id'")
-        request_body = {'parent': parent, 'position': position}
+        request_body = {"parent": parent, "position": position}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/boards/{board_id}/items/{item_id}'
+        url = f"{self.base_url}/v2/boards/{board_id}/items/{item_id}"
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -2157,8 +2197,10 @@ class MiroApp(APIApplication):
         """
         if board_id_PlatformContainers is None:
             raise ValueError("Missing required parameter 'board_id_PlatformContainers'")
-        url = f'{self.base_url}/v2/boards/{board_id_PlatformContainers}/items'
-        query_params = {k: v for k, v in [('parent_item_id', parent_item_id), ('limit', limit), ('type', type), ('cursor', cursor)] if v is not None}
+        url = f"{self.base_url}/v2/boards/{board_id_PlatformContainers}/items"
+        query_params = {
+            k: v for k, v in [("parent_item_id", parent_item_id), ("limit", limit), ("type", type), ("cursor", cursor)] if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -2181,7 +2223,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'board_id'")
         if item_id is None:
             raise ValueError("Missing required parameter 'item_id'")
-        url = f'{self.base_url}/v2-experimental/boards/{board_id}/items/{item_id}'
+        url = f"{self.base_url}/v2-experimental/boards/{board_id}/items/{item_id}"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -2205,7 +2247,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'board_id'")
         if item_id is None:
             raise ValueError("Missing required parameter 'item_id'")
-        url = f'{self.base_url}/v2-experimental/boards/{board_id}/items/{item_id}'
+        url = f"{self.base_url}/v2-experimental/boards/{board_id}/items/{item_id}"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -2228,8 +2270,8 @@ class MiroApp(APIApplication):
         """
         if board_id is None:
             raise ValueError("Missing required parameter 'board_id'")
-        url = f'{self.base_url}/v2/boards/{board_id}/members'
-        query_params = {k: v for k, v in [('limit', limit), ('offset', offset)] if v is not None}
+        url = f"{self.base_url}/v2/boards/{board_id}/members"
+        query_params = {k: v for k, v in [("limit", limit), ("offset", offset)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -2262,9 +2304,9 @@ class MiroApp(APIApplication):
         """
         if board_id is None:
             raise ValueError("Missing required parameter 'board_id'")
-        request_body = {'emails': emails, 'message': message, 'role': role}
+        request_body = {"emails": emails, "message": message, "role": role}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/boards/{board_id}/members'
+        url = f"{self.base_url}/v2/boards/{board_id}/members"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -2288,7 +2330,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'board_id'")
         if board_member_id is None:
             raise ValueError("Missing required parameter 'board_member_id'")
-        url = f'{self.base_url}/v2/boards/{board_id}/members/{board_member_id}'
+        url = f"{self.base_url}/v2/boards/{board_id}/members/{board_member_id}"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -2312,7 +2354,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'board_id'")
         if board_member_id is None:
             raise ValueError("Missing required parameter 'board_member_id'")
-        url = f'{self.base_url}/v2/boards/{board_id}/members/{board_member_id}'
+        url = f"{self.base_url}/v2/boards/{board_id}/members/{board_member_id}"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -2343,9 +2385,9 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'board_id'")
         if board_member_id is None:
             raise ValueError("Missing required parameter 'board_member_id'")
-        request_body = {'role': role}
+        request_body = {"role": role}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/boards/{board_id}/members/{board_member_id}'
+        url = f"{self.base_url}/v2/boards/{board_id}/members/{board_member_id}"
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -2405,9 +2447,9 @@ class MiroApp(APIApplication):
         """
         if board_id is None:
             raise ValueError("Missing required parameter 'board_id'")
-        request_body = {'data': data, 'geometry': geometry, 'parent': parent, 'position': position, 'style': style}
+        request_body = {"data": data, "geometry": geometry, "parent": parent, "position": position, "style": style}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/boards/{board_id}/shapes'
+        url = f"{self.base_url}/v2/boards/{board_id}/shapes"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -2431,7 +2473,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'board_id'")
         if item_id is None:
             raise ValueError("Missing required parameter 'item_id'")
-        url = f'{self.base_url}/v2/boards/{board_id}/shapes/{item_id}'
+        url = f"{self.base_url}/v2/boards/{board_id}/shapes/{item_id}"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -2455,7 +2497,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'board_id'")
         if item_id is None:
             raise ValueError("Missing required parameter 'item_id'")
-        url = f'{self.base_url}/v2/boards/{board_id}/shapes/{item_id}'
+        url = f"{self.base_url}/v2/boards/{board_id}/shapes/{item_id}"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -2518,9 +2560,9 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'board_id'")
         if item_id is None:
             raise ValueError("Missing required parameter 'item_id'")
-        request_body = {'data': data, 'geometry': geometry, 'parent': parent, 'position': position, 'style': style}
+        request_body = {"data": data, "geometry": geometry, "parent": parent, "position": position, "style": style}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/boards/{board_id}/shapes/{item_id}'
+        url = f"{self.base_url}/v2/boards/{board_id}/shapes/{item_id}"
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -2571,9 +2613,9 @@ class MiroApp(APIApplication):
         """
         if board_id is None:
             raise ValueError("Missing required parameter 'board_id'")
-        request_body = {'data': data, 'geometry': geometry, 'parent': parent, 'position': position, 'style': style}
+        request_body = {"data": data, "geometry": geometry, "parent": parent, "position": position, "style": style}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/boards/{board_id}/sticky_notes'
+        url = f"{self.base_url}/v2/boards/{board_id}/sticky_notes"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -2597,7 +2639,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'board_id'")
         if item_id is None:
             raise ValueError("Missing required parameter 'item_id'")
-        url = f'{self.base_url}/v2/boards/{board_id}/sticky_notes/{item_id}'
+        url = f"{self.base_url}/v2/boards/{board_id}/sticky_notes/{item_id}"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -2621,7 +2663,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'board_id'")
         if item_id is None:
             raise ValueError("Missing required parameter 'item_id'")
-        url = f'{self.base_url}/v2/boards/{board_id}/sticky_notes/{item_id}'
+        url = f"{self.base_url}/v2/boards/{board_id}/sticky_notes/{item_id}"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -2675,9 +2717,9 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'board_id'")
         if item_id is None:
             raise ValueError("Missing required parameter 'item_id'")
-        request_body = {'data': data, 'geometry': geometry, 'parent': parent, 'position': position, 'style': style}
+        request_body = {"data": data, "geometry": geometry, "parent": parent, "position": position, "style": style}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/boards/{board_id}/sticky_notes/{item_id}'
+        url = f"{self.base_url}/v2/boards/{board_id}/sticky_notes/{item_id}"
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -2730,9 +2772,9 @@ class MiroApp(APIApplication):
         """
         if board_id is None:
             raise ValueError("Missing required parameter 'board_id'")
-        request_body = {'data': data, 'geometry': geometry, 'parent': parent, 'position': position, 'style': style}
+        request_body = {"data": data, "geometry": geometry, "parent": parent, "position": position, "style": style}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/boards/{board_id}/texts'
+        url = f"{self.base_url}/v2/boards/{board_id}/texts"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -2756,7 +2798,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'board_id'")
         if item_id is None:
             raise ValueError("Missing required parameter 'item_id'")
-        url = f'{self.base_url}/v2/boards/{board_id}/texts/{item_id}'
+        url = f"{self.base_url}/v2/boards/{board_id}/texts/{item_id}"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -2780,7 +2822,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'board_id'")
         if item_id is None:
             raise ValueError("Missing required parameter 'item_id'")
-        url = f'{self.base_url}/v2/boards/{board_id}/texts/{item_id}'
+        url = f"{self.base_url}/v2/boards/{board_id}/texts/{item_id}"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -2836,9 +2878,9 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'board_id'")
         if item_id is None:
             raise ValueError("Missing required parameter 'item_id'")
-        request_body = {'data': data, 'geometry': geometry, 'parent': parent, 'position': position, 'style': style}
+        request_body = {"data": data, "geometry": geometry, "parent": parent, "position": position, "style": style}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/boards/{board_id}/texts/{item_id}'
+        url = f"{self.base_url}/v2/boards/{board_id}/texts/{item_id}"
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -2860,7 +2902,7 @@ class MiroApp(APIApplication):
         if board_id is None:
             raise ValueError("Missing required parameter 'board_id'")
         request_body = items
-        url = f'{self.base_url}/v2/boards/{board_id}/items/bulk'
+        url = f"{self.base_url}/v2/boards/{board_id}/items/bulk"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -2907,9 +2949,9 @@ class MiroApp(APIApplication):
         """
         if board_id is None:
             raise ValueError("Missing required parameter 'board_id'")
-        request_body = {'data': data, 'geometry': geometry, 'position': position, 'style': style}
+        request_body = {"data": data, "geometry": geometry, "position": position, "style": style}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/boards/{board_id}/frames'
+        url = f"{self.base_url}/v2/boards/{board_id}/frames"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -2933,7 +2975,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'board_id'")
         if item_id is None:
             raise ValueError("Missing required parameter 'item_id'")
-        url = f'{self.base_url}/v2/boards/{board_id}/frames/{item_id}'
+        url = f"{self.base_url}/v2/boards/{board_id}/frames/{item_id}"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -2957,7 +2999,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'board_id'")
         if item_id is None:
             raise ValueError("Missing required parameter 'item_id'")
-        url = f'{self.base_url}/v2/boards/{board_id}/frames/{item_id}'
+        url = f"{self.base_url}/v2/boards/{board_id}/frames/{item_id}"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -3007,9 +3049,9 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'board_id'")
         if item_id is None:
             raise ValueError("Missing required parameter 'item_id'")
-        request_body = {'data': data, 'geometry': geometry, 'position': position, 'style': style}
+        request_body = {"data": data, "geometry": geometry, "position": position, "style": style}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/boards/{board_id}/frames/{item_id}'
+        url = f"{self.base_url}/v2/boards/{board_id}/frames/{item_id}"
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -3033,8 +3075,8 @@ class MiroApp(APIApplication):
         """
         if app_id is None:
             raise ValueError("Missing required parameter 'app_id'")
-        url = f'{self.base_url}/v2-experimental/apps/{app_id}/metrics'
-        query_params = {k: v for k, v in [('startDate', startDate), ('endDate', endDate), ('period', period)] if v is not None}
+        url = f"{self.base_url}/v2-experimental/apps/{app_id}/metrics"
+        query_params = {k: v for k, v in [("startDate", startDate), ("endDate", endDate), ("period", period)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -3054,7 +3096,7 @@ class MiroApp(APIApplication):
         """
         if app_id is None:
             raise ValueError("Missing required parameter 'app_id'")
-        url = f'{self.base_url}/v2-experimental/apps/{app_id}/metrics-total'
+        url = f"{self.base_url}/v2-experimental/apps/{app_id}/metrics-total"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -3083,9 +3125,9 @@ class MiroApp(APIApplication):
         Tags:
             Webhooks (experimental)
         """
-        request_body = {'boardId': boardId, 'callbackUrl': callbackUrl, 'status': status}
+        request_body = {"boardId": boardId, "callbackUrl": callbackUrl, "status": status}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2-experimental/webhooks/board_subscriptions'
+        url = f"{self.base_url}/v2-experimental/webhooks/board_subscriptions"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -3115,9 +3157,9 @@ class MiroApp(APIApplication):
         """
         if subscription_id is None:
             raise ValueError("Missing required parameter 'subscription_id'")
-        request_body = {'callbackUrl': callbackUrl, 'status': status}
+        request_body = {"callbackUrl": callbackUrl, "status": status}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2-experimental/webhooks/board_subscriptions/{subscription_id}'
+        url = f"{self.base_url}/v2-experimental/webhooks/board_subscriptions/{subscription_id}"
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -3137,8 +3179,8 @@ class MiroApp(APIApplication):
         Tags:
             Webhooks (experimental)
         """
-        url = f'{self.base_url}/v2-experimental/webhooks/subscriptions'
-        query_params = {k: v for k, v in [('limit', limit), ('cursor', cursor)] if v is not None}
+        url = f"{self.base_url}/v2-experimental/webhooks/subscriptions"
+        query_params = {k: v for k, v in [("limit", limit), ("cursor", cursor)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -3158,7 +3200,7 @@ class MiroApp(APIApplication):
         """
         if subscription_id is None:
             raise ValueError("Missing required parameter 'subscription_id'")
-        url = f'{self.base_url}/v2-experimental/webhooks/subscriptions/{subscription_id}'
+        url = f"{self.base_url}/v2-experimental/webhooks/subscriptions/{subscription_id}"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -3179,7 +3221,7 @@ class MiroApp(APIApplication):
         """
         if subscription_id is None:
             raise ValueError("Missing required parameter 'subscription_id'")
-        url = f'{self.base_url}/v2-experimental/webhooks/subscriptions/{subscription_id}'
+        url = f"{self.base_url}/v2-experimental/webhooks/subscriptions/{subscription_id}"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -3203,7 +3245,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'board_id'")
         if item_id is None:
             raise ValueError("Missing required parameter 'item_id'")
-        url = f'{self.base_url}/v2-experimental/boards/{board_id}/mindmap_nodes/{item_id}'
+        url = f"{self.base_url}/v2-experimental/boards/{board_id}/mindmap_nodes/{item_id}"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -3227,7 +3269,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'board_id'")
         if item_id is None:
             raise ValueError("Missing required parameter 'item_id'")
-        url = f'{self.base_url}/v2-experimental/boards/{board_id}/mindmap_nodes/{item_id}'
+        url = f"{self.base_url}/v2-experimental/boards/{board_id}/mindmap_nodes/{item_id}"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -3250,8 +3292,8 @@ class MiroApp(APIApplication):
         """
         if board_id is None:
             raise ValueError("Missing required parameter 'board_id'")
-        url = f'{self.base_url}/v2-experimental/boards/{board_id}/mindmap_nodes'
-        query_params = {k: v for k, v in [('limit', limit), ('cursor', cursor)] if v is not None}
+        url = f"{self.base_url}/v2-experimental/boards/{board_id}/mindmap_nodes"
+        query_params = {k: v for k, v in [("limit", limit), ("cursor", cursor)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -3297,9 +3339,9 @@ class MiroApp(APIApplication):
         """
         if board_id is None:
             raise ValueError("Missing required parameter 'board_id'")
-        request_body = {'data': data, 'geometry': geometry, 'parent': parent, 'position': position}
+        request_body = {"data": data, "geometry": geometry, "parent": parent, "position": position}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2-experimental/boards/{board_id}/mindmap_nodes'
+        url = f"{self.base_url}/v2-experimental/boards/{board_id}/mindmap_nodes"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -3323,8 +3365,8 @@ class MiroApp(APIApplication):
         """
         if board_id is None:
             raise ValueError("Missing required parameter 'board_id'")
-        url = f'{self.base_url}/v2-experimental/boards/{board_id}/items'
-        query_params = {k: v for k, v in [('limit', limit), ('type', type), ('cursor', cursor)] if v is not None}
+        url = f"{self.base_url}/v2-experimental/boards/{board_id}/items"
+        query_params = {k: v for k, v in [("limit", limit), ("type", type), ("cursor", cursor)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -3383,9 +3425,9 @@ class MiroApp(APIApplication):
         """
         if board_id is None:
             raise ValueError("Missing required parameter 'board_id'")
-        request_body = {'data': data, 'geometry': geometry, 'parent': parent, 'position': position, 'style': style}
+        request_body = {"data": data, "geometry": geometry, "parent": parent, "position": position, "style": style}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2-experimental/boards/{board_id}/shapes'
+        url = f"{self.base_url}/v2-experimental/boards/{board_id}/shapes"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -3409,7 +3451,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'board_id'")
         if item_id is None:
             raise ValueError("Missing required parameter 'item_id'")
-        url = f'{self.base_url}/v2-experimental/boards/{board_id}/shapes/{item_id}'
+        url = f"{self.base_url}/v2-experimental/boards/{board_id}/shapes/{item_id}"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -3433,7 +3475,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'board_id'")
         if item_id is None:
             raise ValueError("Missing required parameter 'item_id'")
-        url = f'{self.base_url}/v2-experimental/boards/{board_id}/shapes/{item_id}'
+        url = f"{self.base_url}/v2-experimental/boards/{board_id}/shapes/{item_id}"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -3496,9 +3538,9 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'board_id'")
         if item_id is None:
             raise ValueError("Missing required parameter 'item_id'")
-        request_body = {'data': data, 'geometry': geometry, 'parent': parent, 'position': position, 'style': style}
+        request_body = {"data": data, "geometry": geometry, "parent": parent, "position": position, "style": style}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2-experimental/boards/{board_id}/shapes/{item_id}'
+        url = f"{self.base_url}/v2-experimental/boards/{board_id}/shapes/{item_id}"
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -3521,8 +3563,8 @@ class MiroApp(APIApplication):
         """
         if board_id is None:
             raise ValueError("Missing required parameter 'board_id'")
-        url = f'{self.base_url}/v2/boards/{board_id}/groups'
-        query_params = {k: v for k, v in [('limit', limit), ('cursor', cursor)] if v is not None}
+        url = f"{self.base_url}/v2/boards/{board_id}/groups"
+        query_params = {k: v for k, v in [("limit", limit), ("cursor", cursor)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -3554,9 +3596,9 @@ class MiroApp(APIApplication):
         """
         if board_id is None:
             raise ValueError("Missing required parameter 'board_id'")
-        request_body = {'data': data}
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/boards/{board_id}/groups'
+        url = f"{self.base_url}/v2/boards/{board_id}/groups"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -3580,8 +3622,8 @@ class MiroApp(APIApplication):
         """
         if board_id is None:
             raise ValueError("Missing required parameter 'board_id'")
-        url = f'{self.base_url}/v2/boards/{board_id}/groups/items'
-        query_params = {k: v for k, v in [('limit', limit), ('cursor', cursor), ('group_item_id', group_item_id)] if v is not None}
+        url = f"{self.base_url}/v2/boards/{board_id}/groups/items"
+        query_params = {k: v for k, v in [("limit", limit), ("cursor", cursor), ("group_item_id", group_item_id)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -3604,7 +3646,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'board_id'")
         if group_id is None:
             raise ValueError("Missing required parameter 'group_id'")
-        url = f'{self.base_url}/v2/boards/{board_id}/groups/{group_id}'
+        url = f"{self.base_url}/v2/boards/{board_id}/groups/{group_id}"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -3640,9 +3682,9 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'board_id'")
         if group_id is None:
             raise ValueError("Missing required parameter 'group_id'")
-        request_body = {'data': data}
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/boards/{board_id}/groups/{group_id}'
+        url = f"{self.base_url}/v2/boards/{board_id}/groups/{group_id}"
         query_params = {}
         response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -3667,8 +3709,8 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'board_id'")
         if group_id is None:
             raise ValueError("Missing required parameter 'group_id'")
-        url = f'{self.base_url}/v2/boards/{board_id}/groups/{group_id}'
-        query_params = {k: v for k, v in [('delete_items', delete_items)] if v is not None}
+        url = f"{self.base_url}/v2/boards/{board_id}/groups/{group_id}"
+        query_params = {k: v for k, v in [("delete_items", delete_items)] if v is not None}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -3690,8 +3732,8 @@ class MiroApp(APIApplication):
         """
         if board_id is None:
             raise ValueError("Missing required parameter 'board_id'")
-        url = f'{self.base_url}/v2/boards/{board_id}/groups/<string>'
-        query_params = {k: v for k, v in [('delete_items', delete_items)] if v is not None}
+        url = f"{self.base_url}/v2/boards/{board_id}/groups/<string>"
+        query_params = {k: v for k, v in [("delete_items", delete_items)] if v is not None}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -3719,9 +3761,9 @@ class MiroApp(APIApplication):
         Tags:
             OAuth
         """
-        request_body = {'accessToken': accessToken, 'clientId': clientId, 'clientSecret': clientSecret}
+        request_body = {"accessToken": accessToken, "clientId": clientId, "clientSecret": clientSecret}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/oauth/revoke'
+        url = f"{self.base_url}/v2/oauth/revoke"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -3745,7 +3787,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'board_id'")
         if item_id is None:
             raise ValueError("Missing required parameter 'item_id'")
-        url = f'{self.base_url}/v2/boards/{board_id}/items/{item_id}/tags'
+        url = f"{self.base_url}/v2/boards/{board_id}/items/{item_id}/tags"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -3768,8 +3810,8 @@ class MiroApp(APIApplication):
         """
         if board_id is None:
             raise ValueError("Missing required parameter 'board_id'")
-        url = f'{self.base_url}/v2/boards/{board_id}/tags'
-        query_params = {k: v for k, v in [('limit', limit), ('offset', offset)] if v is not None}
+        url = f"{self.base_url}/v2/boards/{board_id}/tags"
+        query_params = {k: v for k, v in [("limit", limit), ("offset", offset)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -3798,9 +3840,9 @@ class MiroApp(APIApplication):
         """
         if board_id is None:
             raise ValueError("Missing required parameter 'board_id'")
-        request_body = {'fillColor': fillColor, 'title': title}
+        request_body = {"fillColor": fillColor, "title": title}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/boards/{board_id}/tags'
+        url = f"{self.base_url}/v2/boards/{board_id}/tags"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -3824,7 +3866,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'board_id'")
         if tag_id is None:
             raise ValueError("Missing required parameter 'tag_id'")
-        url = f'{self.base_url}/v2/boards/{board_id}/tags/{tag_id}'
+        url = f"{self.base_url}/v2/boards/{board_id}/tags/{tag_id}"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -3848,7 +3890,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'board_id'")
         if tag_id is None:
             raise ValueError("Missing required parameter 'tag_id'")
-        url = f'{self.base_url}/v2/boards/{board_id}/tags/{tag_id}'
+        url = f"{self.base_url}/v2/boards/{board_id}/tags/{tag_id}"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -3881,9 +3923,9 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'board_id'")
         if tag_id is None:
             raise ValueError("Missing required parameter 'tag_id'")
-        request_body = {'fillColor': fillColor, 'title': title}
+        request_body = {"fillColor": fillColor, "title": title}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/boards/{board_id}/tags/{tag_id}'
+        url = f"{self.base_url}/v2/boards/{board_id}/tags/{tag_id}"
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -3907,8 +3949,8 @@ class MiroApp(APIApplication):
         """
         if board_id_PlatformTags is None:
             raise ValueError("Missing required parameter 'board_id_PlatformTags'")
-        url = f'{self.base_url}/v2/boards/{board_id_PlatformTags}/items'
-        query_params = {k: v for k, v in [('limit', limit), ('offset', offset), ('tag_id', tag_id)] if v is not None}
+        url = f"{self.base_url}/v2/boards/{board_id_PlatformTags}/items"
+        query_params = {k: v for k, v in [("limit", limit), ("offset", offset), ("tag_id", tag_id)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -3932,8 +3974,8 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'board_id_PlatformTags'")
         if item_id is None:
             raise ValueError("Missing required parameter 'item_id'")
-        url = f'{self.base_url}/v2/boards/{board_id_PlatformTags}/items/{item_id}'
-        query_params = {k: v for k, v in [('tag_id', tag_id)] if v is not None}
+        url = f"{self.base_url}/v2/boards/{board_id_PlatformTags}/items/{item_id}"
+        query_params = {k: v for k, v in [("tag_id", tag_id)] if v is not None}
         response = await self._apost(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -3957,8 +3999,8 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'board_id_PlatformTags'")
         if item_id is None:
             raise ValueError("Missing required parameter 'item_id'")
-        url = f'{self.base_url}/v2/boards/{board_id_PlatformTags}/items/{item_id}'
-        query_params = {k: v for k, v in [('tag_id', tag_id)] if v is not None}
+        url = f"{self.base_url}/v2/boards/{board_id_PlatformTags}/items/{item_id}"
+        query_params = {k: v for k, v in [("tag_id", tag_id)] if v is not None}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -3983,8 +4025,8 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'org_id'")
         if team_id is None:
             raise ValueError("Missing required parameter 'team_id'")
-        url = f'{self.base_url}/v2/orgs/{org_id}/teams/{team_id}/projects'
-        query_params = {k: v for k, v in [('limit', limit), ('cursor', cursor)] if v is not None}
+        url = f"{self.base_url}/v2/orgs/{org_id}/teams/{team_id}/projects"
+        query_params = {k: v for k, v in [("limit", limit), ("cursor", cursor)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -4014,9 +4056,9 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'org_id'")
         if team_id is None:
             raise ValueError("Missing required parameter 'team_id'")
-        request_body = {'name': name}
+        request_body = {"name": name}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/orgs/{org_id}/teams/{team_id}/projects'
+        url = f"{self.base_url}/v2/orgs/{org_id}/teams/{team_id}/projects"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -4043,7 +4085,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'team_id'")
         if project_id is None:
             raise ValueError("Missing required parameter 'project_id'")
-        url = f'{self.base_url}/v2/orgs/{org_id}/teams/{team_id}/projects/{project_id}'
+        url = f"{self.base_url}/v2/orgs/{org_id}/teams/{team_id}/projects/{project_id}"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -4070,7 +4112,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'team_id'")
         if project_id is None:
             raise ValueError("Missing required parameter 'project_id'")
-        url = f'{self.base_url}/v2/orgs/{org_id}/teams/{team_id}/projects/{project_id}'
+        url = f"{self.base_url}/v2/orgs/{org_id}/teams/{team_id}/projects/{project_id}"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -4104,9 +4146,9 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'team_id'")
         if project_id is None:
             raise ValueError("Missing required parameter 'project_id'")
-        request_body = {'name': name}
+        request_body = {"name": name}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/orgs/{org_id}/teams/{team_id}/projects/{project_id}'
+        url = f"{self.base_url}/v2/orgs/{org_id}/teams/{team_id}/projects/{project_id}"
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -4133,7 +4175,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'team_id'")
         if project_id is None:
             raise ValueError("Missing required parameter 'project_id'")
-        url = f'{self.base_url}/v2/orgs/{org_id}/teams/{team_id}/projects/{project_id}/settings'
+        url = f"{self.base_url}/v2/orgs/{org_id}/teams/{team_id}/projects/{project_id}/settings"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -4169,9 +4211,9 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'team_id'")
         if project_id is None:
             raise ValueError("Missing required parameter 'project_id'")
-        request_body = {'sharingPolicySettings': sharingPolicySettings}
+        request_body = {"sharingPolicySettings": sharingPolicySettings}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/orgs/{org_id}/teams/{team_id}/projects/{project_id}/settings'
+        url = f"{self.base_url}/v2/orgs/{org_id}/teams/{team_id}/projects/{project_id}/settings"
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -4200,8 +4242,8 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'team_id'")
         if project_id is None:
             raise ValueError("Missing required parameter 'project_id'")
-        url = f'{self.base_url}/v2/orgs/{org_id}/teams/{team_id}/projects/{project_id}/members'
-        query_params = {k: v for k, v in [('limit', limit), ('cursor', cursor)] if v is not None}
+        url = f"{self.base_url}/v2/orgs/{org_id}/teams/{team_id}/projects/{project_id}/members"
+        query_params = {k: v for k, v in [("limit", limit), ("cursor", cursor)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -4236,9 +4278,9 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'team_id'")
         if project_id is None:
             raise ValueError("Missing required parameter 'project_id'")
-        request_body = {'email': email, 'role': role}
+        request_body = {"email": email, "role": role}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/orgs/{org_id}/teams/{team_id}/projects/{project_id}/members'
+        url = f"{self.base_url}/v2/orgs/{org_id}/teams/{team_id}/projects/{project_id}/members"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -4268,7 +4310,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         if member_id is None:
             raise ValueError("Missing required parameter 'member_id'")
-        url = f'{self.base_url}/v2/orgs/{org_id}/teams/{team_id}/projects/{project_id}/members/{member_id}'
+        url = f"{self.base_url}/v2/orgs/{org_id}/teams/{team_id}/projects/{project_id}/members/{member_id}"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -4298,7 +4340,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         if member_id is None:
             raise ValueError("Missing required parameter 'member_id'")
-        url = f'{self.base_url}/v2/orgs/{org_id}/teams/{team_id}/projects/{project_id}/members/{member_id}'
+        url = f"{self.base_url}/v2/orgs/{org_id}/teams/{team_id}/projects/{project_id}/members/{member_id}"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -4335,9 +4377,9 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         if member_id is None:
             raise ValueError("Missing required parameter 'member_id'")
-        request_body = {'role': role}
+        request_body = {"role": role}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/orgs/{org_id}/teams/{team_id}/projects/{project_id}/members/{member_id}'
+        url = f"{self.base_url}/v2/orgs/{org_id}/teams/{team_id}/projects/{project_id}/members/{member_id}"
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -4361,8 +4403,8 @@ class MiroApp(APIApplication):
         """
         if org_id is None:
             raise ValueError("Missing required parameter 'org_id'")
-        url = f'{self.base_url}/v2/orgs/{org_id}/teams'
-        query_params = {k: v for k, v in [('limit', limit), ('cursor', cursor), ('name', name)] if v is not None}
+        url = f"{self.base_url}/v2/orgs/{org_id}/teams"
+        query_params = {k: v for k, v in [("limit", limit), ("cursor", cursor), ("name", name)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -4389,9 +4431,9 @@ class MiroApp(APIApplication):
         """
         if org_id is None:
             raise ValueError("Missing required parameter 'org_id'")
-        request_body = {'name': name}
+        request_body = {"name": name}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/orgs/{org_id}/teams'
+        url = f"{self.base_url}/v2/orgs/{org_id}/teams"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -4415,7 +4457,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'org_id'")
         if team_id is None:
             raise ValueError("Missing required parameter 'team_id'")
-        url = f'{self.base_url}/v2/orgs/{org_id}/teams/{team_id}'
+        url = f"{self.base_url}/v2/orgs/{org_id}/teams/{team_id}"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -4439,7 +4481,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'org_id'")
         if team_id is None:
             raise ValueError("Missing required parameter 'team_id'")
-        url = f'{self.base_url}/v2/orgs/{org_id}/teams/{team_id}'
+        url = f"{self.base_url}/v2/orgs/{org_id}/teams/{team_id}"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -4470,9 +4512,9 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'org_id'")
         if team_id is None:
             raise ValueError("Missing required parameter 'team_id'")
-        request_body = {'name': name}
+        request_body = {"name": name}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/orgs/{org_id}/teams/{team_id}'
+        url = f"{self.base_url}/v2/orgs/{org_id}/teams/{team_id}"
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -4503,8 +4545,8 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'org_id'")
         if team_id is None:
             raise ValueError("Missing required parameter 'team_id'")
-        url = f'{self.base_url}/v2/orgs/{org_id}/teams/{team_id}/members'
-        query_params = {k: v for k, v in [('limit', limit), ('cursor', cursor), ('role', role)] if v is not None}
+        url = f"{self.base_url}/v2/orgs/{org_id}/teams/{team_id}/members"
+        query_params = {k: v for k, v in [("limit", limit), ("cursor", cursor), ("role", role)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -4536,9 +4578,9 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'org_id'")
         if team_id is None:
             raise ValueError("Missing required parameter 'team_id'")
-        request_body = {'email': email, 'role': role}
+        request_body = {"email": email, "role": role}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/orgs/{org_id}/teams/{team_id}/members'
+        url = f"{self.base_url}/v2/orgs/{org_id}/teams/{team_id}/members"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -4565,7 +4607,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'team_id'")
         if member_id is None:
             raise ValueError("Missing required parameter 'member_id'")
-        url = f'{self.base_url}/v2/orgs/{org_id}/teams/{team_id}/members/{member_id}'
+        url = f"{self.base_url}/v2/orgs/{org_id}/teams/{team_id}/members/{member_id}"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -4592,7 +4634,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'team_id'")
         if member_id is None:
             raise ValueError("Missing required parameter 'member_id'")
-        url = f'{self.base_url}/v2/orgs/{org_id}/teams/{team_id}/members/{member_id}'
+        url = f"{self.base_url}/v2/orgs/{org_id}/teams/{team_id}/members/{member_id}"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -4626,9 +4668,9 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'team_id'")
         if member_id is None:
             raise ValueError("Missing required parameter 'member_id'")
-        request_body = {'role': role}
+        request_body = {"role": role}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/orgs/{org_id}/teams/{team_id}/members/{member_id}'
+        url = f"{self.base_url}/v2/orgs/{org_id}/teams/{team_id}/members/{member_id}"
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -4649,7 +4691,7 @@ class MiroApp(APIApplication):
         """
         if org_id is None:
             raise ValueError("Missing required parameter 'org_id'")
-        url = f'{self.base_url}/v2/orgs/{org_id}/default_teams_settings'
+        url = f"{self.base_url}/v2/orgs/{org_id}/default_teams_settings"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -4673,13 +4715,22 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'org_id'")
         if team_id is None:
             raise ValueError("Missing required parameter 'team_id'")
-        url = f'{self.base_url}/v2/orgs/{org_id}/teams/{team_id}/settings'
+        url = f"{self.base_url}/v2/orgs/{org_id}/teams/{team_id}/settings"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def update_team_settings1(self, org_id, team_id, teamAccountDiscoverySettings=None, teamCollaborationSettings=None, teamCopyAccessLevelSettings=None, teamInvitationSettings=None, teamSharingPolicySettings=None) -> Any:
+    async def update_team_settings1(
+        self,
+        org_id,
+        team_id,
+        teamAccountDiscoverySettings=None,
+        teamCollaborationSettings=None,
+        teamCopyAccessLevelSettings=None,
+        teamInvitationSettings=None,
+        teamSharingPolicySettings=None,
+    ) -> Any:
         """
         Updates settings for a team within an organization using the GitHub API and returns a status message.
 
@@ -4737,13 +4788,160 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'org_id'")
         if team_id is None:
             raise ValueError("Missing required parameter 'team_id'")
-        request_body = {'teamAccountDiscoverySettings': teamAccountDiscoverySettings, 'teamCollaborationSettings': teamCollaborationSettings, 'teamCopyAccessLevelSettings': teamCopyAccessLevelSettings, 'teamInvitationSettings': teamInvitationSettings, 'teamSharingPolicySettings': teamSharingPolicySettings}
+        request_body = {
+            "teamAccountDiscoverySettings": teamAccountDiscoverySettings,
+            "teamCollaborationSettings": teamCollaborationSettings,
+            "teamCopyAccessLevelSettings": teamCopyAccessLevelSettings,
+            "teamInvitationSettings": teamInvitationSettings,
+            "teamSharingPolicySettings": teamSharingPolicySettings,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/orgs/{org_id}/teams/{team_id}/settings'
+        url = f"{self.base_url}/v2/orgs/{org_id}/teams/{team_id}/settings"
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
     def list_tools(self):
-        return [self.revoke_token_v1, self.get_access_token_information, self.get_audit_logs, self.get_organization_settings, self.bulk_update_boards_classification, self.get_team_settings, self.update_team_settings, self.get_board_classification, self.update_board_classification, self.get_all_cases, self.get_case, self.get_all_legal_holds_within_acase, self.get_legal_hold_information, self.get_content_items_under_legal_hold, self.create_board_export_job, self.get_board_export_job_status, self.get_results_for_board_export_job, self.retrieve_content_change_logs_of_board_items, self.reset_all_sessions_of_auser, self.get_organization_info, self.get_organization_members, self.get_organization_member, self.get_boards, self.copy_board, self.create_board, self.get_specific_board, self.delete_board, self.update_board, self.create_app_card_item, self.get_app_card_item, self.delete_app_card_item, self.update_app_card_item, self.create_card_item, self.get_card_item, self.delete_card_item, self.update_card_item, self.get_connectors, self.create_connector, self.get_specific_connector, self.delete_connector, self.update_connector, self.create_document_item_using_url, self.get_document_item, self.delete_document_item, self.update_document_item_using_url, self.create_embed_item, self.get_embed_item, self.delete_embed_item, self.update_embed_item, self.create_image_item_using_url, self.get_image_item, self.delete_image_item, self.update_image_item_using_url, self.get_items_on_board, self.get_specific_item_on_board, self.delete_item, self.update_item_position_or_parent, self.get_items_within_frame, self.get_specific_item_on_board1, self.delete_item1, self.get_all_board_members, self.share_board, self.get_specific_board_member, self.remove_board_member, self.update_board_member, self.create_shape_item, self.get_shape_item, self.delete_shape_item, self.update_shape_item, self.create_sticky_note_item, self.get_sticky_note_item, self.delete_sticky_note_item, self.update_sticky_note_item, self.create_text_item, self.get_text_item, self.delete_text_item, self.update_text_item, self.create_items_in_bulk, self.create_frame, self.get_frame, self.delete_frame, self.update_frame, self.get_app_metrics, self.get_total_app_metrics, self.create_webhook_subscription, self.update_webhook_subscription, self.get_webhook_subscriptions, self.get_specific_webhook_subscription, self.delete_webhook_subscription, self.get_specific_mind_map_node, self.delete_mind_map_node, self.get_mind_map_nodes, self.create_mind_map_node, self.get_items_on_board1, self.create_shape_item1, self.get_shape_item1, self.delete_shape_item1, self.update_shape_item1, self.get_all_groups_on_aboard, self.create_group, self.get_items_of_agroup_by_id, self.get_agroup_by_its_id, self.updates_agroup_with_new_items, self.ungroup_items, self.deletes_the_group, self.revoke_token_v2, self.get_tags_from_item, self.get_tags_from_board, self.create_tag, self.get_tag, self.delete_tag, self.update_tag, self.get_items_by_tag, self.attach_tag_to_item, self.remove_tag_from_item, self.list_of_projects, self.create_project, self.get_project, self.delete_project, self.update_project, self.get_project_settings, self.update_project_settings, self.list_of_project_members, self.add_member_in_aproject, self.get_project_member, self.remove_project_member, self.update_project_member, self.list_teams, self.create_team, self.get_team, self.delete_team, self.update_team, self.list_team_members, self.invite_team_members, self.get_team_member, self.delete_team_member_from_team, self.update_team_member, self.get_default_team_settings, self.get_team_settings1, self.update_team_settings1]
+        return [
+            self.revoke_token_v1,
+            self.get_access_token_information,
+            self.get_audit_logs,
+            self.get_organization_settings,
+            self.bulk_update_boards_classification,
+            self.get_team_settings,
+            self.update_team_settings,
+            self.get_board_classification,
+            self.update_board_classification,
+            self.get_all_cases,
+            self.get_case,
+            self.get_all_legal_holds_within_acase,
+            self.get_legal_hold_information,
+            self.get_content_items_under_legal_hold,
+            self.create_board_export_job,
+            self.get_board_export_job_status,
+            self.get_results_for_board_export_job,
+            self.retrieve_content_change_logs_of_board_items,
+            self.reset_all_sessions_of_auser,
+            self.get_organization_info,
+            self.get_organization_members,
+            self.get_organization_member,
+            self.get_boards,
+            self.copy_board,
+            self.create_board,
+            self.get_specific_board,
+            self.delete_board,
+            self.update_board,
+            self.create_app_card_item,
+            self.get_app_card_item,
+            self.delete_app_card_item,
+            self.update_app_card_item,
+            self.create_card_item,
+            self.get_card_item,
+            self.delete_card_item,
+            self.update_card_item,
+            self.get_connectors,
+            self.create_connector,
+            self.get_specific_connector,
+            self.delete_connector,
+            self.update_connector,
+            self.create_document_item_using_url,
+            self.get_document_item,
+            self.delete_document_item,
+            self.update_document_item_using_url,
+            self.create_embed_item,
+            self.get_embed_item,
+            self.delete_embed_item,
+            self.update_embed_item,
+            self.create_image_item_using_url,
+            self.get_image_item,
+            self.delete_image_item,
+            self.update_image_item_using_url,
+            self.get_items_on_board,
+            self.get_specific_item_on_board,
+            self.delete_item,
+            self.update_item_position_or_parent,
+            self.get_items_within_frame,
+            self.get_specific_item_on_board1,
+            self.delete_item1,
+            self.get_all_board_members,
+            self.share_board,
+            self.get_specific_board_member,
+            self.remove_board_member,
+            self.update_board_member,
+            self.create_shape_item,
+            self.get_shape_item,
+            self.delete_shape_item,
+            self.update_shape_item,
+            self.create_sticky_note_item,
+            self.get_sticky_note_item,
+            self.delete_sticky_note_item,
+            self.update_sticky_note_item,
+            self.create_text_item,
+            self.get_text_item,
+            self.delete_text_item,
+            self.update_text_item,
+            self.create_items_in_bulk,
+            self.create_frame,
+            self.get_frame,
+            self.delete_frame,
+            self.update_frame,
+            self.get_app_metrics,
+            self.get_total_app_metrics,
+            self.create_webhook_subscription,
+            self.update_webhook_subscription,
+            self.get_webhook_subscriptions,
+            self.get_specific_webhook_subscription,
+            self.delete_webhook_subscription,
+            self.get_specific_mind_map_node,
+            self.delete_mind_map_node,
+            self.get_mind_map_nodes,
+            self.create_mind_map_node,
+            self.get_items_on_board1,
+            self.create_shape_item1,
+            self.get_shape_item1,
+            self.delete_shape_item1,
+            self.update_shape_item1,
+            self.get_all_groups_on_aboard,
+            self.create_group,
+            self.get_items_of_agroup_by_id,
+            self.get_agroup_by_its_id,
+            self.updates_agroup_with_new_items,
+            self.ungroup_items,
+            self.deletes_the_group,
+            self.revoke_token_v2,
+            self.get_tags_from_item,
+            self.get_tags_from_board,
+            self.create_tag,
+            self.get_tag,
+            self.delete_tag,
+            self.update_tag,
+            self.get_items_by_tag,
+            self.attach_tag_to_item,
+            self.remove_tag_from_item,
+            self.list_of_projects,
+            self.create_project,
+            self.get_project,
+            self.delete_project,
+            self.update_project,
+            self.get_project_settings,
+            self.update_project_settings,
+            self.list_of_project_members,
+            self.add_member_in_aproject,
+            self.get_project_member,
+            self.remove_project_member,
+            self.update_project_member,
+            self.list_teams,
+            self.create_team,
+            self.get_team,
+            self.delete_team,
+            self.update_team,
+            self.list_team_members,
+            self.invite_team_members,
+            self.get_team_member,
+            self.delete_team_member_from_team,
+            self.update_team_member,
+            self.get_default_team_settings,
+            self.get_team_settings1,
+            self.update_team_settings1,
+        ]

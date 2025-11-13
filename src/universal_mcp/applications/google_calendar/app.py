@@ -4,12 +4,12 @@ from loguru import logger
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
-class GoogleCalendarApp(APIApplication):
 
+class GoogleCalendarApp(APIApplication):
     def __init__(self, integration: Integration) -> None:
-        super().__init__(name='google_calendar', integration=integration)
-        self.base_api_url = 'https://www.googleapis.com/calendar/v3/calendars/primary'
-        self.base_url = 'https://www.googleapis.com/calendar/v3'
+        super().__init__(name="google_calendar", integration=integration)
+        self.base_api_url = "https://www.googleapis.com/calendar/v3/calendars/primary"
+        self.base_url = "https://www.googleapis.com/calendar/v3"
 
     def _format_datetime(self, dt_string: str) -> str:
         """Format a datetime string from ISO format to a human-readable format.
@@ -21,21 +21,21 @@ class GoogleCalendarApp(APIApplication):
             A formatted datetime string (e.g., "2023-06-01 10:00 AM") or the original string with
             "(All day)" appended if it's just a date
         """
-        if not dt_string or dt_string == 'Unknown':
-            return 'Unknown'
-        if 'T' in dt_string:
+        if not dt_string or dt_string == "Unknown":
+            return "Unknown"
+        if "T" in dt_string:
             try:
-                if dt_string.endswith('Z'):
-                    dt_string = dt_string.replace('Z', '+00:00')
+                if dt_string.endswith("Z"):
+                    dt_string = dt_string.replace("Z", "+00:00")
                 dt = datetime.fromisoformat(dt_string)
-                return dt.strftime('%Y-%m-%d %I:%M %p')
+                return dt.strftime("%Y-%m-%d %I:%M %p")
             except ValueError:
-                logger.warning(f'Could not parse datetime string: {dt_string}')
+                logger.warning(f"Could not parse datetime string: {dt_string}")
                 return dt_string
         else:
-            return f'{dt_string} (All day)'
+            return f"{dt_string} (All day)"
 
-    async def get_upcoming_events(self, days: int=1, max_results: int | None=None, time_zone: str | None=None) -> dict[str, Any]:
+    async def get_upcoming_events(self, days: int = 1, max_results: int | None = None, time_zone: str | None = None) -> dict[str, Any]:
         """
         Retrieves events for a specified number of days, starting from today. This function simplifies date-range queries by auto-calculating start/end times, unlike the more comprehensive `list_events` function, which offers granular control with explicit time filters, text search, and custom sorting.
 
@@ -55,20 +55,20 @@ class GoogleCalendarApp(APIApplication):
         """
         today = datetime.now(UTC).date()
         end_date = today + timedelta(days=days)
-        time_min = f'{today.isoformat()}T00:00:00Z'
-        time_max = f'{end_date.isoformat()}T00:00:00Z'
-        url = f'{self.base_api_url}/events'
-        params = {'timeMin': time_min, 'timeMax': time_max, 'singleEvents': 'true', 'orderBy': 'startTime'}
+        time_min = f"{today.isoformat()}T00:00:00Z"
+        time_max = f"{end_date.isoformat()}T00:00:00Z"
+        url = f"{self.base_api_url}/events"
+        params = {"timeMin": time_min, "timeMax": time_max, "singleEvents": "true", "orderBy": "startTime"}
         if max_results is not None:
-            params['maxResults'] = str(max_results)
+            params["maxResults"] = str(max_results)
         if time_zone:
-            params['timeZone'] = time_zone
-        date_range = 'today' if days == 1 else f'the next {days} days'
-        logger.info(f'Retrieving calendar events for {date_range}')
+            params["timeZone"] = time_zone
+        date_range = "today" if days == 1 else f"the next {days} days"
+        logger.info(f"Retrieving calendar events for {date_range}")
         response = await self._aget(url, params=params)
         return self._handle_response(response)
 
-    async def get_event_by_id(self, event_id: str, max_attendees: int | None=None, time_zone: str | None=None) -> dict[str, Any]:
+    async def get_event_by_id(self, event_id: str, max_attendees: int | None = None, time_zone: str | None = None) -> dict[str, Any]:
         """
         Retrieves a specific calendar event using its unique ID. Unlike `list_events`, which fetches multiple events based on date ranges or search queries, this function targets a single, known event. It can optionally limit attendees returned and specify a time zone for date formatting in the response.
 
@@ -87,17 +87,27 @@ class GoogleCalendarApp(APIApplication):
         Tags:
             retrieve, calendar, event, api, important
         """
-        url = f'{self.base_api_url}/events/{event_id}'
+        url = f"{self.base_api_url}/events/{event_id}"
         params = {}
         if max_attendees is not None:
-            params['maxAttendees'] = max_attendees
+            params["maxAttendees"] = max_attendees
         if time_zone:
-            params['timeZone'] = time_zone
-        logger.info(f'Retrieving calendar event with ID: {event_id}')
+            params["timeZone"] = time_zone
+        logger.info(f"Retrieving calendar event with ID: {event_id}")
         response = await self._aget(url, params=params)
         return self._handle_response(response)
 
-    async def list_events(self, max_results: int=10, time_min: str | None=None, time_max: str | None=None, q: str | None=None, order_by: str='startTime', single_events: bool=True, time_zone: str | None=None, page_token: str | None=None) -> dict[str, Any]:
+    async def list_events(
+        self,
+        max_results: int = 10,
+        time_min: str | None = None,
+        time_max: str | None = None,
+        q: str | None = None,
+        order_by: str = "startTime",
+        single_events: bool = True,
+        time_zone: str | None = None,
+        page_token: str | None = None,
+    ) -> dict[str, Any]:
         """
         Fetches a customizable list of events using filters for date range, text search, sorting, and pagination. This advanced function provides more granular control than `get_upcoming_events`, which is limited to fetching events for a specific number of upcoming days.
 
@@ -121,26 +131,36 @@ class GoogleCalendarApp(APIApplication):
         Tags:
             list, retrieve, calendar, events, pagination, api, important
         """
-        url = f'{self.base_api_url}/events'
-        params = {'maxResults': str(max_results), 'orderBy': order_by, 'singleEvents': str(single_events).lower()}
+        url = f"{self.base_api_url}/events"
+        params = {"maxResults": str(max_results), "orderBy": order_by, "singleEvents": str(single_events).lower()}
         if time_min:
-            params['timeMin'] = time_min
+            params["timeMin"] = time_min
         else:
-            now = datetime.utcnow().isoformat() + 'Z'
-            params['timeMin'] = now
+            now = datetime.utcnow().isoformat() + "Z"
+            params["timeMin"] = now
         if time_max:
-            params['timeMax'] = time_max
+            params["timeMax"] = time_max
         if q:
-            params['q'] = q
+            params["q"] = q
         if time_zone:
-            params['timeZone'] = time_zone
+            params["timeZone"] = time_zone
         if page_token:
-            params['pageToken'] = page_token
-        logger.info(f'Retrieving calendar events with params: {params}')
+            params["pageToken"] = page_token
+        logger.info(f"Retrieving calendar events with params: {params}")
         response = await self._aget(url, params=params)
         return self._handle_response(response)
 
-    async def create_event(self, start: dict[str, Any], end: dict[str, Any], summary: str, description: str | None=None, location: str | None=None, attendees: list[dict[str, str]] | None=None, recurrence: list[str] | None=None, calendar_id: str='primary') -> dict[str, Any]:
+    async def create_event(
+        self,
+        start: dict[str, Any],
+        end: dict[str, Any],
+        summary: str,
+        description: str | None = None,
+        location: str | None = None,
+        attendees: list[dict[str, str]] | None = None,
+        recurrence: list[str] | None = None,
+        calendar_id: str = "primary",
+    ) -> dict[str, Any]:
         """
         Creates a calendar event using structured data for start/end times, summary, attendees, and recurrence. This method provides precise control for complex appointments, unlike `create_event_from_text` which parses natural language, making it ideal for detailed or recurring event creation.
 
@@ -178,13 +198,21 @@ class GoogleCalendarApp(APIApplication):
         Tags:
             create, calendar, event, insert, recurring, important
         """
-        request_body_data = {'start': start, 'end': end, 'summary': summary, 'description': description, 'location': location, 'attendees': attendees, 'recurrence': recurrence}
+        request_body_data = {
+            "start": start,
+            "end": end,
+            "summary": summary,
+            "description": description,
+            "location": location,
+            "attendees": attendees,
+            "recurrence": recurrence,
+        }
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/calendars/{calendar_id}/events'
+        url = f"{self.base_url}/calendars/{calendar_id}/events"
         response = await self._apost(url, data=request_body_data)
         return self._handle_response(response)
 
-    async def create_event_from_text(self, text: str, send_updates: str='none') -> dict[str, Any]:
+    async def create_event_from_text(self, text: str, send_updates: str = "none") -> dict[str, Any]:
         """
         Creates a calendar event by parsing a natural language string (e.g., "Meeting tomorrow at 10am"). This offers a user-friendly shortcut, contrasting with the structured `create_event` function which requires explicit fields like start and end times.
 
@@ -201,13 +229,22 @@ class GoogleCalendarApp(APIApplication):
         Tags:
             create, calendar, event, quick-add, natural-language, important
         """
-        url = f'{self.base_api_url}/events/quickAdd'
-        params = {'text': text, 'sendUpdates': send_updates}
+        url = f"{self.base_api_url}/events/quickAdd"
+        params = {"text": text, "sendUpdates": send_updates}
         logger.info(f"Creating event via quickAdd: '{text}'")
         response = await self._apost(url, data=None, params=params)
         return self._handle_response(response)
 
-    async def list_recurring_event_instances(self, event_id: str, max_results: int=25, time_min: str | None=None, time_max: str | None=None, time_zone: str | None=None, show_deleted: bool=False, page_token: str | None=None) -> dict[str, Any]:
+    async def list_recurring_event_instances(
+        self,
+        event_id: str,
+        max_results: int = 25,
+        time_min: str | None = None,
+        time_max: str | None = None,
+        time_zone: str | None = None,
+        show_deleted: bool = False,
+        page_token: str | None = None,
+    ) -> dict[str, Any]:
         """
         Retrieves all individual occurrences of a specific recurring event using its ID. Unlike `list_events`, which fetches multiple distinct events, this function expands a single recurring event into its separate instances, allowing filtering by time range and pagination for detailed scheduling views.
 
@@ -230,21 +267,34 @@ class GoogleCalendarApp(APIApplication):
         Tags:
             list, retrieve, calendar, events, recurring, pagination, api, important
         """
-        url = f'{self.base_api_url}/events/{event_id}/instances'
-        params = {'maxResults': str(max_results), 'showDeleted': str(show_deleted).lower()}
+        url = f"{self.base_api_url}/events/{event_id}/instances"
+        params = {"maxResults": str(max_results), "showDeleted": str(show_deleted).lower()}
         if time_min:
-            params['timeMin'] = time_min
+            params["timeMin"] = time_min
         if time_max:
-            params['timeMax'] = time_max
+            params["timeMax"] = time_max
         if time_zone:
-            params['timeZone'] = time_zone
+            params["timeZone"] = time_zone
         if page_token:
-            params['pageToken'] = page_token
-        logger.info(f'Retrieving instances of recurring event with ID: {event_id}')
+            params["pageToken"] = page_token
+        logger.info(f"Retrieving instances of recurring event with ID: {event_id}")
         response = await self._aget(url, params=params)
         return self._handle_response(response)
 
-    async def delete_event(self, calendarId, eventId, sendNotifications=None, sendUpdates=None, alt=None, fields=None, key=None, oauth_token=None, prettyPrint=None, quotaUser=None, userIp=None) -> Any:
+    async def delete_event(
+        self,
+        calendarId,
+        eventId,
+        sendNotifications=None,
+        sendUpdates=None,
+        alt=None,
+        fields=None,
+        key=None,
+        oauth_token=None,
+        prettyPrint=None,
+        quotaUser=None,
+        userIp=None,
+    ) -> Any:
         """
         Permanently deletes a specific event from a Google Calendar using its event and calendar IDs. It can optionally send cancellation notifications to attendees, distinguishing it from functions that retrieve (`get_event_by_id`) or modify events (`replace_event`), which do not remove entries from the calendar.
 
@@ -271,12 +321,39 @@ class GoogleCalendarApp(APIApplication):
             raise ValueError("Missing required parameter 'calendarId'")
         if eventId is None:
             raise ValueError("Missing required parameter 'eventId'")
-        url = f'{self.base_url}/calendars/{calendarId}/events/{eventId}'
-        query_params = {k: v for k, v in [('sendNotifications', sendNotifications), ('sendUpdates', sendUpdates), ('alt', alt), ('fields', fields), ('key', key), ('oauth_token', oauth_token), ('prettyPrint', prettyPrint), ('quotaUser', quotaUser), ('userIp', userIp)] if v is not None}
+        url = f"{self.base_url}/calendars/{calendarId}/events/{eventId}"
+        query_params = {
+            k: v
+            for k, v in [
+                ("sendNotifications", sendNotifications),
+                ("sendUpdates", sendUpdates),
+                ("alt", alt),
+                ("fields", fields),
+                ("key", key),
+                ("oauth_token", oauth_token),
+                ("prettyPrint", prettyPrint),
+                ("quotaUser", quotaUser),
+                ("userIp", userIp),
+            ]
+            if v is not None
+        }
         response = await self._adelete(url, params=query_params)
         return self._handle_response(response)
 
-    async def replace_event(self, event_id: str, start: dict[str, Any], end: dict[str, Any], summary: str, description: str | None=None, location: str | None=None, attendees: list[dict[str, str]] | None=None, recurrence: list[str] | None=None, calendar_id: str='primary', send_updates: str='none', max_attendees: int | None=None) -> dict[str, Any]:
+    async def replace_event(
+        self,
+        event_id: str,
+        start: dict[str, Any],
+        end: dict[str, Any],
+        summary: str,
+        description: str | None = None,
+        location: str | None = None,
+        attendees: list[dict[str, str]] | None = None,
+        recurrence: list[str] | None = None,
+        calendar_id: str = "primary",
+        send_updates: str = "none",
+        max_attendees: int | None = None,
+    ) -> dict[str, Any]:
         """
         Replaces an existing calendar event, identified by its ID, with new data. This function performs a full update, overwriting all event properties like start/end times and summary. It does not support partial modifications, requiring all necessary fields for the replacement to be provided.
 
@@ -311,13 +388,21 @@ class GoogleCalendarApp(APIApplication):
         Tags:
             update, calendar, event, modify, important
         """
-        request_body_data = {'start': start, 'end': end, 'summary': summary, 'description': description, 'location': location, 'attendees': attendees, 'recurrence': recurrence}
+        request_body_data = {
+            "start": start,
+            "end": end,
+            "summary": summary,
+            "description": description,
+            "location": location,
+            "attendees": attendees,
+            "recurrence": recurrence,
+        }
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/calendars/{calendar_id}/events/{event_id}'
-        params = {'sendUpdates': send_updates}
+        url = f"{self.base_url}/calendars/{calendar_id}/events/{event_id}"
+        params = {"sendUpdates": send_updates}
         if max_attendees is not None:
-            params['maxAttendees'] = str(max_attendees)
-        logger.info(f'Updating calendar event with ID: {event_id}')
+            params["maxAttendees"] = str(max_attendees)
+        logger.info(f"Updating calendar event with ID: {event_id}")
         response = await self._aput(url, data=request_body_data, params=params)
         return self._handle_response(response)
 
@@ -334,12 +419,27 @@ class GoogleCalendarApp(APIApplication):
         Tags:
             get, calendar, timezone, settings, important
         """
-        url = f'{self.base_api_url}'
+        url = f"{self.base_api_url}"
         logger.info("Retrieving user's calendar timezone settings")
         response = await self._aget(url)
         return self._handle_response(response)
 
-    async def get_free_busy_info(self, alt=None, fields=None, key=None, oauth_token=None, prettyPrint=None, quotaUser=None, userIp=None, calendarExpansionMax=None, groupExpansionMax=None, items=None, timeMax=None, timeMin=None, timeZone=None) -> dict[str, Any]:
+    async def get_free_busy_info(
+        self,
+        alt=None,
+        fields=None,
+        key=None,
+        oauth_token=None,
+        prettyPrint=None,
+        quotaUser=None,
+        userIp=None,
+        calendarExpansionMax=None,
+        groupExpansionMax=None,
+        items=None,
+        timeMax=None,
+        timeMin=None,
+        timeZone=None,
+    ) -> dict[str, Any]:
         """
         Queries the free/busy status for one or more calendars within a specified time range. It returns a list of busy time intervals, making it ideal for finding open slots and scheduling new events without conflicts.
 
@@ -380,13 +480,43 @@ class GoogleCalendarApp(APIApplication):
         Returns:
             dict[str, Any]: Successful response
         """
-        request_body = {'calendarExpansionMax': calendarExpansionMax, 'groupExpansionMax': groupExpansionMax, 'items': items, 'timeMax': timeMax, 'timeMin': timeMin, 'timeZone': timeZone}
+        request_body = {
+            "calendarExpansionMax": calendarExpansionMax,
+            "groupExpansionMax": groupExpansionMax,
+            "items": items,
+            "timeMax": timeMax,
+            "timeMin": timeMin,
+            "timeZone": timeZone,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/freeBusy'
-        query_params = {k: v for k, v in [('alt', alt), ('fields', fields), ('key', key), ('oauth_token', oauth_token), ('prettyPrint', prettyPrint), ('quotaUser', quotaUser), ('userIp', userIp)] if v is not None}
+        url = f"{self.base_url}/freeBusy"
+        query_params = {
+            k: v
+            for k, v in [
+                ("alt", alt),
+                ("fields", fields),
+                ("key", key),
+                ("oauth_token", oauth_token),
+                ("prettyPrint", prettyPrint),
+                ("quotaUser", quotaUser),
+                ("userIp", userIp),
+            ]
+            if v is not None
+        }
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
     def list_tools(self):
-        return [self.get_event_by_id, self.get_upcoming_events, self.list_events, self.create_event_from_text, self.create_event, self.replace_event, self.list_recurring_event_instances, self.get_primary_calendar_details, self.delete_event, self.get_free_busy_info]
+        return [
+            self.get_event_by_id,
+            self.get_upcoming_events,
+            self.list_events,
+            self.create_event_from_text,
+            self.create_event,
+            self.replace_event,
+            self.list_recurring_event_instances,
+            self.get_primary_calendar_details,
+            self.delete_event,
+            self.get_free_busy_info,
+        ]

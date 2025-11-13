@@ -1,12 +1,12 @@
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
-class TavilyApp(APIApplication):
 
+class TavilyApp(APIApplication):
     def __init__(self, integration: Integration) -> None:
-        name = 'tavily'
+        name = "tavily"
         super().__init__(name=name, integration=integration)
-        self.base_url = 'https://api.tavily.com'
+        self.base_url = "https://api.tavily.com"
 
     async def search_and_summarize(self, query: str) -> str:
         """
@@ -25,16 +25,27 @@ class TavilyApp(APIApplication):
         Tags:
             search, ai, web, query, important, api-client, text-processing
         """
-        url = f'{self.base_url}/search'
-        payload = {'query': query, 'topic': 'general', 'search_depth': 'basic', 'max_results': 3, 'include_answer': True, 'include_raw_content': False, 'include_images': False, 'include_image_descriptions': False, 'include_domains': [], 'exclude_domains': []}
+        url = f"{self.base_url}/search"
+        payload = {
+            "query": query,
+            "topic": "general",
+            "search_depth": "basic",
+            "max_results": 3,
+            "include_answer": True,
+            "include_raw_content": False,
+            "include_images": False,
+            "include_image_descriptions": False,
+            "include_domains": [],
+            "exclude_domains": [],
+        }
         response = await self._apost(url, payload)
         result = response.json()
-        if 'answer' in result:
-            return result['answer']
+        if "answer" in result:
+            return result["answer"]
         summaries = []
-        for item in result.get('results', [])[:3]:
+        for item in result.get("results", [])[:3]:
             summaries.append(f"• {item['title']}: {item['snippet']}")
-        return '\n'.join(summaries)
+        return "\n".join(summaries)
 
     def list_tools(self):
         return [self.search_and_summarize]

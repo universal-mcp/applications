@@ -4,10 +4,10 @@ from universal_mcp.exceptions import NotAuthorizedError, ToolError
 from universal_mcp.integrations import Integration
 import resend
 
-class ResendApp(APIApplication):
 
+class ResendApp(APIApplication):
     def __init__(self, integration: Integration, **kwargs: Any) -> None:
-        super().__init__(name='resend', integration=integration, **kwargs)
+        super().__init__(name="resend", integration=integration, **kwargs)
         self._api_key = None
 
     @property
@@ -17,11 +17,11 @@ class ResendApp(APIApplication):
         """
         if self._api_key is None:
             if not self.integration:
-                raise NotAuthorizedError('Resend integration not configured.')
+                raise NotAuthorizedError("Resend integration not configured.")
             credentials = self.integration.get_credentials()
-            api_key = credentials.get('api_key') or credentials.get('API_KEY') or credentials.get('apiKey')
+            api_key = credentials.get("api_key") or credentials.get("API_KEY") or credentials.get("apiKey")
             if not api_key:
-                raise NotAuthorizedError('Resend API key not found in credentials.')
+                raise NotAuthorizedError("Resend API key not found in credentials.")
             self._api_key = api_key
             resend.api_key = self._api_key
         return self._api_key
@@ -46,12 +46,12 @@ class ResendApp(APIApplication):
             send, email, api, communication, important
         """
         self.api_key
-        params: resend.Emails.SendParams = {'from': from_email, 'to': to_emails, 'subject': subject, 'text': text}
+        params: resend.Emails.SendParams = {"from": from_email, "to": to_emails, "subject": subject, "text": text}
         try:
             email = resend.Emails.send(params)
             return email
         except Exception as e:
-            raise ToolError(f'Failed to send email: {e}')
+            raise ToolError(f"Failed to send email: {e}")
 
     async def send_batch_emails(self, emails: list[dict[str, Any]]) -> dict[str, Any]:
         """
@@ -71,13 +71,13 @@ class ResendApp(APIApplication):
         """
         self.api_key
         if not 1 <= len(emails) <= 100:
-            raise ToolError('The number of emails in a batch must be between 1 and 100.')
+            raise ToolError("The number of emails in a batch must be between 1 and 100.")
         params: list[resend.Emails.SendParams] = emails
         try:
             sent_emails_response = resend.Batch.send(params)
             return sent_emails_response
         except Exception as e:
-            raise ToolError(f'Failed to send batch emails: {e}')
+            raise ToolError(f"Failed to send batch emails: {e}")
 
     async def retrieve_email_by_id(self, email_id: str) -> dict[str, Any]:
         """
@@ -100,7 +100,7 @@ class ResendApp(APIApplication):
             email = resend.Emails.get(email_id=email_id)
             return email
         except Exception as e:
-            raise ToolError(f'Failed to retrieve email: {e}')
+            raise ToolError(f"Failed to retrieve email: {e}")
 
     async def reschedule_email(self, email_id: str, scheduled_at: str) -> dict[str, Any]:
         """
@@ -120,12 +120,12 @@ class ResendApp(APIApplication):
             update, email, async_job, management
         """
         self.api_key
-        params: resend.Emails.UpdateParams = {'id': email_id, 'scheduled_at': scheduled_at}
+        params: resend.Emails.UpdateParams = {"id": email_id, "scheduled_at": scheduled_at}
         try:
             response = resend.Emails.update(params=params)
             return response
         except Exception as e:
-            raise ToolError(f'Failed to update scheduled email: {e}')
+            raise ToolError(f"Failed to update scheduled email: {e}")
 
     async def cancel_scheduled_email(self, email_id: str) -> dict[str, Any]:
         """
@@ -148,7 +148,7 @@ class ResendApp(APIApplication):
             response = resend.Emails.cancel(email_id=email_id)
             return response
         except Exception as e:
-            raise ToolError(f'Failed to cancel scheduled email: {e}')
+            raise ToolError(f"Failed to cancel scheduled email: {e}")
 
     async def create_domain(self, name: str) -> dict[str, Any]:
         """
@@ -167,12 +167,12 @@ class ResendApp(APIApplication):
             create, domain, management, api, batch, important
         """
         self.api_key
-        params: resend.Domains.CreateParams = {'name': name}
+        params: resend.Domains.CreateParams = {"name": name}
         try:
             domain = resend.Domains.create(params)
             return domain
         except Exception as e:
-            raise ToolError(f'Failed to create domain: {e}')
+            raise ToolError(f"Failed to create domain: {e}")
 
     async def get_domain(self, domain_id: str) -> dict[str, Any]:
         """
@@ -195,7 +195,7 @@ class ResendApp(APIApplication):
             domain = resend.Domains.get(domain_id=domain_id)
             return domain
         except Exception as e:
-            raise ToolError(f'Failed to retrieve domain: {e}')
+            raise ToolError(f"Failed to retrieve domain: {e}")
 
     async def verify_domain(self, domain_id: str) -> dict[str, Any]:
         """
@@ -218,9 +218,11 @@ class ResendApp(APIApplication):
             response = resend.Domains.verify(domain_id=domain_id)
             return response
         except Exception as e:
-            raise ToolError(f'Failed to verify domain: {e}')
+            raise ToolError(f"Failed to verify domain: {e}")
 
-    async def update_domain_settings(self, domain_id: str, open_tracking: bool | None=None, click_tracking: bool | None=None, tls: str | None=None) -> dict[str, Any]:
+    async def update_domain_settings(
+        self, domain_id: str, open_tracking: bool | None = None, click_tracking: bool | None = None, tls: str | None = None
+    ) -> dict[str, Any]:
         """
         Updates settings for a specific domain identified by its ID. This function can modify configurations like open and click tracking, and TLS enforcement. It returns the updated domain object from the API, raising a ToolError if the update fails. Only the provided settings are modified.
 
@@ -240,18 +242,18 @@ class ResendApp(APIApplication):
             update, domain, management
         """
         self.api_key
-        params: resend.Domains.UpdateParams = {'id': domain_id}
+        params: resend.Domains.UpdateParams = {"id": domain_id}
         if open_tracking is not None:
-            params['open_tracking'] = open_tracking
+            params["open_tracking"] = open_tracking
         if click_tracking is not None:
-            params['click_tracking'] = click_tracking
+            params["click_tracking"] = click_tracking
         if tls is not None:
-            params['tls'] = tls
+            params["tls"] = tls
         try:
             updated_domain = resend.Domains.update(params)
             return updated_domain
         except Exception as e:
-            raise ToolError(f'Failed to update domain: {e}')
+            raise ToolError(f"Failed to update domain: {e}")
 
     async def list_domains(self) -> list[dict[str, Any]]:
         """
@@ -271,7 +273,7 @@ class ResendApp(APIApplication):
             domains = resend.Domains.list()
             return domains
         except Exception as e:
-            raise ToolError(f'Failed to list domains: {e}')
+            raise ToolError(f"Failed to list domains: {e}")
 
     async def remove_domain(self, domain_id: str) -> dict[str, Any]:
         """
@@ -294,7 +296,7 @@ class ResendApp(APIApplication):
             response = resend.Domains.remove(domain_id=domain_id)
             return response
         except Exception as e:
-            raise ToolError(f'Failed to remove domain: {e}')
+            raise ToolError(f"Failed to remove domain: {e}")
 
     async def create_api_key(self, name: str) -> dict[str, Any]:
         """
@@ -313,12 +315,12 @@ class ResendApp(APIApplication):
             create, api-key, authentication
         """
         self.api_key
-        params: resend.ApiKeys.CreateParams = {'name': name}
+        params: resend.ApiKeys.CreateParams = {"name": name}
         try:
             api_key_obj = resend.ApiKeys.create(params)
             return api_key_obj
         except Exception as e:
-            raise ToolError(f'Failed to create API key: {e}')
+            raise ToolError(f"Failed to create API key: {e}")
 
     async def list_api_keys(self) -> list[dict[str, Any]]:
         """
@@ -341,7 +343,7 @@ class ResendApp(APIApplication):
             keys = resend.ApiKeys.list()
             return keys
         except Exception as e:
-            raise ToolError(f'Failed to list API keys: {e}')
+            raise ToolError(f"Failed to list API keys: {e}")
 
     async def remove_api_key(self, api_key_id: str) -> dict[str, Any]:
         """
@@ -364,7 +366,7 @@ class ResendApp(APIApplication):
             response = resend.ApiKeys.remove(api_key_id=api_key_id)
             return response
         except Exception as e:
-            raise ToolError(f'Failed to remove API key: {e}')
+            raise ToolError(f"Failed to remove API key: {e}")
 
     async def register_broadcast(self, audience_id: str, from_email: str, subject: str, html: str) -> dict[str, Any]:
         """
@@ -386,12 +388,12 @@ class ResendApp(APIApplication):
             broadcast, email, important
         """
         self.api_key
-        params: resend.Broadcasts.CreateParams = {'audience_id': audience_id, 'from': from_email, 'subject': subject, 'html': html}
+        params: resend.Broadcasts.CreateParams = {"audience_id": audience_id, "from": from_email, "subject": subject, "html": html}
         try:
             broadcast = resend.Broadcasts.create(params)
             return broadcast
         except Exception as e:
-            raise ToolError(f'Failed to create broadcast: {e}')
+            raise ToolError(f"Failed to create broadcast: {e}")
 
     async def get_broadcast(self, broadcast_id: str) -> dict[str, Any]:
         """
@@ -414,9 +416,9 @@ class ResendApp(APIApplication):
             broadcast = resend.Broadcasts.get(id=broadcast_id)
             return broadcast
         except Exception as e:
-            raise ToolError(f'Failed to retrieve broadcast: {e}')
+            raise ToolError(f"Failed to retrieve broadcast: {e}")
 
-    async def update_broadcast(self, broadcast_id: str, html: str | None=None, subject: str | None=None) -> dict[str, Any]:
+    async def update_broadcast(self, broadcast_id: str, html: str | None = None, subject: str | None = None) -> dict[str, Any]:
         """
         Updates the HTML content and/or subject of an existing broadcast, identified by its ID. Requires that at least one modifiable field (html or subject) is provided. This function alters a broadcast's content, differing from `send_broadcast` which triggers its delivery.
 
@@ -435,20 +437,20 @@ class ResendApp(APIApplication):
             update, management, broadcast, api
         """
         self.api_key
-        params: resend.Broadcasts.UpdateParams = {'id': broadcast_id}
+        params: resend.Broadcasts.UpdateParams = {"id": broadcast_id}
         if html is not None:
-            params['html'] = html
+            params["html"] = html
         if subject is not None:
-            params['subject'] = subject
+            params["subject"] = subject
         if len(params) == 1:
-            raise ToolError('At least one field (e.g., html, subject) must be provided for the update.')
+            raise ToolError("At least one field (e.g., html, subject) must be provided for the update.")
         try:
             updated_broadcast = resend.Broadcasts.update(params)
             return updated_broadcast
         except Exception as e:
-            raise ToolError(f'Failed to update broadcast: {e}')
+            raise ToolError(f"Failed to update broadcast: {e}")
 
-    async def send_or_schedule_broadcast(self, broadcast_id: str, scheduled_at: str | None=None) -> dict[str, Any]:
+    async def send_or_schedule_broadcast(self, broadcast_id: str, scheduled_at: str | None = None) -> dict[str, Any]:
         """
         Initiates the delivery of a pre-existing broadcast, identified by its ID, to its target audience. The broadcast can be sent immediately or scheduled for a future time via the optional `scheduled_at` parameter. It returns the API response upon execution.
 
@@ -466,14 +468,14 @@ class ResendApp(APIApplication):
             broadcast, send, api, management
         """
         self.api_key
-        params: resend.Broadcasts.SendParams = {'broadcast_id': broadcast_id}
+        params: resend.Broadcasts.SendParams = {"broadcast_id": broadcast_id}
         if scheduled_at:
-            params['scheduled_at'] = scheduled_at
+            params["scheduled_at"] = scheduled_at
         try:
             response = resend.Broadcasts.send(params)
             return response
         except Exception as e:
-            raise ToolError(f'Failed to send broadcast: {e}')
+            raise ToolError(f"Failed to send broadcast: {e}")
 
     async def remove_draft_broadcast(self, broadcast_id: str) -> dict[str, Any]:
         """
@@ -496,7 +498,7 @@ class ResendApp(APIApplication):
             response = resend.Broadcasts.remove(id=broadcast_id)
             return response
         except Exception as e:
-            raise ToolError(f'Failed to remove broadcast: {e}')
+            raise ToolError(f"Failed to remove broadcast: {e}")
 
     async def list_broadcasts(self) -> list[dict[str, Any]]:
         """
@@ -516,7 +518,7 @@ class ResendApp(APIApplication):
             broadcasts = resend.Broadcasts.list()
             return broadcasts
         except Exception as e:
-            raise ToolError(f'Failed to list broadcasts: {e}')
+            raise ToolError(f"Failed to list broadcasts: {e}")
 
     async def create_audience(self, name: str) -> dict[str, Any]:
         """
@@ -535,12 +537,12 @@ class ResendApp(APIApplication):
             create, audience, management, important
         """
         self.api_key
-        params: resend.Audiences.CreateParams = {'name': name}
+        params: resend.Audiences.CreateParams = {"name": name}
         try:
             audience = resend.Audiences.create(params)
             return audience
         except Exception as e:
-            raise ToolError(f'Failed to create audience: {e}')
+            raise ToolError(f"Failed to create audience: {e}")
 
     async def get_audience(self, audience_id: str) -> dict[str, Any]:
         """
@@ -563,7 +565,7 @@ class ResendApp(APIApplication):
             audience = resend.Audiences.get(id=audience_id)
             return audience
         except Exception as e:
-            raise ToolError(f'Failed to retrieve audience: {e}')
+            raise ToolError(f"Failed to retrieve audience: {e}")
 
     async def remove_audience(self, audience_id: str) -> dict[str, Any]:
         """
@@ -586,7 +588,7 @@ class ResendApp(APIApplication):
             response = resend.Audiences.remove(id=audience_id)
             return response
         except Exception as e:
-            raise ToolError(f'Failed to remove audience: {e}')
+            raise ToolError(f"Failed to remove audience: {e}")
 
     async def list_audiences(self) -> list[dict[str, Any]]:
         """
@@ -606,9 +608,11 @@ class ResendApp(APIApplication):
             audiences = resend.Audiences.list()
             return audiences
         except Exception as e:
-            raise ToolError(f'Failed to list audiences: {e}')
+            raise ToolError(f"Failed to list audiences: {e}")
 
-    async def create_contact(self, audience_id: str, email: str, first_name: str | None=None, last_name: str | None=None, unsubscribed: bool=False) -> dict[str, Any]:
+    async def create_contact(
+        self, audience_id: str, email: str, first_name: str | None = None, last_name: str | None = None, unsubscribed: bool = False
+    ) -> dict[str, Any]:
         """
         Creates a new contact with a given email, optional name, and subscription status, adding it to a specific audience. This function populates audience lists, differing from `update_contact` which modifies existing entries, and requires a valid `audience_id` to function.
 
@@ -629,18 +633,18 @@ class ResendApp(APIApplication):
             create, contact, management, important
         """
         self.api_key
-        params: resend.Contacts.CreateParams = {'audience_id': audience_id, 'email': email, 'unsubscribed': unsubscribed}
+        params: resend.Contacts.CreateParams = {"audience_id": audience_id, "email": email, "unsubscribed": unsubscribed}
         if first_name:
-            params['first_name'] = first_name
+            params["first_name"] = first_name
         if last_name:
-            params['last_name'] = last_name
+            params["last_name"] = last_name
         try:
             contact = resend.Contacts.create(params)
             return contact
         except Exception as e:
-            raise ToolError(f'Failed to create contact: {e}')
+            raise ToolError(f"Failed to create contact: {e}")
 
-    async def get_contact(self, audience_id: str, contact_id: str | None=None, email: str | None=None) -> dict[str, Any]:
+    async def get_contact(self, audience_id: str, contact_id: str | None = None, email: str | None = None) -> dict[str, Any]:
         """
         Fetches a single contact's details from a specified audience by its unique ID or email address. The function requires exactly one identifier for the lookup, raising an error if the identifier is missing, ambiguous, or if the API call fails.
 
@@ -661,18 +665,26 @@ class ResendApp(APIApplication):
         self.api_key
         if not (contact_id or email) or (contact_id and email):
             raise ToolError("You must provide exactly one of 'contact_id' or 'email'.")
-        params = {'audience_id': audience_id}
+        params = {"audience_id": audience_id}
         if contact_id:
-            params['id'] = contact_id
+            params["id"] = contact_id
         if email:
-            params['email'] = email
+            params["email"] = email
         try:
             contact = resend.Contacts.get(**params)
             return contact
         except Exception as e:
-            raise ToolError(f'Failed to retrieve contact: {e}')
+            raise ToolError(f"Failed to retrieve contact: {e}")
 
-    async def update_contact(self, audience_id: str, contact_id: str | None=None, email: str | None=None, first_name: str | None=None, last_name: str | None=None, unsubscribed: bool | None=None) -> dict[str, Any]:
+    async def update_contact(
+        self,
+        audience_id: str,
+        contact_id: str | None = None,
+        email: str | None = None,
+        first_name: str | None = None,
+        last_name: str | None = None,
+        unsubscribed: bool | None = None,
+    ) -> dict[str, Any]:
         """
         Updates an existing contact's details (e.g., name, subscription status) within a specific audience. The contact is identified by its unique ID or email address. This function validates inputs and returns the Resend API response, raising a ToolError on failure or if arguments are invalid.
 
@@ -696,26 +708,26 @@ class ResendApp(APIApplication):
         self.api_key
         if not (contact_id or email) or (contact_id and email):
             raise ToolError("You must provide exactly one of 'contact_id' or 'email' to identify the contact.")
-        params: resend.Contacts.UpdateParams = {'audience_id': audience_id}
+        params: resend.Contacts.UpdateParams = {"audience_id": audience_id}
         if contact_id:
-            params['id'] = contact_id
+            params["id"] = contact_id
         if email:
-            params['email'] = email
+            params["email"] = email
         if first_name is not None:
-            params['first_name'] = first_name
+            params["first_name"] = first_name
         if last_name is not None:
-            params['last_name'] = last_name
+            params["last_name"] = last_name
         if unsubscribed is not None:
-            params['unsubscribed'] = unsubscribed
+            params["unsubscribed"] = unsubscribed
         if len(params) <= 2:
-            raise ToolError('At least one field to update (e.g., first_name, unsubscribed) must be provided.')
+            raise ToolError("At least one field to update (e.g., first_name, unsubscribed) must be provided.")
         try:
             response = resend.Contacts.update(params)
             return response
         except Exception as e:
-            raise ToolError(f'Failed to update contact: {e}')
+            raise ToolError(f"Failed to update contact: {e}")
 
-    async def remove_contact(self, audience_id: str, contact_id: str | None=None, email: str | None=None) -> dict[str, Any]:
+    async def remove_contact(self, audience_id: str, contact_id: str | None = None, email: str | None = None) -> dict[str, Any]:
         """
         Removes a contact from a specified audience. The contact must be identified by either its unique ID or email address, but not both. Raises an error if the identifier is missing, ambiguous, or if the API call to the Resend service fails.
 
@@ -736,16 +748,16 @@ class ResendApp(APIApplication):
         self.api_key
         if not (contact_id or email) or (contact_id and email):
             raise ToolError("You must provide exactly one of 'contact_id' or 'email'.")
-        params = {'audience_id': audience_id}
+        params = {"audience_id": audience_id}
         if contact_id:
-            params['id'] = contact_id
+            params["id"] = contact_id
         if email:
-            params['email'] = email
+            params["email"] = email
         try:
             response = resend.Contacts.remove(**params)
             return response
         except Exception as e:
-            raise ToolError(f'Failed to remove contact: {e}')
+            raise ToolError(f"Failed to remove contact: {e}")
 
     async def list_contacts(self, audience_id: str) -> list[dict[str, Any]]:
         """
@@ -768,7 +780,37 @@ class ResendApp(APIApplication):
             contacts = resend.Contacts.list(audience_id=audience_id)
             return contacts
         except Exception as e:
-            raise ToolError(f'Failed to list contacts: {e}')
+            raise ToolError(f"Failed to list contacts: {e}")
 
     def list_tools(self) -> list[callable]:
-        return [self.send_email, self.send_batch_emails, self.retrieve_email_by_id, self.reschedule_email, self.cancel_scheduled_email, self.create_domain, self.get_domain, self.verify_domain, self.update_domain_settings, self.list_domains, self.remove_domain, self.create_api_key, self.list_api_keys, self.remove_api_key, self.register_broadcast, self.get_broadcast, self.update_broadcast, self.send_or_schedule_broadcast, self.remove_draft_broadcast, self.list_broadcasts, self.create_audience, self.get_audience, self.remove_audience, self.list_audiences, self.create_contact, self.get_contact, self.update_contact, self.remove_contact, self.list_contacts]
+        return [
+            self.send_email,
+            self.send_batch_emails,
+            self.retrieve_email_by_id,
+            self.reschedule_email,
+            self.cancel_scheduled_email,
+            self.create_domain,
+            self.get_domain,
+            self.verify_domain,
+            self.update_domain_settings,
+            self.list_domains,
+            self.remove_domain,
+            self.create_api_key,
+            self.list_api_keys,
+            self.remove_api_key,
+            self.register_broadcast,
+            self.get_broadcast,
+            self.update_broadcast,
+            self.send_or_schedule_broadcast,
+            self.remove_draft_broadcast,
+            self.list_broadcasts,
+            self.create_audience,
+            self.get_audience,
+            self.remove_audience,
+            self.list_audiences,
+            self.create_contact,
+            self.get_contact,
+            self.update_contact,
+            self.remove_contact,
+            self.list_contacts,
+        ]

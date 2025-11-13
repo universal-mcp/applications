@@ -2,11 +2,11 @@ from typing import Any
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
-class DialpadApp(APIApplication):
 
-    def __init__(self, integration: Integration=None, **kwargs) -> None:
-        super().__init__(name='dialpad', integration=integration, **kwargs)
-        self.base_url = 'https://dialpad.com/api/v2'
+class DialpadApp(APIApplication):
+    def __init__(self, integration: Integration = None, **kwargs) -> None:
+        super().__init__(name="dialpad", integration=integration, **kwargs)
+        self.base_url = "https://dialpad.com/api/v2"
 
     async def accesscontrolpolicies_assign(self, id, target_id=None, target_type=None, user_id=None) -> dict[str, Any]:
         """
@@ -26,9 +26,9 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {'target_id': target_id, 'target_type': target_type, 'user_id': user_id}
+        request_body = {"target_id": target_id, "target_type": target_type, "user_id": user_id}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/accesscontrolpolicies/{id}/assign'
+        url = f"{self.base_url}/api/v2/accesscontrolpolicies/{id}/assign"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -47,13 +47,15 @@ class DialpadApp(APIApplication):
         Tags:
             accesscontrolpolicies
         """
-        url = f'{self.base_url}/api/v2/accesscontrolpolicies'
-        query_params = {k: v for k, v in [('cursor', cursor)] if v is not None}
+        url = f"{self.base_url}/api/v2/accesscontrolpolicies"
+        query_params = {k: v for k, v in [("cursor", cursor)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def accesscontrolpolicies_create(self, description=None, name=None, owner_id=None, permission_sets=None, target_type=None) -> dict[str, Any]:
+    async def accesscontrolpolicies_create(
+        self, description=None, name=None, owner_id=None, permission_sets=None, target_type=None
+    ) -> dict[str, Any]:
         """
         Creates a new access control policy using JSON data and returns a successful response upon completion.
 
@@ -74,9 +76,15 @@ class DialpadApp(APIApplication):
         Tags:
             accesscontrolpolicies
         """
-        request_body = {'description': description, 'name': name, 'owner_id': owner_id, 'permission_sets': permission_sets, 'target_type': target_type}
+        request_body = {
+            "description": description,
+            "name": name,
+            "owner_id": owner_id,
+            "permission_sets": permission_sets,
+            "target_type": target_type,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/accesscontrolpolicies'
+        url = f"{self.base_url}/api/v2/accesscontrolpolicies"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -97,7 +105,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/v2/accesscontrolpolicies/{id}'
+        url = f"{self.base_url}/api/v2/accesscontrolpolicies/{id}"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -118,13 +126,15 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/v2/accesscontrolpolicies/{id}'
+        url = f"{self.base_url}/api/v2/accesscontrolpolicies/{id}"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def accesscontrolpolicies_update(self, id, description=None, name=None, permission_sets=None, state=None, user_id=None) -> dict[str, Any]:
+    async def accesscontrolpolicies_update(
+        self, id, description=None, name=None, permission_sets=None, state=None, user_id=None
+    ) -> dict[str, Any]:
         """
         Partially updates an existing access control policy by its ID using a JSON payload.
 
@@ -148,9 +158,9 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {'description': description, 'name': name, 'permission_sets': permission_sets, 'state': state, 'user_id': user_id}
+        request_body = {"description": description, "name": name, "permission_sets": permission_sets, "state": state, "user_id": user_id}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/accesscontrolpolicies/{id}'
+        url = f"{self.base_url}/api/v2/accesscontrolpolicies/{id}"
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -172,8 +182,8 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/v2/accesscontrolpolicies/{id}/assignments'
-        query_params = {k: v for k, v in [('cursor', cursor)] if v is not None}
+        url = f"{self.base_url}/api/v2/accesscontrolpolicies/{id}/assignments"
+        query_params = {k: v for k, v in [("cursor", cursor)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -197,9 +207,9 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {'target_id': target_id, 'target_type': target_type, 'unassign_all': unassign_all, 'user_id': user_id}
+        request_body = {"target_id": target_id, "target_type": target_type, "unassign_all": unassign_all, "user_id": user_id}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/accesscontrolpolicies/{id}/unassign'
+        url = f"{self.base_url}/api/v2/accesscontrolpolicies/{id}/unassign"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -219,8 +229,8 @@ class DialpadApp(APIApplication):
         Tags:
             app
         """
-        url = f'{self.base_url}/api/v2/app/settings'
-        query_params = {k: v for k, v in [('target_id', target_id), ('target_type', target_type)] if v is not None}
+        url = f"{self.base_url}/api/v2/app/settings"
+        query_params = {k: v for k, v in [("target_id", target_id), ("target_type", target_type)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -238,9 +248,9 @@ class DialpadApp(APIApplication):
         Tags:
             blockednumbers
         """
-        request_body = {'numbers': numbers}
+        request_body = {"numbers": numbers}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/blockednumbers/add'
+        url = f"{self.base_url}/api/v2/blockednumbers/add"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -261,7 +271,7 @@ class DialpadApp(APIApplication):
         """
         if number is None:
             raise ValueError("Missing required parameter 'number'")
-        url = f'{self.base_url}/api/v2/blockednumbers/{number}'
+        url = f"{self.base_url}/api/v2/blockednumbers/{number}"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -280,9 +290,9 @@ class DialpadApp(APIApplication):
         Tags:
             blockednumbers
         """
-        request_body = {'numbers': numbers}
+        request_body = {"numbers": numbers}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/blockednumbers/remove'
+        url = f"{self.base_url}/api/v2/blockednumbers/remove"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -301,8 +311,8 @@ class DialpadApp(APIApplication):
         Tags:
             blockednumbers
         """
-        url = f'{self.base_url}/api/v2/blockednumbers'
-        query_params = {k: v for k, v in [('cursor', cursor)] if v is not None}
+        url = f"{self.base_url}/api/v2/blockednumbers"
+        query_params = {k: v for k, v in [("cursor", cursor)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -323,9 +333,9 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {'participant': participant}
+        request_body = {"participant": participant}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/call/{id}/participants/add'
+        url = f"{self.base_url}/api/v2/call/{id}/participants/add"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -346,13 +356,15 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/v2/call/{id}'
+        url = f"{self.base_url}/api/v2/call/{id}"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def call_initiate_ivr_call(self, custom_data=None, outbound_caller_id=None, phone_number=None, target_id=None, target_type=None) -> dict[str, Any]:
+    async def call_initiate_ivr_call(
+        self, custom_data=None, outbound_caller_id=None, phone_number=None, target_id=None, target_type=None
+    ) -> dict[str, Any]:
         """
         Initiates an outbound call to ring an IVR workflow by sending a POST request and returns a confirmation upon success[1].
 
@@ -369,9 +381,15 @@ class DialpadApp(APIApplication):
         Tags:
             call
         """
-        request_body = {'custom_data': custom_data, 'outbound_caller_id': outbound_caller_id, 'phone_number': phone_number, 'target_id': target_id, 'target_type': target_type}
+        request_body = {
+            "custom_data": custom_data,
+            "outbound_caller_id": outbound_caller_id,
+            "phone_number": phone_number,
+            "target_id": target_id,
+            "target_type": target_type,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/call/initiate_ivr_call'
+        url = f"{self.base_url}/api/v2/call/initiate_ivr_call"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -394,13 +412,33 @@ class DialpadApp(APIApplication):
         Tags:
             call
         """
-        url = f'{self.base_url}/api/v2/call'
-        query_params = {k: v for k, v in [('cursor', cursor), ('started_after', started_after), ('started_before', started_before), ('target_id', target_id), ('target_type', target_type)] if v is not None}
+        url = f"{self.base_url}/api/v2/call"
+        query_params = {
+            k: v
+            for k, v in [
+                ("cursor", cursor),
+                ("started_after", started_after),
+                ("started_before", started_before),
+                ("target_id", target_id),
+                ("target_type", target_type),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def call_call(self, custom_data=None, device_id=None, group_id=None, group_type=None, is_consult=None, outbound_caller_id=None, phone_number=None, user_id=None) -> dict[str, Any]:
+    async def call_call(
+        self,
+        custom_data=None,
+        device_id=None,
+        group_id=None,
+        group_type=None,
+        is_consult=None,
+        outbound_caller_id=None,
+        phone_number=None,
+        user_id=None,
+    ) -> dict[str, Any]:
         """
         Initiates a call using a JSON payload and returns a successful response upon completion.
 
@@ -422,9 +460,18 @@ class DialpadApp(APIApplication):
         Tags:
             call
         """
-        request_body = {'custom_data': custom_data, 'device_id': device_id, 'group_id': group_id, 'group_type': group_type, 'is_consult': is_consult, 'outbound_caller_id': outbound_caller_id, 'phone_number': phone_number, 'user_id': user_id}
+        request_body = {
+            "custom_data": custom_data,
+            "device_id": device_id,
+            "group_id": group_id,
+            "group_type": group_type,
+            "is_consult": is_consult,
+            "outbound_caller_id": outbound_caller_id,
+            "phone_number": phone_number,
+            "user_id": user_id,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/call'
+        url = f"{self.base_url}/api/v2/call"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -449,9 +496,9 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {'custom_data': custom_data, 'to': to, 'transfer_state': transfer_state}
+        request_body = {"custom_data": custom_data, "to": to, "transfer_state": transfer_state}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/call/{id}/transfer'
+        url = f"{self.base_url}/api/v2/call/{id}/transfer"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -473,9 +520,9 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {'user_id': user_id}
+        request_body = {"user_id": user_id}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/call/{id}/unpark'
+        url = f"{self.base_url}/api/v2/call/{id}/unpark"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -496,7 +543,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/v2/call/{id}/actions/hangup'
+        url = f"{self.base_url}/api/v2/call/{id}/actions/hangup"
         query_params = {}
         response = await self._aput(url, data={}, params=query_params)
         response.raise_for_status()
@@ -518,9 +565,9 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {'labels': labels}
+        request_body = {"labels": labels}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/call/{id}/labels'
+        url = f"{self.base_url}/api/v2/call/{id}/labels"
         query_params = {}
         response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -540,9 +587,9 @@ class DialpadApp(APIApplication):
         Tags:
             callback
         """
-        request_body = {'call_center_id': call_center_id, 'phone_number': phone_number}
+        request_body = {"call_center_id": call_center_id, "phone_number": phone_number}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/callback'
+        url = f"{self.base_url}/api/v2/callback"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -562,9 +609,9 @@ class DialpadApp(APIApplication):
         Tags:
             callback
         """
-        request_body = {'call_center_id': call_center_id, 'phone_number': phone_number}
+        request_body = {"call_center_id": call_center_id, "phone_number": phone_number}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/callback/validate'
+        url = f"{self.base_url}/api/v2/callback/validate"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -585,13 +632,32 @@ class DialpadApp(APIApplication):
         Tags:
             callcenters
         """
-        url = f'{self.base_url}/api/v2/callcenters'
-        query_params = {k: v for k, v in [('cursor', cursor), ('office_id', office_id), ('name_search', name_search)] if v is not None}
+        url = f"{self.base_url}/api/v2/callcenters"
+        query_params = {k: v for k, v in [("cursor", cursor), ("office_id", office_id), ("name_search", name_search)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def callcenters_create(self, advanced_settings=None, alerts=None, friday_hours=None, group_description=None, hold_queue=None, hours_on=None, monday_hours=None, name=None, office_id=None, ring_seconds=None, routing_options=None, saturday_hours=None, sunday_hours=None, thursday_hours=None, tuesday_hours=None, voice_intelligence=None, wednesday_hours=None) -> dict[str, Any]:
+    async def callcenters_create(
+        self,
+        advanced_settings=None,
+        alerts=None,
+        friday_hours=None,
+        group_description=None,
+        hold_queue=None,
+        hours_on=None,
+        monday_hours=None,
+        name=None,
+        office_id=None,
+        ring_seconds=None,
+        routing_options=None,
+        saturday_hours=None,
+        sunday_hours=None,
+        thursday_hours=None,
+        tuesday_hours=None,
+        voice_intelligence=None,
+        wednesday_hours=None,
+    ) -> dict[str, Any]:
         """
         Creates a new call center resource using JSON data and returns a successful response upon completion.
 
@@ -622,9 +688,27 @@ class DialpadApp(APIApplication):
         Tags:
             callcenters
         """
-        request_body = {'advanced_settings': advanced_settings, 'alerts': alerts, 'friday_hours': friday_hours, 'group_description': group_description, 'hold_queue': hold_queue, 'hours_on': hours_on, 'monday_hours': monday_hours, 'name': name, 'office_id': office_id, 'ring_seconds': ring_seconds, 'routing_options': routing_options, 'saturday_hours': saturday_hours, 'sunday_hours': sunday_hours, 'thursday_hours': thursday_hours, 'tuesday_hours': tuesday_hours, 'voice_intelligence': voice_intelligence, 'wednesday_hours': wednesday_hours}
+        request_body = {
+            "advanced_settings": advanced_settings,
+            "alerts": alerts,
+            "friday_hours": friday_hours,
+            "group_description": group_description,
+            "hold_queue": hold_queue,
+            "hours_on": hours_on,
+            "monday_hours": monday_hours,
+            "name": name,
+            "office_id": office_id,
+            "ring_seconds": ring_seconds,
+            "routing_options": routing_options,
+            "saturday_hours": saturday_hours,
+            "sunday_hours": sunday_hours,
+            "thursday_hours": thursday_hours,
+            "tuesday_hours": tuesday_hours,
+            "voice_intelligence": voice_intelligence,
+            "wednesday_hours": wednesday_hours,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/callcenters'
+        url = f"{self.base_url}/api/v2/callcenters"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -645,7 +729,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/v2/callcenters/{id}'
+        url = f"{self.base_url}/api/v2/callcenters/{id}"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -666,13 +750,32 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/v2/callcenters/{id}'
+        url = f"{self.base_url}/api/v2/callcenters/{id}"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def callcenters_update(self, id, advanced_settings=None, alerts=None, friday_hours=None, group_description=None, hold_queue=None, hours_on=None, monday_hours=None, name=None, ring_seconds=None, routing_options=None, saturday_hours=None, sunday_hours=None, thursday_hours=None, tuesday_hours=None, voice_intelligence=None, wednesday_hours=None) -> dict[str, Any]:
+    async def callcenters_update(
+        self,
+        id,
+        advanced_settings=None,
+        alerts=None,
+        friday_hours=None,
+        group_description=None,
+        hold_queue=None,
+        hours_on=None,
+        monday_hours=None,
+        name=None,
+        ring_seconds=None,
+        routing_options=None,
+        saturday_hours=None,
+        sunday_hours=None,
+        thursday_hours=None,
+        tuesday_hours=None,
+        voice_intelligence=None,
+        wednesday_hours=None,
+    ) -> dict[str, Any]:
         """
         Updates partial properties of the call center resource identified by the given ID using a JSON Patch document.
 
@@ -705,9 +808,26 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {'advanced_settings': advanced_settings, 'alerts': alerts, 'friday_hours': friday_hours, 'group_description': group_description, 'hold_queue': hold_queue, 'hours_on': hours_on, 'monday_hours': monday_hours, 'name': name, 'ring_seconds': ring_seconds, 'routing_options': routing_options, 'saturday_hours': saturday_hours, 'sunday_hours': sunday_hours, 'thursday_hours': thursday_hours, 'tuesday_hours': tuesday_hours, 'voice_intelligence': voice_intelligence, 'wednesday_hours': wednesday_hours}
+        request_body = {
+            "advanced_settings": advanced_settings,
+            "alerts": alerts,
+            "friday_hours": friday_hours,
+            "group_description": group_description,
+            "hold_queue": hold_queue,
+            "hours_on": hours_on,
+            "monday_hours": monday_hours,
+            "name": name,
+            "ring_seconds": ring_seconds,
+            "routing_options": routing_options,
+            "saturday_hours": saturday_hours,
+            "sunday_hours": sunday_hours,
+            "thursday_hours": thursday_hours,
+            "tuesday_hours": tuesday_hours,
+            "voice_intelligence": voice_intelligence,
+            "wednesday_hours": wednesday_hours,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/callcenters/{id}'
+        url = f"{self.base_url}/api/v2/callcenters/{id}"
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -728,7 +848,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/v2/callcenters/{id}/status'
+        url = f"{self.base_url}/api/v2/callcenters/{id}/status"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -749,7 +869,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/v2/callcenters/operators/{id}/dutystatus'
+        url = f"{self.base_url}/api/v2/callcenters/operators/{id}/dutystatus"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -774,9 +894,9 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {'duty_status_reason': duty_status_reason, 'on_duty': on_duty}
+        request_body = {"duty_status_reason": duty_status_reason, "on_duty": on_duty}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/callcenters/operators/{id}/dutystatus'
+        url = f"{self.base_url}/api/v2/callcenters/operators/{id}/dutystatus"
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -800,7 +920,7 @@ class DialpadApp(APIApplication):
             raise ValueError("Missing required parameter 'call_center_id'")
         if user_id is None:
             raise ValueError("Missing required parameter 'user_id'")
-        url = f'{self.base_url}/api/v2/callcenters/{call_center_id}/operators/{user_id}/skill'
+        url = f"{self.base_url}/api/v2/callcenters/{call_center_id}/operators/{user_id}/skill"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -825,9 +945,9 @@ class DialpadApp(APIApplication):
             raise ValueError("Missing required parameter 'call_center_id'")
         if user_id is None:
             raise ValueError("Missing required parameter 'user_id'")
-        request_body = {'skill_level': skill_level}
+        request_body = {"skill_level": skill_level}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/callcenters/{call_center_id}/operators/{user_id}/skill'
+        url = f"{self.base_url}/api/v2/callcenters/{call_center_id}/operators/{user_id}/skill"
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -849,9 +969,9 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {'user_id': user_id}
+        request_body = {"user_id": user_id}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/callcenters/{id}/operators'
+        url = f"{self.base_url}/api/v2/callcenters/{id}/operators"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -872,13 +992,15 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/v2/callcenters/{id}/operators'
+        url = f"{self.base_url}/api/v2/callcenters/{id}/operators"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def callcenters_operators_post(self, id, keep_paid_numbers=None, license_type=None, role=None, skill_level=None, user_id=None) -> dict[str, Any]:
+    async def callcenters_operators_post(
+        self, id, keep_paid_numbers=None, license_type=None, role=None, skill_level=None, user_id=None
+    ) -> dict[str, Any]:
         """
         Adds a new operator to the call center specified by the given ID using a JSON request body.
 
@@ -901,9 +1023,15 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {'keep_paid_numbers': keep_paid_numbers, 'license_type': license_type, 'role': role, 'skill_level': skill_level, 'user_id': user_id}
+        request_body = {
+            "keep_paid_numbers": keep_paid_numbers,
+            "license_type": license_type,
+            "role": role,
+            "skill_level": skill_level,
+            "user_id": user_id,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/callcenters/{id}/operators'
+        url = f"{self.base_url}/api/v2/callcenters/{id}/operators"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -922,8 +1050,8 @@ class DialpadApp(APIApplication):
         Tags:
             calllabels
         """
-        url = f'{self.base_url}/api/v2/calllabels'
-        query_params = {k: v for k, v in [('limit', limit)] if v is not None}
+        url = f"{self.base_url}/api/v2/calllabels"
+        query_params = {k: v for k, v in [("limit", limit)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -942,9 +1070,9 @@ class DialpadApp(APIApplication):
         Tags:
             callreviewsharelink
         """
-        request_body = {'call_id': call_id, 'privacy': privacy}
+        request_body = {"call_id": call_id, "privacy": privacy}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/callreviewsharelink'
+        url = f"{self.base_url}/api/v2/callreviewsharelink"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -965,7 +1093,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/v2/callreviewsharelink/{id}'
+        url = f"{self.base_url}/api/v2/callreviewsharelink/{id}"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -986,7 +1114,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/v2/callreviewsharelink/{id}'
+        url = f"{self.base_url}/api/v2/callreviewsharelink/{id}"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -1008,9 +1136,9 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {'privacy': privacy}
+        request_body = {"privacy": privacy}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/callreviewsharelink/{id}'
+        url = f"{self.base_url}/api/v2/callreviewsharelink/{id}"
         query_params = {}
         response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -1030,13 +1158,15 @@ class DialpadApp(APIApplication):
         Tags:
             callrouters
         """
-        url = f'{self.base_url}/api/v2/callrouters'
-        query_params = {k: v for k, v in [('cursor', cursor), ('office_id', office_id)] if v is not None}
+        url = f"{self.base_url}/api/v2/callrouters"
+        query_params = {k: v for k, v in [("cursor", cursor), ("office_id", office_id)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def callrouters_create(self, default_target_id=None, default_target_type=None, enabled=None, name=None, office_id=None, routing_url=None, secret=None) -> dict[str, Any]:
+    async def callrouters_create(
+        self, default_target_id=None, default_target_type=None, enabled=None, name=None, office_id=None, routing_url=None, secret=None
+    ) -> dict[str, Any]:
         """
         Creates a new call router configuration using the provided JSON data and returns a successful response upon completion.
 
@@ -1059,9 +1189,17 @@ class DialpadApp(APIApplication):
         Tags:
             callrouters
         """
-        request_body = {'default_target_id': default_target_id, 'default_target_type': default_target_type, 'enabled': enabled, 'name': name, 'office_id': office_id, 'routing_url': routing_url, 'secret': secret}
+        request_body = {
+            "default_target_id": default_target_id,
+            "default_target_type": default_target_type,
+            "enabled": enabled,
+            "name": name,
+            "office_id": office_id,
+            "routing_url": routing_url,
+            "secret": secret,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/callrouters'
+        url = f"{self.base_url}/api/v2/callrouters"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -1082,7 +1220,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/v2/callrouters/{id}'
+        url = f"{self.base_url}/api/v2/callrouters/{id}"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -1103,13 +1241,24 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/v2/callrouters/{id}'
+        url = f"{self.base_url}/api/v2/callrouters/{id}"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def callrouters_update(self, id, default_target_id=None, default_target_type=None, enabled=None, name=None, office_id=None, reset_error_count=None, routing_url=None, secret=None) -> dict[str, Any]:
+    async def callrouters_update(
+        self,
+        id,
+        default_target_id=None,
+        default_target_type=None,
+        enabled=None,
+        name=None,
+        office_id=None,
+        reset_error_count=None,
+        routing_url=None,
+        secret=None,
+    ) -> dict[str, Any]:
         """
         Updates a call router with a specified ID using partial modifications via a JSON Patch document.
 
@@ -1140,9 +1289,18 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {'default_target_id': default_target_id, 'default_target_type': default_target_type, 'enabled': enabled, 'name': name, 'office_id': office_id, 'reset_error_count': reset_error_count, 'routing_url': routing_url, 'secret': secret}
+        request_body = {
+            "default_target_id": default_target_id,
+            "default_target_type": default_target_type,
+            "enabled": enabled,
+            "name": name,
+            "office_id": office_id,
+            "reset_error_count": reset_error_count,
+            "routing_url": routing_url,
+            "secret": secret,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/callrouters/{id}'
+        url = f"{self.base_url}/api/v2/callrouters/{id}"
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -1166,9 +1324,9 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {'area_code': area_code, 'number': number, 'primary': primary}
+        request_body = {"area_code": area_code, "number": number, "primary": primary}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/callrouters/{id}/assign_number'
+        url = f"{self.base_url}/api/v2/callrouters/{id}/assign_number"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -1189,7 +1347,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/v2/channels/{id}'
+        url = f"{self.base_url}/api/v2/channels/{id}"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -1210,7 +1368,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/v2/channels/{id}'
+        url = f"{self.base_url}/api/v2/channels/{id}"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -1230,8 +1388,8 @@ class DialpadApp(APIApplication):
         Tags:
             channels
         """
-        url = f'{self.base_url}/api/v2/channels'
-        query_params = {k: v for k, v in [('cursor', cursor), ('state', state)] if v is not None}
+        url = f"{self.base_url}/api/v2/channels"
+        query_params = {k: v for k, v in [("cursor", cursor), ("state", state)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -1254,9 +1412,9 @@ class DialpadApp(APIApplication):
         Tags:
             channels
         """
-        request_body = {'description': description, 'name': name, 'privacy_type': privacy_type, 'user_id': user_id}
+        request_body = {"description": description, "name": name, "privacy_type": privacy_type, "user_id": user_id}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/channels'
+        url = f"{self.base_url}/api/v2/channels"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -1278,9 +1436,9 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {'user_id': user_id}
+        request_body = {"user_id": user_id}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/channels/{id}/members'
+        url = f"{self.base_url}/api/v2/channels/{id}/members"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -1302,8 +1460,8 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/v2/channels/{id}/members'
-        query_params = {k: v for k, v in [('cursor', cursor)] if v is not None}
+        url = f"{self.base_url}/api/v2/channels/{id}/members"
+        query_params = {k: v for k, v in [("cursor", cursor)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -1324,9 +1482,9 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {'user_id': user_id}
+        request_body = {"user_id": user_id}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/channels/{id}/members'
+        url = f"{self.base_url}/api/v2/channels/{id}/members"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -1347,7 +1505,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/v2/coachingteams/{id}/members'
+        url = f"{self.base_url}/api/v2/coachingteams/{id}/members"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -1370,9 +1528,9 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {'member_id': member_id, 'role': role}
+        request_body = {"member_id": member_id, "role": role}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/coachingteams/{id}/members'
+        url = f"{self.base_url}/api/v2/coachingteams/{id}/members"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -1393,7 +1551,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/v2/coachingteams/{id}'
+        url = f"{self.base_url}/api/v2/coachingteams/{id}"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -1412,8 +1570,8 @@ class DialpadApp(APIApplication):
         Tags:
             coachingteams
         """
-        url = f'{self.base_url}/api/v2/coachingteams'
-        query_params = {k: v for k, v in [('cursor', cursor)] if v is not None}
+        url = f"{self.base_url}/api/v2/coachingteams"
+        query_params = {k: v for k, v in [("cursor", cursor)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -1428,7 +1586,7 @@ class DialpadApp(APIApplication):
         Tags:
             company
         """
-        url = f'{self.base_url}/api/v2/company'
+        url = f"{self.base_url}/api/v2/company"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -1452,8 +1610,10 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/v2/company/{id}/smsoptout'
-        query_params = {k: v for k, v in [('a2p_campaign_id', a2p_campaign_id), ('cursor', cursor), ('opt_out_state', opt_out_state)] if v is not None}
+        url = f"{self.base_url}/api/v2/company/{id}/smsoptout"
+        query_params = {
+            k: v for k, v in [("a2p_campaign_id", a2p_campaign_id), ("cursor", cursor), ("opt_out_state", opt_out_state)] if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -1471,8 +1631,8 @@ class DialpadApp(APIApplication):
         Tags:
             conference
         """
-        url = f'{self.base_url}/api/v2/conference/rooms'
-        query_params = {k: v for k, v in [('cursor', cursor)] if v is not None}
+        url = f"{self.base_url}/api/v2/conference/rooms"
+        query_params = {k: v for k, v in [("cursor", cursor)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -1491,8 +1651,8 @@ class DialpadApp(APIApplication):
         Tags:
             conference
         """
-        url = f'{self.base_url}/api/v2/conference/meetings'
-        query_params = {k: v for k, v in [('cursor', cursor), ('room_id', room_id)] if v is not None}
+        url = f"{self.base_url}/api/v2/conference/meetings"
+        query_params = {k: v for k, v in [("cursor", cursor), ("room_id", room_id)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -1512,7 +1672,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/v2/contacts/{id}'
+        url = f"{self.base_url}/api/v2/contacts/{id}"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -1533,13 +1693,25 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/v2/contacts/{id}'
+        url = f"{self.base_url}/api/v2/contacts/{id}"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def contacts_update(self, id, company_name=None, emails=None, extension=None, first_name=None, job_title=None, last_name=None, phones=None, trunk_group=None, urls=None) -> dict[str, Any]:
+    async def contacts_update(
+        self,
+        id,
+        company_name=None,
+        emails=None,
+        extension=None,
+        first_name=None,
+        job_title=None,
+        last_name=None,
+        phones=None,
+        trunk_group=None,
+        urls=None,
+    ) -> dict[str, Any]:
         """
         Partially updates the contact resource identified by the given ID with the provided JSON data.
 
@@ -1575,9 +1747,19 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {'company_name': company_name, 'emails': emails, 'extension': extension, 'first_name': first_name, 'job_title': job_title, 'last_name': last_name, 'phones': phones, 'trunk_group': trunk_group, 'urls': urls}
+        request_body = {
+            "company_name": company_name,
+            "emails": emails,
+            "extension": extension,
+            "first_name": first_name,
+            "job_title": job_title,
+            "last_name": last_name,
+            "phones": phones,
+            "trunk_group": trunk_group,
+            "urls": urls,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/contacts/{id}'
+        url = f"{self.base_url}/api/v2/contacts/{id}"
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -1598,13 +1780,25 @@ class DialpadApp(APIApplication):
         Tags:
             contacts
         """
-        url = f'{self.base_url}/api/v2/contacts'
-        query_params = {k: v for k, v in [('cursor', cursor), ('include_local', include_local), ('owner_id', owner_id)] if v is not None}
+        url = f"{self.base_url}/api/v2/contacts"
+        query_params = {k: v for k, v in [("cursor", cursor), ("include_local", include_local), ("owner_id", owner_id)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def contacts_create(self, company_name=None, emails=None, extension=None, first_name=None, job_title=None, last_name=None, owner_id=None, phones=None, trunk_group=None, urls=None) -> dict[str, Any]:
+    async def contacts_create(
+        self,
+        company_name=None,
+        emails=None,
+        extension=None,
+        first_name=None,
+        job_title=None,
+        last_name=None,
+        owner_id=None,
+        phones=None,
+        trunk_group=None,
+        urls=None,
+    ) -> dict[str, Any]:
         """
         Creates or updates one or multiple contacts by submitting their data in JSON format to the server.
 
@@ -1640,15 +1834,38 @@ class DialpadApp(APIApplication):
         Tags:
             contacts
         """
-        request_body = {'company_name': company_name, 'emails': emails, 'extension': extension, 'first_name': first_name, 'job_title': job_title, 'last_name': last_name, 'owner_id': owner_id, 'phones': phones, 'trunk_group': trunk_group, 'urls': urls}
+        request_body = {
+            "company_name": company_name,
+            "emails": emails,
+            "extension": extension,
+            "first_name": first_name,
+            "job_title": job_title,
+            "last_name": last_name,
+            "owner_id": owner_id,
+            "phones": phones,
+            "trunk_group": trunk_group,
+            "urls": urls,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/contacts'
+        url = f"{self.base_url}/api/v2/contacts"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def contacts_create_with_uid(self, company_name=None, emails=None, extension=None, first_name=None, job_title=None, last_name=None, phones=None, trunk_group=None, uid=None, urls=None) -> dict[str, Any]:
+    async def contacts_create_with_uid(
+        self,
+        company_name=None,
+        emails=None,
+        extension=None,
+        first_name=None,
+        job_title=None,
+        last_name=None,
+        phones=None,
+        trunk_group=None,
+        uid=None,
+        urls=None,
+    ) -> dict[str, Any]:
         """
         Updates or replaces the entire contact resource at the specified path with the provided request data, returning a status code on success.
 
@@ -1682,9 +1899,20 @@ class DialpadApp(APIApplication):
         Tags:
             contacts
         """
-        request_body = {'company_name': company_name, 'emails': emails, 'extension': extension, 'first_name': first_name, 'job_title': job_title, 'last_name': last_name, 'phones': phones, 'trunk_group': trunk_group, 'uid': uid, 'urls': urls}
+        request_body = {
+            "company_name": company_name,
+            "emails": emails,
+            "extension": extension,
+            "first_name": first_name,
+            "job_title": job_title,
+            "last_name": last_name,
+            "phones": phones,
+            "trunk_group": trunk_group,
+            "uid": uid,
+            "urls": urls,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/contacts'
+        url = f"{self.base_url}/api/v2/contacts"
         query_params = {}
         response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -1713,9 +1941,9 @@ class DialpadApp(APIApplication):
             raise ValueError("Missing required parameter 'target_id'")
         if ivr_type is None:
             raise ValueError("Missing required parameter 'ivr_type'")
-        request_body = {'ivr_id': ivr_id, 'select_option': select_option}
+        request_body = {"ivr_id": ivr_id, "select_option": select_option}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/customivrs/{target_type}/{target_id}/{ivr_type}'
+        url = f"{self.base_url}/api/v2/customivrs/{target_type}/{target_id}/{ivr_type}"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -1744,9 +1972,9 @@ class DialpadApp(APIApplication):
             raise ValueError("Missing required parameter 'target_id'")
         if ivr_type is None:
             raise ValueError("Missing required parameter 'ivr_type'")
-        request_body = {'ivr_id': ivr_id, 'select_option': select_option}
+        request_body = {"ivr_id": ivr_id, "select_option": select_option}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/customivrs/{target_type}/{target_id}/{ivr_type}'
+        url = f"{self.base_url}/api/v2/customivrs/{target_type}/{target_id}/{ivr_type}"
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -1767,8 +1995,8 @@ class DialpadApp(APIApplication):
         Tags:
             customivrs, important
         """
-        url = f'{self.base_url}/api/v2/customivrs'
-        query_params = {k: v for k, v in [('cursor', cursor), ('target_type', target_type), ('target_id', target_id)] if v is not None}
+        url = f"{self.base_url}/api/v2/customivrs"
+        query_params = {k: v for k, v in [("cursor", cursor), ("target_type", target_type), ("target_id", target_id)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -1795,9 +2023,16 @@ class DialpadApp(APIApplication):
         Tags:
             customivrs
         """
-        request_body = {'description': description, 'file': file, 'ivr_type': ivr_type, 'name': name, 'target_id': target_id, 'target_type': target_type}
+        request_body = {
+            "description": description,
+            "file": file,
+            "ivr_type": ivr_type,
+            "name": name,
+            "target_id": target_id,
+            "target_type": target_type,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/customivrs'
+        url = f"{self.base_url}/api/v2/customivrs"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -1824,9 +2059,9 @@ class DialpadApp(APIApplication):
         """
         if ivr_id is None:
             raise ValueError("Missing required parameter 'ivr_id'")
-        request_body = {'description': description, 'name': name}
+        request_body = {"description": description, "name": name}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/customivrs/{ivr_id}'
+        url = f"{self.base_url}/api/v2/customivrs/{ivr_id}"
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -1847,7 +2082,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/v2/departments/{id}'
+        url = f"{self.base_url}/api/v2/departments/{id}"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -1868,13 +2103,31 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/v2/departments/{id}'
+        url = f"{self.base_url}/api/v2/departments/{id}"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def departments_update(self, id, auto_call_recording=None, friday_hours=None, group_description=None, hold_queue=None, hours_on=None, monday_hours=None, name=None, ring_seconds=None, routing_options=None, saturday_hours=None, sunday_hours=None, thursday_hours=None, tuesday_hours=None, voice_intelligence=None, wednesday_hours=None) -> dict[str, Any]:
+    async def departments_update(
+        self,
+        id,
+        auto_call_recording=None,
+        friday_hours=None,
+        group_description=None,
+        hold_queue=None,
+        hours_on=None,
+        monday_hours=None,
+        name=None,
+        ring_seconds=None,
+        routing_options=None,
+        saturday_hours=None,
+        sunday_hours=None,
+        thursday_hours=None,
+        tuesday_hours=None,
+        voice_intelligence=None,
+        wednesday_hours=None,
+    ) -> dict[str, Any]:
         """
         Updates a department partially using the provided JSON data at the specified department ID.
 
@@ -1906,9 +2159,25 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {'auto_call_recording': auto_call_recording, 'friday_hours': friday_hours, 'group_description': group_description, 'hold_queue': hold_queue, 'hours_on': hours_on, 'monday_hours': monday_hours, 'name': name, 'ring_seconds': ring_seconds, 'routing_options': routing_options, 'saturday_hours': saturday_hours, 'sunday_hours': sunday_hours, 'thursday_hours': thursday_hours, 'tuesday_hours': tuesday_hours, 'voice_intelligence': voice_intelligence, 'wednesday_hours': wednesday_hours}
+        request_body = {
+            "auto_call_recording": auto_call_recording,
+            "friday_hours": friday_hours,
+            "group_description": group_description,
+            "hold_queue": hold_queue,
+            "hours_on": hours_on,
+            "monday_hours": monday_hours,
+            "name": name,
+            "ring_seconds": ring_seconds,
+            "routing_options": routing_options,
+            "saturday_hours": saturday_hours,
+            "sunday_hours": sunday_hours,
+            "thursday_hours": thursday_hours,
+            "tuesday_hours": tuesday_hours,
+            "voice_intelligence": voice_intelligence,
+            "wednesday_hours": wednesday_hours,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/departments/{id}'
+        url = f"{self.base_url}/api/v2/departments/{id}"
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -1929,13 +2198,31 @@ class DialpadApp(APIApplication):
         Tags:
             departments
         """
-        url = f'{self.base_url}/api/v2/departments'
-        query_params = {k: v for k, v in [('cursor', cursor), ('office_id', office_id), ('name_search', name_search)] if v is not None}
+        url = f"{self.base_url}/api/v2/departments"
+        query_params = {k: v for k, v in [("cursor", cursor), ("office_id", office_id), ("name_search", name_search)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def departments_create(self, auto_call_recording=None, friday_hours=None, group_description=None, hold_queue=None, hours_on=None, monday_hours=None, name=None, office_id=None, ring_seconds=None, routing_options=None, saturday_hours=None, sunday_hours=None, thursday_hours=None, tuesday_hours=None, voice_intelligence=None, wednesday_hours=None) -> dict[str, Any]:
+    async def departments_create(
+        self,
+        auto_call_recording=None,
+        friday_hours=None,
+        group_description=None,
+        hold_queue=None,
+        hours_on=None,
+        monday_hours=None,
+        name=None,
+        office_id=None,
+        ring_seconds=None,
+        routing_options=None,
+        saturday_hours=None,
+        sunday_hours=None,
+        thursday_hours=None,
+        tuesday_hours=None,
+        voice_intelligence=None,
+        wednesday_hours=None,
+    ) -> dict[str, Any]:
         """
         Creates a new department resource using the provided JSON data and returns a successful response if the operation is completed.
 
@@ -1965,9 +2252,26 @@ class DialpadApp(APIApplication):
         Tags:
             departments
         """
-        request_body = {'auto_call_recording': auto_call_recording, 'friday_hours': friday_hours, 'group_description': group_description, 'hold_queue': hold_queue, 'hours_on': hours_on, 'monday_hours': monday_hours, 'name': name, 'office_id': office_id, 'ring_seconds': ring_seconds, 'routing_options': routing_options, 'saturday_hours': saturday_hours, 'sunday_hours': sunday_hours, 'thursday_hours': thursday_hours, 'tuesday_hours': tuesday_hours, 'voice_intelligence': voice_intelligence, 'wednesday_hours': wednesday_hours}
+        request_body = {
+            "auto_call_recording": auto_call_recording,
+            "friday_hours": friday_hours,
+            "group_description": group_description,
+            "hold_queue": hold_queue,
+            "hours_on": hours_on,
+            "monday_hours": monday_hours,
+            "name": name,
+            "office_id": office_id,
+            "ring_seconds": ring_seconds,
+            "routing_options": routing_options,
+            "saturday_hours": saturday_hours,
+            "sunday_hours": sunday_hours,
+            "thursday_hours": thursday_hours,
+            "tuesday_hours": tuesday_hours,
+            "voice_intelligence": voice_intelligence,
+            "wednesday_hours": wednesday_hours,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/departments'
+        url = f"{self.base_url}/api/v2/departments"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -1990,9 +2294,9 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {'operator_id': operator_id, 'operator_type': operator_type}
+        request_body = {"operator_id": operator_id, "operator_type": operator_type}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/departments/{id}/operators'
+        url = f"{self.base_url}/api/v2/departments/{id}/operators"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -2013,7 +2317,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/v2/departments/{id}/operators'
+        url = f"{self.base_url}/api/v2/departments/{id}/operators"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -2037,9 +2341,9 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {'operator_id': operator_id, 'operator_type': operator_type, 'role': role}
+        request_body = {"operator_id": operator_id, "operator_type": operator_type, "role": role}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/departments/{id}/operators'
+        url = f"{self.base_url}/api/v2/departments/{id}/operators"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -2059,9 +2363,9 @@ class DialpadApp(APIApplication):
         Tags:
             faxline
         """
-        request_body = {'line': line, 'target': target}
+        request_body = {"line": line, "target": target}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/faxline'
+        url = f"{self.base_url}/api/v2/faxline"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -2085,15 +2389,17 @@ class DialpadApp(APIApplication):
         """
         if number is None:
             raise ValueError("Missing required parameter 'number'")
-        request_body = {'primary': primary, 'target_id': target_id, 'target_type': target_type}
+        request_body = {"primary": primary, "target_id": target_id, "target_type": target_type}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/numbers/{number}/assign'
+        url = f"{self.base_url}/api/v2/numbers/{number}/assign"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def numbers_assign_target_number_post(self, area_code=None, number=None, primary=None, target_id=None, target_type=None) -> dict[str, Any]:
+    async def numbers_assign_target_number_post(
+        self, area_code=None, number=None, primary=None, target_id=None, target_type=None
+    ) -> dict[str, Any]:
         """
         Assigns numbers using a JSON payload in the request body via the "POST" method and returns a successful response upon completion.
 
@@ -2110,9 +2416,9 @@ class DialpadApp(APIApplication):
         Tags:
             numbers
         """
-        request_body = {'area_code': area_code, 'number': number, 'primary': primary, 'target_id': target_id, 'target_type': target_type}
+        request_body = {"area_code": area_code, "number": number, "primary": primary, "target_id": target_id, "target_type": target_type}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/numbers/assign'
+        url = f"{self.base_url}/api/v2/numbers/assign"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -2134,8 +2440,8 @@ class DialpadApp(APIApplication):
         """
         if number is None:
             raise ValueError("Missing required parameter 'number'")
-        url = f'{self.base_url}/api/v2/numbers/{number}'
-        query_params = {k: v for k, v in [('release', release)] if v is not None}
+        url = f"{self.base_url}/api/v2/numbers/{number}"
+        query_params = {k: v for k, v in [("release", release)] if v is not None}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -2155,7 +2461,7 @@ class DialpadApp(APIApplication):
         """
         if number is None:
             raise ValueError("Missing required parameter 'number'")
-        url = f'{self.base_url}/api/v2/numbers/{number}'
+        url = f"{self.base_url}/api/v2/numbers/{number}"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -2175,8 +2481,8 @@ class DialpadApp(APIApplication):
         Tags:
             numbers
         """
-        url = f'{self.base_url}/api/v2/numbers'
-        query_params = {k: v for k, v in [('cursor', cursor), ('status', status)] if v is not None}
+        url = f"{self.base_url}/api/v2/numbers"
+        query_params = {k: v for k, v in [("cursor", cursor), ("status", status)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -2195,13 +2501,15 @@ class DialpadApp(APIApplication):
         Tags:
             numbers
         """
-        url = f'{self.base_url}/api/v2/numbers/format'
-        query_params = {k: v for k, v in [('country_code', country_code), ('number', number)] if v is not None}
+        url = f"{self.base_url}/api/v2/numbers/format"
+        query_params = {k: v for k, v in [("country_code", country_code), ("number", number)] if v is not None}
         response = await self._apost(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def oauth2_authorize_get(self, redirect_uri, client_id, code_challenge_method=None, code_challenge=None, scope=None, response_type=None, state=None) -> Any:
+    async def oauth2_authorize_get(
+        self, redirect_uri, client_id, code_challenge_method=None, code_challenge=None, scope=None, response_type=None, state=None
+    ) -> Any:
         """
         Initiates the OAuth 2.0 authorization code flow by redirecting the user to authenticate and grant permissions, then redirects back to the specified callback URL with an authorization code or error.
 
@@ -2220,8 +2528,20 @@ class DialpadApp(APIApplication):
         Tags:
             oauth2
         """
-        url = f'{self.base_url}/oauth2/authorize'
-        query_params = {k: v for k, v in [('code_challenge_method', code_challenge_method), ('code_challenge', code_challenge), ('scope', scope), ('response_type', response_type), ('redirect_uri', redirect_uri), ('client_id', client_id), ('state', state)] if v is not None}
+        url = f"{self.base_url}/oauth2/authorize"
+        query_params = {
+            k: v
+            for k, v in [
+                ("code_challenge_method", code_challenge_method),
+                ("code_challenge", code_challenge),
+                ("scope", scope),
+                ("response_type", response_type),
+                ("redirect_uri", redirect_uri),
+                ("client_id", client_id),
+                ("state", state),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -2236,13 +2556,13 @@ class DialpadApp(APIApplication):
         Tags:
             oauth2
         """
-        url = f'{self.base_url}/oauth2/deauthorize'
+        url = f"{self.base_url}/oauth2/deauthorize"
         query_params = {}
         response = await self._apost(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
-        '\n        Requests an access token and optionally a refresh token using OAuth 2.0 by exchanging credentials or codes, typically in flows like authorization code, client credentials, or refresh token.\n\n        Returns:\n            dict[str, Any]: A successful response\n\n        Tags:\n            oauth2\n        '
-        url = f'{self.base_url}/oauth2/token'
+        "\n        Requests an access token and optionally a refresh token using OAuth 2.0 by exchanging credentials or codes, typically in flows like authorization code, client credentials, or refresh token.\n\n        Returns:\n            dict[str, Any]: A successful response\n\n        Tags:\n            oauth2\n        "
+        url = f"{self.base_url}/oauth2/token"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -2263,7 +2583,7 @@ class DialpadApp(APIApplication):
         """
         if office_id is None:
             raise ValueError("Missing required parameter 'office_id'")
-        url = f'{self.base_url}/api/v2/offices/{office_id}/plan'
+        url = f"{self.base_url}/api/v2/offices/{office_id}/plan"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -2285,8 +2605,8 @@ class DialpadApp(APIApplication):
         """
         if office_id is None:
             raise ValueError("Missing required parameter 'office_id'")
-        url = f'{self.base_url}/api/v2/offices/{office_id}/callcenters'
-        query_params = {k: v for k, v in [('cursor', cursor)] if v is not None}
+        url = f"{self.base_url}/api/v2/offices/{office_id}/callcenters"
+        query_params = {k: v for k, v in [("cursor", cursor)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -2307,8 +2627,8 @@ class DialpadApp(APIApplication):
         """
         if office_id is None:
             raise ValueError("Missing required parameter 'office_id'")
-        url = f'{self.base_url}/api/v2/offices/{office_id}/teams'
-        query_params = {k: v for k, v in [('cursor', cursor)] if v is not None}
+        url = f"{self.base_url}/api/v2/offices/{office_id}/teams"
+        query_params = {k: v for k, v in [("cursor", cursor)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -2329,8 +2649,8 @@ class DialpadApp(APIApplication):
         """
         if office_id is None:
             raise ValueError("Missing required parameter 'office_id'")
-        url = f'{self.base_url}/api/v2/offices/{office_id}/departments'
-        query_params = {k: v for k, v in [('cursor', cursor)] if v is not None}
+        url = f"{self.base_url}/api/v2/offices/{office_id}/departments"
+        query_params = {k: v for k, v in [("cursor", cursor)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -2353,9 +2673,9 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {'area_code': area_code, 'number': number, 'primary': primary}
+        request_body = {"area_code": area_code, "number": number, "primary": primary}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/offices/{id}/assign_number'
+        url = f"{self.base_url}/api/v2/offices/{id}/assign_number"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -2377,9 +2697,9 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {'number': number}
+        request_body = {"number": number}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/offices/{id}/unassign_number'
+        url = f"{self.base_url}/api/v2/offices/{id}/unassign_number"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -2400,13 +2720,15 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/v2/offices/{id}/e911'
+        url = f"{self.base_url}/api/v2/offices/{id}/e911"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def offices_e911_update(self, id, address=None, address2=None, city=None, country=None, state=None, update_all=None, use_validated_option=None, zip=None) -> dict[str, Any]:
+    async def offices_e911_update(
+        self, id, address=None, address2=None, city=None, country=None, state=None, update_all=None, use_validated_option=None, zip=None
+    ) -> dict[str, Any]:
         """
         Updates or replaces the E911 configuration for the specified office using the provided data in the request body.
 
@@ -2439,9 +2761,18 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {'address': address, 'address2': address2, 'city': city, 'country': country, 'state': state, 'update_all': update_all, 'use_validated_option': use_validated_option, 'zip': zip}
+        request_body = {
+            "address": address,
+            "address2": address2,
+            "city": city,
+            "country": country,
+            "state": state,
+            "update_all": update_all,
+            "use_validated_option": use_validated_option,
+            "zip": zip,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/offices/{id}/e911'
+        url = f"{self.base_url}/api/v2/offices/{id}/e911"
         query_params = {}
         response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -2462,7 +2793,7 @@ class DialpadApp(APIApplication):
         """
         if office_id is None:
             raise ValueError("Missing required parameter 'office_id'")
-        url = f'{self.base_url}/api/v2/offices/{office_id}/available_licenses'
+        url = f"{self.base_url}/api/v2/offices/{office_id}/available_licenses"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -2483,7 +2814,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/v2/offices/{id}/offdutystatuses'
+        url = f"{self.base_url}/api/v2/offices/{id}/offdutystatuses"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -2504,7 +2835,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/v2/offices/{id}'
+        url = f"{self.base_url}/api/v2/offices/{id}"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -2524,13 +2855,44 @@ class DialpadApp(APIApplication):
         Tags:
             offices
         """
-        url = f'{self.base_url}/api/v2/offices'
-        query_params = {k: v for k, v in [('cursor', cursor), ('active_only', active_only)] if v is not None}
+        url = f"{self.base_url}/api/v2/offices"
+        query_params = {k: v for k, v in [("cursor", cursor), ("active_only", active_only)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def offices_create(self, annual_commit_monthly_billing=None, auto_call_recording=None, billing_address=None, billing_contact=None, country=None, currency=None, e911_address=None, first_action=None, friday_hours=None, group_description=None, hours_on=None, international_enabled=None, invoiced=None, mainline_number=None, monday_hours=None, name=None, no_operators_action=None, plan_period=None, ring_seconds=None, routing_options=None, saturday_hours=None, sunday_hours=None, thursday_hours=None, timezone=None, tuesday_hours=None, unified_billing=None, use_same_address=None, voice_intelligence=None, wednesday_hours=None) -> dict[str, Any]:
+    async def offices_create(
+        self,
+        annual_commit_monthly_billing=None,
+        auto_call_recording=None,
+        billing_address=None,
+        billing_contact=None,
+        country=None,
+        currency=None,
+        e911_address=None,
+        first_action=None,
+        friday_hours=None,
+        group_description=None,
+        hours_on=None,
+        international_enabled=None,
+        invoiced=None,
+        mainline_number=None,
+        monday_hours=None,
+        name=None,
+        no_operators_action=None,
+        plan_period=None,
+        ring_seconds=None,
+        routing_options=None,
+        saturday_hours=None,
+        sunday_hours=None,
+        thursday_hours=None,
+        timezone=None,
+        tuesday_hours=None,
+        unified_billing=None,
+        use_same_address=None,
+        voice_intelligence=None,
+        wednesday_hours=None,
+    ) -> dict[str, Any]:
         """
         Creates a new office using the provided JSON data in the request body.
 
@@ -2573,9 +2935,39 @@ class DialpadApp(APIApplication):
         Tags:
             offices
         """
-        request_body = {'annual_commit_monthly_billing': annual_commit_monthly_billing, 'auto_call_recording': auto_call_recording, 'billing_address': billing_address, 'billing_contact': billing_contact, 'country': country, 'currency': currency, 'e911_address': e911_address, 'first_action': first_action, 'friday_hours': friday_hours, 'group_description': group_description, 'hours_on': hours_on, 'international_enabled': international_enabled, 'invoiced': invoiced, 'mainline_number': mainline_number, 'monday_hours': monday_hours, 'name': name, 'no_operators_action': no_operators_action, 'plan_period': plan_period, 'ring_seconds': ring_seconds, 'routing_options': routing_options, 'saturday_hours': saturday_hours, 'sunday_hours': sunday_hours, 'thursday_hours': thursday_hours, 'timezone': timezone, 'tuesday_hours': tuesday_hours, 'unified_billing': unified_billing, 'use_same_address': use_same_address, 'voice_intelligence': voice_intelligence, 'wednesday_hours': wednesday_hours}
+        request_body = {
+            "annual_commit_monthly_billing": annual_commit_monthly_billing,
+            "auto_call_recording": auto_call_recording,
+            "billing_address": billing_address,
+            "billing_contact": billing_contact,
+            "country": country,
+            "currency": currency,
+            "e911_address": e911_address,
+            "first_action": first_action,
+            "friday_hours": friday_hours,
+            "group_description": group_description,
+            "hours_on": hours_on,
+            "international_enabled": international_enabled,
+            "invoiced": invoiced,
+            "mainline_number": mainline_number,
+            "monday_hours": monday_hours,
+            "name": name,
+            "no_operators_action": no_operators_action,
+            "plan_period": plan_period,
+            "ring_seconds": ring_seconds,
+            "routing_options": routing_options,
+            "saturday_hours": saturday_hours,
+            "sunday_hours": sunday_hours,
+            "thursday_hours": thursday_hours,
+            "timezone": timezone,
+            "tuesday_hours": tuesday_hours,
+            "unified_billing": unified_billing,
+            "use_same_address": use_same_address,
+            "voice_intelligence": voice_intelligence,
+            "wednesday_hours": wednesday_hours,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/offices'
+        url = f"{self.base_url}/api/v2/offices"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -2598,9 +2990,9 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {'operator_id': operator_id, 'operator_type': operator_type}
+        request_body = {"operator_id": operator_id, "operator_type": operator_type}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/offices/{id}/operators'
+        url = f"{self.base_url}/api/v2/offices/{id}/operators"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -2621,7 +3013,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/v2/offices/{id}/operators'
+        url = f"{self.base_url}/api/v2/offices/{id}/operators"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -2645,9 +3037,9 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {'operator_id': operator_id, 'operator_type': operator_type, 'role': role}
+        request_body = {"operator_id": operator_id, "operator_type": operator_type, "role": role}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/offices/{id}/operators'
+        url = f"{self.base_url}/api/v2/offices/{id}/operators"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -2668,9 +3060,9 @@ class DialpadApp(APIApplication):
         Tags:
             recordingsharelink
         """
-        request_body = {'privacy': privacy, 'recording_id': recording_id, 'recording_type': recording_type}
+        request_body = {"privacy": privacy, "recording_id": recording_id, "recording_type": recording_type}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/recordingsharelink'
+        url = f"{self.base_url}/api/v2/recordingsharelink"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -2691,7 +3083,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/v2/recordingsharelink/{id}'
+        url = f"{self.base_url}/api/v2/recordingsharelink/{id}"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -2712,7 +3104,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/v2/recordingsharelink/{id}'
+        url = f"{self.base_url}/api/v2/recordingsharelink/{id}"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -2734,9 +3126,9 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {'privacy': privacy}
+        request_body = {"privacy": privacy}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/recordingsharelink/{id}'
+        url = f"{self.base_url}/api/v2/recordingsharelink/{id}"
         query_params = {}
         response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -2760,9 +3152,9 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {'area_code': area_code, 'number': number, 'primary': primary}
+        request_body = {"area_code": area_code, "number": number, "primary": primary}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/rooms/{id}/assign_number'
+        url = f"{self.base_url}/api/v2/rooms/{id}/assign_number"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -2784,9 +3176,9 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {'number': number}
+        request_body = {"number": number}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/rooms/{id}/unassign_number'
+        url = f"{self.base_url}/api/v2/rooms/{id}/unassign_number"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -2807,7 +3199,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/v2/rooms/{id}'
+        url = f"{self.base_url}/api/v2/rooms/{id}"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -2828,7 +3220,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/v2/rooms/{id}'
+        url = f"{self.base_url}/api/v2/rooms/{id}"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -2855,9 +3247,9 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {'name': name, 'phone_numbers': phone_numbers}
+        request_body = {"name": name, "phone_numbers": phone_numbers}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/rooms/{id}'
+        url = f"{self.base_url}/api/v2/rooms/{id}"
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -2877,8 +3269,8 @@ class DialpadApp(APIApplication):
         Tags:
             rooms
         """
-        url = f'{self.base_url}/api/v2/rooms'
-        query_params = {k: v for k, v in [('cursor', cursor), ('office_id', office_id)] if v is not None}
+        url = f"{self.base_url}/api/v2/rooms"
+        query_params = {k: v for k, v in [("cursor", cursor), ("office_id", office_id)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -2899,9 +3291,9 @@ class DialpadApp(APIApplication):
         Tags:
             rooms
         """
-        request_body = {'name': name, 'office_id': office_id}
+        request_body = {"name": name, "office_id": office_id}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/rooms'
+        url = f"{self.base_url}/api/v2/rooms"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -2922,9 +3314,9 @@ class DialpadApp(APIApplication):
         Tags:
             rooms
         """
-        request_body = {'customer_ref': customer_ref}
+        request_body = {"customer_ref": customer_ref}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/rooms/international_pin'
+        url = f"{self.base_url}/api/v2/rooms/international_pin"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -2948,7 +3340,7 @@ class DialpadApp(APIApplication):
             raise ValueError("Missing required parameter 'parent_id'")
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/v2/rooms/{parent_id}/deskphones/{id}'
+        url = f"{self.base_url}/api/v2/rooms/{parent_id}/deskphones/{id}"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -2972,7 +3364,7 @@ class DialpadApp(APIApplication):
             raise ValueError("Missing required parameter 'parent_id'")
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/v2/rooms/{parent_id}/deskphones/{id}'
+        url = f"{self.base_url}/api/v2/rooms/{parent_id}/deskphones/{id}"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -2993,7 +3385,7 @@ class DialpadApp(APIApplication):
         """
         if parent_id is None:
             raise ValueError("Missing required parameter 'parent_id'")
-        url = f'{self.base_url}/api/v2/rooms/{parent_id}/deskphones'
+        url = f"{self.base_url}/api/v2/rooms/{parent_id}/deskphones"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -3014,7 +3406,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/v2/schedulereports/{id}'
+        url = f"{self.base_url}/api/v2/schedulereports/{id}"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -3035,13 +3427,27 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/v2/schedulereports/{id}'
+        url = f"{self.base_url}/api/v2/schedulereports/{id}"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def schedule_reports_update(self, id, at=None, coaching_group=None, enabled=None, endpoint_id=None, frequency=None, name=None, on_day=None, report_type=None, target_id=None, target_type=None, timezone=None) -> dict[str, Any]:
+    async def schedule_reports_update(
+        self,
+        id,
+        at=None,
+        coaching_group=None,
+        enabled=None,
+        endpoint_id=None,
+        frequency=None,
+        name=None,
+        on_day=None,
+        report_type=None,
+        target_id=None,
+        target_type=None,
+        timezone=None,
+    ) -> dict[str, Any]:
         """
         Updates a scheduled report by modifying specific properties of the resource identified by the provided ID using a JSON payload.
 
@@ -3069,9 +3475,21 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {'at': at, 'coaching_group': coaching_group, 'enabled': enabled, 'endpoint_id': endpoint_id, 'frequency': frequency, 'name': name, 'on_day': on_day, 'report_type': report_type, 'target_id': target_id, 'target_type': target_type, 'timezone': timezone}
+        request_body = {
+            "at": at,
+            "coaching_group": coaching_group,
+            "enabled": enabled,
+            "endpoint_id": endpoint_id,
+            "frequency": frequency,
+            "name": name,
+            "on_day": on_day,
+            "report_type": report_type,
+            "target_id": target_id,
+            "target_type": target_type,
+            "timezone": timezone,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/schedulereports/{id}'
+        url = f"{self.base_url}/api/v2/schedulereports/{id}"
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -3090,13 +3508,26 @@ class DialpadApp(APIApplication):
         Tags:
             schedulereports
         """
-        url = f'{self.base_url}/api/v2/schedulereports'
-        query_params = {k: v for k, v in [('cursor', cursor)] if v is not None}
+        url = f"{self.base_url}/api/v2/schedulereports"
+        query_params = {k: v for k, v in [("cursor", cursor)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def schedule_reports_create(self, at=None, coaching_group=None, enabled=None, endpoint_id=None, frequency=None, name=None, on_day=None, report_type=None, target_id=None, target_type=None, timezone=None) -> dict[str, Any]:
+    async def schedule_reports_create(
+        self,
+        at=None,
+        coaching_group=None,
+        enabled=None,
+        endpoint_id=None,
+        frequency=None,
+        name=None,
+        on_day=None,
+        report_type=None,
+        target_id=None,
+        target_type=None,
+        timezone=None,
+    ) -> dict[str, Any]:
         """
         Schedules reports for retrieval using the POST method, sending a JSON request to configure the reporting parameters.
 
@@ -3121,15 +3552,38 @@ class DialpadApp(APIApplication):
         Tags:
             schedulereports
         """
-        request_body = {'at': at, 'coaching_group': coaching_group, 'enabled': enabled, 'endpoint_id': endpoint_id, 'frequency': frequency, 'name': name, 'on_day': on_day, 'report_type': report_type, 'target_id': target_id, 'target_type': target_type, 'timezone': timezone}
+        request_body = {
+            "at": at,
+            "coaching_group": coaching_group,
+            "enabled": enabled,
+            "endpoint_id": endpoint_id,
+            "frequency": frequency,
+            "name": name,
+            "on_day": on_day,
+            "report_type": report_type,
+            "target_id": target_id,
+            "target_type": target_type,
+            "timezone": timezone,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/schedulereports'
+        url = f"{self.base_url}/api/v2/schedulereports"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def sms_send(self, channel_hashtag=None, from_number=None, infer_country_code=None, media=None, sender_group_id=None, sender_group_type=None, text=None, to_numbers=None, user_id=None) -> dict[str, Any]:
+    async def sms_send(
+        self,
+        channel_hashtag=None,
+        from_number=None,
+        infer_country_code=None,
+        media=None,
+        sender_group_id=None,
+        sender_group_type=None,
+        text=None,
+        to_numbers=None,
+        user_id=None,
+    ) -> dict[str, Any]:
         """
         Sends an SMS message using the provided JSON data in the request body and returns a status message upon successful execution.
 
@@ -3152,9 +3606,19 @@ class DialpadApp(APIApplication):
         Tags:
             sms
         """
-        request_body = {'channel_hashtag': channel_hashtag, 'from_number': from_number, 'infer_country_code': infer_country_code, 'media': media, 'sender_group_id': sender_group_id, 'sender_group_type': sender_group_type, 'text': text, 'to_numbers': to_numbers, 'user_id': user_id}
+        request_body = {
+            "channel_hashtag": channel_hashtag,
+            "from_number": from_number,
+            "infer_country_code": infer_country_code,
+            "media": media,
+            "sender_group_id": sender_group_id,
+            "sender_group_type": sender_group_type,
+            "text": text,
+            "to_numbers": to_numbers,
+            "user_id": user_id,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/sms'
+        url = f"{self.base_url}/api/v2/sms"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -3175,13 +3639,27 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/v2/stats/{id}'
+        url = f"{self.base_url}/api/v2/stats/{id}"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def stats_create(self, coaching_group=None, coaching_team=None, days_ago_end=None, days_ago_start=None, export_type=None, group_by=None, is_today=None, office_id=None, stat_type=None, target_id=None, target_type=None, timezone=None) -> dict[str, Any]:
+    async def stats_create(
+        self,
+        coaching_group=None,
+        coaching_team=None,
+        days_ago_end=None,
+        days_ago_start=None,
+        export_type=None,
+        group_by=None,
+        is_today=None,
+        office_id=None,
+        stat_type=None,
+        target_id=None,
+        target_type=None,
+        timezone=None,
+    ) -> dict[str, Any]:
         """
         Submits statistical data via a POST request to the "/api/v2/stats" endpoint and expects a successful (200) response upon completion.
 
@@ -3217,9 +3695,22 @@ class DialpadApp(APIApplication):
         Tags:
             stats
         """
-        request_body = {'coaching_group': coaching_group, 'coaching_team': coaching_team, 'days_ago_end': days_ago_end, 'days_ago_start': days_ago_start, 'export_type': export_type, 'group_by': group_by, 'is_today': is_today, 'office_id': office_id, 'stat_type': stat_type, 'target_id': target_id, 'target_type': target_type, 'timezone': timezone}
+        request_body = {
+            "coaching_group": coaching_group,
+            "coaching_team": coaching_team,
+            "days_ago_end": days_ago_end,
+            "days_ago_start": days_ago_start,
+            "export_type": export_type,
+            "group_by": group_by,
+            "is_today": is_today,
+            "office_id": office_id,
+            "stat_type": stat_type,
+            "target_id": target_id,
+            "target_type": target_type,
+            "timezone": timezone,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/stats'
+        url = f"{self.base_url}/api/v2/stats"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -3238,8 +3729,8 @@ class DialpadApp(APIApplication):
         Tags:
             subscriptions
         """
-        url = f'{self.base_url}/api/v2/subscriptions/agent_status'
-        query_params = {k: v for k, v in [('cursor', cursor)] if v is not None}
+        url = f"{self.base_url}/api/v2/subscriptions/agent_status"
+        query_params = {k: v for k, v in [("cursor", cursor)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -3259,9 +3750,9 @@ class DialpadApp(APIApplication):
         Tags:
             subscriptions
         """
-        request_body = {'agent_type': agent_type, 'enabled': enabled, 'endpoint_id': endpoint_id}
+        request_body = {"agent_type": agent_type, "enabled": enabled, "endpoint_id": endpoint_id}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/subscriptions/agent_status'
+        url = f"{self.base_url}/api/v2/subscriptions/agent_status"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -3282,7 +3773,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/v2/subscriptions/agent_status/{id}'
+        url = f"{self.base_url}/api/v2/subscriptions/agent_status/{id}"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -3303,7 +3794,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/v2/subscriptions/agent_status/{id}'
+        url = f"{self.base_url}/api/v2/subscriptions/agent_status/{id}"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -3328,9 +3819,9 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {'agent_type': agent_type, 'enabled': enabled, 'endpoint_id': endpoint_id}
+        request_body = {"agent_type": agent_type, "enabled": enabled, "endpoint_id": endpoint_id}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/subscriptions/agent_status/{id}'
+        url = f"{self.base_url}/api/v2/subscriptions/agent_status/{id}"
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -3351,13 +3842,15 @@ class DialpadApp(APIApplication):
         Tags:
             subscriptions
         """
-        url = f'{self.base_url}/api/v2/subscriptions/call'
-        query_params = {k: v for k, v in [('cursor', cursor), ('target_type', target_type), ('target_id', target_id)] if v is not None}
+        url = f"{self.base_url}/api/v2/subscriptions/call"
+        query_params = {k: v for k, v in [("cursor", cursor), ("target_type", target_type), ("target_id", target_id)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def webhook_call_event_subscription_create(self, call_states=None, enabled=None, endpoint_id=None, group_calls_only=None, target_id=None, target_type=None) -> dict[str, Any]:
+    async def webhook_call_event_subscription_create(
+        self, call_states=None, enabled=None, endpoint_id=None, group_calls_only=None, target_id=None, target_type=None
+    ) -> dict[str, Any]:
         """
         Subscribes a user to a call notification service using a JSON payload and returns a success response upon successful subscription.
 
@@ -3375,9 +3868,16 @@ class DialpadApp(APIApplication):
         Tags:
             subscriptions
         """
-        request_body = {'call_states': call_states, 'enabled': enabled, 'endpoint_id': endpoint_id, 'group_calls_only': group_calls_only, 'target_id': target_id, 'target_type': target_type}
+        request_body = {
+            "call_states": call_states,
+            "enabled": enabled,
+            "endpoint_id": endpoint_id,
+            "group_calls_only": group_calls_only,
+            "target_id": target_id,
+            "target_type": target_type,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/subscriptions/call'
+        url = f"{self.base_url}/api/v2/subscriptions/call"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -3398,7 +3898,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/v2/subscriptions/call/{id}'
+        url = f"{self.base_url}/api/v2/subscriptions/call/{id}"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -3419,13 +3919,15 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/v2/subscriptions/call/{id}'
+        url = f"{self.base_url}/api/v2/subscriptions/call/{id}"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def webhook_call_event_subscription_update(self, id, call_states=None, enabled=None, endpoint_id=None, group_calls_only=None, target_id=None, target_type=None) -> dict[str, Any]:
+    async def webhook_call_event_subscription_update(
+        self, id, call_states=None, enabled=None, endpoint_id=None, group_calls_only=None, target_id=None, target_type=None
+    ) -> dict[str, Any]:
         """
         Partially updates a subscription identified by the provided ID using the PATCH method, allowing for selective modification of specific fields in the subscription resource.
 
@@ -3447,9 +3949,16 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {'call_states': call_states, 'enabled': enabled, 'endpoint_id': endpoint_id, 'group_calls_only': group_calls_only, 'target_id': target_id, 'target_type': target_type}
+        request_body = {
+            "call_states": call_states,
+            "enabled": enabled,
+            "endpoint_id": endpoint_id,
+            "group_calls_only": group_calls_only,
+            "target_id": target_id,
+            "target_type": target_type,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/subscriptions/call/{id}'
+        url = f"{self.base_url}/api/v2/subscriptions/call/{id}"
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -3468,8 +3977,8 @@ class DialpadApp(APIApplication):
         Tags:
             subscriptions
         """
-        url = f'{self.base_url}/api/v2/subscriptions/changelog'
-        query_params = {k: v for k, v in [('cursor', cursor)] if v is not None}
+        url = f"{self.base_url}/api/v2/subscriptions/changelog"
+        query_params = {k: v for k, v in [("cursor", cursor)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -3488,9 +3997,9 @@ class DialpadApp(APIApplication):
         Tags:
             subscriptions
         """
-        request_body = {'enabled': enabled, 'endpoint_id': endpoint_id}
+        request_body = {"enabled": enabled, "endpoint_id": endpoint_id}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/subscriptions/changelog'
+        url = f"{self.base_url}/api/v2/subscriptions/changelog"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -3511,7 +4020,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/v2/subscriptions/changelog/{id}'
+        url = f"{self.base_url}/api/v2/subscriptions/changelog/{id}"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -3532,7 +4041,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/v2/subscriptions/changelog/{id}'
+        url = f"{self.base_url}/api/v2/subscriptions/changelog/{id}"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -3556,9 +4065,9 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {'enabled': enabled, 'endpoint_id': endpoint_id}
+        request_body = {"enabled": enabled, "endpoint_id": endpoint_id}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/subscriptions/changelog/{id}'
+        url = f"{self.base_url}/api/v2/subscriptions/changelog/{id}"
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -3577,8 +4086,8 @@ class DialpadApp(APIApplication):
         Tags:
             subscriptions
         """
-        url = f'{self.base_url}/api/v2/subscriptions/contact'
-        query_params = {k: v for k, v in [('cursor', cursor)] if v is not None}
+        url = f"{self.base_url}/api/v2/subscriptions/contact"
+        query_params = {k: v for k, v in [("cursor", cursor)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -3598,9 +4107,9 @@ class DialpadApp(APIApplication):
         Tags:
             subscriptions
         """
-        request_body = {'contact_type': contact_type, 'enabled': enabled, 'endpoint_id': endpoint_id}
+        request_body = {"contact_type": contact_type, "enabled": enabled, "endpoint_id": endpoint_id}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/subscriptions/contact'
+        url = f"{self.base_url}/api/v2/subscriptions/contact"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -3621,7 +4130,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/v2/subscriptions/contact/{id}'
+        url = f"{self.base_url}/api/v2/subscriptions/contact/{id}"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -3642,7 +4151,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/v2/subscriptions/contact/{id}'
+        url = f"{self.base_url}/api/v2/subscriptions/contact/{id}"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -3667,9 +4176,9 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {'contact_type': contact_type, 'enabled': enabled, 'endpoint_id': endpoint_id}
+        request_body = {"contact_type": contact_type, "enabled": enabled, "endpoint_id": endpoint_id}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/subscriptions/contact/{id}'
+        url = f"{self.base_url}/api/v2/subscriptions/contact/{id}"
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -3690,13 +4199,15 @@ class DialpadApp(APIApplication):
         Tags:
             subscriptions
         """
-        url = f'{self.base_url}/api/v2/subscriptions/sms'
-        query_params = {k: v for k, v in [('cursor', cursor), ('target_type', target_type), ('target_id', target_id)] if v is not None}
+        url = f"{self.base_url}/api/v2/subscriptions/sms"
+        query_params = {k: v for k, v in [("cursor", cursor), ("target_type", target_type), ("target_id", target_id)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def webhook_sms_event_subscription_create(self, direction=None, enabled=None, endpoint_id=None, include_internal=None, status=None, target_id=None, target_type=None) -> dict[str, Any]:
+    async def webhook_sms_event_subscription_create(
+        self, direction=None, enabled=None, endpoint_id=None, include_internal=None, status=None, target_id=None, target_type=None
+    ) -> dict[str, Any]:
         """
         Sends a subscription request for SMS notifications by creating an SMS subscription.
 
@@ -3715,9 +4226,17 @@ class DialpadApp(APIApplication):
         Tags:
             subscriptions
         """
-        request_body = {'direction': direction, 'enabled': enabled, 'endpoint_id': endpoint_id, 'include_internal': include_internal, 'status': status, 'target_id': target_id, 'target_type': target_type}
+        request_body = {
+            "direction": direction,
+            "enabled": enabled,
+            "endpoint_id": endpoint_id,
+            "include_internal": include_internal,
+            "status": status,
+            "target_id": target_id,
+            "target_type": target_type,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/subscriptions/sms'
+        url = f"{self.base_url}/api/v2/subscriptions/sms"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -3738,7 +4257,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/v2/subscriptions/sms/{id}'
+        url = f"{self.base_url}/api/v2/subscriptions/sms/{id}"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -3759,13 +4278,15 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/v2/subscriptions/sms/{id}'
+        url = f"{self.base_url}/api/v2/subscriptions/sms/{id}"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def webhook_sms_event_subscription_update(self, id, direction=None, enabled=None, endpoint_id=None, include_internal=None, status=None, target_id=None, target_type=None) -> dict[str, Any]:
+    async def webhook_sms_event_subscription_update(
+        self, id, direction=None, enabled=None, endpoint_id=None, include_internal=None, status=None, target_id=None, target_type=None
+    ) -> dict[str, Any]:
         """
         Updates an SMS subscription identified by its ID, modifying specific properties using JSON Patch operations.
 
@@ -3788,9 +4309,17 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {'direction': direction, 'enabled': enabled, 'endpoint_id': endpoint_id, 'include_internal': include_internal, 'status': status, 'target_id': target_id, 'target_type': target_type}
+        request_body = {
+            "direction": direction,
+            "enabled": enabled,
+            "endpoint_id": endpoint_id,
+            "include_internal": include_internal,
+            "status": status,
+            "target_id": target_id,
+            "target_type": target_type,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/subscriptions/sms/{id}'
+        url = f"{self.base_url}/api/v2/subscriptions/sms/{id}"
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -3811,7 +4340,7 @@ class DialpadApp(APIApplication):
         """
         if call_id is None:
             raise ValueError("Missing required parameter 'call_id'")
-        url = f'{self.base_url}/api/v2/transcripts/{call_id}'
+        url = f"{self.base_url}/api/v2/transcripts/{call_id}"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -3832,7 +4361,7 @@ class DialpadApp(APIApplication):
         """
         if call_id is None:
             raise ValueError("Missing required parameter 'call_id'")
-        url = f'{self.base_url}/api/v2/transcripts/{call_id}/url'
+        url = f"{self.base_url}/api/v2/transcripts/{call_id}/url"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -3853,7 +4382,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/v2/userdevices/{id}'
+        url = f"{self.base_url}/api/v2/userdevices/{id}"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -3873,13 +4402,15 @@ class DialpadApp(APIApplication):
         Tags:
             userdevices
         """
-        url = f'{self.base_url}/api/v2/userdevices'
-        query_params = {k: v for k, v in [('cursor', cursor), ('user_id', user_id)] if v is not None}
+        url = f"{self.base_url}/api/v2/userdevices"
+        query_params = {k: v for k, v in [("cursor", cursor), ("user_id", user_id)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def users_initiate_call(self, id, custom_data=None, group_id=None, group_type=None, outbound_caller_id=None, phone_number=None) -> dict[str, Any]:
+    async def users_initiate_call(
+        self, id, custom_data=None, group_id=None, group_type=None, outbound_caller_id=None, phone_number=None
+    ) -> dict[str, Any]:
         """
         Initiates a call for a user identified by the provided ID using the POST method, sending JSON data in the request body.
 
@@ -3902,9 +4433,15 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {'custom_data': custom_data, 'group_id': group_id, 'group_type': group_type, 'outbound_caller_id': outbound_caller_id, 'phone_number': phone_number}
+        request_body = {
+            "custom_data": custom_data,
+            "group_id": group_id,
+            "group_type": group_type,
+            "outbound_caller_id": outbound_caller_id,
+            "phone_number": phone_number,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/users/{id}/initiate_call'
+        url = f"{self.base_url}/api/v2/users/{id}/initiate_call"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -3931,9 +4468,9 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {'is_recording': is_recording, 'play_message': play_message, 'recording_type': recording_type}
+        request_body = {"is_recording": is_recording, "play_message": play_message, "recording_type": recording_type}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/users/{id}/activecall'
+        url = f"{self.base_url}/api/v2/users/{id}/activecall"
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -3955,9 +4492,9 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {'enable_vi': enable_vi}
+        request_body = {"enable_vi": enable_vi}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/users/{id}/togglevi'
+        url = f"{self.base_url}/api/v2/users/{id}/togglevi"
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -3978,7 +4515,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/v2/users/{id}/caller_id'
+        url = f"{self.base_url}/api/v2/users/{id}/caller_id"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -4000,9 +4537,9 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {'caller_id': caller_id}
+        request_body = {"caller_id": caller_id}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/users/{id}/caller_id'
+        url = f"{self.base_url}/api/v2/users/{id}/caller_id"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -4026,7 +4563,7 @@ class DialpadApp(APIApplication):
             raise ValueError("Missing required parameter 'parent_id'")
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/v2/users/{parent_id}/deskphones/{id}'
+        url = f"{self.base_url}/api/v2/users/{parent_id}/deskphones/{id}"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -4050,7 +4587,7 @@ class DialpadApp(APIApplication):
             raise ValueError("Missing required parameter 'parent_id'")
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/v2/users/{parent_id}/deskphones/{id}'
+        url = f"{self.base_url}/api/v2/users/{parent_id}/deskphones/{id}"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -4071,7 +4608,7 @@ class DialpadApp(APIApplication):
         """
         if parent_id is None:
             raise ValueError("Missing required parameter 'parent_id'")
-        url = f'{self.base_url}/api/v2/users/{parent_id}/deskphones'
+        url = f"{self.base_url}/api/v2/users/{parent_id}/deskphones"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -4095,9 +4632,9 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {'area_code': area_code, 'number': number, 'primary': primary}
+        request_body = {"area_code": area_code, "number": number, "primary": primary}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/users/{id}/assign_number'
+        url = f"{self.base_url}/api/v2/users/{id}/assign_number"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -4119,9 +4656,9 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {'number': number}
+        request_body = {"number": number}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/users/{id}/unassign_number'
+        url = f"{self.base_url}/api/v2/users/{id}/unassign_number"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -4145,9 +4682,9 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {'do_not_disturb': do_not_disturb, 'group_id': group_id, 'group_type': group_type}
+        request_body = {"do_not_disturb": do_not_disturb, "group_id": group_id, "group_type": group_type}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/users/{id}/togglednd'
+        url = f"{self.base_url}/api/v2/users/{id}/togglednd"
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -4168,13 +4705,15 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/v2/users/{id}/e911'
+        url = f"{self.base_url}/api/v2/users/{id}/e911"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def users_e911_update(self, id, address=None, address2=None, city=None, country=None, state=None, use_validated_option=None, zip=None) -> dict[str, Any]:
+    async def users_e911_update(
+        self, id, address=None, address2=None, city=None, country=None, state=None, use_validated_option=None, zip=None
+    ) -> dict[str, Any]:
         """
         Updates the E911 (Enhanced 911) location information for a user identified by the specified ID.
 
@@ -4206,9 +4745,17 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {'address': address, 'address2': address2, 'city': city, 'country': country, 'state': state, 'use_validated_option': use_validated_option, 'zip': zip}
+        request_body = {
+            "address": address,
+            "address2": address2,
+            "city": city,
+            "country": country,
+            "state": state,
+            "use_validated_option": use_validated_option,
+            "zip": zip,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/users/{id}/e911'
+        url = f"{self.base_url}/api/v2/users/{id}/e911"
         query_params = {}
         response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -4229,7 +4776,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/v2/users/{id}/personas'
+        url = f"{self.base_url}/api/v2/users/{id}/personas"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -4254,9 +4801,9 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {'screen_pop_uri': screen_pop_uri}
+        request_body = {"screen_pop_uri": screen_pop_uri}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/users/{id}/screenpop'
+        url = f"{self.base_url}/api/v2/users/{id}/screenpop"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -4277,7 +4824,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/v2/users/{id}'
+        url = f"{self.base_url}/api/v2/users/{id}"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -4298,13 +4845,30 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/v2/users/{id}'
+        url = f"{self.base_url}/api/v2/users/{id}"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def users_update(self, id, admin_office_ids=None, emails=None, extension=None, first_name=None, forwarding_numbers=None, is_super_admin=None, job_title=None, keep_paid_numbers=None, last_name=None, license=None, office_id=None, phone_numbers=None, presence_status=None, state=None) -> dict[str, Any]:
+    async def users_update(
+        self,
+        id,
+        admin_office_ids=None,
+        emails=None,
+        extension=None,
+        first_name=None,
+        forwarding_numbers=None,
+        is_super_admin=None,
+        job_title=None,
+        keep_paid_numbers=None,
+        last_name=None,
+        license=None,
+        office_id=None,
+        phone_numbers=None,
+        presence_status=None,
+        state=None,
+    ) -> dict[str, Any]:
         """
         Partially updates the user identified by the given ID with the specified JSON data and returns a success response.
 
@@ -4356,9 +4920,24 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {'admin_office_ids': admin_office_ids, 'emails': emails, 'extension': extension, 'first_name': first_name, 'forwarding_numbers': forwarding_numbers, 'is_super_admin': is_super_admin, 'job_title': job_title, 'keep_paid_numbers': keep_paid_numbers, 'last_name': last_name, 'license': license, 'office_id': office_id, 'phone_numbers': phone_numbers, 'presence_status': presence_status, 'state': state}
+        request_body = {
+            "admin_office_ids": admin_office_ids,
+            "emails": emails,
+            "extension": extension,
+            "first_name": first_name,
+            "forwarding_numbers": forwarding_numbers,
+            "is_super_admin": is_super_admin,
+            "job_title": job_title,
+            "keep_paid_numbers": keep_paid_numbers,
+            "last_name": last_name,
+            "license": license,
+            "office_id": office_id,
+            "phone_numbers": phone_numbers,
+            "presence_status": presence_status,
+            "state": state,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/users/{id}'
+        url = f"{self.base_url}/api/v2/users/{id}"
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -4381,13 +4960,19 @@ class DialpadApp(APIApplication):
         Tags:
             users
         """
-        url = f'{self.base_url}/api/v2/users'
-        query_params = {k: v for k, v in [('cursor', cursor), ('state', state), ('company_admin', company_admin), ('email', email), ('number', number)] if v is not None}
+        url = f"{self.base_url}/api/v2/users"
+        query_params = {
+            k: v
+            for k, v in [("cursor", cursor), ("state", state), ("company_admin", company_admin), ("email", email), ("number", number)]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def users_create(self, auto_assign=None, email=None, first_name=None, last_name=None, license=None, office_id=None) -> dict[str, Any]:
+    async def users_create(
+        self, auto_assign=None, email=None, first_name=None, last_name=None, license=None, office_id=None
+    ) -> dict[str, Any]:
         """
         Creates a new user resource using JSON data and returns a success response with a status code of 200 OK.
 
@@ -4409,9 +4994,16 @@ class DialpadApp(APIApplication):
         Tags:
             users, important
         """
-        request_body = {'auto_assign': auto_assign, 'email': email, 'first_name': first_name, 'last_name': last_name, 'license': license, 'office_id': office_id}
+        request_body = {
+            "auto_assign": auto_assign,
+            "email": email,
+            "first_name": first_name,
+            "last_name": last_name,
+            "license": license,
+            "office_id": office_id,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/users'
+        url = f"{self.base_url}/api/v2/users"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -4433,9 +5025,9 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {'office_id': office_id}
+        request_body = {"office_id": office_id}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/users/{id}/move_office'
+        url = f"{self.base_url}/api/v2/users/{id}/move_office"
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -4458,9 +5050,9 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {'expiration': expiration, 'status_message': status_message}
+        request_body = {"expiration": expiration, "status_message": status_message}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/users/{id}/status'
+        url = f"{self.base_url}/api/v2/users/{id}/status"
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -4479,8 +5071,8 @@ class DialpadApp(APIApplication):
         Tags:
             webhooks
         """
-        url = f'{self.base_url}/api/v2/webhooks'
-        query_params = {k: v for k, v in [('cursor', cursor)] if v is not None}
+        url = f"{self.base_url}/api/v2/webhooks"
+        query_params = {k: v for k, v in [("cursor", cursor)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -4501,9 +5093,9 @@ class DialpadApp(APIApplication):
         Tags:
             webhooks
         """
-        request_body = {'hook_url': hook_url, 'secret': secret}
+        request_body = {"hook_url": hook_url, "secret": secret}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/webhooks'
+        url = f"{self.base_url}/api/v2/webhooks"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -4524,7 +5116,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/v2/webhooks/{id}'
+        url = f"{self.base_url}/api/v2/webhooks/{id}"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -4545,7 +5137,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/v2/webhooks/{id}'
+        url = f"{self.base_url}/api/v2/webhooks/{id}"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -4570,9 +5162,9 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {'hook_url': hook_url, 'secret': secret}
+        request_body = {"hook_url": hook_url, "secret": secret}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/webhooks/{id}'
+        url = f"{self.base_url}/api/v2/webhooks/{id}"
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -4591,8 +5183,8 @@ class DialpadApp(APIApplication):
         Tags:
             websockets
         """
-        url = f'{self.base_url}/api/v2/websockets'
-        query_params = {k: v for k, v in [('cursor', cursor)] if v is not None}
+        url = f"{self.base_url}/api/v2/websockets"
+        query_params = {k: v for k, v in [("cursor", cursor)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -4612,9 +5204,9 @@ class DialpadApp(APIApplication):
         Tags:
             websockets
         """
-        request_body = {'secret': secret}
+        request_body = {"secret": secret}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/websockets'
+        url = f"{self.base_url}/api/v2/websockets"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -4635,7 +5227,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/v2/websockets/{id}'
+        url = f"{self.base_url}/api/v2/websockets/{id}"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -4656,7 +5248,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/v2/websockets/{id}'
+        url = f"{self.base_url}/api/v2/websockets/{id}"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -4680,13 +5272,205 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {'secret': secret}
+        request_body = {"secret": secret}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/v2/websockets/{id}'
+        url = f"{self.base_url}/api/v2/websockets/{id}"
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
     def list_tools(self):
-        return [self.accesscontrolpolicies_assign, self.accesscontrolpolicies_list, self.accesscontrolpolicies_create, self.accesscontrolpolicies_delete, self.accesscontrolpolicies_get, self.accesscontrolpolicies_update, self.accesscontrolpolicies_assignments, self.accesscontrolpolicies_unassign, self.app_settings_get, self.blockednumbers_add, self.blockednumbers_get, self.blockednumbers_remove, self.blockednumbers_list, self.call_participants_add, self.call_get_call_info, self.call_initiate_ivr_call, self.call_list, self.call_call, self.call_transfer_call, self.call_unpark, self.call_actions_hangup, self.call_put_call_labels, self.call_callback, self.call_validate_callback, self.callcenters_listall, self.callcenters_create, self.callcenters_delete, self.callcenters_get, self.callcenters_update, self.callcenters_status, self.callcenters_operators_get_dutystatus, self.callcenters_operators_dutystatus, self.callcenters_operators_get_skilllevel, self.callcenters_operators_skilllevel, self.callcenters_operators_delete, self.callcenters_operators_get, self.callcenters_operators_post, self.calllabel_list, self.call_review_share_link_create, self.call_review_share_link_delete, self.call_review_share_link_get, self.call_review_share_link_update, self.callrouters_list, self.callrouters_create, self.callrouters_delete, self.callrouters_get, self.callrouters_update, self.numbers_assign_call_router_number_post, self.channels_delete, self.channels_get, self.channels_list, self.channels_post, self.channels_members_delete, self.channels_members_list, self.channels_members_post, self.coaching_team_members_get, self.coaching_team_members_add, self.coaching_team_get, self.coaching_team_listall, self.company_get, self.company_sms_opt_out, self.conference_rooms_list, self.conference_meetings_list, self.contacts_delete, self.contacts_get, self.contacts_update, self.contacts_list, self.contacts_create, self.contacts_create_with_uid, self.ivr_delete, self.ivr_update, self.custom_ivrs_get, self.ivr_create, self.ivr_details_update, self.departments_delete, self.departments_get, self.departments_update, self.departments_listall, self.departments_create, self.departments_operators_delete, self.departments_operators_get, self.departments_operators_post, self.faxline_create, self.numbers_assign_number_post, self.numbers_assign_target_number_post, self.numbers_delete, self.numbers_get, self.numbers_list, self.format_post, self.oauth2_authorize_get, self.oauth2_deauthorize_post, self.plan_get, self.callcenters_list, self.coaching_team_list, self.departments_list, self.numbers_assign_office_number_post, self.numbers_office_unassign_number_post, self.offices_e911_get, self.offices_e911_update, self.plan_available_licenses_get, self.offices_offdutystatuses_get, self.offices_get, self.offices_list, self.offices_create, self.offices_operators_delete, self.offices_operators_get, self.offices_operators_post, self.recording_share_link_create, self.recording_share_link_delete, self.recording_share_link_get, self.recording_share_link_update, self.numbers_assign_room_number_post, self.numbers_room_unassign_number_post, self.rooms_delete, self.rooms_get, self.rooms_patch, self.rooms_list, self.rooms_post, self.deskphones_rooms_create_international_pin, self.deskphones_rooms_delete, self.deskphones_rooms_get, self.deskphones_rooms_list, self.schedule_reports_delete, self.schedule_reports_get, self.schedule_reports_update, self.schedule_reports_list, self.schedule_reports_create, self.sms_send, self.stats_get, self.stats_create, self.webhook_agent_status_event_subscription_list, self.webhook_agent_status_event_subscription_create, self.webhook_agent_status_event_subscription_delete, self.webhook_agent_status_event_subscription_get, self.webhook_agent_status_event_subscription_update, self.webhook_call_event_subscription_list, self.webhook_call_event_subscription_create, self.webhook_call_event_subscription_delete, self.webhook_call_event_subscription_get, self.webhook_call_event_subscription_update, self.webhook_change_log_event_subscription_list, self.webhook_change_log_event_subscription_create, self.webhook_change_log_event_subscription_delete, self.webhook_change_log_event_subscription_get, self.webhook_change_log_event_subscription_update, self.webhook_contact_event_subscription_list, self.webhook_contact_event_subscription_create, self.webhook_contact_event_subscription_delete, self.webhook_contact_event_subscription_get, self.webhook_contact_event_subscription_update, self.webhook_sms_event_subscription_list, self.webhook_sms_event_subscription_create, self.webhook_sms_event_subscription_delete, self.webhook_sms_event_subscription_get, self.webhook_sms_event_subscription_update, self.transcripts_get, self.transcripts_get_url, self.userdevices_get, self.userdevices_list, self.users_initiate_call, self.users_update_active_call, self.users_toggle_call_vi, self.caller_id_users_get, self.caller_id_users_post, self.deskphones_users_delete, self.deskphones_users_get, self.deskphones_users_list, self.numbers_assign_user_number_post, self.numbers_user_unassign_number_post, self.users_toggle_dnd, self.users_e911_get, self.users_e911_update, self.users_personas_get, self.screen_pop_initiate, self.users_delete, self.users_get, self.users_update, self.users_list, self.users_create, self.users_move_office_patch, self.users_update_status, self.webhooks_list, self.webhooks_create, self.webhooks_delete, self.webhooks_get, self.webhook_update, self.websockets_list, self.websockets_create, self.websockets_delete, self.websockets_get, self.websockets_update]
+        return [
+            self.accesscontrolpolicies_assign,
+            self.accesscontrolpolicies_list,
+            self.accesscontrolpolicies_create,
+            self.accesscontrolpolicies_delete,
+            self.accesscontrolpolicies_get,
+            self.accesscontrolpolicies_update,
+            self.accesscontrolpolicies_assignments,
+            self.accesscontrolpolicies_unassign,
+            self.app_settings_get,
+            self.blockednumbers_add,
+            self.blockednumbers_get,
+            self.blockednumbers_remove,
+            self.blockednumbers_list,
+            self.call_participants_add,
+            self.call_get_call_info,
+            self.call_initiate_ivr_call,
+            self.call_list,
+            self.call_call,
+            self.call_transfer_call,
+            self.call_unpark,
+            self.call_actions_hangup,
+            self.call_put_call_labels,
+            self.call_callback,
+            self.call_validate_callback,
+            self.callcenters_listall,
+            self.callcenters_create,
+            self.callcenters_delete,
+            self.callcenters_get,
+            self.callcenters_update,
+            self.callcenters_status,
+            self.callcenters_operators_get_dutystatus,
+            self.callcenters_operators_dutystatus,
+            self.callcenters_operators_get_skilllevel,
+            self.callcenters_operators_skilllevel,
+            self.callcenters_operators_delete,
+            self.callcenters_operators_get,
+            self.callcenters_operators_post,
+            self.calllabel_list,
+            self.call_review_share_link_create,
+            self.call_review_share_link_delete,
+            self.call_review_share_link_get,
+            self.call_review_share_link_update,
+            self.callrouters_list,
+            self.callrouters_create,
+            self.callrouters_delete,
+            self.callrouters_get,
+            self.callrouters_update,
+            self.numbers_assign_call_router_number_post,
+            self.channels_delete,
+            self.channels_get,
+            self.channels_list,
+            self.channels_post,
+            self.channels_members_delete,
+            self.channels_members_list,
+            self.channels_members_post,
+            self.coaching_team_members_get,
+            self.coaching_team_members_add,
+            self.coaching_team_get,
+            self.coaching_team_listall,
+            self.company_get,
+            self.company_sms_opt_out,
+            self.conference_rooms_list,
+            self.conference_meetings_list,
+            self.contacts_delete,
+            self.contacts_get,
+            self.contacts_update,
+            self.contacts_list,
+            self.contacts_create,
+            self.contacts_create_with_uid,
+            self.ivr_delete,
+            self.ivr_update,
+            self.custom_ivrs_get,
+            self.ivr_create,
+            self.ivr_details_update,
+            self.departments_delete,
+            self.departments_get,
+            self.departments_update,
+            self.departments_listall,
+            self.departments_create,
+            self.departments_operators_delete,
+            self.departments_operators_get,
+            self.departments_operators_post,
+            self.faxline_create,
+            self.numbers_assign_number_post,
+            self.numbers_assign_target_number_post,
+            self.numbers_delete,
+            self.numbers_get,
+            self.numbers_list,
+            self.format_post,
+            self.oauth2_authorize_get,
+            self.oauth2_deauthorize_post,
+            self.plan_get,
+            self.callcenters_list,
+            self.coaching_team_list,
+            self.departments_list,
+            self.numbers_assign_office_number_post,
+            self.numbers_office_unassign_number_post,
+            self.offices_e911_get,
+            self.offices_e911_update,
+            self.plan_available_licenses_get,
+            self.offices_offdutystatuses_get,
+            self.offices_get,
+            self.offices_list,
+            self.offices_create,
+            self.offices_operators_delete,
+            self.offices_operators_get,
+            self.offices_operators_post,
+            self.recording_share_link_create,
+            self.recording_share_link_delete,
+            self.recording_share_link_get,
+            self.recording_share_link_update,
+            self.numbers_assign_room_number_post,
+            self.numbers_room_unassign_number_post,
+            self.rooms_delete,
+            self.rooms_get,
+            self.rooms_patch,
+            self.rooms_list,
+            self.rooms_post,
+            self.deskphones_rooms_create_international_pin,
+            self.deskphones_rooms_delete,
+            self.deskphones_rooms_get,
+            self.deskphones_rooms_list,
+            self.schedule_reports_delete,
+            self.schedule_reports_get,
+            self.schedule_reports_update,
+            self.schedule_reports_list,
+            self.schedule_reports_create,
+            self.sms_send,
+            self.stats_get,
+            self.stats_create,
+            self.webhook_agent_status_event_subscription_list,
+            self.webhook_agent_status_event_subscription_create,
+            self.webhook_agent_status_event_subscription_delete,
+            self.webhook_agent_status_event_subscription_get,
+            self.webhook_agent_status_event_subscription_update,
+            self.webhook_call_event_subscription_list,
+            self.webhook_call_event_subscription_create,
+            self.webhook_call_event_subscription_delete,
+            self.webhook_call_event_subscription_get,
+            self.webhook_call_event_subscription_update,
+            self.webhook_change_log_event_subscription_list,
+            self.webhook_change_log_event_subscription_create,
+            self.webhook_change_log_event_subscription_delete,
+            self.webhook_change_log_event_subscription_get,
+            self.webhook_change_log_event_subscription_update,
+            self.webhook_contact_event_subscription_list,
+            self.webhook_contact_event_subscription_create,
+            self.webhook_contact_event_subscription_delete,
+            self.webhook_contact_event_subscription_get,
+            self.webhook_contact_event_subscription_update,
+            self.webhook_sms_event_subscription_list,
+            self.webhook_sms_event_subscription_create,
+            self.webhook_sms_event_subscription_delete,
+            self.webhook_sms_event_subscription_get,
+            self.webhook_sms_event_subscription_update,
+            self.transcripts_get,
+            self.transcripts_get_url,
+            self.userdevices_get,
+            self.userdevices_list,
+            self.users_initiate_call,
+            self.users_update_active_call,
+            self.users_toggle_call_vi,
+            self.caller_id_users_get,
+            self.caller_id_users_post,
+            self.deskphones_users_delete,
+            self.deskphones_users_get,
+            self.deskphones_users_list,
+            self.numbers_assign_user_number_post,
+            self.numbers_user_unassign_number_post,
+            self.users_toggle_dnd,
+            self.users_e911_get,
+            self.users_e911_update,
+            self.users_personas_get,
+            self.screen_pop_initiate,
+            self.users_delete,
+            self.users_get,
+            self.users_update,
+            self.users_list,
+            self.users_create,
+            self.users_move_office_patch,
+            self.users_update_status,
+            self.webhooks_list,
+            self.webhooks_create,
+            self.webhooks_delete,
+            self.webhooks_get,
+            self.webhook_update,
+            self.websockets_list,
+            self.websockets_create,
+            self.websockets_delete,
+            self.websockets_get,
+            self.websockets_update,
+        ]

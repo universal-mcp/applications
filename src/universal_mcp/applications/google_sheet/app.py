@@ -3,15 +3,16 @@ from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 from universal_mcp.applications.google_sheet.helper import analyze_sheet_for_tables, analyze_table_schema
 
+
 class GoogleSheetApp(APIApplication):
     """
     Application for interacting with Google Sheets API.
     Provides tools to create and manage Google Spreadsheets.
     """
 
-    def __init__(self, integration: Integration | None=None) -> None:
-        super().__init__(name='google_sheet', integration=integration)
-        self.base_url = 'https://sheets.googleapis.com/v4/spreadsheets'
+    def __init__(self, integration: Integration | None = None) -> None:
+        super().__init__(name="google_sheet", integration=integration)
+        self.base_url = "https://sheets.googleapis.com/v4/spreadsheets"
 
     async def create_spreadsheet(self, title: str) -> dict[str, Any]:
         """
@@ -31,10 +32,10 @@ class GoogleSheetApp(APIApplication):
             create, spreadsheet, google-sheets, api, important
         """
         url = self.base_url
-        spreadsheet_data = {'properties': {'title': title}}
+        spreadsheet_data = {"properties": {"title": title}}
         response = await self._apost(url, data=spreadsheet_data)
         payload = self._handle_response(response)
-        payload['Note'] = 'You must load and call other google_sheet content functions (like `google_sheet__write_values_to_sheet`)'
+        payload["Note"] = "You must load and call other google_sheet content functions (like `google_sheet__write_values_to_sheet`)"
         return payload
 
     async def get_spreadsheet_metadata(self, spreadsheetId: str) -> dict[str, Any]:
@@ -55,11 +56,18 @@ class GoogleSheetApp(APIApplication):
         Tags:
             get, retrieve, spreadsheet, api, metadata, read, important
         """
-        url = f'{self.base_url}/{spreadsheetId}'
+        url = f"{self.base_url}/{spreadsheetId}"
         response = await self._aget(url)
         return self._handle_response(response)
 
-    async def get_values(self, spreadsheetId: str, range: str, majorDimension: str | None=None, valueRenderOption: str | None=None, dateTimeRenderOption: str | None=None) -> dict[str, Any]:
+    async def get_values(
+        self,
+        spreadsheetId: str,
+        range: str,
+        majorDimension: str | None = None,
+        valueRenderOption: str | None = None,
+        dateTimeRenderOption: str | None = None,
+    ) -> dict[str, Any]:
         """
         Retrieves cell values from a single, specified A1 notation range. Unlike `batch_get_values_by_range` which fetches multiple ranges, this function is for a singular query and provides options to control the data's output format (e.g., rows vs. columns, formatted vs. raw values).
 
@@ -80,18 +88,18 @@ class GoogleSheetApp(APIApplication):
         Tags:
             get, read, spreadsheet, values, important
         """
-        url = f'{self.base_url}/{spreadsheetId}/values/{range}'
+        url = f"{self.base_url}/{spreadsheetId}/values/{range}"
         params = {}
         if majorDimension:
-            params['majorDimension'] = majorDimension
+            params["majorDimension"] = majorDimension
         if valueRenderOption:
-            params['valueRenderOption'] = valueRenderOption
+            params["valueRenderOption"] = valueRenderOption
         if dateTimeRenderOption:
-            params['dateTimeRenderOption'] = dateTimeRenderOption
+            params["dateTimeRenderOption"] = dateTimeRenderOption
         response = await self._aget(url, params=params)
         return self._handle_response(response)
 
-    async def batch_get_values_by_range(self, spreadsheetId: str, ranges: list[str] | None=None) -> dict[str, Any]:
+    async def batch_get_values_by_range(self, spreadsheetId: str, ranges: list[str] | None = None) -> dict[str, Any]:
         """
         Efficiently retrieves values from multiple predefined A1 notation ranges in a single API request. Unlike `get_values`, which fetches a single range, or `batch_get_values_by_data_filter`, which uses dynamic filtering criteria, this function operates on a simple list of range strings for bulk data retrieval.
 
@@ -109,14 +117,25 @@ class GoogleSheetApp(APIApplication):
         Tags:
             get, batch, read, spreadsheet, values
         """
-        url = f'{self.base_url}/{spreadsheetId}/values:batchGet'
+        url = f"{self.base_url}/{spreadsheetId}/values:batchGet"
         params = {}
         if ranges:
-            params['ranges'] = ranges
+            params["ranges"] = ranges
         response = await self._aget(url, params=params)
         return self._handle_response(response)
 
-    async def insert_dimensions(self, spreadsheetId: str, sheet_id: int, dimension: str, start_index: int, end_index: int, inherit_from_before: bool=True, include_spreadsheet_in_response: bool | None=None, response_include_grid_data: bool | None=None, response_ranges: list[str] | None=None) -> dict[str, Any]:
+    async def insert_dimensions(
+        self,
+        spreadsheetId: str,
+        sheet_id: int,
+        dimension: str,
+        start_index: int,
+        end_index: int,
+        inherit_from_before: bool = True,
+        include_spreadsheet_in_response: bool | None = None,
+        response_include_grid_data: bool | None = None,
+        response_ranges: list[str] | None = None,
+    ) -> dict[str, Any]:
         """
         Inserts a specified number of empty rows or columns at a given index, shifting existing content. Distinct from `append_dimensions`, which only adds to the end, this function creates space within the sheet's data grid, preserving surrounding data and formatting.
 
@@ -145,21 +164,30 @@ class GoogleSheetApp(APIApplication):
             insert, modify, spreadsheet, rows, columns, dimensions, important
         """
         if not spreadsheetId:
-            raise ValueError('spreadsheetId cannot be empty')
-        if dimension not in ['ROWS', 'COLUMNS']:
+            raise ValueError("spreadsheetId cannot be empty")
+        if dimension not in ["ROWS", "COLUMNS"]:
             raise ValueError('dimension must be either "ROWS" or "COLUMNS"')
         if start_index < 0 or end_index < 0:
-            raise ValueError('start_index and end_index must be non-negative')
+            raise ValueError("start_index and end_index must be non-negative")
         if start_index >= end_index:
-            raise ValueError('end_index must be greater than start_index')
-        url = f'{self.base_url}/{spreadsheetId}:batchUpdate'
-        request_body: dict[str, Any] = {'requests': [{'insertDimension': {'inheritFromBefore': inherit_from_before, 'range': {'dimension': dimension, 'sheetId': sheet_id, 'startIndex': start_index, 'endIndex': end_index}}}]}
+            raise ValueError("end_index must be greater than start_index")
+        url = f"{self.base_url}/{spreadsheetId}:batchUpdate"
+        request_body: dict[str, Any] = {
+            "requests": [
+                {
+                    "insertDimension": {
+                        "inheritFromBefore": inherit_from_before,
+                        "range": {"dimension": dimension, "sheetId": sheet_id, "startIndex": start_index, "endIndex": end_index},
+                    }
+                }
+            ]
+        }
         if include_spreadsheet_in_response is not None:
-            request_body['includeSpreadsheetInResponse'] = include_spreadsheet_in_response
+            request_body["includeSpreadsheetInResponse"] = include_spreadsheet_in_response
         if response_include_grid_data is not None:
-            request_body['responseIncludeGridData'] = response_include_grid_data
+            request_body["responseIncludeGridData"] = response_include_grid_data
         if response_ranges is not None:
-            request_body['responseRanges'] = response_ranges
+            request_body["responseRanges"] = response_ranges
         response = await self._apost(url, data=request_body)
         return self._handle_response(response)
 
@@ -187,17 +215,27 @@ class GoogleSheetApp(APIApplication):
             append, modify, spreadsheet, rows, columns, dimensions, important
         """
         if not spreadsheetId:
-            raise ValueError('spreadsheetId cannot be empty')
-        if dimension not in ['ROWS', 'COLUMNS']:
+            raise ValueError("spreadsheetId cannot be empty")
+        if dimension not in ["ROWS", "COLUMNS"]:
             raise ValueError('dimension must be either "ROWS" or "COLUMNS"')
         if length <= 0:
-            raise ValueError('length must be a positive integer')
-        url = f'{self.base_url}/{spreadsheetId}:batchUpdate'
-        request_body = {'requests': [{'appendDimension': {'sheetId': sheet_id, 'dimension': dimension, 'length': length}}]}
+            raise ValueError("length must be a positive integer")
+        url = f"{self.base_url}/{spreadsheetId}:batchUpdate"
+        request_body = {"requests": [{"appendDimension": {"sheetId": sheet_id, "dimension": dimension, "length": length}}]}
         response = await self._apost(url, data=request_body)
         return self._handle_response(response)
 
-    async def delete_dimensions(self, spreadsheetId: str, sheet_id: int, dimension: str, start_index: int, end_index: int, include_spreadsheet_in_response: bool | None=None, response_include_grid_data: bool | None=None, response_ranges: list[str] | None=None) -> dict[str, Any]:
+    async def delete_dimensions(
+        self,
+        spreadsheetId: str,
+        sheet_id: int,
+        dimension: str,
+        start_index: int,
+        end_index: int,
+        include_spreadsheet_in_response: bool | None = None,
+        response_include_grid_data: bool | None = None,
+        response_ranges: list[str] | None = None,
+    ) -> dict[str, Any]:
         """
         Deletes a specified range of rows or columns, permanently removing them and shifting subsequent cells. This alters the sheet's structure, unlike `clear_values` which only removes cell content. It is the direct counterpart to `insert_dimensions`, which adds space within the data grid.
 
@@ -222,25 +260,52 @@ class GoogleSheetApp(APIApplication):
             delete, modify, spreadsheet, rows, columns, dimensions, important
         """
         if not spreadsheetId:
-            raise ValueError('spreadsheetId cannot be empty')
-        if dimension not in ['ROWS', 'COLUMNS']:
+            raise ValueError("spreadsheetId cannot be empty")
+        if dimension not in ["ROWS", "COLUMNS"]:
             raise ValueError('dimension must be either "ROWS" or "COLUMNS"')
         if start_index < 0 or end_index < 0:
-            raise ValueError('start_index and end_index must be non-negative')
+            raise ValueError("start_index and end_index must be non-negative")
         if start_index >= end_index:
-            raise ValueError('end_index must be greater than start_index')
-        url = f'{self.base_url}/{spreadsheetId}:batchUpdate'
-        request_body: dict[str, Any] = {'requests': [{'deleteDimension': {'range': {'sheetId': sheet_id, 'dimension': dimension, 'startIndex': start_index, 'endIndex': end_index}}}]}
+            raise ValueError("end_index must be greater than start_index")
+        url = f"{self.base_url}/{spreadsheetId}:batchUpdate"
+        request_body: dict[str, Any] = {
+            "requests": [
+                {
+                    "deleteDimension": {
+                        "range": {"sheetId": sheet_id, "dimension": dimension, "startIndex": start_index, "endIndex": end_index}
+                    }
+                }
+            ]
+        }
         if include_spreadsheet_in_response is not None:
-            request_body['includeSpreadsheetInResponse'] = include_spreadsheet_in_response
+            request_body["includeSpreadsheetInResponse"] = include_spreadsheet_in_response
         if response_include_grid_data is not None:
-            request_body['responseIncludeGridData'] = response_include_grid_data
+            request_body["responseIncludeGridData"] = response_include_grid_data
         if response_ranges is not None:
-            request_body['responseRanges'] = response_ranges
+            request_body["responseRanges"] = response_ranges
         response = await self._apost(url, data=request_body)
         return self._handle_response(response)
 
-    async def add_sheet(self, spreadsheetId: str, title: str | None=None, sheetId: int | None=None, index: int | None=None, sheetType: str='GRID', hidden: bool | None=None, rightToLeft: bool | None=None, tabColorStyle: dict | None=None, rowCount: int | None=None, columnCount: int | None=None, frozenRowCount: int | None=None, frozenColumnCount: int | None=None, hideGridlines: bool | None=None, rowGroupControlAfter: bool | None=None, columnGroupControlAfter: bool | None=None, includeSpreadsheetInResponse: bool=False, responseIncludeGridData: bool=False) -> dict[str, Any]:
+    async def add_sheet(
+        self,
+        spreadsheetId: str,
+        title: str | None = None,
+        sheetId: int | None = None,
+        index: int | None = None,
+        sheetType: str = "GRID",
+        hidden: bool | None = None,
+        rightToLeft: bool | None = None,
+        tabColorStyle: dict | None = None,
+        rowCount: int | None = None,
+        columnCount: int | None = None,
+        frozenRowCount: int | None = None,
+        frozenColumnCount: int | None = None,
+        hideGridlines: bool | None = None,
+        rowGroupControlAfter: bool | None = None,
+        columnGroupControlAfter: bool | None = None,
+        includeSpreadsheetInResponse: bool = False,
+        responseIncludeGridData: bool = False,
+    ) -> dict[str, Any]:
         """
         Adds a new worksheet (tab) to an existing Google Spreadsheet. It allows extensive customization of the new sheet's properties, such as its title, position, and dimensions. This is distinct from `create_spreadsheet`, which generates a completely new spreadsheet file instead of modifying an existing one.
 
@@ -274,45 +339,74 @@ class GoogleSheetApp(APIApplication):
             add, sheet, spreadsheet, create
         """
         if not spreadsheetId:
-            raise ValueError('spreadsheetId cannot be empty')
-        url = f'{self.base_url}/{spreadsheetId}:batchUpdate'
-        add_sheet_request = {'properties': {}}
+            raise ValueError("spreadsheetId cannot be empty")
+        url = f"{self.base_url}/{spreadsheetId}:batchUpdate"
+        add_sheet_request = {"properties": {}}
         if title is not None:
-            add_sheet_request['properties']['title'] = title
+            add_sheet_request["properties"]["title"] = title
         if sheetId is not None:
-            add_sheet_request['properties']['sheetId'] = sheetId
+            add_sheet_request["properties"]["sheetId"] = sheetId
         if index is not None:
-            add_sheet_request['properties']['index'] = index
+            add_sheet_request["properties"]["index"] = index
         if sheetType is not None:
-            add_sheet_request['properties']['sheetType'] = sheetType
+            add_sheet_request["properties"]["sheetType"] = sheetType
         if hidden is not None:
-            add_sheet_request['properties']['hidden'] = hidden
+            add_sheet_request["properties"]["hidden"] = hidden
         if rightToLeft is not None:
-            add_sheet_request['properties']['rightToLeft'] = rightToLeft
+            add_sheet_request["properties"]["rightToLeft"] = rightToLeft
         if tabColorStyle is not None:
-            add_sheet_request['properties']['tabColorStyle'] = tabColorStyle
+            add_sheet_request["properties"]["tabColorStyle"] = tabColorStyle
         grid_properties = {}
-        if any((param is not None for param in [rowCount, columnCount, frozenRowCount, frozenColumnCount, hideGridlines, rowGroupControlAfter, columnGroupControlAfter])):
+        if any(
+            (
+                param is not None
+                for param in [
+                    rowCount,
+                    columnCount,
+                    frozenRowCount,
+                    frozenColumnCount,
+                    hideGridlines,
+                    rowGroupControlAfter,
+                    columnGroupControlAfter,
+                ]
+            )
+        ):
             if rowCount is not None:
-                grid_properties['rowCount'] = rowCount
+                grid_properties["rowCount"] = rowCount
             if columnCount is not None:
-                grid_properties['columnCount'] = columnCount
+                grid_properties["columnCount"] = columnCount
             if frozenRowCount is not None:
-                grid_properties['frozenRowCount'] = frozenRowCount
+                grid_properties["frozenRowCount"] = frozenRowCount
             if frozenColumnCount is not None:
-                grid_properties['frozenColumnCount'] = frozenColumnCount
+                grid_properties["frozenColumnCount"] = frozenColumnCount
             if hideGridlines is not None:
-                grid_properties['hideGridlines'] = hideGridlines
+                grid_properties["hideGridlines"] = hideGridlines
             if rowGroupControlAfter is not None:
-                grid_properties['rowGroupControlAfter'] = rowGroupControlAfter
+                grid_properties["rowGroupControlAfter"] = rowGroupControlAfter
             if columnGroupControlAfter is not None:
-                grid_properties['columnGroupControlAfter'] = columnGroupControlAfter
-            add_sheet_request['properties']['gridProperties'] = grid_properties
-        request_body = {'requests': [{'addSheet': add_sheet_request}], 'includeSpreadsheetInResponse': includeSpreadsheetInResponse, 'responseIncludeGridData': responseIncludeGridData}
+                grid_properties["columnGroupControlAfter"] = columnGroupControlAfter
+            add_sheet_request["properties"]["gridProperties"] = grid_properties
+        request_body = {
+            "requests": [{"addSheet": add_sheet_request}],
+            "includeSpreadsheetInResponse": includeSpreadsheetInResponse,
+            "responseIncludeGridData": responseIncludeGridData,
+        }
         response = await self._apost(url, data=request_body)
         return self._handle_response(response)
 
-    async def add_basic_chart(self, spreadsheetId: str, source_sheet_id: int, chart_title: str, chart_type: str, domain_range: dict, series_ranges: list[dict], new_sheet: bool=False, chart_position: dict | None=None, x_axis_title: str | None=None, y_axis_title: str | None=None) -> dict[str, Any]:
+    async def add_basic_chart(
+        self,
+        spreadsheetId: str,
+        source_sheet_id: int,
+        chart_title: str,
+        chart_type: str,
+        domain_range: dict,
+        series_ranges: list[dict],
+        new_sheet: bool = False,
+        chart_position: dict | None = None,
+        x_axis_title: str | None = None,
+        y_axis_title: str | None = None,
+    ) -> dict[str, Any]:
         """
         Adds various axis-based charts (e.g., column, bar, line, area) to a spreadsheet from specified data ranges. The chart can be placed on a new sheet or positioned on an existing one. This is distinct from `add_pie_chart`, which creates proportional visualizations instead of axis-based charts.
 
@@ -342,25 +436,87 @@ class GoogleSheetApp(APIApplication):
             add, chart, basic-chart, visualization
         """
         if not spreadsheetId:
-            raise ValueError('spreadsheetId cannot be empty')
+            raise ValueError("spreadsheetId cannot be empty")
         if not chart_title:
-            raise ValueError('chart_title cannot be empty')
-        url = f'{self.base_url}/{spreadsheetId}:batchUpdate'
-        chart_spec = {'title': chart_title, 'basicChart': {'chartType': chart_type, 'legendPosition': 'BOTTOM_LEGEND', 'axis': [{'position': 'BOTTOM_AXIS', 'title': x_axis_title if x_axis_title else 'Categories'}, {'position': 'LEFT_AXIS', 'title': y_axis_title if y_axis_title else 'Values'}], 'domains': [{'domain': {'sourceRange': {'sources': [{'sheetId': source_sheet_id, 'startRowIndex': domain_range.get('startRowIndex', 0), 'endRowIndex': domain_range.get('endRowIndex', 1), 'startColumnIndex': domain_range.get('startColumnIndex', 0), 'endColumnIndex': domain_range.get('endColumnIndex', 1)}]}}}], 'series': [], 'headerCount': 1}}
+            raise ValueError("chart_title cannot be empty")
+        url = f"{self.base_url}/{spreadsheetId}:batchUpdate"
+        chart_spec = {
+            "title": chart_title,
+            "basicChart": {
+                "chartType": chart_type,
+                "legendPosition": "BOTTOM_LEGEND",
+                "axis": [
+                    {"position": "BOTTOM_AXIS", "title": x_axis_title if x_axis_title else "Categories"},
+                    {"position": "LEFT_AXIS", "title": y_axis_title if y_axis_title else "Values"},
+                ],
+                "domains": [
+                    {
+                        "domain": {
+                            "sourceRange": {
+                                "sources": [
+                                    {
+                                        "sheetId": source_sheet_id,
+                                        "startRowIndex": domain_range.get("startRowIndex", 0),
+                                        "endRowIndex": domain_range.get("endRowIndex", 1),
+                                        "startColumnIndex": domain_range.get("startColumnIndex", 0),
+                                        "endColumnIndex": domain_range.get("endColumnIndex", 1),
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                ],
+                "series": [],
+                "headerCount": 1,
+            },
+        }
         for series_range in series_ranges:
-            series = {'series': {'sourceRange': {'sources': [{'sheetId': source_sheet_id, 'startRowIndex': series_range.get('startRowIndex', 0), 'endRowIndex': series_range.get('endRowIndex', 1), 'startColumnIndex': series_range.get('startColumnIndex', 0), 'endColumnIndex': series_range.get('endColumnIndex', 1)}]}}, 'targetAxis': 'LEFT_AXIS'}
-            chart_spec['basicChart']['series'].append(series)
+            series = {
+                "series": {
+                    "sourceRange": {
+                        "sources": [
+                            {
+                                "sheetId": source_sheet_id,
+                                "startRowIndex": series_range.get("startRowIndex", 0),
+                                "endRowIndex": series_range.get("endRowIndex", 1),
+                                "startColumnIndex": series_range.get("startColumnIndex", 0),
+                                "endColumnIndex": series_range.get("endColumnIndex", 1),
+                            }
+                        ]
+                    }
+                },
+                "targetAxis": "LEFT_AXIS",
+            }
+            chart_spec["basicChart"]["series"].append(series)
         if new_sheet:
-            position_spec = {'newSheet': True}
+            position_spec = {"newSheet": True}
         elif chart_position:
             position_spec = chart_position
         else:
-            position_spec = {'overlayPosition': {'anchorCell': {'sheetId': source_sheet_id, 'rowIndex': 0, 'columnIndex': 0}, 'offsetXPixels': 0, 'offsetYPixels': 0, 'widthPixels': 600, 'heightPixels': 400}}
-        request_body = {'requests': [{'addChart': {'chart': {'spec': chart_spec, 'position': position_spec}}}]}
+            position_spec = {
+                "overlayPosition": {
+                    "anchorCell": {"sheetId": source_sheet_id, "rowIndex": 0, "columnIndex": 0},
+                    "offsetXPixels": 0,
+                    "offsetYPixels": 0,
+                    "widthPixels": 600,
+                    "heightPixels": 400,
+                }
+            }
+        request_body = {"requests": [{"addChart": {"chart": {"spec": chart_spec, "position": position_spec}}}]}
         response = await self._apost(url, data=request_body)
         return self._handle_response(response)
 
-    async def add_pie_chart(self, spreadsheetId: str, source_sheet_id: int, chart_title: str, data_range: dict, new_sheet: bool=False, chart_position: dict | None=None, legend_position: str='BOTTOM_LEGEND', pie_hole: float | None=None) -> dict[str, Any]:
+    async def add_pie_chart(
+        self,
+        spreadsheetId: str,
+        source_sheet_id: int,
+        chart_title: str,
+        data_range: dict,
+        new_sheet: bool = False,
+        chart_position: dict | None = None,
+        legend_position: str = "BOTTOM_LEGEND",
+        pie_hole: float | None = None,
+    ) -> dict[str, Any]:
         """
         Adds a pie or donut chart to a Google Spreadsheet from a specified data range. Unlike the more general `add_basic_chart`, this is specialized for visualizing data as proportions of a whole and supports pie-specific options like creating a donut chart via the `pie_hole` parameter.
 
@@ -388,27 +544,74 @@ class GoogleSheetApp(APIApplication):
             add, chart, pie, visualization
         """
         if not spreadsheetId:
-            raise ValueError('spreadsheetId cannot be empty')
+            raise ValueError("spreadsheetId cannot be empty")
         if not chart_title:
-            raise ValueError('chart_title cannot be empty')
+            raise ValueError("chart_title cannot be empty")
         if pie_hole is not None and (not 0 <= pie_hole <= 1):
-            raise ValueError('pie_hole must be between 0.0 and 1.0')
-        url = f'{self.base_url}/{spreadsheetId}:batchUpdate'
-        pie_chart_spec = {'legendPosition': legend_position, 'domain': {'sourceRange': {'sources': [{'sheetId': source_sheet_id, 'startRowIndex': data_range.get('startRowIndex', 0), 'endRowIndex': data_range.get('endRowIndex', 1), 'startColumnIndex': data_range.get('startColumnIndex', 0), 'endColumnIndex': data_range.get('startColumnIndex', 0) + 1}]}}, 'series': {'sourceRange': {'sources': [{'sheetId': source_sheet_id, 'startRowIndex': data_range.get('startRowIndex', 0), 'endRowIndex': data_range.get('endRowIndex', 1), 'startColumnIndex': data_range.get('startColumnIndex', 0) + 1, 'endColumnIndex': data_range.get('endColumnIndex', 2)}]}}}
+            raise ValueError("pie_hole must be between 0.0 and 1.0")
+        url = f"{self.base_url}/{spreadsheetId}:batchUpdate"
+        pie_chart_spec = {
+            "legendPosition": legend_position,
+            "domain": {
+                "sourceRange": {
+                    "sources": [
+                        {
+                            "sheetId": source_sheet_id,
+                            "startRowIndex": data_range.get("startRowIndex", 0),
+                            "endRowIndex": data_range.get("endRowIndex", 1),
+                            "startColumnIndex": data_range.get("startColumnIndex", 0),
+                            "endColumnIndex": data_range.get("startColumnIndex", 0) + 1,
+                        }
+                    ]
+                }
+            },
+            "series": {
+                "sourceRange": {
+                    "sources": [
+                        {
+                            "sheetId": source_sheet_id,
+                            "startRowIndex": data_range.get("startRowIndex", 0),
+                            "endRowIndex": data_range.get("endRowIndex", 1),
+                            "startColumnIndex": data_range.get("startColumnIndex", 0) + 1,
+                            "endColumnIndex": data_range.get("endColumnIndex", 2),
+                        }
+                    ]
+                }
+            },
+        }
         if pie_hole is not None:
-            pie_chart_spec['pieHole'] = pie_hole
-        chart_spec = {'title': chart_title, 'pieChart': pie_chart_spec}
+            pie_chart_spec["pieHole"] = pie_hole
+        chart_spec = {"title": chart_title, "pieChart": pie_chart_spec}
         if new_sheet:
-            position_spec = {'newSheet': True}
+            position_spec = {"newSheet": True}
         elif chart_position:
             position_spec = chart_position
         else:
-            position_spec = {'overlayPosition': {'anchorCell': {'sheetId': source_sheet_id, 'rowIndex': 0, 'columnIndex': 0}, 'offsetXPixels': 0, 'offsetYPixels': 0, 'widthPixels': 600, 'heightPixels': 400}}
-        request_body = {'requests': [{'addChart': {'chart': {'spec': chart_spec, 'position': position_spec}}}]}
+            position_spec = {
+                "overlayPosition": {
+                    "anchorCell": {"sheetId": source_sheet_id, "rowIndex": 0, "columnIndex": 0},
+                    "offsetXPixels": 0,
+                    "offsetYPixels": 0,
+                    "widthPixels": 600,
+                    "heightPixels": 400,
+                }
+            }
+        request_body = {"requests": [{"addChart": {"chart": {"spec": chart_spec, "position": position_spec}}}]}
         response = await self._apost(url, data=request_body)
         return self._handle_response(response)
 
-    async def add_table(self, spreadsheetId: str, sheet_id: int, table_name: str, table_id: str, start_row_index: int, end_row_index: int, start_column_index: int, end_column_index: int, column_properties: list[dict] | None=None) -> dict[str, Any]:
+    async def add_table(
+        self,
+        spreadsheetId: str,
+        sheet_id: int,
+        table_name: str,
+        table_id: str,
+        start_row_index: int,
+        end_row_index: int,
+        start_column_index: int,
+        end_column_index: int,
+        column_properties: list[dict] | None = None,
+    ) -> dict[str, Any]:
         """
         Creates a structured table within a specified range on a Google Sheet. Defines the table's name, ID, and dimensions, and can optionally configure column properties like data types and validation rules. This action creates a formal table object, distinct from functions that only write cell values.
 
@@ -436,31 +639,53 @@ class GoogleSheetApp(APIApplication):
             add, table, structured-data
         """
         if not spreadsheetId:
-            raise ValueError('spreadsheetId cannot be empty')
+            raise ValueError("spreadsheetId cannot be empty")
         if not table_name:
-            raise ValueError('table_name cannot be empty')
+            raise ValueError("table_name cannot be empty")
         if not table_id:
-            raise ValueError('table_id cannot be empty')
+            raise ValueError("table_id cannot be empty")
         if start_row_index < 0 or end_row_index < 0 or start_column_index < 0 or (end_column_index < 0):
-            raise ValueError('All indices must be non-negative')
+            raise ValueError("All indices must be non-negative")
         if start_row_index >= end_row_index:
-            raise ValueError('end_row_index must be greater than start_row_index')
+            raise ValueError("end_row_index must be greater than start_row_index")
         if start_column_index >= end_column_index:
-            raise ValueError('end_column_index must be greater than start_column_index')
+            raise ValueError("end_column_index must be greater than start_column_index")
         if column_properties:
-            valid_column_types = ['TEXT', 'PERCENT', 'DROPDOWN', 'DOUBLE', 'CURRENCY', 'DATE', 'TIME', 'DATE_TIME']
+            valid_column_types = ["TEXT", "PERCENT", "DROPDOWN", "DOUBLE", "CURRENCY", "DATE", "TIME", "DATE_TIME"]
             for i, prop in enumerate(column_properties):
-                if 'columnType' in prop and prop['columnType'] not in valid_column_types:
-                    raise ValueError(f"Invalid column type '{prop['columnType']}' at index {i}. Valid types are: {', '.join(valid_column_types)}")
-        url = f'{self.base_url}/{spreadsheetId}:batchUpdate'
-        table_spec = {'name': table_name, 'tableId': table_id, 'range': {'sheetId': sheet_id, 'startColumnIndex': start_column_index, 'endColumnIndex': end_column_index, 'startRowIndex': start_row_index, 'endRowIndex': end_row_index}}
+                if "columnType" in prop and prop["columnType"] not in valid_column_types:
+                    raise ValueError(
+                        f"Invalid column type '{prop['columnType']}' at index {i}. Valid types are: {', '.join(valid_column_types)}"
+                    )
+        url = f"{self.base_url}/{spreadsheetId}:batchUpdate"
+        table_spec = {
+            "name": table_name,
+            "tableId": table_id,
+            "range": {
+                "sheetId": sheet_id,
+                "startColumnIndex": start_column_index,
+                "endColumnIndex": end_column_index,
+                "startRowIndex": start_row_index,
+                "endRowIndex": end_row_index,
+            },
+        }
         if column_properties:
-            table_spec['columnProperties'] = column_properties
-        request_body = {'requests': [{'addTable': {'table': table_spec}}]}
+            table_spec["columnProperties"] = column_properties
+        request_body = {"requests": [{"addTable": {"table": table_spec}}]}
         response = await self._apost(url, data=request_body)
         return self._handle_response(response)
 
-    async def update_table(self, spreadsheetId: str, table_id: str, table_name: str | None=None, start_row_index: int | None=None, end_row_index: int | None=None, start_column_index: int | None=None, end_column_index: int | None=None, column_properties: list[dict] | None=None) -> dict[str, Any]:
+    async def update_table(
+        self,
+        spreadsheetId: str,
+        table_id: str,
+        table_name: str | None = None,
+        start_row_index: int | None = None,
+        end_row_index: int | None = None,
+        start_column_index: int | None = None,
+        end_column_index: int | None = None,
+        column_properties: list[dict] | None = None,
+    ) -> dict[str, Any]:
         """
         Modifies properties of an existing table within a Google Sheet, such as its name, data range, or column specifications. This function updates the table's structural metadata, distinguishing it from `update_values` which alters the cell data within the table's range.
 
@@ -488,50 +713,52 @@ class GoogleSheetApp(APIApplication):
             update, table, modify, structured-data
         """
         if not spreadsheetId:
-            raise ValueError('spreadsheetId cannot be empty')
+            raise ValueError("spreadsheetId cannot be empty")
         if not table_id:
-            raise ValueError('table_id cannot be empty')
+            raise ValueError("table_id cannot be empty")
         if start_row_index is not None and start_row_index < 0:
-            raise ValueError('start_row_index must be non-negative')
+            raise ValueError("start_row_index must be non-negative")
         if end_row_index is not None and end_row_index < 0:
-            raise ValueError('end_row_index must be non-negative')
+            raise ValueError("end_row_index must be non-negative")
         if start_column_index is not None and start_column_index < 0:
-            raise ValueError('start_column_index must be non-negative')
+            raise ValueError("start_column_index must be non-negative")
         if end_column_index is not None and end_column_index < 0:
-            raise ValueError('end_column_index must be non-negative')
+            raise ValueError("end_column_index must be non-negative")
         if start_row_index is not None and end_row_index is not None and (start_row_index >= end_row_index):
-            raise ValueError('end_row_index must be greater than start_row_index')
+            raise ValueError("end_row_index must be greater than start_row_index")
         if start_column_index is not None and end_column_index is not None and (start_column_index >= end_column_index):
-            raise ValueError('end_column_index must be greater than start_column_index')
+            raise ValueError("end_column_index must be greater than start_column_index")
         if column_properties:
-            valid_column_types = ['TEXT', 'PERCENT', 'DROPDOWN', 'DOUBLE', 'CURRENCY', 'DATE', 'TIME', 'DATE_TIME']
+            valid_column_types = ["TEXT", "PERCENT", "DROPDOWN", "DOUBLE", "CURRENCY", "DATE", "TIME", "DATE_TIME"]
             for i, prop in enumerate(column_properties):
-                if 'columnType' in prop and prop['columnType'] not in valid_column_types:
-                    raise ValueError(f"Invalid column type '{prop['columnType']}' at index {i}. Valid types are: {', '.join(valid_column_types)}")
-        url = f'{self.base_url}/{spreadsheetId}:batchUpdate'
-        table_spec: dict[str, Any] = {'tableId': table_id}
+                if "columnType" in prop and prop["columnType"] not in valid_column_types:
+                    raise ValueError(
+                        f"Invalid column type '{prop['columnType']}' at index {i}. Valid types are: {', '.join(valid_column_types)}"
+                    )
+        url = f"{self.base_url}/{spreadsheetId}:batchUpdate"
+        table_spec: dict[str, Any] = {"tableId": table_id}
         fields_to_update = []
         if table_name is not None:
-            table_spec['name'] = table_name
-            fields_to_update.append('name')
+            table_spec["name"] = table_name
+            fields_to_update.append("name")
         range_params: dict[str, Any] = {}
         if start_row_index is not None:
-            range_params['startRowIndex'] = start_row_index
+            range_params["startRowIndex"] = start_row_index
         if end_row_index is not None:
-            range_params['endRowIndex'] = end_row_index
+            range_params["endRowIndex"] = end_row_index
         if start_column_index is not None:
-            range_params['startColumnIndex'] = start_column_index
+            range_params["startColumnIndex"] = start_column_index
         if end_column_index is not None:
-            range_params['endColumnIndex'] = end_column_index
+            range_params["endColumnIndex"] = end_column_index
         if range_params:
-            table_spec['range'] = range_params
-            fields_to_update.append('range')
+            table_spec["range"] = range_params
+            fields_to_update.append("range")
         if column_properties:
-            table_spec['columnProperties'] = column_properties
-            fields_to_update.append('columnProperties')
+            table_spec["columnProperties"] = column_properties
+            fields_to_update.append("columnProperties")
         if not fields_to_update:
-            raise ValueError('At least one field must be provided for update (table_name, range indices, or column_properties)')
-        request_body = {'requests': [{'updateTable': {'table': table_spec, 'fields': ','.join(fields_to_update)}}]}
+            raise ValueError("At least one field must be provided for update (table_name, range indices, or column_properties)")
+        request_body = {"requests": [{"updateTable": {"table": table_spec, "fields": ",".join(fields_to_update)}}]}
         response = await self._apost(url, data=request_body)
         return self._handle_response(response)
 
@@ -553,11 +780,13 @@ class GoogleSheetApp(APIApplication):
         Tags:
             clear, modify, spreadsheet, api, sheets, data-management, important
         """
-        url = f'{self.base_url}/{spreadsheetId}/values/{range}:clear'
+        url = f"{self.base_url}/{spreadsheetId}/values/{range}:clear"
         response = await self._apost(url, data={})
         return self._handle_response(response)
 
-    async def update_values(self, spreadsheetId: str, range: str, values: list[list[Any]], value_input_option: str='RAW') -> dict[str, Any]:
+    async def update_values(
+        self, spreadsheetId: str, range: str, values: list[list[Any]], value_input_option: str = "RAW"
+    ) -> dict[str, Any]:
         """
         Overwrites cell values within a specific A1 notation range using a provided 2D list. This function replaces existing data in a predefined area, distinguishing it from `append_values`, which adds new rows after a table instead of overwriting a specific block of cells.
 
@@ -577,9 +806,9 @@ class GoogleSheetApp(APIApplication):
         Tags:
             update, write, sheets, api, important, data-modification, google-sheets
         """
-        url = f'{self.base_url}/{spreadsheetId}/values/{range}'
-        params = {'valueInputOption': value_input_option}
-        data = {'range': range, 'values': values}
+        url = f"{self.base_url}/{spreadsheetId}/values/{range}"
+        params = {"valueInputOption": value_input_option}
+        data = {"range": range, "values": values}
         response = await self._aput(url, data=data, params=params)
         return self._handle_response(response)
 
@@ -602,15 +831,22 @@ class GoogleSheetApp(APIApplication):
             clear, batch, values, spreadsheet
         """
         if not spreadsheetId:
-            raise ValueError('spreadsheetId cannot be empty')
+            raise ValueError("spreadsheetId cannot be empty")
         if not ranges or not isinstance(ranges, list) or len(ranges) == 0:
-            raise ValueError('ranges must be a non-empty list')
-        url = f'{self.base_url}/{spreadsheetId}/values:batchClear'
-        request_body = {'ranges': ranges}
+            raise ValueError("ranges must be a non-empty list")
+        url = f"{self.base_url}/{spreadsheetId}/values:batchClear"
+        request_body = {"ranges": ranges}
         response = await self._apost(url, data=request_body)
         return self._handle_response(response)
 
-    async def batch_get_values_by_data_filter(self, spreadsheetId: str, data_filters: list[dict], major_dimension: str | None=None, value_render_option: str | None=None, date_time_render_option: str | None=None) -> dict[str, Any]:
+    async def batch_get_values_by_data_filter(
+        self,
+        spreadsheetId: str,
+        data_filters: list[dict],
+        major_dimension: str | None = None,
+        value_render_option: str | None = None,
+        date_time_render_option: str | None = None,
+    ) -> dict[str, Any]:
         """
         Retrieves values from spreadsheet ranges matching a list of data filters. This method provides dynamic, criteria-based selection using A1 notation or grid coordinates, unlike `batch_get_values_by_range` which uses a simple list of range strings. It is ideal for fetching multiple, specific datasets in one request.
 
@@ -634,23 +870,23 @@ class GoogleSheetApp(APIApplication):
             get, batch, data-filter, values, spreadsheet
         """
         if not spreadsheetId:
-            raise ValueError('spreadsheetId cannot be empty')
+            raise ValueError("spreadsheetId cannot be empty")
         if not data_filters or not isinstance(data_filters, list) or len(data_filters) == 0:
-            raise ValueError('data_filters must be a non-empty list')
-        if major_dimension and major_dimension not in ['ROWS', 'COLUMNS']:
+            raise ValueError("data_filters must be a non-empty list")
+        if major_dimension and major_dimension not in ["ROWS", "COLUMNS"]:
             raise ValueError('major_dimension must be either "ROWS" or "COLUMNS"')
-        if value_render_option and value_render_option not in ['FORMATTED_VALUE', 'UNFORMATTED_VALUE', 'FORMULA']:
+        if value_render_option and value_render_option not in ["FORMATTED_VALUE", "UNFORMATTED_VALUE", "FORMULA"]:
             raise ValueError('value_render_option must be either "FORMATTED_VALUE", "UNFORMATTED_VALUE", or "FORMULA"')
-        if date_time_render_option and date_time_render_option not in ['SERIAL_NUMBER', 'FORMATTED_STRING']:
+        if date_time_render_option and date_time_render_option not in ["SERIAL_NUMBER", "FORMATTED_STRING"]:
             raise ValueError('date_time_render_option must be either "SERIAL_NUMBER" or "FORMATTED_STRING"')
-        url = f'{self.base_url}/{spreadsheetId}/values:batchGetByDataFilter'
-        request_body: dict[str, Any] = {'dataFilters': data_filters}
+        url = f"{self.base_url}/{spreadsheetId}/values:batchGetByDataFilter"
+        request_body: dict[str, Any] = {"dataFilters": data_filters}
         if major_dimension:
-            request_body['majorDimension'] = major_dimension
+            request_body["majorDimension"] = major_dimension
         if value_render_option:
-            request_body['valueRenderOption'] = value_render_option
+            request_body["valueRenderOption"] = value_render_option
         if date_time_render_option:
-            request_body['dateTimeRenderOption'] = date_time_render_option
+            request_body["dateTimeRenderOption"] = date_time_render_option
         response = await self._apost(url, data=request_body)
         return self._handle_response(response)
 
@@ -675,17 +911,25 @@ class GoogleSheetApp(APIApplication):
             copy, sheet, spreadsheet, duplicate
         """
         if not spreadsheetId:
-            raise ValueError('spreadsheetId cannot be empty')
+            raise ValueError("spreadsheetId cannot be empty")
         if sheet_id is None:
-            raise ValueError('sheet_id cannot be empty')
+            raise ValueError("sheet_id cannot be empty")
         if not destination_spreadsheetId:
-            raise ValueError('destination_spreadsheetId cannot be empty')
-        url = f'{self.base_url}/{spreadsheetId}/sheets/{sheet_id}:copyTo'
-        request_body = {'destinationSpreadsheetId': destination_spreadsheetId}
+            raise ValueError("destination_spreadsheetId cannot be empty")
+        url = f"{self.base_url}/{spreadsheetId}/sheets/{sheet_id}:copyTo"
+        request_body = {"destinationSpreadsheetId": destination_spreadsheetId}
         response = await self._apost(url, data=request_body)
         return self._handle_response(response)
 
-    async def write_values_to_sheet(self, spreadsheetId: str, sheet_name: str, values: list[list[Any]], first_cell_location: str | None=None, value_input_option: str='USER_ENTERED', include_values_in_response: bool=False) -> dict[str, Any]:
+    async def write_values_to_sheet(
+        self,
+        spreadsheetId: str,
+        sheet_name: str,
+        values: list[list[Any]],
+        first_cell_location: str | None = None,
+        value_input_option: str = "USER_ENTERED",
+        include_values_in_response: bool = False,
+    ) -> dict[str, Any]:
         """
         Writes a 2D list of values to a sheet, overwriting existing data. Data is written starting from a specified cell, or defaults to cell A1 if no location is provided. This differs from `append_values`, which adds new rows after existing data without replacing content.
 
@@ -708,24 +952,34 @@ class GoogleSheetApp(APIApplication):
             batch, update, write, sheets, api, important, data-modification, google-sheets
         """
         if not spreadsheetId:
-            raise ValueError('spreadsheetId cannot be empty')
+            raise ValueError("spreadsheetId cannot be empty")
         if not sheet_name:
-            raise ValueError('sheet_name cannot be empty')
+            raise ValueError("sheet_name cannot be empty")
         if not values or not isinstance(values, list) or len(values) == 0:
-            raise ValueError('values must be a non-empty 2D list')
-        if value_input_option not in ['RAW', 'USER_ENTERED']:
+            raise ValueError("values must be a non-empty 2D list")
+        if value_input_option not in ["RAW", "USER_ENTERED"]:
             raise ValueError('value_input_option must be either "RAW" or "USER_ENTERED"')
         if first_cell_location:
-            range_str = f'{sheet_name}!{first_cell_location}'
+            range_str = f"{sheet_name}!{first_cell_location}"
         else:
-            range_str = f'{sheet_name}'
-        url = f'{self.base_url}/{spreadsheetId}/values/{range_str}'
-        params = {'valueInputOption': value_input_option, 'includeValuesInResponse': include_values_in_response}
-        data = {'values': values}
+            range_str = f"{sheet_name}"
+        url = f"{self.base_url}/{spreadsheetId}/values/{range_str}"
+        params = {"valueInputOption": value_input_option, "includeValuesInResponse": include_values_in_response}
+        data = {"values": values}
         response = await self._aput(url, data=data, params=params)
         return self._handle_response(response)
 
-    async def append_values(self, spreadsheetId: str, range: str, value_input_option: str, values: list[list[Any]], insert_data_option: str | None=None, include_values_in_response: bool | None=None, response_value_render_option: str | None=None, response_date_time_render_option: str | None=None) -> dict[str, Any]:
+    async def append_values(
+        self,
+        spreadsheetId: str,
+        range: str,
+        value_input_option: str,
+        values: list[list[Any]],
+        insert_data_option: str | None = None,
+        include_values_in_response: bool | None = None,
+        response_value_render_option: str | None = None,
+        response_date_time_render_option: str | None = None,
+    ) -> dict[str, Any]:
         """
         Appends rows of data after a specified table in a Google Sheet. Distinct from `update_values` which overwrites data, this function adds new rows at the end of the table. It can also insert rows, shifting existing cells down, offering finer control over data addition.
 
@@ -750,32 +1004,32 @@ class GoogleSheetApp(APIApplication):
             append, values, spreadsheet, data, important
         """
         if not spreadsheetId:
-            raise ValueError('spreadsheetId cannot be empty')
+            raise ValueError("spreadsheetId cannot be empty")
         if not range:
-            raise ValueError('range cannot be empty')
+            raise ValueError("range cannot be empty")
         if not value_input_option:
-            raise ValueError('value_input_option cannot be empty')
-        if value_input_option not in ['RAW', 'USER_ENTERED']:
+            raise ValueError("value_input_option cannot be empty")
+        if value_input_option not in ["RAW", "USER_ENTERED"]:
             raise ValueError('value_input_option must be either "RAW" or "USER_ENTERED"')
         if not values or not isinstance(values, list) or len(values) == 0:
-            raise ValueError('values must be a non-empty 2D list')
-        if insert_data_option and insert_data_option not in ['OVERWRITE', 'INSERT_ROWS']:
+            raise ValueError("values must be a non-empty 2D list")
+        if insert_data_option and insert_data_option not in ["OVERWRITE", "INSERT_ROWS"]:
             raise ValueError('insert_data_option must be either "OVERWRITE" or "INSERT_ROWS"')
-        if response_value_render_option and response_value_render_option not in ['FORMATTED_VALUE', 'UNFORMATTED_VALUE', 'FORMULA']:
+        if response_value_render_option and response_value_render_option not in ["FORMATTED_VALUE", "UNFORMATTED_VALUE", "FORMULA"]:
             raise ValueError('response_value_render_option must be either "FORMATTED_VALUE", "UNFORMATTED_VALUE", or "FORMULA"')
-        if response_date_time_render_option and response_date_time_render_option not in ['SERIAL_NUMBER', 'FORMATTED_STRING']:
+        if response_date_time_render_option and response_date_time_render_option not in ["SERIAL_NUMBER", "FORMATTED_STRING"]:
             raise ValueError('response_date_time_render_option must be either "SERIAL_NUMBER" or "FORMATTED_STRING"')
-        url = f'{self.base_url}/{spreadsheetId}/values/{range}:append'
-        params: dict[str, Any] = {'valueInputOption': value_input_option}
+        url = f"{self.base_url}/{spreadsheetId}/values/{range}:append"
+        params: dict[str, Any] = {"valueInputOption": value_input_option}
         if insert_data_option:
-            params['insertDataOption'] = insert_data_option
+            params["insertDataOption"] = insert_data_option
         if include_values_in_response is not None:
-            params['includeValuesInResponse'] = include_values_in_response
+            params["includeValuesInResponse"] = include_values_in_response
         if response_value_render_option:
-            params['responseValueRenderOption'] = response_value_render_option
+            params["responseValueRenderOption"] = response_value_render_option
         if response_date_time_render_option:
-            params['responseDateTimeRenderOption'] = response_date_time_render_option
-        data = {'values': values}
+            params["responseDateTimeRenderOption"] = response_date_time_render_option
+        data = {"values": values}
         response = await self._apost(url, data=data, params=params)
         return self._handle_response(response)
 
@@ -798,11 +1052,11 @@ class GoogleSheetApp(APIApplication):
             clear, filter, basic-filter, spreadsheet
         """
         if not spreadsheetId:
-            raise ValueError('spreadsheetId cannot be empty')
+            raise ValueError("spreadsheetId cannot be empty")
         if sheet_id < 0:
-            raise ValueError('sheet_id must be non-negative')
-        url = f'{self.base_url}/{spreadsheetId}:batchUpdate'
-        request_body = {'requests': [{'clearBasicFilter': {'sheetId': sheet_id}}]}
+            raise ValueError("sheet_id must be non-negative")
+        url = f"{self.base_url}/{spreadsheetId}:batchUpdate"
+        request_body = {"requests": [{"clearBasicFilter": {"sheetId": sheet_id}}]}
         response = await self._apost(url, data=request_body)
         return self._handle_response(response)
 
@@ -825,15 +1079,17 @@ class GoogleSheetApp(APIApplication):
             delete, sheet, spreadsheet, worksheet
         """
         if not spreadsheetId:
-            raise ValueError('spreadsheetId cannot be empty')
+            raise ValueError("spreadsheetId cannot be empty")
         if sheet_id < 0:
-            raise ValueError('sheet_id must be non-negative')
-        url = f'{self.base_url}/{spreadsheetId}:batchUpdate'
-        request_body = {'requests': [{'deleteSheet': {'sheetId': sheet_id}}]}
+            raise ValueError("sheet_id must be non-negative")
+        url = f"{self.base_url}/{spreadsheetId}:batchUpdate"
+        request_body = {"requests": [{"deleteSheet": {"sheetId": sheet_id}}]}
         response = await self._apost(url, data=request_body)
         return self._handle_response(response)
 
-    async def discover_tables(self, spreadsheetId: str, min_rows: int=2, min_columns: int=1, min_confidence: float=0.5) -> dict[str, Any]:
+    async def discover_tables(
+        self, spreadsheetId: str, min_rows: int = 2, min_columns: int = 1, min_confidence: float = 0.5
+    ) -> dict[str, Any]:
         """
         Heuristically analyzes a spreadsheet to discover and list all table-like data structures, identifying headers and data boundaries. It returns informal data blocks meeting specified size criteria, distinguishing it from functions like `add_table` that manage formally defined tables.
 
@@ -854,24 +1110,33 @@ class GoogleSheetApp(APIApplication):
             list, tables, discover, analyze, spreadsheet, important
         """
         if not spreadsheetId:
-            raise ValueError('spreadsheetId cannot be empty')
+            raise ValueError("spreadsheetId cannot be empty")
         if min_rows < 1:
-            raise ValueError('min_rows must be at least 1')
+            raise ValueError("min_rows must be at least 1")
         if min_columns < 1:
-            raise ValueError('min_columns must be at least 1')
+            raise ValueError("min_columns must be at least 1")
         if not 0 <= min_confidence <= 1:
-            raise ValueError('min_confidence must be between 0.0 and 1.0')
+            raise ValueError("min_confidence must be between 0.0 and 1.0")
         spreadsheet = await self.get_spreadsheet_metadata(spreadsheetId)
         tables = []
-        for sheet in spreadsheet.get('sheets', []):
-            sheet_properties = sheet.get('properties', {})
-            sheet_id = sheet_properties.get('sheetId')
-            sheet_title = sheet_properties.get('title', 'Sheet1')
-            sheet_tables = analyze_sheet_for_tables(self.get_values, spreadsheetId, sheet_id, sheet_title, min_rows, min_columns, min_confidence)
+        for sheet in spreadsheet.get("sheets", []):
+            sheet_properties = sheet.get("properties", {})
+            sheet_id = sheet_properties.get("sheetId")
+            sheet_title = sheet_properties.get("title", "Sheet1")
+            sheet_tables = analyze_sheet_for_tables(
+                self.get_values, spreadsheetId, sheet_id, sheet_title, min_rows, min_columns, min_confidence
+            )
             tables.extend(sheet_tables)
-        return {'spreadsheetId': spreadsheetId, 'total_tables': len(tables), 'tables': tables, 'analysis_parameters': {'min_rows': min_rows, 'min_columns': min_columns}}
+        return {
+            "spreadsheetId": spreadsheetId,
+            "total_tables": len(tables),
+            "tables": tables,
+            "analysis_parameters": {"min_rows": min_rows, "min_columns": min_columns},
+        }
 
-    async def analyze_table_schema(self, spreadsheetId: str, table_name: str, sheet_name: str | None=None, sample_size: int=50) -> dict[str, Any]:
+    async def analyze_table_schema(
+        self, spreadsheetId: str, table_name: str, sheet_name: str | None = None, sample_size: int = 50
+    ) -> dict[str, Any]:
         """
         Infers a specified table's schema by analyzing a data sample. After locating the table by name (a value discovered via `discover_tables`), this function determines the most likely data type and properties for each column, providing a detailed structural breakdown of its content.
 
@@ -892,27 +1157,35 @@ class GoogleSheetApp(APIApplication):
             schema, analyze, table, structure, types, columns
         """
         if not spreadsheetId:
-            raise ValueError('spreadsheetId cannot be empty')
+            raise ValueError("spreadsheetId cannot be empty")
         if not table_name:
-            raise ValueError('table_name cannot be empty')
+            raise ValueError("table_name cannot be empty")
         if not 1 <= sample_size <= 1000:
-            raise ValueError('sample_size must be between 1 and 1000')
+            raise ValueError("sample_size must be between 1 and 1000")
         spreadsheet = await self.get_spreadsheet_metadata(spreadsheetId)
         target_table = None
-        for sheet in spreadsheet.get('sheets', []):
-            sheet_properties = sheet.get('properties', {})
-            sheet_title = sheet_properties.get('title', 'Sheet1')
+        for sheet in spreadsheet.get("sheets", []):
+            sheet_properties = sheet.get("properties", {})
+            sheet_title = sheet_properties.get("title", "Sheet1")
             if sheet_name and sheet_title != sheet_name:
                 continue
-            sheet_tables = analyze_sheet_for_tables(self.get_values, spreadsheetId, sheet_properties.get('sheetId', 0), sheet_title, min_rows=2, min_columns=1, min_confidence=0.3)
+            sheet_tables = analyze_sheet_for_tables(
+                self.get_values,
+                spreadsheetId,
+                sheet_properties.get("sheetId", 0),
+                sheet_title,
+                min_rows=2,
+                min_columns=1,
+                min_confidence=0.3,
+            )
             for table in sheet_tables:
-                if table_name == 'auto':
-                    if target_table is None or table['rows'] * table['columns'] > target_table['rows'] * target_table['columns']:
+                if table_name == "auto":
+                    if target_table is None or table["rows"] * table["columns"] > target_table["rows"] * target_table["columns"]:
                         target_table = table
-                elif table['table_name'] == table_name:
+                elif table["table_name"] == table_name:
                     target_table = table
                     break
-            if target_table and table_name != 'auto':
+            if target_table and table_name != "auto":
                 break
         if not target_table:
             raise ValueError(f"Table '{table_name}' not found in spreadsheet")
@@ -946,20 +1219,49 @@ class GoogleSheetApp(APIApplication):
             filter, basic-filter, spreadsheet, sort, important
         """
         if not spreadsheetId:
-            raise ValueError('spreadsheetId cannot be empty')
+            raise ValueError("spreadsheetId cannot be empty")
         if not filter:
-            raise ValueError('filter cannot be empty')
-        if 'range' not in filter:
+            raise ValueError("filter cannot be empty")
+        if "range" not in filter:
             raise ValueError("filter must contain 'range' field")
-        range_data = filter['range']
-        if 'sheetId' not in range_data:
+        range_data = filter["range"]
+        if "sheetId" not in range_data:
             raise ValueError("filter range must contain 'sheetId' field")
-        url = f'{self.base_url}/{spreadsheetId}:batchUpdate'
-        request_body = {'requests': [{'setBasicFilter': {'filter': filter}}]}
+        url = f"{self.base_url}/{spreadsheetId}:batchUpdate"
+        request_body = {"requests": [{"setBasicFilter": {"filter": filter}}]}
         response = await self._apost(url, data=request_body)
         return self._handle_response(response)
 
-    async def format_cells(self, spreadsheetId: str, worksheetId: int, startRowIndex: int, startColumnIndex: int, endRowIndex: int, endColumnIndex: int, bold: bool | None=None, italic: bool | None=None, underline: bool | None=None, strikethrough: bool | None=None, fontSize: int | None=None, fontFamily: str | None=None, backgroundRed: float | None=None, backgroundGreen: float | None=None, backgroundBlue: float | None=None, textRed: float | None=None, textGreen: float | None=None, textBlue: float | None=None, horizontalAlignment: str | None=None, verticalAlignment: str | None=None, wrapStrategy: str | None=None, numberFormat: str | None=None, borderTop: dict | None=None, borderBottom: dict | None=None, borderLeft: dict | None=None, borderRight: dict | None=None, mergeCells: bool=False) -> dict[str, Any]:
+    async def format_cells(
+        self,
+        spreadsheetId: str,
+        worksheetId: int,
+        startRowIndex: int,
+        startColumnIndex: int,
+        endRowIndex: int,
+        endColumnIndex: int,
+        bold: bool | None = None,
+        italic: bool | None = None,
+        underline: bool | None = None,
+        strikethrough: bool | None = None,
+        fontSize: int | None = None,
+        fontFamily: str | None = None,
+        backgroundRed: float | None = None,
+        backgroundGreen: float | None = None,
+        backgroundBlue: float | None = None,
+        textRed: float | None = None,
+        textGreen: float | None = None,
+        textBlue: float | None = None,
+        horizontalAlignment: str | None = None,
+        verticalAlignment: str | None = None,
+        wrapStrategy: str | None = None,
+        numberFormat: str | None = None,
+        borderTop: dict | None = None,
+        borderBottom: dict | None = None,
+        borderLeft: dict | None = None,
+        borderRight: dict | None = None,
+        mergeCells: bool = False,
+    ) -> dict[str, Any]:
         """
         Applies comprehensive formatting to a specified cell range in a worksheet. It modifies visual properties like text style, color, alignment, borders, and can merge cells, without altering the underlying cell values, distinguishing it from data-modification functions like `update_values`.
 
@@ -1012,85 +1314,145 @@ class GoogleSheetApp(APIApplication):
             format, cells, styling, text-formatting, background-color, borders, alignment, merge
         """
         if not spreadsheetId:
-            raise ValueError('spreadsheetId cannot be empty')
+            raise ValueError("spreadsheetId cannot be empty")
         if worksheetId < 0:
-            raise ValueError('worksheetId must be non-negative')
+            raise ValueError("worksheetId must be non-negative")
         if startRowIndex < 0 or startColumnIndex < 0 or endRowIndex < 0 or (endColumnIndex < 0):
-            raise ValueError('All indices must be non-negative')
+            raise ValueError("All indices must be non-negative")
         if startRowIndex >= endRowIndex:
-            raise ValueError('endRowIndex must be greater than startRowIndex')
+            raise ValueError("endRowIndex must be greater than startRowIndex")
         if startColumnIndex >= endColumnIndex:
-            raise ValueError('endColumnIndex must be greater than startColumnIndex')
-        for color_name, color_value in [('backgroundRed', backgroundRed), ('backgroundGreen', backgroundGreen), ('backgroundBlue', backgroundBlue), ('textRed', textRed), ('textGreen', textGreen), ('textBlue', textBlue)]:
+            raise ValueError("endColumnIndex must be greater than startColumnIndex")
+        for color_name, color_value in [
+            ("backgroundRed", backgroundRed),
+            ("backgroundGreen", backgroundGreen),
+            ("backgroundBlue", backgroundBlue),
+            ("textRed", textRed),
+            ("textGreen", textGreen),
+            ("textBlue", textBlue),
+        ]:
             if color_value is not None and (not 0 <= color_value <= 1):
-                raise ValueError(f'{color_name} must be between 0.0 and 1.0')
+                raise ValueError(f"{color_name} must be between 0.0 and 1.0")
         if fontSize is not None and fontSize <= 0:
-            raise ValueError('fontSize must be positive')
-        if horizontalAlignment and horizontalAlignment not in ['LEFT', 'CENTER', 'RIGHT']:
+            raise ValueError("fontSize must be positive")
+        if horizontalAlignment and horizontalAlignment not in ["LEFT", "CENTER", "RIGHT"]:
             raise ValueError('horizontalAlignment must be "LEFT", "CENTER", or "RIGHT"')
-        if verticalAlignment and verticalAlignment not in ['TOP', 'MIDDLE', 'BOTTOM']:
+        if verticalAlignment and verticalAlignment not in ["TOP", "MIDDLE", "BOTTOM"]:
             raise ValueError('verticalAlignment must be "TOP", "MIDDLE", or "BOTTOM"')
-        if wrapStrategy and wrapStrategy not in ['OVERFLOW_CELL', 'LEGACY_WRAP', 'CLIP', 'WRAP']:
+        if wrapStrategy and wrapStrategy not in ["OVERFLOW_CELL", "LEGACY_WRAP", "CLIP", "WRAP"]:
             raise ValueError('wrapStrategy must be "OVERFLOW_CELL", "LEGACY_WRAP", "CLIP", or "WRAP"')
-        url = f'{self.base_url}/{spreadsheetId}:batchUpdate'
+        url = f"{self.base_url}/{spreadsheetId}:batchUpdate"
         requests = []
         if mergeCells:
-            requests.append({'mergeCells': {'range': {'sheetId': worksheetId, 'startRowIndex': startRowIndex, 'endRowIndex': endRowIndex, 'startColumnIndex': startColumnIndex, 'endColumnIndex': endColumnIndex}, 'mergeType': 'MERGE_ALL'}})
+            requests.append(
+                {
+                    "mergeCells": {
+                        "range": {
+                            "sheetId": worksheetId,
+                            "startRowIndex": startRowIndex,
+                            "endRowIndex": endRowIndex,
+                            "startColumnIndex": startColumnIndex,
+                            "endColumnIndex": endColumnIndex,
+                        },
+                        "mergeType": "MERGE_ALL",
+                    }
+                }
+            )
         cell_format = {}
         text_format = {}
         if bold is not None:
-            text_format['bold'] = bold
+            text_format["bold"] = bold
         if italic is not None:
-            text_format['italic'] = italic
+            text_format["italic"] = italic
         if underline is not None:
-            text_format['underline'] = underline
+            text_format["underline"] = underline
         if strikethrough is not None:
-            text_format['strikethrough'] = strikethrough
+            text_format["strikethrough"] = strikethrough
         if fontSize is not None:
-            text_format['fontSize'] = fontSize
+            text_format["fontSize"] = fontSize
         if fontFamily is not None:
-            text_format['fontFamily'] = fontFamily
+            text_format["fontFamily"] = fontFamily
         if any((color is not None for color in [textRed, textGreen, textBlue])):
             text_color = {}
             if textRed is not None:
-                text_color['red'] = textRed
+                text_color["red"] = textRed
             if textGreen is not None:
-                text_color['green'] = textGreen
+                text_color["green"] = textGreen
             if textBlue is not None:
-                text_color['blue'] = textBlue
+                text_color["blue"] = textBlue
             if text_color:
-                text_format['foregroundColor'] = {'rgbColor': text_color}
+                text_format["foregroundColor"] = {"rgbColor": text_color}
         if text_format:
-            cell_format['textFormat'] = text_format
+            cell_format["textFormat"] = text_format
         if any((color is not None for color in [backgroundRed, backgroundGreen, backgroundBlue])):
             background_color = {}
             if backgroundRed is not None:
-                background_color['red'] = backgroundRed
+                background_color["red"] = backgroundRed
             if backgroundGreen is not None:
-                background_color['green'] = backgroundGreen
+                background_color["green"] = backgroundGreen
             if backgroundBlue is not None:
-                background_color['blue'] = backgroundBlue
+                background_color["blue"] = backgroundBlue
             if background_color:
-                cell_format['backgroundColorStyle'] = {'rgbColor': background_color}
+                cell_format["backgroundColorStyle"] = {"rgbColor": background_color}
         if horizontalAlignment or verticalAlignment:
-            cell_format['horizontalAlignment'] = horizontalAlignment
-            cell_format['verticalAlignment'] = verticalAlignment
+            cell_format["horizontalAlignment"] = horizontalAlignment
+            cell_format["verticalAlignment"] = verticalAlignment
         if wrapStrategy:
-            cell_format['wrapStrategy'] = wrapStrategy
+            cell_format["wrapStrategy"] = wrapStrategy
         if numberFormat:
-            cell_format['numberFormat'] = {'type': 'TEXT', 'pattern': numberFormat}
+            cell_format["numberFormat"] = {"type": "TEXT", "pattern": numberFormat}
         borders = {}
-        for border_side, border_config in [('top', borderTop), ('bottom', borderBottom), ('left', borderLeft), ('right', borderRight)]:
+        for border_side, border_config in [("top", borderTop), ("bottom", borderBottom), ("left", borderLeft), ("right", borderRight)]:
             if border_config:
                 borders[border_side] = border_config
         if borders:
-            cell_format['borders'] = borders
+            cell_format["borders"] = borders
         if cell_format:
-            requests.append({'repeatCell': {'range': {'sheetId': worksheetId, 'startRowIndex': startRowIndex, 'endRowIndex': endRowIndex, 'startColumnIndex': startColumnIndex, 'endColumnIndex': endColumnIndex}, 'cell': {'userEnteredFormat': cell_format}, 'fields': 'userEnteredFormat'}})
-        request_body = {'requests': requests}
+            requests.append(
+                {
+                    "repeatCell": {
+                        "range": {
+                            "sheetId": worksheetId,
+                            "startRowIndex": startRowIndex,
+                            "endRowIndex": endRowIndex,
+                            "startColumnIndex": startColumnIndex,
+                            "endColumnIndex": endColumnIndex,
+                        },
+                        "cell": {"userEnteredFormat": cell_format},
+                        "fields": "userEnteredFormat",
+                    }
+                }
+            )
+        request_body = {"requests": requests}
         response = await self._apost(url, data=request_body)
         return self._handle_response(response)
 
     def list_tools(self):
         """Returns a list of methods exposed as tools."""
-        return [self.create_spreadsheet, self.get_spreadsheet_metadata, self.get_values, self.batch_get_values_by_range, self.insert_dimensions, self.append_dimensions, self.delete_dimensions, self.add_sheet, self.add_basic_chart, self.add_pie_chart, self.add_table, self.update_table, self.clear_values, self.update_values, self.batch_clear_values, self.batch_get_values_by_data_filter, self.copy_sheet_to_spreadsheet, self.write_values_to_sheet, self.append_values, self.clear_basic_filter, self.delete_sheet, self.discover_tables, self.analyze_table_schema, self.set_basic_filter, self.format_cells]
+        return [
+            self.create_spreadsheet,
+            self.get_spreadsheet_metadata,
+            self.get_values,
+            self.batch_get_values_by_range,
+            self.insert_dimensions,
+            self.append_dimensions,
+            self.delete_dimensions,
+            self.add_sheet,
+            self.add_basic_chart,
+            self.add_pie_chart,
+            self.add_table,
+            self.update_table,
+            self.clear_values,
+            self.update_values,
+            self.batch_clear_values,
+            self.batch_get_values_by_data_filter,
+            self.copy_sheet_to_spreadsheet,
+            self.write_values_to_sheet,
+            self.append_values,
+            self.clear_basic_filter,
+            self.delete_sheet,
+            self.discover_tables,
+            self.analyze_table_schema,
+            self.set_basic_filter,
+            self.format_cells,
+        ]

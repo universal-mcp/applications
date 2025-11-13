@@ -2,11 +2,11 @@ from typing import Any
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
-class PosthogApp(APIApplication):
 
-    def __init__(self, integration: Integration=None, **kwargs) -> None:
-        super().__init__(name='posthog', integration=integration, **kwargs)
-        self.base_url = 'https://us.posthog.com'
+class PosthogApp(APIApplication):
+    def __init__(self, integration: Integration = None, **kwargs) -> None:
+        super().__init__(name="posthog", integration=integration, **kwargs)
+        self.base_url = "https://us.posthog.com"
 
     async def is_generating_demo_data_retrieve(self, organization_id, id) -> dict[str, Any]:
         """
@@ -26,13 +26,72 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'organization_id'")
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/organizations/{organization_id}/projects/{id}/is_generating_demo_data/'
+        url = f"{self.base_url}/api/organizations/{organization_id}/projects/{id}/is_generating_demo_data/"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def reset_token_partial_update(self, organization_id, id, id_body=None, organization=None, name=None, product_description=None, created_at=None, effective_membership_level=None, has_group_types=None, group_types=None, live_events_token=None, updated_at=None, uuid=None, api_token=None, app_urls=None, slack_incoming_webhook=None, anonymize_ips=None, completed_snippet_onboarding=None, ingested_event=None, test_account_filters=None, test_account_filters_default_checked=None, path_cleaning_filters=None, is_demo=None, timezone=None, data_attributes=None, person_display_name_properties=None, correlation_config=None, autocapture_opt_out=None, autocapture_exceptions_opt_in=None, autocapture_web_vitals_opt_in=None, autocapture_web_vitals_allowed_metrics=None, autocapture_exceptions_errors_to_ignore=None, capture_console_log_opt_in=None, capture_performance_opt_in=None, session_recording_opt_in=None, session_recording_sample_rate=None, session_recording_minimum_duration_milliseconds=None, session_recording_linked_flag=None, session_recording_network_payload_capture_config=None, session_recording_masking_config=None, session_replay_config=None, survey_config=None, access_control=None, week_start_day=None, primary_dashboard=None, live_events_columns=None, recording_domains=None, person_on_events_querying_enabled=None, inject_web_apps=None, extra_settings=None, modifiers=None, default_modifiers=None, has_completed_onboarding_for=None, surveys_opt_in=None, heatmaps_opt_in=None, product_intents=None, flags_persistence_default=None) -> dict[str, Any]:
+    async def reset_token_partial_update(
+        self,
+        organization_id,
+        id,
+        id_body=None,
+        organization=None,
+        name=None,
+        product_description=None,
+        created_at=None,
+        effective_membership_level=None,
+        has_group_types=None,
+        group_types=None,
+        live_events_token=None,
+        updated_at=None,
+        uuid=None,
+        api_token=None,
+        app_urls=None,
+        slack_incoming_webhook=None,
+        anonymize_ips=None,
+        completed_snippet_onboarding=None,
+        ingested_event=None,
+        test_account_filters=None,
+        test_account_filters_default_checked=None,
+        path_cleaning_filters=None,
+        is_demo=None,
+        timezone=None,
+        data_attributes=None,
+        person_display_name_properties=None,
+        correlation_config=None,
+        autocapture_opt_out=None,
+        autocapture_exceptions_opt_in=None,
+        autocapture_web_vitals_opt_in=None,
+        autocapture_web_vitals_allowed_metrics=None,
+        autocapture_exceptions_errors_to_ignore=None,
+        capture_console_log_opt_in=None,
+        capture_performance_opt_in=None,
+        session_recording_opt_in=None,
+        session_recording_sample_rate=None,
+        session_recording_minimum_duration_milliseconds=None,
+        session_recording_linked_flag=None,
+        session_recording_network_payload_capture_config=None,
+        session_recording_masking_config=None,
+        session_replay_config=None,
+        survey_config=None,
+        access_control=None,
+        week_start_day=None,
+        primary_dashboard=None,
+        live_events_columns=None,
+        recording_domains=None,
+        person_on_events_querying_enabled=None,
+        inject_web_apps=None,
+        extra_settings=None,
+        modifiers=None,
+        default_modifiers=None,
+        has_completed_onboarding_for=None,
+        surveys_opt_in=None,
+        heatmaps_opt_in=None,
+        product_intents=None,
+        flags_persistence_default=None,
+    ) -> dict[str, Any]:
         """
         Resets the authentication token for a specific project within an organization and returns a success status.
 
@@ -700,9 +759,65 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'organization_id'")
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {'id': id_body, 'organization': organization, 'name': name, 'product_description': product_description, 'created_at': created_at, 'effective_membership_level': effective_membership_level, 'has_group_types': has_group_types, 'group_types': group_types, 'live_events_token': live_events_token, 'updated_at': updated_at, 'uuid': uuid, 'api_token': api_token, 'app_urls': app_urls, 'slack_incoming_webhook': slack_incoming_webhook, 'anonymize_ips': anonymize_ips, 'completed_snippet_onboarding': completed_snippet_onboarding, 'ingested_event': ingested_event, 'test_account_filters': test_account_filters, 'test_account_filters_default_checked': test_account_filters_default_checked, 'path_cleaning_filters': path_cleaning_filters, 'is_demo': is_demo, 'timezone': timezone, 'data_attributes': data_attributes, 'person_display_name_properties': person_display_name_properties, 'correlation_config': correlation_config, 'autocapture_opt_out': autocapture_opt_out, 'autocapture_exceptions_opt_in': autocapture_exceptions_opt_in, 'autocapture_web_vitals_opt_in': autocapture_web_vitals_opt_in, 'autocapture_web_vitals_allowed_metrics': autocapture_web_vitals_allowed_metrics, 'autocapture_exceptions_errors_to_ignore': autocapture_exceptions_errors_to_ignore, 'capture_console_log_opt_in': capture_console_log_opt_in, 'capture_performance_opt_in': capture_performance_opt_in, 'session_recording_opt_in': session_recording_opt_in, 'session_recording_sample_rate': session_recording_sample_rate, 'session_recording_minimum_duration_milliseconds': session_recording_minimum_duration_milliseconds, 'session_recording_linked_flag': session_recording_linked_flag, 'session_recording_network_payload_capture_config': session_recording_network_payload_capture_config, 'session_recording_masking_config': session_recording_masking_config, 'session_replay_config': session_replay_config, 'survey_config': survey_config, 'access_control': access_control, 'week_start_day': week_start_day, 'primary_dashboard': primary_dashboard, 'live_events_columns': live_events_columns, 'recording_domains': recording_domains, 'person_on_events_querying_enabled': person_on_events_querying_enabled, 'inject_web_apps': inject_web_apps, 'extra_settings': extra_settings, 'modifiers': modifiers, 'default_modifiers': default_modifiers, 'has_completed_onboarding_for': has_completed_onboarding_for, 'surveys_opt_in': surveys_opt_in, 'heatmaps_opt_in': heatmaps_opt_in, 'product_intents': product_intents, 'flags_persistence_default': flags_persistence_default}
+        request_body = {
+            "id": id_body,
+            "organization": organization,
+            "name": name,
+            "product_description": product_description,
+            "created_at": created_at,
+            "effective_membership_level": effective_membership_level,
+            "has_group_types": has_group_types,
+            "group_types": group_types,
+            "live_events_token": live_events_token,
+            "updated_at": updated_at,
+            "uuid": uuid,
+            "api_token": api_token,
+            "app_urls": app_urls,
+            "slack_incoming_webhook": slack_incoming_webhook,
+            "anonymize_ips": anonymize_ips,
+            "completed_snippet_onboarding": completed_snippet_onboarding,
+            "ingested_event": ingested_event,
+            "test_account_filters": test_account_filters,
+            "test_account_filters_default_checked": test_account_filters_default_checked,
+            "path_cleaning_filters": path_cleaning_filters,
+            "is_demo": is_demo,
+            "timezone": timezone,
+            "data_attributes": data_attributes,
+            "person_display_name_properties": person_display_name_properties,
+            "correlation_config": correlation_config,
+            "autocapture_opt_out": autocapture_opt_out,
+            "autocapture_exceptions_opt_in": autocapture_exceptions_opt_in,
+            "autocapture_web_vitals_opt_in": autocapture_web_vitals_opt_in,
+            "autocapture_web_vitals_allowed_metrics": autocapture_web_vitals_allowed_metrics,
+            "autocapture_exceptions_errors_to_ignore": autocapture_exceptions_errors_to_ignore,
+            "capture_console_log_opt_in": capture_console_log_opt_in,
+            "capture_performance_opt_in": capture_performance_opt_in,
+            "session_recording_opt_in": session_recording_opt_in,
+            "session_recording_sample_rate": session_recording_sample_rate,
+            "session_recording_minimum_duration_milliseconds": session_recording_minimum_duration_milliseconds,
+            "session_recording_linked_flag": session_recording_linked_flag,
+            "session_recording_network_payload_capture_config": session_recording_network_payload_capture_config,
+            "session_recording_masking_config": session_recording_masking_config,
+            "session_replay_config": session_replay_config,
+            "survey_config": survey_config,
+            "access_control": access_control,
+            "week_start_day": week_start_day,
+            "primary_dashboard": primary_dashboard,
+            "live_events_columns": live_events_columns,
+            "recording_domains": recording_domains,
+            "person_on_events_querying_enabled": person_on_events_querying_enabled,
+            "inject_web_apps": inject_web_apps,
+            "extra_settings": extra_settings,
+            "modifiers": modifiers,
+            "default_modifiers": default_modifiers,
+            "has_completed_onboarding_for": has_completed_onboarding_for,
+            "surveys_opt_in": surveys_opt_in,
+            "heatmaps_opt_in": heatmaps_opt_in,
+            "product_intents": product_intents,
+            "flags_persistence_default": flags_persistence_default,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/organizations/{organization_id}/projects/{id}/reset_token/'
+        url = f"{self.base_url}/api/organizations/{organization_id}/projects/{id}/reset_token/"
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -725,13 +840,15 @@ class PosthogApp(APIApplication):
         """
         if organization_id is None:
             raise ValueError("Missing required parameter 'organization_id'")
-        url = f'{self.base_url}/api/organizations/{organization_id}/proxy_records/'
-        query_params = {k: v for k, v in [('limit', limit), ('offset', offset)] if v is not None}
+        url = f"{self.base_url}/api/organizations/{organization_id}/proxy_records/"
+        query_params = {k: v for k, v in [("limit", limit), ("offset", offset)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def proxy_records_create(self, organization_id, id, domain, target_cname, status, message, created_at, updated_at, created_by) -> dict[str, Any]:
+    async def proxy_records_create(
+        self, organization_id, id, domain, target_cname, status, message, created_at, updated_at, created_by
+    ) -> dict[str, Any]:
         """
         Creates a proxy record for the specified organization using the provided organization ID.
 
@@ -754,9 +871,18 @@ class PosthogApp(APIApplication):
         """
         if organization_id is None:
             raise ValueError("Missing required parameter 'organization_id'")
-        request_body = {'id': id, 'domain': domain, 'target_cname': target_cname, 'status': status, 'message': message, 'created_at': created_at, 'updated_at': updated_at, 'created_by': created_by}
+        request_body = {
+            "id": id,
+            "domain": domain,
+            "target_cname": target_cname,
+            "status": status,
+            "message": message,
+            "created_at": created_at,
+            "updated_at": updated_at,
+            "created_by": created_by,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/organizations/{organization_id}/proxy_records/'
+        url = f"{self.base_url}/api/organizations/{organization_id}/proxy_records/"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -780,13 +906,15 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'organization_id'")
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/organizations/{organization_id}/proxy_records/{id}/'
+        url = f"{self.base_url}/api/organizations/{organization_id}/proxy_records/{id}/"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def proxy_records_update(self, organization_id, id, id_body, domain, target_cname, status, message, created_at, updated_at, created_by) -> dict[str, Any]:
+    async def proxy_records_update(
+        self, organization_id, id, id_body, domain, target_cname, status, message, created_at, updated_at, created_by
+    ) -> dict[str, Any]:
         """
         Updates a specific proxy record within an organization using the provided identifier and returns a status upon success.
 
@@ -812,15 +940,36 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'organization_id'")
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {'id': id_body, 'domain': domain, 'target_cname': target_cname, 'status': status, 'message': message, 'created_at': created_at, 'updated_at': updated_at, 'created_by': created_by}
+        request_body = {
+            "id": id_body,
+            "domain": domain,
+            "target_cname": target_cname,
+            "status": status,
+            "message": message,
+            "created_at": created_at,
+            "updated_at": updated_at,
+            "created_by": created_by,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/organizations/{organization_id}/proxy_records/{id}/'
+        url = f"{self.base_url}/api/organizations/{organization_id}/proxy_records/{id}/"
         query_params = {}
         response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def proxy_records_partial_update(self, organization_id, id, id_body=None, domain=None, target_cname=None, status=None, message=None, created_at=None, updated_at=None, created_by=None) -> dict[str, Any]:
+    async def proxy_records_partial_update(
+        self,
+        organization_id,
+        id,
+        id_body=None,
+        domain=None,
+        target_cname=None,
+        status=None,
+        message=None,
+        created_at=None,
+        updated_at=None,
+        created_by=None,
+    ) -> dict[str, Any]:
         """
         Updates a proxy record for an organization using the provided ID and organization ID, and returns a status message.
 
@@ -846,9 +995,18 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'organization_id'")
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {'id': id_body, 'domain': domain, 'target_cname': target_cname, 'status': status, 'message': message, 'created_at': created_at, 'updated_at': updated_at, 'created_by': created_by}
+        request_body = {
+            "id": id_body,
+            "domain": domain,
+            "target_cname": target_cname,
+            "status": status,
+            "message": message,
+            "created_at": created_at,
+            "updated_at": updated_at,
+            "created_by": created_by,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/organizations/{organization_id}/proxy_records/{id}/'
+        url = f"{self.base_url}/api/organizations/{organization_id}/proxy_records/{id}/"
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -872,7 +1030,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'organization_id'")
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/organizations/{organization_id}/proxy_records/{id}/'
+        url = f"{self.base_url}/api/organizations/{organization_id}/proxy_records/{id}/"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -895,13 +1053,15 @@ class PosthogApp(APIApplication):
         """
         if organization_id is None:
             raise ValueError("Missing required parameter 'organization_id'")
-        url = f'{self.base_url}/api/organizations/{organization_id}/roles/'
-        query_params = {k: v for k, v in [('limit', limit), ('offset', offset)] if v is not None}
+        url = f"{self.base_url}/api/organizations/{organization_id}/roles/"
+        query_params = {k: v for k, v in [("limit", limit), ("offset", offset)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def roles_create(self, organization_id, id, name, created_at, created_by, members, feature_flags_access_level=None) -> dict[str, Any]:
+    async def roles_create(
+        self, organization_id, id, name, created_at, created_by, members, feature_flags_access_level=None
+    ) -> dict[str, Any]:
         """
         Creates a new role within the specified organization and returns the created resource upon success.
 
@@ -922,9 +1082,16 @@ class PosthogApp(APIApplication):
         """
         if organization_id is None:
             raise ValueError("Missing required parameter 'organization_id'")
-        request_body = {'id': id, 'name': name, 'feature_flags_access_level': feature_flags_access_level, 'created_at': created_at, 'created_by': created_by, 'members': members}
+        request_body = {
+            "id": id,
+            "name": name,
+            "feature_flags_access_level": feature_flags_access_level,
+            "created_at": created_at,
+            "created_by": created_by,
+            "members": members,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/organizations/{organization_id}/roles/'
+        url = f"{self.base_url}/api/organizations/{organization_id}/roles/"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -948,13 +1115,15 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'organization_id'")
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/organizations/{organization_id}/roles/{id}/'
+        url = f"{self.base_url}/api/organizations/{organization_id}/roles/{id}/"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def roles_update(self, organization_id, id, id_body, name, created_at, created_by, members, feature_flags_access_level=None) -> dict[str, Any]:
+    async def roles_update(
+        self, organization_id, id, id_body, name, created_at, created_by, members, feature_flags_access_level=None
+    ) -> dict[str, Any]:
         """
         Updates a specific role in an organization using the provided role ID and organization ID.
 
@@ -978,15 +1147,24 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'organization_id'")
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {'id': id_body, 'name': name, 'feature_flags_access_level': feature_flags_access_level, 'created_at': created_at, 'created_by': created_by, 'members': members}
+        request_body = {
+            "id": id_body,
+            "name": name,
+            "feature_flags_access_level": feature_flags_access_level,
+            "created_at": created_at,
+            "created_by": created_by,
+            "members": members,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/organizations/{organization_id}/roles/{id}/'
+        url = f"{self.base_url}/api/organizations/{organization_id}/roles/{id}/"
         query_params = {}
         response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def roles_partial_update(self, organization_id, id, id_body=None, name=None, feature_flags_access_level=None, created_at=None, created_by=None, members=None) -> dict[str, Any]:
+    async def roles_partial_update(
+        self, organization_id, id, id_body=None, name=None, feature_flags_access_level=None, created_at=None, created_by=None, members=None
+    ) -> dict[str, Any]:
         """
         Updates the specified role within an organization using partial modifications via the PATCH method and returns a success response.
 
@@ -1010,9 +1188,16 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'organization_id'")
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {'id': id_body, 'name': name, 'feature_flags_access_level': feature_flags_access_level, 'created_at': created_at, 'created_by': created_by, 'members': members}
+        request_body = {
+            "id": id_body,
+            "name": name,
+            "feature_flags_access_level": feature_flags_access_level,
+            "created_at": created_at,
+            "created_by": created_by,
+            "members": members,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/organizations/{organization_id}/roles/{id}/'
+        url = f"{self.base_url}/api/organizations/{organization_id}/roles/{id}/"
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -1036,7 +1221,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'organization_id'")
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/organizations/{organization_id}/roles/{id}/'
+        url = f"{self.base_url}/api/organizations/{organization_id}/roles/{id}/"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -1062,13 +1247,15 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'organization_id'")
         if role_id is None:
             raise ValueError("Missing required parameter 'role_id'")
-        url = f'{self.base_url}/api/organizations/{organization_id}/roles/{role_id}/role_memberships/'
-        query_params = {k: v for k, v in [('limit', limit), ('offset', offset)] if v is not None}
+        url = f"{self.base_url}/api/organizations/{organization_id}/roles/{role_id}/role_memberships/"
+        query_params = {k: v for k, v in [("limit", limit), ("offset", offset)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def roles_role_memberships_create(self, organization_id, role_id, id, role_id_body, organization_member, user, joined_at, updated_at, user_uuid) -> dict[str, Any]:
+    async def roles_role_memberships_create(
+        self, organization_id, role_id, id, role_id_body, organization_member, user, joined_at, updated_at, user_uuid
+    ) -> dict[str, Any]:
         """
         Assigns a role to an organization member by associating the role ID with the membership via a POST request.
 
@@ -1093,9 +1280,17 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'organization_id'")
         if role_id is None:
             raise ValueError("Missing required parameter 'role_id'")
-        request_body = {'id': id, 'role_id': role_id_body, 'organization_member': organization_member, 'user': user, 'joined_at': joined_at, 'updated_at': updated_at, 'user_uuid': user_uuid}
+        request_body = {
+            "id": id,
+            "role_id": role_id_body,
+            "organization_member": organization_member,
+            "user": user,
+            "joined_at": joined_at,
+            "updated_at": updated_at,
+            "user_uuid": user_uuid,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/organizations/{organization_id}/roles/{role_id}/role_memberships/'
+        url = f"{self.base_url}/api/organizations/{organization_id}/roles/{role_id}/role_memberships/"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -1122,7 +1317,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'role_id'")
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/organizations/{organization_id}/roles/{role_id}/role_memberships/{id}/'
+        url = f"{self.base_url}/api/organizations/{organization_id}/roles/{role_id}/role_memberships/{id}/"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -1146,13 +1341,35 @@ class PosthogApp(APIApplication):
         """
         if project_id is None:
             raise ValueError("Missing required parameter 'project_id'")
-        url = f'{self.base_url}/api/projects/{project_id}/actions/'
-        query_params = {k: v for k, v in [('format', format), ('limit', limit), ('offset', offset)] if v is not None}
+        url = f"{self.base_url}/api/projects/{project_id}/actions/"
+        query_params = {k: v for k, v in [("format", format), ("limit", limit), ("offset", offset)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def actions_create(self, project_id, format=None, id=None, name=None, description=None, tags=None, post_to_slack=None, slack_message_format=None, steps=None, created_at=None, created_by=None, deleted=None, is_calculating=None, last_calculated_at=None, team_id=None, is_action=None, bytecode_error=None, pinned_at=None, creation_context=None, create_in_folder=None) -> dict[str, Any]:
+    async def actions_create(
+        self,
+        project_id,
+        format=None,
+        id=None,
+        name=None,
+        description=None,
+        tags=None,
+        post_to_slack=None,
+        slack_message_format=None,
+        steps=None,
+        created_at=None,
+        created_by=None,
+        deleted=None,
+        is_calculating=None,
+        last_calculated_at=None,
+        team_id=None,
+        is_action=None,
+        bytecode_error=None,
+        pinned_at=None,
+        creation_context=None,
+        create_in_folder=None,
+    ) -> dict[str, Any]:
         """
         Creates an action for a specified project using the POST method and returns a status message upon success.
 
@@ -1186,15 +1403,36 @@ class PosthogApp(APIApplication):
         """
         if project_id is None:
             raise ValueError("Missing required parameter 'project_id'")
-        request_body = {'id': id, 'name': name, 'description': description, 'tags': tags, 'post_to_slack': post_to_slack, 'slack_message_format': slack_message_format, 'steps': steps, 'created_at': created_at, 'created_by': created_by, 'deleted': deleted, 'is_calculating': is_calculating, 'last_calculated_at': last_calculated_at, 'team_id': team_id, 'is_action': is_action, 'bytecode_error': bytecode_error, 'pinned_at': pinned_at, 'creation_context': creation_context, '_create_in_folder': create_in_folder}
+        request_body = {
+            "id": id,
+            "name": name,
+            "description": description,
+            "tags": tags,
+            "post_to_slack": post_to_slack,
+            "slack_message_format": slack_message_format,
+            "steps": steps,
+            "created_at": created_at,
+            "created_by": created_by,
+            "deleted": deleted,
+            "is_calculating": is_calculating,
+            "last_calculated_at": last_calculated_at,
+            "team_id": team_id,
+            "is_action": is_action,
+            "bytecode_error": bytecode_error,
+            "pinned_at": pinned_at,
+            "creation_context": creation_context,
+            "_create_in_folder": create_in_folder,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/projects/{project_id}/actions/'
-        query_params = {k: v for k, v in [('format', format)] if v is not None}
+        url = f"{self.base_url}/api/projects/{project_id}/actions/"
+        query_params = {k: v for k, v in [("format", format)] if v is not None}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def notebooks_list(self, project_id, contains=None, created_by=None, date_from=None, date_to=None, limit=None, offset=None, user=None) -> dict[str, Any]:
+    async def notebooks_list(
+        self, project_id, contains=None, created_by=None, date_from=None, date_to=None, limit=None, offset=None, user=None
+    ) -> dict[str, Any]:
         """
         Retrieves a list of notebooks for a specific project with optional filtering by content, creator, date range, and pagination parameters.
 
@@ -1216,13 +1454,41 @@ class PosthogApp(APIApplication):
         """
         if project_id is None:
             raise ValueError("Missing required parameter 'project_id'")
-        url = f'{self.base_url}/api/projects/{project_id}/notebooks/'
-        query_params = {k: v for k, v in [('contains', contains), ('created_by', created_by), ('date_from', date_from), ('date_to', date_to), ('limit', limit), ('offset', offset), ('user', user)] if v is not None}
+        url = f"{self.base_url}/api/projects/{project_id}/notebooks/"
+        query_params = {
+            k: v
+            for k, v in [
+                ("contains", contains),
+                ("created_by", created_by),
+                ("date_from", date_from),
+                ("date_to", date_to),
+                ("limit", limit),
+                ("offset", offset),
+                ("user", user),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def notebooks_create(self, project_id, id=None, short_id=None, title=None, content=None, text_content=None, version=None, deleted=None, created_at=None, created_by=None, last_modified_at=None, last_modified_by=None, user_access_level=None, create_in_folder=None) -> dict[str, Any]:
+    async def notebooks_create(
+        self,
+        project_id,
+        id=None,
+        short_id=None,
+        title=None,
+        content=None,
+        text_content=None,
+        version=None,
+        deleted=None,
+        created_at=None,
+        created_by=None,
+        last_modified_at=None,
+        last_modified_by=None,
+        user_access_level=None,
+        create_in_folder=None,
+    ) -> dict[str, Any]:
         """
         Creates a new notebook for a specified project using the project ID.
 
@@ -1250,9 +1516,23 @@ class PosthogApp(APIApplication):
         """
         if project_id is None:
             raise ValueError("Missing required parameter 'project_id'")
-        request_body = {'id': id, 'short_id': short_id, 'title': title, 'content': content, 'text_content': text_content, 'version': version, 'deleted': deleted, 'created_at': created_at, 'created_by': created_by, 'last_modified_at': last_modified_at, 'last_modified_by': last_modified_by, 'user_access_level': user_access_level, '_create_in_folder': create_in_folder}
+        request_body = {
+            "id": id,
+            "short_id": short_id,
+            "title": title,
+            "content": content,
+            "text_content": text_content,
+            "version": version,
+            "deleted": deleted,
+            "created_at": created_at,
+            "created_by": created_by,
+            "last_modified_at": last_modified_at,
+            "last_modified_by": last_modified_by,
+            "user_access_level": user_access_level,
+            "_create_in_folder": create_in_folder,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/projects/{project_id}/notebooks/'
+        url = f"{self.base_url}/api/projects/{project_id}/notebooks/"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -1276,13 +1556,30 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         if short_id is None:
             raise ValueError("Missing required parameter 'short_id'")
-        url = f'{self.base_url}/api/projects/{project_id}/notebooks/{short_id}/'
+        url = f"{self.base_url}/api/projects/{project_id}/notebooks/{short_id}/"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def notebooks_update(self, project_id, short_id, id=None, short_id_body=None, title=None, content=None, text_content=None, version=None, deleted=None, created_at=None, created_by=None, last_modified_at=None, last_modified_by=None, user_access_level=None, create_in_folder=None) -> dict[str, Any]:
+    async def notebooks_update(
+        self,
+        project_id,
+        short_id,
+        id=None,
+        short_id_body=None,
+        title=None,
+        content=None,
+        text_content=None,
+        version=None,
+        deleted=None,
+        created_at=None,
+        created_by=None,
+        last_modified_at=None,
+        last_modified_by=None,
+        user_access_level=None,
+        create_in_folder=None,
+    ) -> dict[str, Any]:
         """
         Updates a notebook in the specified project and returns a success status.
 
@@ -1313,15 +1610,46 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         if short_id is None:
             raise ValueError("Missing required parameter 'short_id'")
-        request_body = {'id': id, 'short_id': short_id_body, 'title': title, 'content': content, 'text_content': text_content, 'version': version, 'deleted': deleted, 'created_at': created_at, 'created_by': created_by, 'last_modified_at': last_modified_at, 'last_modified_by': last_modified_by, 'user_access_level': user_access_level, '_create_in_folder': create_in_folder}
+        request_body = {
+            "id": id,
+            "short_id": short_id_body,
+            "title": title,
+            "content": content,
+            "text_content": text_content,
+            "version": version,
+            "deleted": deleted,
+            "created_at": created_at,
+            "created_by": created_by,
+            "last_modified_at": last_modified_at,
+            "last_modified_by": last_modified_by,
+            "user_access_level": user_access_level,
+            "_create_in_folder": create_in_folder,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/projects/{project_id}/notebooks/{short_id}/'
+        url = f"{self.base_url}/api/projects/{project_id}/notebooks/{short_id}/"
         query_params = {}
         response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def notebooks_partial_update(self, project_id, short_id, id=None, short_id_body=None, title=None, content=None, text_content=None, version=None, deleted=None, created_at=None, created_by=None, last_modified_at=None, last_modified_by=None, user_access_level=None, create_in_folder=None) -> dict[str, Any]:
+    async def notebooks_partial_update(
+        self,
+        project_id,
+        short_id,
+        id=None,
+        short_id_body=None,
+        title=None,
+        content=None,
+        text_content=None,
+        version=None,
+        deleted=None,
+        created_at=None,
+        created_by=None,
+        last_modified_at=None,
+        last_modified_by=None,
+        user_access_level=None,
+        create_in_folder=None,
+    ) -> dict[str, Any]:
         """
         Updates a notebook identified by its project ID and short ID using the provided data.
 
@@ -1352,9 +1680,23 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         if short_id is None:
             raise ValueError("Missing required parameter 'short_id'")
-        request_body = {'id': id, 'short_id': short_id_body, 'title': title, 'content': content, 'text_content': text_content, 'version': version, 'deleted': deleted, 'created_at': created_at, 'created_by': created_by, 'last_modified_at': last_modified_at, 'last_modified_by': last_modified_by, 'user_access_level': user_access_level, '_create_in_folder': create_in_folder}
+        request_body = {
+            "id": id,
+            "short_id": short_id_body,
+            "title": title,
+            "content": content,
+            "text_content": text_content,
+            "version": version,
+            "deleted": deleted,
+            "created_at": created_at,
+            "created_by": created_by,
+            "last_modified_at": last_modified_at,
+            "last_modified_by": last_modified_by,
+            "user_access_level": user_access_level,
+            "_create_in_folder": create_in_folder,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/projects/{project_id}/notebooks/{short_id}/'
+        url = f"{self.base_url}/api/projects/{project_id}/notebooks/{short_id}/"
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -1378,7 +1720,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         if short_id is None:
             raise ValueError("Missing required parameter 'short_id'")
-        url = f'{self.base_url}/api/projects/{project_id}/notebooks/{short_id}/'
+        url = f"{self.base_url}/api/projects/{project_id}/notebooks/{short_id}/"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -1402,7 +1744,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         if short_id is None:
             raise ValueError("Missing required parameter 'short_id'")
-        url = f'{self.base_url}/api/projects/{project_id}/notebooks/{short_id}/activity/'
+        url = f"{self.base_url}/api/projects/{project_id}/notebooks/{short_id}/activity/"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -1423,7 +1765,7 @@ class PosthogApp(APIApplication):
         """
         if project_id is None:
             raise ValueError("Missing required parameter 'project_id'")
-        url = f'{self.base_url}/api/projects/{project_id}/notebooks/activity/'
+        url = f"{self.base_url}/api/projects/{project_id}/notebooks/activity/"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -1444,13 +1786,15 @@ class PosthogApp(APIApplication):
         """
         if project_id is None:
             raise ValueError("Missing required parameter 'project_id'")
-        url = f'{self.base_url}/api/projects/{project_id}/notebooks/recording_comments/'
+        url = f"{self.base_url}/api/projects/{project_id}/notebooks/recording_comments/"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def persons_list(self, project_id, distinct_id=None, email=None, format=None, limit=None, offset=None, properties=None, search=None) -> dict[str, Any]:
+    async def persons_list(
+        self, project_id, distinct_id=None, email=None, format=None, limit=None, offset=None, properties=None, search=None
+    ) -> dict[str, Any]:
         """
         Retrieves a list of persons associated with a specific project, optionally filtered by distinct ID, email, properties, or search criteria.
 
@@ -1472,8 +1816,20 @@ class PosthogApp(APIApplication):
         """
         if project_id is None:
             raise ValueError("Missing required parameter 'project_id'")
-        url = f'{self.base_url}/api/projects/{project_id}/persons/'
-        query_params = {k: v for k, v in [('distinct_id', distinct_id), ('email', email), ('format', format), ('limit', limit), ('offset', offset), ('properties', properties), ('search', search)] if v is not None}
+        url = f"{self.base_url}/api/projects/{project_id}/persons/"
+        query_params = {
+            k: v
+            for k, v in [
+                ("distinct_id", distinct_id),
+                ("email", email),
+                ("format", format),
+                ("limit", limit),
+                ("offset", offset),
+                ("properties", properties),
+                ("search", search),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -1497,13 +1853,15 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/projects/{project_id}/persons/{id}/'
-        query_params = {k: v for k, v in [('format', format)] if v is not None}
+        url = f"{self.base_url}/api/projects/{project_id}/persons/{id}/"
+        query_params = {k: v for k, v in [("format", format)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def persons_update(self, project_id, id, format=None, id_body=None, name=None, distinct_ids=None, properties=None, created_at=None, uuid=None) -> dict[str, Any]:
+    async def persons_update(
+        self, project_id, id, format=None, id_body=None, name=None, distinct_ids=None, properties=None, created_at=None, uuid=None
+    ) -> dict[str, Any]:
         """
         Updates a specific person's details within a designated project and returns a success response upon completion.
 
@@ -1528,15 +1886,24 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {'id': id_body, 'name': name, 'distinct_ids': distinct_ids, 'properties': properties, 'created_at': created_at, 'uuid': uuid}
+        request_body = {
+            "id": id_body,
+            "name": name,
+            "distinct_ids": distinct_ids,
+            "properties": properties,
+            "created_at": created_at,
+            "uuid": uuid,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/projects/{project_id}/persons/{id}/'
-        query_params = {k: v for k, v in [('format', format)] if v is not None}
+        url = f"{self.base_url}/api/projects/{project_id}/persons/{id}/"
+        query_params = {k: v for k, v in [("format", format)] if v is not None}
         response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def persons_partial_update(self, project_id, id, format=None, id_body=None, name=None, distinct_ids=None, properties=None, created_at=None, uuid=None) -> dict[str, Any]:
+    async def persons_partial_update(
+        self, project_id, id, format=None, id_body=None, name=None, distinct_ids=None, properties=None, created_at=None, uuid=None
+    ) -> dict[str, Any]:
         """
         Updates the details of a specific person associated with a project using the PATCH method, allowing for partial modification of the person's information.
 
@@ -1561,10 +1928,17 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {'id': id_body, 'name': name, 'distinct_ids': distinct_ids, 'properties': properties, 'created_at': created_at, 'uuid': uuid}
+        request_body = {
+            "id": id_body,
+            "name": name,
+            "distinct_ids": distinct_ids,
+            "properties": properties,
+            "created_at": created_at,
+            "uuid": uuid,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/projects/{project_id}/persons/{id}/'
-        query_params = {k: v for k, v in [('format', format)] if v is not None}
+        url = f"{self.base_url}/api/projects/{project_id}/persons/{id}/"
+        query_params = {k: v for k, v in [("format", format)] if v is not None}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -1589,8 +1963,8 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/projects/{project_id}/persons/{id}/'
-        query_params = {k: v for k, v in [('delete_events', delete_events), ('format', format)] if v is not None}
+        url = f"{self.base_url}/api/projects/{project_id}/persons/{id}/"
+        query_params = {k: v for k, v in [("delete_events", delete_events), ("format", format)] if v is not None}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -1614,13 +1988,15 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/projects/{project_id}/persons/{id}/activity/'
-        query_params = {k: v for k, v in [('format', format)] if v is not None}
+        url = f"{self.base_url}/api/projects/{project_id}/persons/{id}/activity/"
+        query_params = {k: v for k, v in [("format", format)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def persons_delete_events_create(self, project_id, id, format=None, id_body=None, name=None, distinct_ids=None, properties=None, created_at=None, uuid=None) -> Any:
+    async def persons_delete_events_create(
+        self, project_id, id, format=None, id_body=None, name=None, distinct_ids=None, properties=None, created_at=None, uuid=None
+    ) -> Any:
         """
         Deletes events associated with a person in a project using the POST method and returns a status message.
 
@@ -1645,15 +2021,24 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {'id': id_body, 'name': name, 'distinct_ids': distinct_ids, 'properties': properties, 'created_at': created_at, 'uuid': uuid}
+        request_body = {
+            "id": id_body,
+            "name": name,
+            "distinct_ids": distinct_ids,
+            "properties": properties,
+            "created_at": created_at,
+            "uuid": uuid,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/projects/{project_id}/persons/{id}/delete_events/'
-        query_params = {k: v for k, v in [('format', format)] if v is not None}
+        url = f"{self.base_url}/api/projects/{project_id}/persons/{id}/delete_events/"
+        query_params = {k: v for k, v in [("format", format)] if v is not None}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def persons_delete_property_create(self, project_id, id, unset, format=None, id_body=None, name=None, distinct_ids=None, properties=None, created_at=None, uuid=None) -> Any:
+    async def persons_delete_property_create(
+        self, project_id, id, unset, format=None, id_body=None, name=None, distinct_ids=None, properties=None, created_at=None, uuid=None
+    ) -> Any:
         """
         Removes a specified property from a person within a project using a POST request, returning a success status on completion.
 
@@ -1679,10 +2064,17 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {'id': id_body, 'name': name, 'distinct_ids': distinct_ids, 'properties': properties, 'created_at': created_at, 'uuid': uuid}
+        request_body = {
+            "id": id_body,
+            "name": name,
+            "distinct_ids": distinct_ids,
+            "properties": properties,
+            "created_at": created_at,
+            "uuid": uuid,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/projects/{project_id}/persons/{id}/delete_property/'
-        query_params = {k: v for k, v in [('$unset', unset), ('format', format)] if v is not None}
+        url = f"{self.base_url}/api/projects/{project_id}/persons/{id}/delete_property/"
+        query_params = {k: v for k, v in [("$unset", unset), ("format", format)] if v is not None}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -1706,13 +2098,15 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/projects/{project_id}/persons/{id}/properties_timeline/'
-        query_params = {k: v for k, v in [('format', format)] if v is not None}
+        url = f"{self.base_url}/api/projects/{project_id}/persons/{id}/properties_timeline/"
+        query_params = {k: v for k, v in [("format", format)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def persons_split_create(self, project_id, id, format=None, id_body=None, name=None, distinct_ids=None, properties=None, created_at=None, uuid=None) -> Any:
+    async def persons_split_create(
+        self, project_id, id, format=None, id_body=None, name=None, distinct_ids=None, properties=None, created_at=None, uuid=None
+    ) -> Any:
         """
         Splits a specified person into separate entities within a project and returns the operation result.
 
@@ -1737,15 +2131,35 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {'id': id_body, 'name': name, 'distinct_ids': distinct_ids, 'properties': properties, 'created_at': created_at, 'uuid': uuid}
+        request_body = {
+            "id": id_body,
+            "name": name,
+            "distinct_ids": distinct_ids,
+            "properties": properties,
+            "created_at": created_at,
+            "uuid": uuid,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/projects/{project_id}/persons/{id}/split/'
-        query_params = {k: v for k, v in [('format', format)] if v is not None}
+        url = f"{self.base_url}/api/projects/{project_id}/persons/{id}/split/"
+        query_params = {k: v for k, v in [("format", format)] if v is not None}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def persons_update_property_create(self, project_id, id, key, value, format=None, id_body=None, name=None, distinct_ids=None, properties=None, created_at=None, uuid=None) -> Any:
+    async def persons_update_property_create(
+        self,
+        project_id,
+        id,
+        key,
+        value,
+        format=None,
+        id_body=None,
+        name=None,
+        distinct_ids=None,
+        properties=None,
+        created_at=None,
+        uuid=None,
+    ) -> Any:
         """
         Updates a property for a specified person within a project using the provided key and value.
 
@@ -1772,10 +2186,17 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {'id': id_body, 'name': name, 'distinct_ids': distinct_ids, 'properties': properties, 'created_at': created_at, 'uuid': uuid}
+        request_body = {
+            "id": id_body,
+            "name": name,
+            "distinct_ids": distinct_ids,
+            "properties": properties,
+            "created_at": created_at,
+            "uuid": uuid,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/projects/{project_id}/persons/{id}/update_property/'
-        query_params = {k: v for k, v in [('format', format), ('key', key), ('value', value)] if v is not None}
+        url = f"{self.base_url}/api/projects/{project_id}/persons/{id}/update_property/"
+        query_params = {k: v for k, v in [("format", format), ("key", key), ("value", value)] if v is not None}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -1796,13 +2217,26 @@ class PosthogApp(APIApplication):
         """
         if project_id is None:
             raise ValueError("Missing required parameter 'project_id'")
-        url = f'{self.base_url}/api/projects/{project_id}/persons/activity/'
-        query_params = {k: v for k, v in [('format', format)] if v is not None}
+        url = f"{self.base_url}/api/projects/{project_id}/persons/activity/"
+        query_params = {k: v for k, v in [("format", format)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def persons_bulk_delete_create(self, project_id, delete_events=None, distinct_ids=None, format=None, ids=None, id=None, name=None, distinct_ids_body=None, properties=None, created_at=None, uuid=None) -> Any:
+    async def persons_bulk_delete_create(
+        self,
+        project_id,
+        delete_events=None,
+        distinct_ids=None,
+        format=None,
+        ids=None,
+        id=None,
+        name=None,
+        distinct_ids_body=None,
+        properties=None,
+        created_at=None,
+        uuid=None,
+    ) -> Any:
         """
         Deletes multiple persons from a project in bulk using their IDs or distinct IDs, optionally including the deletion of associated events, via a POST request to `/api/projects/{project_id}/persons/bulk_delete/`.
 
@@ -1827,10 +2261,21 @@ class PosthogApp(APIApplication):
         """
         if project_id is None:
             raise ValueError("Missing required parameter 'project_id'")
-        request_body = {'id': id, 'name': name, 'distinct_ids': distinct_ids_body, 'properties': properties, 'created_at': created_at, 'uuid': uuid}
+        request_body = {
+            "id": id,
+            "name": name,
+            "distinct_ids": distinct_ids_body,
+            "properties": properties,
+            "created_at": created_at,
+            "uuid": uuid,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/projects/{project_id}/persons/bulk_delete/'
-        query_params = {k: v for k, v in [('delete_events', delete_events), ('distinct_ids', distinct_ids), ('format', format), ('ids', ids)] if v is not None}
+        url = f"{self.base_url}/api/projects/{project_id}/persons/bulk_delete/"
+        query_params = {
+            k: v
+            for k, v in [("delete_events", delete_events), ("distinct_ids", distinct_ids), ("format", format), ("ids", ids)]
+            if v is not None
+        }
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -1851,8 +2296,8 @@ class PosthogApp(APIApplication):
         """
         if project_id is None:
             raise ValueError("Missing required parameter 'project_id'")
-        url = f'{self.base_url}/api/projects/{project_id}/persons/cohorts/'
-        query_params = {k: v for k, v in [('format', format)] if v is not None}
+        url = f"{self.base_url}/api/projects/{project_id}/persons/cohorts/"
+        query_params = {k: v for k, v in [("format", format)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -1873,13 +2318,15 @@ class PosthogApp(APIApplication):
         """
         if project_id is None:
             raise ValueError("Missing required parameter 'project_id'")
-        url = f'{self.base_url}/api/projects/{project_id}/persons/funnel/'
-        query_params = {k: v for k, v in [('format', format)] if v is not None}
+        url = f"{self.base_url}/api/projects/{project_id}/persons/funnel/"
+        query_params = {k: v for k, v in [("format", format)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def persons_funnel_create(self, project_id, format=None, id=None, name=None, distinct_ids=None, properties=None, created_at=None, uuid=None) -> Any:
+    async def persons_funnel_create(
+        self, project_id, format=None, id=None, name=None, distinct_ids=None, properties=None, created_at=None, uuid=None
+    ) -> Any:
         """
         Tracks user funnel data for a specific project and returns formatted results.
 
@@ -1901,10 +2348,17 @@ class PosthogApp(APIApplication):
         """
         if project_id is None:
             raise ValueError("Missing required parameter 'project_id'")
-        request_body = {'id': id, 'name': name, 'distinct_ids': distinct_ids, 'properties': properties, 'created_at': created_at, 'uuid': uuid}
+        request_body = {
+            "id": id,
+            "name": name,
+            "distinct_ids": distinct_ids,
+            "properties": properties,
+            "created_at": created_at,
+            "uuid": uuid,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/projects/{project_id}/persons/funnel/'
-        query_params = {k: v for k, v in [('format', format)] if v is not None}
+        url = f"{self.base_url}/api/projects/{project_id}/persons/funnel/"
+        query_params = {k: v for k, v in [("format", format)] if v is not None}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -1925,13 +2379,15 @@ class PosthogApp(APIApplication):
         """
         if project_id is None:
             raise ValueError("Missing required parameter 'project_id'")
-        url = f'{self.base_url}/api/projects/{project_id}/persons/funnel/correlation/'
-        query_params = {k: v for k, v in [('format', format)] if v is not None}
+        url = f"{self.base_url}/api/projects/{project_id}/persons/funnel/correlation/"
+        query_params = {k: v for k, v in [("format", format)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def persons_funnel_correlation_create(self, project_id, format=None, id=None, name=None, distinct_ids=None, properties=None, created_at=None, uuid=None) -> Any:
+    async def persons_funnel_correlation_create(
+        self, project_id, format=None, id=None, name=None, distinct_ids=None, properties=None, created_at=None, uuid=None
+    ) -> Any:
         """
         Calculates and returns the correlation between funnel data for individuals within a specified project using the POST method.
 
@@ -1953,10 +2409,17 @@ class PosthogApp(APIApplication):
         """
         if project_id is None:
             raise ValueError("Missing required parameter 'project_id'")
-        request_body = {'id': id, 'name': name, 'distinct_ids': distinct_ids, 'properties': properties, 'created_at': created_at, 'uuid': uuid}
+        request_body = {
+            "id": id,
+            "name": name,
+            "distinct_ids": distinct_ids,
+            "properties": properties,
+            "created_at": created_at,
+            "uuid": uuid,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/projects/{project_id}/persons/funnel/correlation/'
-        query_params = {k: v for k, v in [('format', format)] if v is not None}
+        url = f"{self.base_url}/api/projects/{project_id}/persons/funnel/correlation/"
+        query_params = {k: v for k, v in [("format", format)] if v is not None}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -1977,13 +2440,15 @@ class PosthogApp(APIApplication):
         """
         if project_id is None:
             raise ValueError("Missing required parameter 'project_id'")
-        url = f'{self.base_url}/api/projects/{project_id}/persons/lifecycle/'
-        query_params = {k: v for k, v in [('format', format)] if v is not None}
+        url = f"{self.base_url}/api/projects/{project_id}/persons/lifecycle/"
+        query_params = {k: v for k, v in [("format", format)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def persons_reset_person_distinct_id_create(self, project_id, format=None, id=None, name=None, distinct_ids=None, properties=None, created_at=None, uuid=None) -> Any:
+    async def persons_reset_person_distinct_id_create(
+        self, project_id, format=None, id=None, name=None, distinct_ids=None, properties=None, created_at=None, uuid=None
+    ) -> Any:
         """
         Resets and unlinks a person's distinct identifier in the specified project, clearing associated user data across devices or sessions.
 
@@ -2005,10 +2470,17 @@ class PosthogApp(APIApplication):
         """
         if project_id is None:
             raise ValueError("Missing required parameter 'project_id'")
-        request_body = {'id': id, 'name': name, 'distinct_ids': distinct_ids, 'properties': properties, 'created_at': created_at, 'uuid': uuid}
+        request_body = {
+            "id": id,
+            "name": name,
+            "distinct_ids": distinct_ids,
+            "properties": properties,
+            "created_at": created_at,
+            "uuid": uuid,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/projects/{project_id}/persons/reset_person_distinct_id/'
-        query_params = {k: v for k, v in [('format', format)] if v is not None}
+        url = f"{self.base_url}/api/projects/{project_id}/persons/reset_person_distinct_id/"
+        query_params = {k: v for k, v in [("format", format)] if v is not None}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -2029,8 +2501,8 @@ class PosthogApp(APIApplication):
         """
         if project_id is None:
             raise ValueError("Missing required parameter 'project_id'")
-        url = f'{self.base_url}/api/projects/{project_id}/persons/stickiness/'
-        query_params = {k: v for k, v in [('format', format)] if v is not None}
+        url = f"{self.base_url}/api/projects/{project_id}/persons/stickiness/"
+        query_params = {k: v for k, v in [("format", format)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -2051,8 +2523,8 @@ class PosthogApp(APIApplication):
         """
         if project_id is None:
             raise ValueError("Missing required parameter 'project_id'")
-        url = f'{self.base_url}/api/projects/{project_id}/persons/trends/'
-        query_params = {k: v for k, v in [('format', format)] if v is not None}
+        url = f"{self.base_url}/api/projects/{project_id}/persons/trends/"
+        query_params = {k: v for k, v in [("format", format)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -2073,8 +2545,8 @@ class PosthogApp(APIApplication):
         """
         if project_id is None:
             raise ValueError("Missing required parameter 'project_id'")
-        url = f'{self.base_url}/api/projects/{project_id}/persons/values/'
-        query_params = {k: v for k, v in [('format', format)] if v is not None}
+        url = f"{self.base_url}/api/projects/{project_id}/persons/values/"
+        query_params = {k: v for k, v in [("format", format)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -2099,13 +2571,29 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         if plugin_config_id is None:
             raise ValueError("Missing required parameter 'plugin_config_id'")
-        url = f'{self.base_url}/api/projects/{project_id}/plugin_configs/{plugin_config_id}/logs/'
-        query_params = {k: v for k, v in [('limit', limit), ('offset', offset)] if v is not None}
+        url = f"{self.base_url}/api/projects/{project_id}/plugin_configs/{plugin_config_id}/logs/"
+        query_params = {k: v for k, v in [("limit", limit), ("offset", offset)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def property_definitions_list(self, project_id, event_names=None, exclude_core_properties=None, exclude_hidden=None, excluded_properties=None, filter_by_event_names=None, group_type_index=None, is_feature_flag=None, is_numerical=None, limit=None, offset=None, properties=None, search=None, type=None) -> dict[str, Any]:
+    async def property_definitions_list(
+        self,
+        project_id,
+        event_names=None,
+        exclude_core_properties=None,
+        exclude_hidden=None,
+        excluded_properties=None,
+        filter_by_event_names=None,
+        group_type_index=None,
+        is_feature_flag=None,
+        is_numerical=None,
+        limit=None,
+        offset=None,
+        properties=None,
+        search=None,
+        type=None,
+    ) -> dict[str, Any]:
         """
         Retrieves property definitions for a specific project with optional filtering for event names, excluded properties, hidden status, numerical type, and feature flags.
 
@@ -2136,8 +2624,26 @@ class PosthogApp(APIApplication):
         """
         if project_id is None:
             raise ValueError("Missing required parameter 'project_id'")
-        url = f'{self.base_url}/api/projects/{project_id}/property_definitions/'
-        query_params = {k: v for k, v in [('event_names', event_names), ('exclude_core_properties', exclude_core_properties), ('exclude_hidden', exclude_hidden), ('excluded_properties', excluded_properties), ('filter_by_event_names', filter_by_event_names), ('group_type_index', group_type_index), ('is_feature_flag', is_feature_flag), ('is_numerical', is_numerical), ('limit', limit), ('offset', offset), ('properties', properties), ('search', search), ('type', type)] if v is not None}
+        url = f"{self.base_url}/api/projects/{project_id}/property_definitions/"
+        query_params = {
+            k: v
+            for k, v in [
+                ("event_names", event_names),
+                ("exclude_core_properties", exclude_core_properties),
+                ("exclude_hidden", exclude_hidden),
+                ("excluded_properties", excluded_properties),
+                ("filter_by_event_names", filter_by_event_names),
+                ("group_type_index", group_type_index),
+                ("is_feature_flag", is_feature_flag),
+                ("is_numerical", is_numerical),
+                ("limit", limit),
+                ("offset", offset),
+                ("properties", properties),
+                ("search", search),
+                ("type", type),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -2160,13 +2666,15 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/projects/{project_id}/property_definitions/{id}/'
+        url = f"{self.base_url}/api/projects/{project_id}/property_definitions/{id}/"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def property_definitions_update(self, project_id, id, id_body, name, is_seen_on_filtered_events, is_numerical=None, property_type=None, tags=None) -> dict[str, Any]:
+    async def property_definitions_update(
+        self, project_id, id, id_body, name, is_seen_on_filtered_events, is_numerical=None, property_type=None, tags=None
+    ) -> dict[str, Any]:
         """
         Updates or replaces a specific property definition within a project using the PUT method, where the project and property definition are identified by their respective IDs.
 
@@ -2190,15 +2698,24 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {'id': id_body, 'name': name, 'is_numerical': is_numerical, 'property_type': property_type, 'tags': tags, 'is_seen_on_filtered_events': is_seen_on_filtered_events}
+        request_body = {
+            "id": id_body,
+            "name": name,
+            "is_numerical": is_numerical,
+            "property_type": property_type,
+            "tags": tags,
+            "is_seen_on_filtered_events": is_seen_on_filtered_events,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/projects/{project_id}/property_definitions/{id}/'
+        url = f"{self.base_url}/api/projects/{project_id}/property_definitions/{id}/"
         query_params = {}
         response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def property_definitions_partial_update(self, project_id, id, id_body=None, name=None, is_numerical=None, property_type=None, tags=None, is_seen_on_filtered_events=None) -> dict[str, Any]:
+    async def property_definitions_partial_update(
+        self, project_id, id, id_body=None, name=None, is_numerical=None, property_type=None, tags=None, is_seen_on_filtered_events=None
+    ) -> dict[str, Any]:
         """
         Updates a specific property definition for a project using the "PATCH" method, allowing partial modifications to the resource at "/api/projects/{project_id}/property_definitions/{id}/".
 
@@ -2222,9 +2739,16 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {'id': id_body, 'name': name, 'is_numerical': is_numerical, 'property_type': property_type, 'tags': tags, 'is_seen_on_filtered_events': is_seen_on_filtered_events}
+        request_body = {
+            "id": id_body,
+            "name": name,
+            "is_numerical": is_numerical,
+            "property_type": property_type,
+            "tags": tags,
+            "is_seen_on_filtered_events": is_seen_on_filtered_events,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/projects/{project_id}/property_definitions/{id}/'
+        url = f"{self.base_url}/api/projects/{project_id}/property_definitions/{id}/"
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -2248,7 +2772,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/projects/{project_id}/property_definitions/{id}/'
+        url = f"{self.base_url}/api/projects/{project_id}/property_definitions/{id}/"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -2269,13 +2793,15 @@ class PosthogApp(APIApplication):
         """
         if project_id is None:
             raise ValueError("Missing required parameter 'project_id'")
-        url = f'{self.base_url}/api/projects/{project_id}/property_definitions/seen_together/'
+        url = f"{self.base_url}/api/projects/{project_id}/property_definitions/seen_together/"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def query_create(self, project_id, query, async_=None, client_query_id=None, filters_override=None, refresh=None, variables_override=None) -> Any:
+    async def query_create(
+        self, project_id, query, async_=None, client_query_id=None, filters_override=None, refresh=None, variables_override=None
+    ) -> Any:
         """
         Submits a query to process or retrieve project-specific data and returns the results.
 
@@ -2312,9 +2838,16 @@ class PosthogApp(APIApplication):
         """
         if project_id is None:
             raise ValueError("Missing required parameter 'project_id'")
-        request_body = {'async': async_, 'client_query_id': client_query_id, 'filters_override': filters_override, 'query': query, 'refresh': refresh, 'variables_override': variables_override}
+        request_body = {
+            "async": async_,
+            "client_query_id": client_query_id,
+            "filters_override": filters_override,
+            "query": query,
+            "refresh": refresh,
+            "variables_override": variables_override,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/projects/{project_id}/query/'
+        url = f"{self.base_url}/api/projects/{project_id}/query/"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -2338,7 +2871,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/projects/{project_id}/query/{id}/'
+        url = f"{self.base_url}/api/projects/{project_id}/query/{id}/"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -2362,7 +2895,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/projects/{project_id}/query/{id}/'
+        url = f"{self.base_url}/api/projects/{project_id}/query/{id}/"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -2383,7 +2916,7 @@ class PosthogApp(APIApplication):
         """
         if project_id is None:
             raise ValueError("Missing required parameter 'project_id'")
-        url = f'{self.base_url}/api/projects/{project_id}/query/check_auth_for_async/'
+        url = f"{self.base_url}/api/projects/{project_id}/query/check_auth_for_async/"
         query_params = {}
         response = await self._apost(url, data={}, params=query_params)
         response.raise_for_status()
@@ -2404,7 +2937,7 @@ class PosthogApp(APIApplication):
         """
         if project_id is None:
             raise ValueError("Missing required parameter 'project_id'")
-        url = f'{self.base_url}/api/projects/{project_id}/query/draft_sql/'
+        url = f"{self.base_url}/api/projects/{project_id}/query/draft_sql/"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -2429,13 +2962,32 @@ class PosthogApp(APIApplication):
         """
         if project_id is None:
             raise ValueError("Missing required parameter 'project_id'")
-        url = f'{self.base_url}/api/projects/{project_id}/session_recording_playlists/'
-        query_params = {k: v for k, v in [('created_by', created_by), ('limit', limit), ('offset', offset), ('short_id', short_id)] if v is not None}
+        url = f"{self.base_url}/api/projects/{project_id}/session_recording_playlists/"
+        query_params = {
+            k: v for k, v in [("created_by", created_by), ("limit", limit), ("offset", offset), ("short_id", short_id)] if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def session_recording_playlists_create(self, project_id, id=None, short_id=None, name=None, derived_name=None, description=None, pinned=None, created_at=None, created_by=None, deleted=None, filters=None, last_modified_at=None, last_modified_by=None, recordings_counts=None, create_in_folder=None) -> dict[str, Any]:
+    async def session_recording_playlists_create(
+        self,
+        project_id,
+        id=None,
+        short_id=None,
+        name=None,
+        derived_name=None,
+        description=None,
+        pinned=None,
+        created_at=None,
+        created_by=None,
+        deleted=None,
+        filters=None,
+        last_modified_at=None,
+        last_modified_by=None,
+        recordings_counts=None,
+        create_in_folder=None,
+    ) -> dict[str, Any]:
         """
         Creates a new session recording playlist for a specified project, allowing users to organize session recordings, using the PostHog API.
 
@@ -2464,9 +3016,24 @@ class PosthogApp(APIApplication):
         """
         if project_id is None:
             raise ValueError("Missing required parameter 'project_id'")
-        request_body = {'id': id, 'short_id': short_id, 'name': name, 'derived_name': derived_name, 'description': description, 'pinned': pinned, 'created_at': created_at, 'created_by': created_by, 'deleted': deleted, 'filters': filters, 'last_modified_at': last_modified_at, 'last_modified_by': last_modified_by, 'recordings_counts': recordings_counts, '_create_in_folder': create_in_folder}
+        request_body = {
+            "id": id,
+            "short_id": short_id,
+            "name": name,
+            "derived_name": derived_name,
+            "description": description,
+            "pinned": pinned,
+            "created_at": created_at,
+            "created_by": created_by,
+            "deleted": deleted,
+            "filters": filters,
+            "last_modified_at": last_modified_at,
+            "last_modified_by": last_modified_by,
+            "recordings_counts": recordings_counts,
+            "_create_in_folder": create_in_folder,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/projects/{project_id}/session_recording_playlists/'
+        url = f"{self.base_url}/api/projects/{project_id}/session_recording_playlists/"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -2490,13 +3057,31 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         if short_id is None:
             raise ValueError("Missing required parameter 'short_id'")
-        url = f'{self.base_url}/api/projects/{project_id}/session_recording_playlists/{short_id}/'
+        url = f"{self.base_url}/api/projects/{project_id}/session_recording_playlists/{short_id}/"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def session_recording_playlists_update(self, project_id, short_id, id=None, short_id_body=None, name=None, derived_name=None, description=None, pinned=None, created_at=None, created_by=None, deleted=None, filters=None, last_modified_at=None, last_modified_by=None, recordings_counts=None, create_in_folder=None) -> dict[str, Any]:
+    async def session_recording_playlists_update(
+        self,
+        project_id,
+        short_id,
+        id=None,
+        short_id_body=None,
+        name=None,
+        derived_name=None,
+        description=None,
+        pinned=None,
+        created_at=None,
+        created_by=None,
+        deleted=None,
+        filters=None,
+        last_modified_at=None,
+        last_modified_by=None,
+        recordings_counts=None,
+        create_in_folder=None,
+    ) -> dict[str, Any]:
         """
         Updates a session recording playlist's configurations (name, description, filters, etc.) for a specified project and playlist identifier using the provided parameters.
 
@@ -2528,15 +3113,48 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         if short_id is None:
             raise ValueError("Missing required parameter 'short_id'")
-        request_body = {'id': id, 'short_id': short_id_body, 'name': name, 'derived_name': derived_name, 'description': description, 'pinned': pinned, 'created_at': created_at, 'created_by': created_by, 'deleted': deleted, 'filters': filters, 'last_modified_at': last_modified_at, 'last_modified_by': last_modified_by, 'recordings_counts': recordings_counts, '_create_in_folder': create_in_folder}
+        request_body = {
+            "id": id,
+            "short_id": short_id_body,
+            "name": name,
+            "derived_name": derived_name,
+            "description": description,
+            "pinned": pinned,
+            "created_at": created_at,
+            "created_by": created_by,
+            "deleted": deleted,
+            "filters": filters,
+            "last_modified_at": last_modified_at,
+            "last_modified_by": last_modified_by,
+            "recordings_counts": recordings_counts,
+            "_create_in_folder": create_in_folder,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/projects/{project_id}/session_recording_playlists/{short_id}/'
+        url = f"{self.base_url}/api/projects/{project_id}/session_recording_playlists/{short_id}/"
         query_params = {}
         response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def session_recording_playlists_partial_update(self, project_id, short_id, id=None, short_id_body=None, name=None, derived_name=None, description=None, pinned=None, created_at=None, created_by=None, deleted=None, filters=None, last_modified_at=None, last_modified_by=None, recordings_counts=None, create_in_folder=None) -> dict[str, Any]:
+    async def session_recording_playlists_partial_update(
+        self,
+        project_id,
+        short_id,
+        id=None,
+        short_id_body=None,
+        name=None,
+        derived_name=None,
+        description=None,
+        pinned=None,
+        created_at=None,
+        created_by=None,
+        deleted=None,
+        filters=None,
+        last_modified_at=None,
+        last_modified_by=None,
+        recordings_counts=None,
+        create_in_folder=None,
+    ) -> dict[str, Any]:
         """
         Updates a session recording playlist for a specific project identified by project_id and playlist short_id.
 
@@ -2568,9 +3186,24 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         if short_id is None:
             raise ValueError("Missing required parameter 'short_id'")
-        request_body = {'id': id, 'short_id': short_id_body, 'name': name, 'derived_name': derived_name, 'description': description, 'pinned': pinned, 'created_at': created_at, 'created_by': created_by, 'deleted': deleted, 'filters': filters, 'last_modified_at': last_modified_at, 'last_modified_by': last_modified_by, 'recordings_counts': recordings_counts, '_create_in_folder': create_in_folder}
+        request_body = {
+            "id": id,
+            "short_id": short_id_body,
+            "name": name,
+            "derived_name": derived_name,
+            "description": description,
+            "pinned": pinned,
+            "created_at": created_at,
+            "created_by": created_by,
+            "deleted": deleted,
+            "filters": filters,
+            "last_modified_at": last_modified_at,
+            "last_modified_by": last_modified_by,
+            "recordings_counts": recordings_counts,
+            "_create_in_folder": create_in_folder,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/projects/{project_id}/session_recording_playlists/{short_id}/'
+        url = f"{self.base_url}/api/projects/{project_id}/session_recording_playlists/{short_id}/"
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -2594,7 +3227,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         if short_id is None:
             raise ValueError("Missing required parameter 'short_id'")
-        url = f'{self.base_url}/api/projects/{project_id}/session_recording_playlists/{short_id}/'
+        url = f"{self.base_url}/api/projects/{project_id}/session_recording_playlists/{short_id}/"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -2618,13 +3251,32 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         if short_id is None:
             raise ValueError("Missing required parameter 'short_id'")
-        url = f'{self.base_url}/api/projects/{project_id}/session_recording_playlists/{short_id}/recordings/'
+        url = f"{self.base_url}/api/projects/{project_id}/session_recording_playlists/{short_id}/recordings/"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def session_recording_playlists_recordings_create(self, project_id, short_id, session_recording_id, id=None, short_id_body=None, name=None, derived_name=None, description=None, pinned=None, created_at=None, created_by=None, deleted=None, filters=None, last_modified_at=None, last_modified_by=None, recordings_counts=None, create_in_folder=None) -> Any:
+    async def session_recording_playlists_recordings_create(
+        self,
+        project_id,
+        short_id,
+        session_recording_id,
+        id=None,
+        short_id_body=None,
+        name=None,
+        derived_name=None,
+        description=None,
+        pinned=None,
+        created_at=None,
+        created_by=None,
+        deleted=None,
+        filters=None,
+        last_modified_at=None,
+        last_modified_by=None,
+        recordings_counts=None,
+        create_in_folder=None,
+    ) -> Any:
         """
         Creates a new recording for a session recording playlist within a specified project using the provided session recording ID and short ID.
 
@@ -2659,9 +3311,24 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'short_id'")
         if session_recording_id is None:
             raise ValueError("Missing required parameter 'session_recording_id'")
-        request_body = {'id': id, 'short_id': short_id_body, 'name': name, 'derived_name': derived_name, 'description': description, 'pinned': pinned, 'created_at': created_at, 'created_by': created_by, 'deleted': deleted, 'filters': filters, 'last_modified_at': last_modified_at, 'last_modified_by': last_modified_by, 'recordings_counts': recordings_counts, '_create_in_folder': create_in_folder}
+        request_body = {
+            "id": id,
+            "short_id": short_id_body,
+            "name": name,
+            "derived_name": derived_name,
+            "description": description,
+            "pinned": pinned,
+            "created_at": created_at,
+            "created_by": created_by,
+            "deleted": deleted,
+            "filters": filters,
+            "last_modified_at": last_modified_at,
+            "last_modified_by": last_modified_by,
+            "recordings_counts": recordings_counts,
+            "_create_in_folder": create_in_folder,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/projects/{project_id}/session_recording_playlists/{short_id}/recordings/{session_recording_id}/'
+        url = f"{self.base_url}/api/projects/{project_id}/session_recording_playlists/{short_id}/recordings/{session_recording_id}/"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -2688,7 +3355,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'short_id'")
         if session_recording_id is None:
             raise ValueError("Missing required parameter 'session_recording_id'")
-        url = f'{self.base_url}/api/projects/{project_id}/session_recording_playlists/{short_id}/recordings/{session_recording_id}/'
+        url = f"{self.base_url}/api/projects/{project_id}/session_recording_playlists/{short_id}/recordings/{session_recording_id}/"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -2711,8 +3378,8 @@ class PosthogApp(APIApplication):
         """
         if project_id is None:
             raise ValueError("Missing required parameter 'project_id'")
-        url = f'{self.base_url}/api/projects/{project_id}/session_recordings/'
-        query_params = {k: v for k, v in [('limit', limit), ('offset', offset)] if v is not None}
+        url = f"{self.base_url}/api/projects/{project_id}/session_recordings/"
+        query_params = {k: v for k, v in [("limit", limit), ("offset", offset)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -2735,13 +3402,38 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/projects/{project_id}/session_recordings/{id}/'
+        url = f"{self.base_url}/api/projects/{project_id}/session_recordings/{id}/"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def session_recordings_update(self, project_id, id, id_body=None, distinct_id=None, viewed=None, viewers=None, recording_duration=None, active_seconds=None, inactive_seconds=None, start_time=None, end_time=None, click_count=None, keypress_count=None, mouse_activity_count=None, console_log_count=None, console_warn_count=None, console_error_count=None, start_url=None, person=None, storage=None, snapshot_source=None, ongoing=None, activity_score=None) -> dict[str, Any]:
+    async def session_recordings_update(
+        self,
+        project_id,
+        id,
+        id_body=None,
+        distinct_id=None,
+        viewed=None,
+        viewers=None,
+        recording_duration=None,
+        active_seconds=None,
+        inactive_seconds=None,
+        start_time=None,
+        end_time=None,
+        click_count=None,
+        keypress_count=None,
+        mouse_activity_count=None,
+        console_log_count=None,
+        console_warn_count=None,
+        console_error_count=None,
+        start_url=None,
+        person=None,
+        storage=None,
+        snapshot_source=None,
+        ongoing=None,
+        activity_score=None,
+    ) -> dict[str, Any]:
         """
         Updates or replaces a specific session recording within a project using the provided ID and returns a success status upon completion.
 
@@ -2780,15 +3472,62 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {'id': id_body, 'distinct_id': distinct_id, 'viewed': viewed, 'viewers': viewers, 'recording_duration': recording_duration, 'active_seconds': active_seconds, 'inactive_seconds': inactive_seconds, 'start_time': start_time, 'end_time': end_time, 'click_count': click_count, 'keypress_count': keypress_count, 'mouse_activity_count': mouse_activity_count, 'console_log_count': console_log_count, 'console_warn_count': console_warn_count, 'console_error_count': console_error_count, 'start_url': start_url, 'person': person, 'storage': storage, 'snapshot_source': snapshot_source, 'ongoing': ongoing, 'activity_score': activity_score}
+        request_body = {
+            "id": id_body,
+            "distinct_id": distinct_id,
+            "viewed": viewed,
+            "viewers": viewers,
+            "recording_duration": recording_duration,
+            "active_seconds": active_seconds,
+            "inactive_seconds": inactive_seconds,
+            "start_time": start_time,
+            "end_time": end_time,
+            "click_count": click_count,
+            "keypress_count": keypress_count,
+            "mouse_activity_count": mouse_activity_count,
+            "console_log_count": console_log_count,
+            "console_warn_count": console_warn_count,
+            "console_error_count": console_error_count,
+            "start_url": start_url,
+            "person": person,
+            "storage": storage,
+            "snapshot_source": snapshot_source,
+            "ongoing": ongoing,
+            "activity_score": activity_score,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/projects/{project_id}/session_recordings/{id}/'
+        url = f"{self.base_url}/api/projects/{project_id}/session_recordings/{id}/"
         query_params = {}
         response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def session_recordings_partial_update(self, project_id, id, id_body=None, distinct_id=None, viewed=None, viewers=None, recording_duration=None, active_seconds=None, inactive_seconds=None, start_time=None, end_time=None, click_count=None, keypress_count=None, mouse_activity_count=None, console_log_count=None, console_warn_count=None, console_error_count=None, start_url=None, person=None, storage=None, snapshot_source=None, ongoing=None, activity_score=None) -> dict[str, Any]:
+    async def session_recordings_partial_update(
+        self,
+        project_id,
+        id,
+        id_body=None,
+        distinct_id=None,
+        viewed=None,
+        viewers=None,
+        recording_duration=None,
+        active_seconds=None,
+        inactive_seconds=None,
+        start_time=None,
+        end_time=None,
+        click_count=None,
+        keypress_count=None,
+        mouse_activity_count=None,
+        console_log_count=None,
+        console_warn_count=None,
+        console_error_count=None,
+        start_url=None,
+        person=None,
+        storage=None,
+        snapshot_source=None,
+        ongoing=None,
+        activity_score=None,
+    ) -> dict[str, Any]:
         """
         Updates the specified session recording within a project with partial modifications using the PATCH HTTP method.
 
@@ -2827,9 +3566,31 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {'id': id_body, 'distinct_id': distinct_id, 'viewed': viewed, 'viewers': viewers, 'recording_duration': recording_duration, 'active_seconds': active_seconds, 'inactive_seconds': inactive_seconds, 'start_time': start_time, 'end_time': end_time, 'click_count': click_count, 'keypress_count': keypress_count, 'mouse_activity_count': mouse_activity_count, 'console_log_count': console_log_count, 'console_warn_count': console_warn_count, 'console_error_count': console_error_count, 'start_url': start_url, 'person': person, 'storage': storage, 'snapshot_source': snapshot_source, 'ongoing': ongoing, 'activity_score': activity_score}
+        request_body = {
+            "id": id_body,
+            "distinct_id": distinct_id,
+            "viewed": viewed,
+            "viewers": viewers,
+            "recording_duration": recording_duration,
+            "active_seconds": active_seconds,
+            "inactive_seconds": inactive_seconds,
+            "start_time": start_time,
+            "end_time": end_time,
+            "click_count": click_count,
+            "keypress_count": keypress_count,
+            "mouse_activity_count": mouse_activity_count,
+            "console_log_count": console_log_count,
+            "console_warn_count": console_warn_count,
+            "console_error_count": console_error_count,
+            "start_url": start_url,
+            "person": person,
+            "storage": storage,
+            "snapshot_source": snapshot_source,
+            "ongoing": ongoing,
+            "activity_score": activity_score,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/projects/{project_id}/session_recordings/{id}/'
+        url = f"{self.base_url}/api/projects/{project_id}/session_recordings/{id}/"
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -2853,7 +3614,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/projects/{project_id}/session_recordings/{id}/'
+        url = f"{self.base_url}/api/projects/{project_id}/session_recordings/{id}/"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -2877,7 +3638,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/projects/{project_id}/session_recordings/{id}/analyze/similar/'
+        url = f"{self.base_url}/api/projects/{project_id}/session_recordings/{id}/analyze/similar/"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -2901,13 +3662,37 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         if recording_id is None:
             raise ValueError("Missing required parameter 'recording_id'")
-        url = f'{self.base_url}/api/projects/{project_id}/session_recordings/{recording_id}/sharing/'
+        url = f"{self.base_url}/api/projects/{project_id}/session_recordings/{recording_id}/sharing/"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def session_recordings_ai_regex_create(self, project_id, id=None, distinct_id=None, viewed=None, viewers=None, recording_duration=None, active_seconds=None, inactive_seconds=None, start_time=None, end_time=None, click_count=None, keypress_count=None, mouse_activity_count=None, console_log_count=None, console_warn_count=None, console_error_count=None, start_url=None, person=None, storage=None, snapshot_source=None, ongoing=None, activity_score=None) -> Any:
+    async def session_recordings_ai_regex_create(
+        self,
+        project_id,
+        id=None,
+        distinct_id=None,
+        viewed=None,
+        viewers=None,
+        recording_duration=None,
+        active_seconds=None,
+        inactive_seconds=None,
+        start_time=None,
+        end_time=None,
+        click_count=None,
+        keypress_count=None,
+        mouse_activity_count=None,
+        console_log_count=None,
+        console_warn_count=None,
+        console_error_count=None,
+        start_url=None,
+        person=None,
+        storage=None,
+        snapshot_source=None,
+        ongoing=None,
+        activity_score=None,
+    ) -> Any:
         """
         Creates AI-powered regex session recordings for a specified project using the POST method.
 
@@ -2943,9 +3728,31 @@ class PosthogApp(APIApplication):
         """
         if project_id is None:
             raise ValueError("Missing required parameter 'project_id'")
-        request_body = {'id': id, 'distinct_id': distinct_id, 'viewed': viewed, 'viewers': viewers, 'recording_duration': recording_duration, 'active_seconds': active_seconds, 'inactive_seconds': inactive_seconds, 'start_time': start_time, 'end_time': end_time, 'click_count': click_count, 'keypress_count': keypress_count, 'mouse_activity_count': mouse_activity_count, 'console_log_count': console_log_count, 'console_warn_count': console_warn_count, 'console_error_count': console_error_count, 'start_url': start_url, 'person': person, 'storage': storage, 'snapshot_source': snapshot_source, 'ongoing': ongoing, 'activity_score': activity_score}
+        request_body = {
+            "id": id,
+            "distinct_id": distinct_id,
+            "viewed": viewed,
+            "viewers": viewers,
+            "recording_duration": recording_duration,
+            "active_seconds": active_seconds,
+            "inactive_seconds": inactive_seconds,
+            "start_time": start_time,
+            "end_time": end_time,
+            "click_count": click_count,
+            "keypress_count": keypress_count,
+            "mouse_activity_count": mouse_activity_count,
+            "console_log_count": console_log_count,
+            "console_warn_count": console_warn_count,
+            "console_error_count": console_error_count,
+            "start_url": start_url,
+            "person": person,
+            "storage": storage,
+            "snapshot_source": snapshot_source,
+            "ongoing": ongoing,
+            "activity_score": activity_score,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/projects/{project_id}/session_recordings/ai/regex/'
+        url = f"{self.base_url}/api/projects/{project_id}/session_recordings/ai/regex/"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -2966,7 +3773,7 @@ class PosthogApp(APIApplication):
         """
         if project_id is None:
             raise ValueError("Missing required parameter 'project_id'")
-        url = f'{self.base_url}/api/projects/{project_id}/sessions/property_definitions/'
+        url = f"{self.base_url}/api/projects/{project_id}/sessions/property_definitions/"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -2987,7 +3794,7 @@ class PosthogApp(APIApplication):
         """
         if project_id is None:
             raise ValueError("Missing required parameter 'project_id'")
-        url = f'{self.base_url}/api/projects/{project_id}/sessions/values/'
+        url = f"{self.base_url}/api/projects/{project_id}/sessions/values/"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -3010,13 +3817,35 @@ class PosthogApp(APIApplication):
         """
         if project_id is None:
             raise ValueError("Missing required parameter 'project_id'")
-        url = f'{self.base_url}/api/projects/{project_id}/subscriptions/'
-        query_params = {k: v for k, v in [('limit', limit), ('offset', offset)] if v is not None}
+        url = f"{self.base_url}/api/projects/{project_id}/subscriptions/"
+        query_params = {k: v for k, v in [("limit", limit), ("offset", offset)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def subscriptions_create(self, project_id, id, target_type, target_value, frequency, start_date, created_at, created_by, summary, next_delivery_date, dashboard=None, insight=None, interval=None, byweekday=None, bysetpos=None, count=None, until_date=None, deleted=None, title=None, invite_message=None) -> dict[str, Any]:
+    async def subscriptions_create(
+        self,
+        project_id,
+        id,
+        target_type,
+        target_value,
+        frequency,
+        start_date,
+        created_at,
+        created_by,
+        summary,
+        next_delivery_date,
+        dashboard=None,
+        insight=None,
+        interval=None,
+        byweekday=None,
+        bysetpos=None,
+        count=None,
+        until_date=None,
+        deleted=None,
+        title=None,
+        invite_message=None,
+    ) -> dict[str, Any]:
         """
         Creates a new subscription for a project using the provided project ID and returns a successful creation status.
 
@@ -3055,9 +3884,29 @@ class PosthogApp(APIApplication):
         """
         if project_id is None:
             raise ValueError("Missing required parameter 'project_id'")
-        request_body = {'id': id, 'dashboard': dashboard, 'insight': insight, 'target_type': target_type, 'target_value': target_value, 'frequency': frequency, 'interval': interval, 'byweekday': byweekday, 'bysetpos': bysetpos, 'count': count, 'start_date': start_date, 'until_date': until_date, 'created_at': created_at, 'created_by': created_by, 'deleted': deleted, 'title': title, 'summary': summary, 'next_delivery_date': next_delivery_date, 'invite_message': invite_message}
+        request_body = {
+            "id": id,
+            "dashboard": dashboard,
+            "insight": insight,
+            "target_type": target_type,
+            "target_value": target_value,
+            "frequency": frequency,
+            "interval": interval,
+            "byweekday": byweekday,
+            "bysetpos": bysetpos,
+            "count": count,
+            "start_date": start_date,
+            "until_date": until_date,
+            "created_at": created_at,
+            "created_by": created_by,
+            "deleted": deleted,
+            "title": title,
+            "summary": summary,
+            "next_delivery_date": next_delivery_date,
+            "invite_message": invite_message,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/projects/{project_id}/subscriptions/'
+        url = f"{self.base_url}/api/projects/{project_id}/subscriptions/"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -3081,13 +3930,36 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/projects/{project_id}/subscriptions/{id}/'
+        url = f"{self.base_url}/api/projects/{project_id}/subscriptions/{id}/"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def subscriptions_update(self, project_id, id, id_body, target_type, target_value, frequency, start_date, created_at, created_by, summary, next_delivery_date, dashboard=None, insight=None, interval=None, byweekday=None, bysetpos=None, count=None, until_date=None, deleted=None, title=None, invite_message=None) -> dict[str, Any]:
+    async def subscriptions_update(
+        self,
+        project_id,
+        id,
+        id_body,
+        target_type,
+        target_value,
+        frequency,
+        start_date,
+        created_at,
+        created_by,
+        summary,
+        next_delivery_date,
+        dashboard=None,
+        insight=None,
+        interval=None,
+        byweekday=None,
+        bysetpos=None,
+        count=None,
+        until_date=None,
+        deleted=None,
+        title=None,
+        invite_message=None,
+    ) -> dict[str, Any]:
         """
         Updates an existing subscription associated with a specific project by replacing it with the provided data.
 
@@ -3129,15 +4001,58 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {'id': id_body, 'dashboard': dashboard, 'insight': insight, 'target_type': target_type, 'target_value': target_value, 'frequency': frequency, 'interval': interval, 'byweekday': byweekday, 'bysetpos': bysetpos, 'count': count, 'start_date': start_date, 'until_date': until_date, 'created_at': created_at, 'created_by': created_by, 'deleted': deleted, 'title': title, 'summary': summary, 'next_delivery_date': next_delivery_date, 'invite_message': invite_message}
+        request_body = {
+            "id": id_body,
+            "dashboard": dashboard,
+            "insight": insight,
+            "target_type": target_type,
+            "target_value": target_value,
+            "frequency": frequency,
+            "interval": interval,
+            "byweekday": byweekday,
+            "bysetpos": bysetpos,
+            "count": count,
+            "start_date": start_date,
+            "until_date": until_date,
+            "created_at": created_at,
+            "created_by": created_by,
+            "deleted": deleted,
+            "title": title,
+            "summary": summary,
+            "next_delivery_date": next_delivery_date,
+            "invite_message": invite_message,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/projects/{project_id}/subscriptions/{id}/'
+        url = f"{self.base_url}/api/projects/{project_id}/subscriptions/{id}/"
         query_params = {}
         response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def subscriptions_partial_update(self, project_id, id, id_body=None, dashboard=None, insight=None, target_type=None, target_value=None, frequency=None, interval=None, byweekday=None, bysetpos=None, count=None, start_date=None, until_date=None, created_at=None, created_by=None, deleted=None, title=None, summary=None, next_delivery_date=None, invite_message=None) -> dict[str, Any]:
+    async def subscriptions_partial_update(
+        self,
+        project_id,
+        id,
+        id_body=None,
+        dashboard=None,
+        insight=None,
+        target_type=None,
+        target_value=None,
+        frequency=None,
+        interval=None,
+        byweekday=None,
+        bysetpos=None,
+        count=None,
+        start_date=None,
+        until_date=None,
+        created_at=None,
+        created_by=None,
+        deleted=None,
+        title=None,
+        summary=None,
+        next_delivery_date=None,
+        invite_message=None,
+    ) -> dict[str, Any]:
         """
         Updates a subscription by partially modifying its properties, such as specified fields, using the "/api/projects/{project_id}/subscriptions/{id}/" endpoint with the PATCH method.
 
@@ -3179,9 +4094,29 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {'id': id_body, 'dashboard': dashboard, 'insight': insight, 'target_type': target_type, 'target_value': target_value, 'frequency': frequency, 'interval': interval, 'byweekday': byweekday, 'bysetpos': bysetpos, 'count': count, 'start_date': start_date, 'until_date': until_date, 'created_at': created_at, 'created_by': created_by, 'deleted': deleted, 'title': title, 'summary': summary, 'next_delivery_date': next_delivery_date, 'invite_message': invite_message}
+        request_body = {
+            "id": id_body,
+            "dashboard": dashboard,
+            "insight": insight,
+            "target_type": target_type,
+            "target_value": target_value,
+            "frequency": frequency,
+            "interval": interval,
+            "byweekday": byweekday,
+            "bysetpos": bysetpos,
+            "count": count,
+            "start_date": start_date,
+            "until_date": until_date,
+            "created_at": created_at,
+            "created_by": created_by,
+            "deleted": deleted,
+            "title": title,
+            "summary": summary,
+            "next_delivery_date": next_delivery_date,
+            "invite_message": invite_message,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/projects/{project_id}/subscriptions/{id}/'
+        url = f"{self.base_url}/api/projects/{project_id}/subscriptions/{id}/"
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -3205,7 +4140,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/projects/{project_id}/subscriptions/{id}/'
+        url = f"{self.base_url}/api/projects/{project_id}/subscriptions/{id}/"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -3229,13 +4164,49 @@ class PosthogApp(APIApplication):
         """
         if project_id is None:
             raise ValueError("Missing required parameter 'project_id'")
-        url = f'{self.base_url}/api/projects/{project_id}/surveys/'
-        query_params = {k: v for k, v in [('limit', limit), ('offset', offset), ('search', search)] if v is not None}
+        url = f"{self.base_url}/api/projects/{project_id}/surveys/"
+        query_params = {k: v for k, v in [("limit", limit), ("offset", offset), ("search", search)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def surveys_create(self, project_id, id, name, type, linked_flag, targeting_flag, internal_targeting_flag, created_at, created_by, description=None, schedule=None, linked_flag_id=None, targeting_flag_id=None, targeting_flag_filters=None, remove_targeting_flag=None, questions=None, conditions=None, appearance=None, start_date=None, end_date=None, archived=None, responses_limit=None, iteration_count=None, iteration_frequency_days=None, iteration_start_dates=None, current_iteration=None, current_iteration_start_date=None, response_sampling_start_date=None, response_sampling_interval_type=None, response_sampling_interval=None, response_sampling_limit=None, response_sampling_daily_limits=None, enable_partial_responses=None, create_in_folder=None) -> dict[str, Any]:
+    async def surveys_create(
+        self,
+        project_id,
+        id,
+        name,
+        type,
+        linked_flag,
+        targeting_flag,
+        internal_targeting_flag,
+        created_at,
+        created_by,
+        description=None,
+        schedule=None,
+        linked_flag_id=None,
+        targeting_flag_id=None,
+        targeting_flag_filters=None,
+        remove_targeting_flag=None,
+        questions=None,
+        conditions=None,
+        appearance=None,
+        start_date=None,
+        end_date=None,
+        archived=None,
+        responses_limit=None,
+        iteration_count=None,
+        iteration_frequency_days=None,
+        iteration_start_dates=None,
+        current_iteration=None,
+        current_iteration_start_date=None,
+        response_sampling_start_date=None,
+        response_sampling_interval_type=None,
+        response_sampling_interval=None,
+        response_sampling_limit=None,
+        response_sampling_daily_limits=None,
+        enable_partial_responses=None,
+        create_in_folder=None,
+    ) -> dict[str, Any]:
         """
         Creates a new survey under the specified project and returns a status message upon successful creation.
 
@@ -3368,9 +4339,43 @@ class PosthogApp(APIApplication):
         """
         if project_id is None:
             raise ValueError("Missing required parameter 'project_id'")
-        request_body = {'id': id, 'name': name, 'description': description, 'type': type, 'schedule': schedule, 'linked_flag': linked_flag, 'linked_flag_id': linked_flag_id, 'targeting_flag_id': targeting_flag_id, 'targeting_flag': targeting_flag, 'internal_targeting_flag': internal_targeting_flag, 'targeting_flag_filters': targeting_flag_filters, 'remove_targeting_flag': remove_targeting_flag, 'questions': questions, 'conditions': conditions, 'appearance': appearance, 'created_at': created_at, 'created_by': created_by, 'start_date': start_date, 'end_date': end_date, 'archived': archived, 'responses_limit': responses_limit, 'iteration_count': iteration_count, 'iteration_frequency_days': iteration_frequency_days, 'iteration_start_dates': iteration_start_dates, 'current_iteration': current_iteration, 'current_iteration_start_date': current_iteration_start_date, 'response_sampling_start_date': response_sampling_start_date, 'response_sampling_interval_type': response_sampling_interval_type, 'response_sampling_interval': response_sampling_interval, 'response_sampling_limit': response_sampling_limit, 'response_sampling_daily_limits': response_sampling_daily_limits, 'enable_partial_responses': enable_partial_responses, '_create_in_folder': create_in_folder}
+        request_body = {
+            "id": id,
+            "name": name,
+            "description": description,
+            "type": type,
+            "schedule": schedule,
+            "linked_flag": linked_flag,
+            "linked_flag_id": linked_flag_id,
+            "targeting_flag_id": targeting_flag_id,
+            "targeting_flag": targeting_flag,
+            "internal_targeting_flag": internal_targeting_flag,
+            "targeting_flag_filters": targeting_flag_filters,
+            "remove_targeting_flag": remove_targeting_flag,
+            "questions": questions,
+            "conditions": conditions,
+            "appearance": appearance,
+            "created_at": created_at,
+            "created_by": created_by,
+            "start_date": start_date,
+            "end_date": end_date,
+            "archived": archived,
+            "responses_limit": responses_limit,
+            "iteration_count": iteration_count,
+            "iteration_frequency_days": iteration_frequency_days,
+            "iteration_start_dates": iteration_start_dates,
+            "current_iteration": current_iteration,
+            "current_iteration_start_date": current_iteration_start_date,
+            "response_sampling_start_date": response_sampling_start_date,
+            "response_sampling_interval_type": response_sampling_interval_type,
+            "response_sampling_interval": response_sampling_interval,
+            "response_sampling_limit": response_sampling_limit,
+            "response_sampling_daily_limits": response_sampling_daily_limits,
+            "enable_partial_responses": enable_partial_responses,
+            "_create_in_folder": create_in_folder,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/projects/{project_id}/surveys/'
+        url = f"{self.base_url}/api/projects/{project_id}/surveys/"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -3394,13 +4399,47 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/projects/{project_id}/surveys/{id}/'
+        url = f"{self.base_url}/api/projects/{project_id}/surveys/{id}/"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def surveys_update(self, project_id, id, id_body, name, type, linked_flag, targeting_flag, internal_targeting_flag, conditions, created_at, created_by, feature_flag_keys, description=None, schedule=None, linked_flag_id=None, questions=None, appearance=None, start_date=None, end_date=None, archived=None, responses_limit=None, iteration_count=None, iteration_frequency_days=None, iteration_start_dates=None, current_iteration=None, current_iteration_start_date=None, response_sampling_start_date=None, response_sampling_interval_type=None, response_sampling_interval=None, response_sampling_limit=None, response_sampling_daily_limits=None, enable_partial_responses=None) -> dict[str, Any]:
+    async def surveys_update(
+        self,
+        project_id,
+        id,
+        id_body,
+        name,
+        type,
+        linked_flag,
+        targeting_flag,
+        internal_targeting_flag,
+        conditions,
+        created_at,
+        created_by,
+        feature_flag_keys,
+        description=None,
+        schedule=None,
+        linked_flag_id=None,
+        questions=None,
+        appearance=None,
+        start_date=None,
+        end_date=None,
+        archived=None,
+        responses_limit=None,
+        iteration_count=None,
+        iteration_frequency_days=None,
+        iteration_start_dates=None,
+        current_iteration=None,
+        current_iteration_start_date=None,
+        response_sampling_start_date=None,
+        response_sampling_interval_type=None,
+        response_sampling_interval=None,
+        response_sampling_limit=None,
+        response_sampling_daily_limits=None,
+        enable_partial_responses=None,
+    ) -> dict[str, Any]:
         """
         Updates a survey specified by its ID within a project identified by its ID using the PUT method.
 
@@ -3533,15 +4572,83 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {'id': id_body, 'name': name, 'description': description, 'type': type, 'schedule': schedule, 'linked_flag': linked_flag, 'linked_flag_id': linked_flag_id, 'targeting_flag': targeting_flag, 'internal_targeting_flag': internal_targeting_flag, 'questions': questions, 'conditions': conditions, 'appearance': appearance, 'created_at': created_at, 'created_by': created_by, 'start_date': start_date, 'end_date': end_date, 'archived': archived, 'responses_limit': responses_limit, 'feature_flag_keys': feature_flag_keys, 'iteration_count': iteration_count, 'iteration_frequency_days': iteration_frequency_days, 'iteration_start_dates': iteration_start_dates, 'current_iteration': current_iteration, 'current_iteration_start_date': current_iteration_start_date, 'response_sampling_start_date': response_sampling_start_date, 'response_sampling_interval_type': response_sampling_interval_type, 'response_sampling_interval': response_sampling_interval, 'response_sampling_limit': response_sampling_limit, 'response_sampling_daily_limits': response_sampling_daily_limits, 'enable_partial_responses': enable_partial_responses}
+        request_body = {
+            "id": id_body,
+            "name": name,
+            "description": description,
+            "type": type,
+            "schedule": schedule,
+            "linked_flag": linked_flag,
+            "linked_flag_id": linked_flag_id,
+            "targeting_flag": targeting_flag,
+            "internal_targeting_flag": internal_targeting_flag,
+            "questions": questions,
+            "conditions": conditions,
+            "appearance": appearance,
+            "created_at": created_at,
+            "created_by": created_by,
+            "start_date": start_date,
+            "end_date": end_date,
+            "archived": archived,
+            "responses_limit": responses_limit,
+            "feature_flag_keys": feature_flag_keys,
+            "iteration_count": iteration_count,
+            "iteration_frequency_days": iteration_frequency_days,
+            "iteration_start_dates": iteration_start_dates,
+            "current_iteration": current_iteration,
+            "current_iteration_start_date": current_iteration_start_date,
+            "response_sampling_start_date": response_sampling_start_date,
+            "response_sampling_interval_type": response_sampling_interval_type,
+            "response_sampling_interval": response_sampling_interval,
+            "response_sampling_limit": response_sampling_limit,
+            "response_sampling_daily_limits": response_sampling_daily_limits,
+            "enable_partial_responses": enable_partial_responses,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/projects/{project_id}/surveys/{id}/'
+        url = f"{self.base_url}/api/projects/{project_id}/surveys/{id}/"
         query_params = {}
         response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def surveys_partial_update(self, project_id, id, id_body=None, name=None, description=None, type=None, schedule=None, linked_flag=None, linked_flag_id=None, targeting_flag_id=None, targeting_flag=None, internal_targeting_flag=None, targeting_flag_filters=None, remove_targeting_flag=None, questions=None, conditions=None, appearance=None, created_at=None, created_by=None, start_date=None, end_date=None, archived=None, responses_limit=None, iteration_count=None, iteration_frequency_days=None, iteration_start_dates=None, current_iteration=None, current_iteration_start_date=None, response_sampling_start_date=None, response_sampling_interval_type=None, response_sampling_interval=None, response_sampling_limit=None, response_sampling_daily_limits=None, enable_partial_responses=None, create_in_folder=None) -> dict[str, Any]:
+    async def surveys_partial_update(
+        self,
+        project_id,
+        id,
+        id_body=None,
+        name=None,
+        description=None,
+        type=None,
+        schedule=None,
+        linked_flag=None,
+        linked_flag_id=None,
+        targeting_flag_id=None,
+        targeting_flag=None,
+        internal_targeting_flag=None,
+        targeting_flag_filters=None,
+        remove_targeting_flag=None,
+        questions=None,
+        conditions=None,
+        appearance=None,
+        created_at=None,
+        created_by=None,
+        start_date=None,
+        end_date=None,
+        archived=None,
+        responses_limit=None,
+        iteration_count=None,
+        iteration_frequency_days=None,
+        iteration_start_dates=None,
+        current_iteration=None,
+        current_iteration_start_date=None,
+        response_sampling_start_date=None,
+        response_sampling_interval_type=None,
+        response_sampling_interval=None,
+        response_sampling_limit=None,
+        response_sampling_daily_limits=None,
+        enable_partial_responses=None,
+        create_in_folder=None,
+    ) -> dict[str, Any]:
         """
         Updates a specific survey within a project by applying partial modifications and returns a success status.
 
@@ -3677,9 +4784,43 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {'id': id_body, 'name': name, 'description': description, 'type': type, 'schedule': schedule, 'linked_flag': linked_flag, 'linked_flag_id': linked_flag_id, 'targeting_flag_id': targeting_flag_id, 'targeting_flag': targeting_flag, 'internal_targeting_flag': internal_targeting_flag, 'targeting_flag_filters': targeting_flag_filters, 'remove_targeting_flag': remove_targeting_flag, 'questions': questions, 'conditions': conditions, 'appearance': appearance, 'created_at': created_at, 'created_by': created_by, 'start_date': start_date, 'end_date': end_date, 'archived': archived, 'responses_limit': responses_limit, 'iteration_count': iteration_count, 'iteration_frequency_days': iteration_frequency_days, 'iteration_start_dates': iteration_start_dates, 'current_iteration': current_iteration, 'current_iteration_start_date': current_iteration_start_date, 'response_sampling_start_date': response_sampling_start_date, 'response_sampling_interval_type': response_sampling_interval_type, 'response_sampling_interval': response_sampling_interval, 'response_sampling_limit': response_sampling_limit, 'response_sampling_daily_limits': response_sampling_daily_limits, 'enable_partial_responses': enable_partial_responses, '_create_in_folder': create_in_folder}
+        request_body = {
+            "id": id_body,
+            "name": name,
+            "description": description,
+            "type": type,
+            "schedule": schedule,
+            "linked_flag": linked_flag,
+            "linked_flag_id": linked_flag_id,
+            "targeting_flag_id": targeting_flag_id,
+            "targeting_flag": targeting_flag,
+            "internal_targeting_flag": internal_targeting_flag,
+            "targeting_flag_filters": targeting_flag_filters,
+            "remove_targeting_flag": remove_targeting_flag,
+            "questions": questions,
+            "conditions": conditions,
+            "appearance": appearance,
+            "created_at": created_at,
+            "created_by": created_by,
+            "start_date": start_date,
+            "end_date": end_date,
+            "archived": archived,
+            "responses_limit": responses_limit,
+            "iteration_count": iteration_count,
+            "iteration_frequency_days": iteration_frequency_days,
+            "iteration_start_dates": iteration_start_dates,
+            "current_iteration": current_iteration,
+            "current_iteration_start_date": current_iteration_start_date,
+            "response_sampling_start_date": response_sampling_start_date,
+            "response_sampling_interval_type": response_sampling_interval_type,
+            "response_sampling_interval": response_sampling_interval,
+            "response_sampling_limit": response_sampling_limit,
+            "response_sampling_daily_limits": response_sampling_daily_limits,
+            "enable_partial_responses": enable_partial_responses,
+            "_create_in_folder": create_in_folder,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/projects/{project_id}/surveys/{id}/'
+        url = f"{self.base_url}/api/projects/{project_id}/surveys/{id}/"
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -3703,7 +4844,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/projects/{project_id}/surveys/{id}/'
+        url = f"{self.base_url}/api/projects/{project_id}/surveys/{id}/"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -3727,7 +4868,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/projects/{project_id}/surveys/{id}/activity/'
+        url = f"{self.base_url}/api/projects/{project_id}/surveys/{id}/activity/"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -3751,13 +4892,50 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/projects/{project_id}/surveys/{id}/stats/'
+        url = f"{self.base_url}/api/projects/{project_id}/surveys/{id}/stats/"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def surveys_summarize_responses_create(self, project_id, id, id_body, name, type, linked_flag, targeting_flag, internal_targeting_flag, created_at, created_by, description=None, schedule=None, linked_flag_id=None, targeting_flag_id=None, targeting_flag_filters=None, remove_targeting_flag=None, questions=None, conditions=None, appearance=None, start_date=None, end_date=None, archived=None, responses_limit=None, iteration_count=None, iteration_frequency_days=None, iteration_start_dates=None, current_iteration=None, current_iteration_start_date=None, response_sampling_start_date=None, response_sampling_interval_type=None, response_sampling_interval=None, response_sampling_limit=None, response_sampling_daily_limits=None, enable_partial_responses=None, create_in_folder=None) -> Any:
+    async def surveys_summarize_responses_create(
+        self,
+        project_id,
+        id,
+        id_body,
+        name,
+        type,
+        linked_flag,
+        targeting_flag,
+        internal_targeting_flag,
+        created_at,
+        created_by,
+        description=None,
+        schedule=None,
+        linked_flag_id=None,
+        targeting_flag_id=None,
+        targeting_flag_filters=None,
+        remove_targeting_flag=None,
+        questions=None,
+        conditions=None,
+        appearance=None,
+        start_date=None,
+        end_date=None,
+        archived=None,
+        responses_limit=None,
+        iteration_count=None,
+        iteration_frequency_days=None,
+        iteration_start_dates=None,
+        current_iteration=None,
+        current_iteration_start_date=None,
+        response_sampling_start_date=None,
+        response_sampling_interval_type=None,
+        response_sampling_interval=None,
+        response_sampling_limit=None,
+        response_sampling_daily_limits=None,
+        enable_partial_responses=None,
+        create_in_folder=None,
+    ) -> Any:
         """
         Generates summarized insights from survey responses for a specified project and survey using AI-powered summarization.
 
@@ -3893,9 +5071,43 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {'id': id_body, 'name': name, 'description': description, 'type': type, 'schedule': schedule, 'linked_flag': linked_flag, 'linked_flag_id': linked_flag_id, 'targeting_flag_id': targeting_flag_id, 'targeting_flag': targeting_flag, 'internal_targeting_flag': internal_targeting_flag, 'targeting_flag_filters': targeting_flag_filters, 'remove_targeting_flag': remove_targeting_flag, 'questions': questions, 'conditions': conditions, 'appearance': appearance, 'created_at': created_at, 'created_by': created_by, 'start_date': start_date, 'end_date': end_date, 'archived': archived, 'responses_limit': responses_limit, 'iteration_count': iteration_count, 'iteration_frequency_days': iteration_frequency_days, 'iteration_start_dates': iteration_start_dates, 'current_iteration': current_iteration, 'current_iteration_start_date': current_iteration_start_date, 'response_sampling_start_date': response_sampling_start_date, 'response_sampling_interval_type': response_sampling_interval_type, 'response_sampling_interval': response_sampling_interval, 'response_sampling_limit': response_sampling_limit, 'response_sampling_daily_limits': response_sampling_daily_limits, 'enable_partial_responses': enable_partial_responses, '_create_in_folder': create_in_folder}
+        request_body = {
+            "id": id_body,
+            "name": name,
+            "description": description,
+            "type": type,
+            "schedule": schedule,
+            "linked_flag": linked_flag,
+            "linked_flag_id": linked_flag_id,
+            "targeting_flag_id": targeting_flag_id,
+            "targeting_flag": targeting_flag,
+            "internal_targeting_flag": internal_targeting_flag,
+            "targeting_flag_filters": targeting_flag_filters,
+            "remove_targeting_flag": remove_targeting_flag,
+            "questions": questions,
+            "conditions": conditions,
+            "appearance": appearance,
+            "created_at": created_at,
+            "created_by": created_by,
+            "start_date": start_date,
+            "end_date": end_date,
+            "archived": archived,
+            "responses_limit": responses_limit,
+            "iteration_count": iteration_count,
+            "iteration_frequency_days": iteration_frequency_days,
+            "iteration_start_dates": iteration_start_dates,
+            "current_iteration": current_iteration,
+            "current_iteration_start_date": current_iteration_start_date,
+            "response_sampling_start_date": response_sampling_start_date,
+            "response_sampling_interval_type": response_sampling_interval_type,
+            "response_sampling_interval": response_sampling_interval,
+            "response_sampling_limit": response_sampling_limit,
+            "response_sampling_daily_limits": response_sampling_daily_limits,
+            "enable_partial_responses": enable_partial_responses,
+            "_create_in_folder": create_in_folder,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/projects/{project_id}/surveys/{id}/summarize_responses/'
+        url = f"{self.base_url}/api/projects/{project_id}/surveys/{id}/summarize_responses/"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -3916,7 +5128,7 @@ class PosthogApp(APIApplication):
         """
         if project_id is None:
             raise ValueError("Missing required parameter 'project_id'")
-        url = f'{self.base_url}/api/projects/{project_id}/surveys/activity/'
+        url = f"{self.base_url}/api/projects/{project_id}/surveys/activity/"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -3937,7 +5149,7 @@ class PosthogApp(APIApplication):
         """
         if project_id is None:
             raise ValueError("Missing required parameter 'project_id'")
-        url = f'{self.base_url}/api/projects/{project_id}/surveys/responses_count/'
+        url = f"{self.base_url}/api/projects/{project_id}/surveys/responses_count/"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -3958,7 +5170,7 @@ class PosthogApp(APIApplication):
         """
         if project_id is None:
             raise ValueError("Missing required parameter 'project_id'")
-        url = f'{self.base_url}/api/projects/{project_id}/surveys/stats/'
+        url = f"{self.base_url}/api/projects/{project_id}/surveys/stats/"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -3981,8 +5193,8 @@ class PosthogApp(APIApplication):
         """
         if project_id is None:
             raise ValueError("Missing required parameter 'project_id'")
-        url = f'{self.base_url}/api/projects/{project_id}/web_experiments/'
-        query_params = {k: v for k, v in [('limit', limit), ('offset', offset)] if v is not None}
+        url = f"{self.base_url}/api/projects/{project_id}/web_experiments/"
+        query_params = {k: v for k, v in [("limit", limit), ("offset", offset)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -4007,9 +5219,9 @@ class PosthogApp(APIApplication):
         """
         if project_id is None:
             raise ValueError("Missing required parameter 'project_id'")
-        request_body = {'id': id, 'name': name, 'created_at': created_at, 'feature_flag_key': feature_flag_key, 'variants': variants}
+        request_body = {"id": id, "name": name, "created_at": created_at, "feature_flag_key": feature_flag_key, "variants": variants}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/projects/{project_id}/web_experiments/'
+        url = f"{self.base_url}/api/projects/{project_id}/web_experiments/"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -4033,13 +5245,15 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/projects/{project_id}/web_experiments/{id}/'
+        url = f"{self.base_url}/api/projects/{project_id}/web_experiments/{id}/"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def web_experiments_update(self, project_id, id, id_body, name, feature_flag_key, created_at=None, variants=None) -> dict[str, Any]:
+    async def web_experiments_update(
+        self, project_id, id, id_body, name, feature_flag_key, created_at=None, variants=None
+    ) -> dict[str, Any]:
         """
         Updates a web experiment for a specified project using the provided ID and returns a success status upon completion.
 
@@ -4062,15 +5276,17 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {'id': id_body, 'name': name, 'created_at': created_at, 'feature_flag_key': feature_flag_key, 'variants': variants}
+        request_body = {"id": id_body, "name": name, "created_at": created_at, "feature_flag_key": feature_flag_key, "variants": variants}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/projects/{project_id}/web_experiments/{id}/'
+        url = f"{self.base_url}/api/projects/{project_id}/web_experiments/{id}/"
         query_params = {}
         response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def web_experiments_partial_update(self, project_id, id, id_body=None, name=None, created_at=None, feature_flag_key=None, variants=None) -> dict[str, Any]:
+    async def web_experiments_partial_update(
+        self, project_id, id, id_body=None, name=None, created_at=None, feature_flag_key=None, variants=None
+    ) -> dict[str, Any]:
         """
         Updates specific properties of a web experiment in a project using the PATCH method, returning a successful response upon modification.
 
@@ -4093,9 +5309,9 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {'id': id_body, 'name': name, 'created_at': created_at, 'feature_flag_key': feature_flag_key, 'variants': variants}
+        request_body = {"id": id_body, "name": name, "created_at": created_at, "feature_flag_key": feature_flag_key, "variants": variants}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/projects/{project_id}/web_experiments/{id}/'
+        url = f"{self.base_url}/api/projects/{project_id}/web_experiments/{id}/"
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -4119,7 +5335,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f'{self.base_url}/api/projects/{project_id}/web_experiments/{id}/'
+        url = f"{self.base_url}/api/projects/{project_id}/web_experiments/{id}/"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
@@ -4140,8 +5356,8 @@ class PosthogApp(APIApplication):
         Tags:
             users, users
         """
-        url = f'{self.base_url}/api/users/'
-        query_params = {k: v for k, v in [('is_staff', is_staff), ('limit', limit), ('offset', offset)] if v is not None}
+        url = f"{self.base_url}/api/users/"
+        query_params = {k: v for k, v in [("is_staff", is_staff), ("limit", limit), ("offset", offset)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -4161,13 +5377,47 @@ class PosthogApp(APIApplication):
         """
         if uuid is None:
             raise ValueError("Missing required parameter 'uuid'")
-        url = f'{self.base_url}/api/users/{uuid}/'
+        url = f"{self.base_url}/api/users/{uuid}/"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def users_update(self, uuid, date_joined, uuid_body, distinct_id, email, pending_email, is_email_verified, has_password, is_impersonated, is_impersonated_until, sensitive_session_expires_at, team, organization, organizations, password, is_2fa_enabled, has_social_auth, scene_personalisation, first_name=None, last_name=None, notification_settings=None, anonymize_data=None, toolbar_mode=None, is_staff=None, set_current_organization=None, set_current_team=None, current_password=None, events_column_config=None, has_seen_product_intro_for=None, theme_mode=None, hedgehog_config=None, role_at_organization=None) -> dict[str, Any]:
+    async def users_update(
+        self,
+        uuid,
+        date_joined,
+        uuid_body,
+        distinct_id,
+        email,
+        pending_email,
+        is_email_verified,
+        has_password,
+        is_impersonated,
+        is_impersonated_until,
+        sensitive_session_expires_at,
+        team,
+        organization,
+        organizations,
+        password,
+        is_2fa_enabled,
+        has_social_auth,
+        scene_personalisation,
+        first_name=None,
+        last_name=None,
+        notification_settings=None,
+        anonymize_data=None,
+        toolbar_mode=None,
+        is_staff=None,
+        set_current_organization=None,
+        set_current_team=None,
+        current_password=None,
+        events_column_config=None,
+        has_seen_product_intro_for=None,
+        theme_mode=None,
+        hedgehog_config=None,
+        role_at_organization=None,
+    ) -> dict[str, Any]:
         """
         Updates or replaces a user's entire resource at the specified UUID endpoint using the provided data.
 
@@ -4220,15 +5470,81 @@ class PosthogApp(APIApplication):
         """
         if uuid is None:
             raise ValueError("Missing required parameter 'uuid'")
-        request_body = {'date_joined': date_joined, 'uuid': uuid_body, 'distinct_id': distinct_id, 'first_name': first_name, 'last_name': last_name, 'email': email, 'pending_email': pending_email, 'is_email_verified': is_email_verified, 'notification_settings': notification_settings, 'anonymize_data': anonymize_data, 'toolbar_mode': toolbar_mode, 'has_password': has_password, 'is_staff': is_staff, 'is_impersonated': is_impersonated, 'is_impersonated_until': is_impersonated_until, 'sensitive_session_expires_at': sensitive_session_expires_at, 'team': team, 'organization': organization, 'organizations': organizations, 'set_current_organization': set_current_organization, 'set_current_team': set_current_team, 'password': password, 'current_password': current_password, 'events_column_config': events_column_config, 'is_2fa_enabled': is_2fa_enabled, 'has_social_auth': has_social_auth, 'has_seen_product_intro_for': has_seen_product_intro_for, 'scene_personalisation': scene_personalisation, 'theme_mode': theme_mode, 'hedgehog_config': hedgehog_config, 'role_at_organization': role_at_organization}
+        request_body = {
+            "date_joined": date_joined,
+            "uuid": uuid_body,
+            "distinct_id": distinct_id,
+            "first_name": first_name,
+            "last_name": last_name,
+            "email": email,
+            "pending_email": pending_email,
+            "is_email_verified": is_email_verified,
+            "notification_settings": notification_settings,
+            "anonymize_data": anonymize_data,
+            "toolbar_mode": toolbar_mode,
+            "has_password": has_password,
+            "is_staff": is_staff,
+            "is_impersonated": is_impersonated,
+            "is_impersonated_until": is_impersonated_until,
+            "sensitive_session_expires_at": sensitive_session_expires_at,
+            "team": team,
+            "organization": organization,
+            "organizations": organizations,
+            "set_current_organization": set_current_organization,
+            "set_current_team": set_current_team,
+            "password": password,
+            "current_password": current_password,
+            "events_column_config": events_column_config,
+            "is_2fa_enabled": is_2fa_enabled,
+            "has_social_auth": has_social_auth,
+            "has_seen_product_intro_for": has_seen_product_intro_for,
+            "scene_personalisation": scene_personalisation,
+            "theme_mode": theme_mode,
+            "hedgehog_config": hedgehog_config,
+            "role_at_organization": role_at_organization,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/users/{uuid}/'
+        url = f"{self.base_url}/api/users/{uuid}/"
         query_params = {}
         response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def users_partial_update(self, uuid, date_joined=None, uuid_body=None, distinct_id=None, first_name=None, last_name=None, email=None, pending_email=None, is_email_verified=None, notification_settings=None, anonymize_data=None, toolbar_mode=None, has_password=None, is_staff=None, is_impersonated=None, is_impersonated_until=None, sensitive_session_expires_at=None, team=None, organization=None, organizations=None, set_current_organization=None, set_current_team=None, password=None, current_password=None, events_column_config=None, is_2fa_enabled=None, has_social_auth=None, has_seen_product_intro_for=None, scene_personalisation=None, theme_mode=None, hedgehog_config=None, role_at_organization=None) -> dict[str, Any]:
+    async def users_partial_update(
+        self,
+        uuid,
+        date_joined=None,
+        uuid_body=None,
+        distinct_id=None,
+        first_name=None,
+        last_name=None,
+        email=None,
+        pending_email=None,
+        is_email_verified=None,
+        notification_settings=None,
+        anonymize_data=None,
+        toolbar_mode=None,
+        has_password=None,
+        is_staff=None,
+        is_impersonated=None,
+        is_impersonated_until=None,
+        sensitive_session_expires_at=None,
+        team=None,
+        organization=None,
+        organizations=None,
+        set_current_organization=None,
+        set_current_team=None,
+        password=None,
+        current_password=None,
+        events_column_config=None,
+        is_2fa_enabled=None,
+        has_social_auth=None,
+        has_seen_product_intro_for=None,
+        scene_personalisation=None,
+        theme_mode=None,
+        hedgehog_config=None,
+        role_at_organization=None,
+    ) -> dict[str, Any]:
         """
         Updates a specific user's details, identified by their UUID, using partial modifications via the PATCH method.
 
@@ -4281,9 +5597,41 @@ class PosthogApp(APIApplication):
         """
         if uuid is None:
             raise ValueError("Missing required parameter 'uuid'")
-        request_body = {'date_joined': date_joined, 'uuid': uuid_body, 'distinct_id': distinct_id, 'first_name': first_name, 'last_name': last_name, 'email': email, 'pending_email': pending_email, 'is_email_verified': is_email_verified, 'notification_settings': notification_settings, 'anonymize_data': anonymize_data, 'toolbar_mode': toolbar_mode, 'has_password': has_password, 'is_staff': is_staff, 'is_impersonated': is_impersonated, 'is_impersonated_until': is_impersonated_until, 'sensitive_session_expires_at': sensitive_session_expires_at, 'team': team, 'organization': organization, 'organizations': organizations, 'set_current_organization': set_current_organization, 'set_current_team': set_current_team, 'password': password, 'current_password': current_password, 'events_column_config': events_column_config, 'is_2fa_enabled': is_2fa_enabled, 'has_social_auth': has_social_auth, 'has_seen_product_intro_for': has_seen_product_intro_for, 'scene_personalisation': scene_personalisation, 'theme_mode': theme_mode, 'hedgehog_config': hedgehog_config, 'role_at_organization': role_at_organization}
+        request_body = {
+            "date_joined": date_joined,
+            "uuid": uuid_body,
+            "distinct_id": distinct_id,
+            "first_name": first_name,
+            "last_name": last_name,
+            "email": email,
+            "pending_email": pending_email,
+            "is_email_verified": is_email_verified,
+            "notification_settings": notification_settings,
+            "anonymize_data": anonymize_data,
+            "toolbar_mode": toolbar_mode,
+            "has_password": has_password,
+            "is_staff": is_staff,
+            "is_impersonated": is_impersonated,
+            "is_impersonated_until": is_impersonated_until,
+            "sensitive_session_expires_at": sensitive_session_expires_at,
+            "team": team,
+            "organization": organization,
+            "organizations": organizations,
+            "set_current_organization": set_current_organization,
+            "set_current_team": set_current_team,
+            "password": password,
+            "current_password": current_password,
+            "events_column_config": events_column_config,
+            "is_2fa_enabled": is_2fa_enabled,
+            "has_social_auth": has_social_auth,
+            "has_seen_product_intro_for": has_seen_product_intro_for,
+            "scene_personalisation": scene_personalisation,
+            "theme_mode": theme_mode,
+            "hedgehog_config": hedgehog_config,
+            "role_at_organization": role_at_organization,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/users/{uuid}/'
+        url = f"{self.base_url}/api/users/{uuid}/"
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -4304,13 +5652,47 @@ class PosthogApp(APIApplication):
         """
         if uuid is None:
             raise ValueError("Missing required parameter 'uuid'")
-        url = f'{self.base_url}/api/users/{uuid}/hedgehog_config/'
+        url = f"{self.base_url}/api/users/{uuid}/hedgehog_config/"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def users_hedgehog_config_partial_update(self, uuid, date_joined=None, uuid_body=None, distinct_id=None, first_name=None, last_name=None, email=None, pending_email=None, is_email_verified=None, notification_settings=None, anonymize_data=None, toolbar_mode=None, has_password=None, is_staff=None, is_impersonated=None, is_impersonated_until=None, sensitive_session_expires_at=None, team=None, organization=None, organizations=None, set_current_organization=None, set_current_team=None, password=None, current_password=None, events_column_config=None, is_2fa_enabled=None, has_social_auth=None, has_seen_product_intro_for=None, scene_personalisation=None, theme_mode=None, hedgehog_config=None, role_at_organization=None) -> Any:
+    async def users_hedgehog_config_partial_update(
+        self,
+        uuid,
+        date_joined=None,
+        uuid_body=None,
+        distinct_id=None,
+        first_name=None,
+        last_name=None,
+        email=None,
+        pending_email=None,
+        is_email_verified=None,
+        notification_settings=None,
+        anonymize_data=None,
+        toolbar_mode=None,
+        has_password=None,
+        is_staff=None,
+        is_impersonated=None,
+        is_impersonated_until=None,
+        sensitive_session_expires_at=None,
+        team=None,
+        organization=None,
+        organizations=None,
+        set_current_organization=None,
+        set_current_team=None,
+        password=None,
+        current_password=None,
+        events_column_config=None,
+        is_2fa_enabled=None,
+        has_social_auth=None,
+        has_seen_product_intro_for=None,
+        scene_personalisation=None,
+        theme_mode=None,
+        hedgehog_config=None,
+        role_at_organization=None,
+    ) -> Any:
         """
         Updates the hedgehog configuration settings for a specific user identified by UUID using a PATCH request.
 
@@ -4363,15 +5745,81 @@ class PosthogApp(APIApplication):
         """
         if uuid is None:
             raise ValueError("Missing required parameter 'uuid'")
-        request_body = {'date_joined': date_joined, 'uuid': uuid_body, 'distinct_id': distinct_id, 'first_name': first_name, 'last_name': last_name, 'email': email, 'pending_email': pending_email, 'is_email_verified': is_email_verified, 'notification_settings': notification_settings, 'anonymize_data': anonymize_data, 'toolbar_mode': toolbar_mode, 'has_password': has_password, 'is_staff': is_staff, 'is_impersonated': is_impersonated, 'is_impersonated_until': is_impersonated_until, 'sensitive_session_expires_at': sensitive_session_expires_at, 'team': team, 'organization': organization, 'organizations': organizations, 'set_current_organization': set_current_organization, 'set_current_team': set_current_team, 'password': password, 'current_password': current_password, 'events_column_config': events_column_config, 'is_2fa_enabled': is_2fa_enabled, 'has_social_auth': has_social_auth, 'has_seen_product_intro_for': has_seen_product_intro_for, 'scene_personalisation': scene_personalisation, 'theme_mode': theme_mode, 'hedgehog_config': hedgehog_config, 'role_at_organization': role_at_organization}
+        request_body = {
+            "date_joined": date_joined,
+            "uuid": uuid_body,
+            "distinct_id": distinct_id,
+            "first_name": first_name,
+            "last_name": last_name,
+            "email": email,
+            "pending_email": pending_email,
+            "is_email_verified": is_email_verified,
+            "notification_settings": notification_settings,
+            "anonymize_data": anonymize_data,
+            "toolbar_mode": toolbar_mode,
+            "has_password": has_password,
+            "is_staff": is_staff,
+            "is_impersonated": is_impersonated,
+            "is_impersonated_until": is_impersonated_until,
+            "sensitive_session_expires_at": sensitive_session_expires_at,
+            "team": team,
+            "organization": organization,
+            "organizations": organizations,
+            "set_current_organization": set_current_organization,
+            "set_current_team": set_current_team,
+            "password": password,
+            "current_password": current_password,
+            "events_column_config": events_column_config,
+            "is_2fa_enabled": is_2fa_enabled,
+            "has_social_auth": has_social_auth,
+            "has_seen_product_intro_for": has_seen_product_intro_for,
+            "scene_personalisation": scene_personalisation,
+            "theme_mode": theme_mode,
+            "hedgehog_config": hedgehog_config,
+            "role_at_organization": role_at_organization,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/users/{uuid}/hedgehog_config/'
+        url = f"{self.base_url}/api/users/{uuid}/hedgehog_config/"
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def users_scene_personalisation_create(self, uuid, date_joined, uuid_body, distinct_id, email, pending_email, is_email_verified, has_password, is_impersonated, is_impersonated_until, sensitive_session_expires_at, team, organization, organizations, password, is_2fa_enabled, has_social_auth, scene_personalisation, first_name=None, last_name=None, notification_settings=None, anonymize_data=None, toolbar_mode=None, is_staff=None, set_current_organization=None, set_current_team=None, current_password=None, events_column_config=None, has_seen_product_intro_for=None, theme_mode=None, hedgehog_config=None, role_at_organization=None) -> Any:
+    async def users_scene_personalisation_create(
+        self,
+        uuid,
+        date_joined,
+        uuid_body,
+        distinct_id,
+        email,
+        pending_email,
+        is_email_verified,
+        has_password,
+        is_impersonated,
+        is_impersonated_until,
+        sensitive_session_expires_at,
+        team,
+        organization,
+        organizations,
+        password,
+        is_2fa_enabled,
+        has_social_auth,
+        scene_personalisation,
+        first_name=None,
+        last_name=None,
+        notification_settings=None,
+        anonymize_data=None,
+        toolbar_mode=None,
+        is_staff=None,
+        set_current_organization=None,
+        set_current_team=None,
+        current_password=None,
+        events_column_config=None,
+        has_seen_product_intro_for=None,
+        theme_mode=None,
+        hedgehog_config=None,
+        role_at_organization=None,
+    ) -> Any:
         """
         Sends a request to personalize a scene for a user identified by their UUID, enabling tailored experiences based on user-specific data.
 
@@ -4424,9 +5872,41 @@ class PosthogApp(APIApplication):
         """
         if uuid is None:
             raise ValueError("Missing required parameter 'uuid'")
-        request_body = {'date_joined': date_joined, 'uuid': uuid_body, 'distinct_id': distinct_id, 'first_name': first_name, 'last_name': last_name, 'email': email, 'pending_email': pending_email, 'is_email_verified': is_email_verified, 'notification_settings': notification_settings, 'anonymize_data': anonymize_data, 'toolbar_mode': toolbar_mode, 'has_password': has_password, 'is_staff': is_staff, 'is_impersonated': is_impersonated, 'is_impersonated_until': is_impersonated_until, 'sensitive_session_expires_at': sensitive_session_expires_at, 'team': team, 'organization': organization, 'organizations': organizations, 'set_current_organization': set_current_organization, 'set_current_team': set_current_team, 'password': password, 'current_password': current_password, 'events_column_config': events_column_config, 'is_2fa_enabled': is_2fa_enabled, 'has_social_auth': has_social_auth, 'has_seen_product_intro_for': has_seen_product_intro_for, 'scene_personalisation': scene_personalisation, 'theme_mode': theme_mode, 'hedgehog_config': hedgehog_config, 'role_at_organization': role_at_organization}
+        request_body = {
+            "date_joined": date_joined,
+            "uuid": uuid_body,
+            "distinct_id": distinct_id,
+            "first_name": first_name,
+            "last_name": last_name,
+            "email": email,
+            "pending_email": pending_email,
+            "is_email_verified": is_email_verified,
+            "notification_settings": notification_settings,
+            "anonymize_data": anonymize_data,
+            "toolbar_mode": toolbar_mode,
+            "has_password": has_password,
+            "is_staff": is_staff,
+            "is_impersonated": is_impersonated,
+            "is_impersonated_until": is_impersonated_until,
+            "sensitive_session_expires_at": sensitive_session_expires_at,
+            "team": team,
+            "organization": organization,
+            "organizations": organizations,
+            "set_current_organization": set_current_organization,
+            "set_current_team": set_current_team,
+            "password": password,
+            "current_password": current_password,
+            "events_column_config": events_column_config,
+            "is_2fa_enabled": is_2fa_enabled,
+            "has_social_auth": has_social_auth,
+            "has_seen_product_intro_for": has_seen_product_intro_for,
+            "scene_personalisation": scene_personalisation,
+            "theme_mode": theme_mode,
+            "hedgehog_config": hedgehog_config,
+            "role_at_organization": role_at_organization,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/users/{uuid}/scene_personalisation/'
+        url = f"{self.base_url}/api/users/{uuid}/scene_personalisation/"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -4447,13 +5927,47 @@ class PosthogApp(APIApplication):
         """
         if uuid is None:
             raise ValueError("Missing required parameter 'uuid'")
-        url = f'{self.base_url}/api/users/{uuid}/start_2fa_setup/'
+        url = f"{self.base_url}/api/users/{uuid}/start_2fa_setup/"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def users_two_factor_backup_codes_create(self, uuid, date_joined, uuid_body, distinct_id, email, pending_email, is_email_verified, has_password, is_impersonated, is_impersonated_until, sensitive_session_expires_at, team, organization, organizations, password, is_2fa_enabled, has_social_auth, scene_personalisation, first_name=None, last_name=None, notification_settings=None, anonymize_data=None, toolbar_mode=None, is_staff=None, set_current_organization=None, set_current_team=None, current_password=None, events_column_config=None, has_seen_product_intro_for=None, theme_mode=None, hedgehog_config=None, role_at_organization=None) -> Any:
+    async def users_two_factor_backup_codes_create(
+        self,
+        uuid,
+        date_joined,
+        uuid_body,
+        distinct_id,
+        email,
+        pending_email,
+        is_email_verified,
+        has_password,
+        is_impersonated,
+        is_impersonated_until,
+        sensitive_session_expires_at,
+        team,
+        organization,
+        organizations,
+        password,
+        is_2fa_enabled,
+        has_social_auth,
+        scene_personalisation,
+        first_name=None,
+        last_name=None,
+        notification_settings=None,
+        anonymize_data=None,
+        toolbar_mode=None,
+        is_staff=None,
+        set_current_organization=None,
+        set_current_team=None,
+        current_password=None,
+        events_column_config=None,
+        has_seen_product_intro_for=None,
+        theme_mode=None,
+        hedgehog_config=None,
+        role_at_organization=None,
+    ) -> Any:
         """
         Generates and stores backup codes for two-factor authentication (2FA) associated with the specified user UUID.
 
@@ -4506,15 +6020,81 @@ class PosthogApp(APIApplication):
         """
         if uuid is None:
             raise ValueError("Missing required parameter 'uuid'")
-        request_body = {'date_joined': date_joined, 'uuid': uuid_body, 'distinct_id': distinct_id, 'first_name': first_name, 'last_name': last_name, 'email': email, 'pending_email': pending_email, 'is_email_verified': is_email_verified, 'notification_settings': notification_settings, 'anonymize_data': anonymize_data, 'toolbar_mode': toolbar_mode, 'has_password': has_password, 'is_staff': is_staff, 'is_impersonated': is_impersonated, 'is_impersonated_until': is_impersonated_until, 'sensitive_session_expires_at': sensitive_session_expires_at, 'team': team, 'organization': organization, 'organizations': organizations, 'set_current_organization': set_current_organization, 'set_current_team': set_current_team, 'password': password, 'current_password': current_password, 'events_column_config': events_column_config, 'is_2fa_enabled': is_2fa_enabled, 'has_social_auth': has_social_auth, 'has_seen_product_intro_for': has_seen_product_intro_for, 'scene_personalisation': scene_personalisation, 'theme_mode': theme_mode, 'hedgehog_config': hedgehog_config, 'role_at_organization': role_at_organization}
+        request_body = {
+            "date_joined": date_joined,
+            "uuid": uuid_body,
+            "distinct_id": distinct_id,
+            "first_name": first_name,
+            "last_name": last_name,
+            "email": email,
+            "pending_email": pending_email,
+            "is_email_verified": is_email_verified,
+            "notification_settings": notification_settings,
+            "anonymize_data": anonymize_data,
+            "toolbar_mode": toolbar_mode,
+            "has_password": has_password,
+            "is_staff": is_staff,
+            "is_impersonated": is_impersonated,
+            "is_impersonated_until": is_impersonated_until,
+            "sensitive_session_expires_at": sensitive_session_expires_at,
+            "team": team,
+            "organization": organization,
+            "organizations": organizations,
+            "set_current_organization": set_current_organization,
+            "set_current_team": set_current_team,
+            "password": password,
+            "current_password": current_password,
+            "events_column_config": events_column_config,
+            "is_2fa_enabled": is_2fa_enabled,
+            "has_social_auth": has_social_auth,
+            "has_seen_product_intro_for": has_seen_product_intro_for,
+            "scene_personalisation": scene_personalisation,
+            "theme_mode": theme_mode,
+            "hedgehog_config": hedgehog_config,
+            "role_at_organization": role_at_organization,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/users/{uuid}/two_factor_backup_codes/'
+        url = f"{self.base_url}/api/users/{uuid}/two_factor_backup_codes/"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def users_two_factor_disable_create(self, uuid, date_joined, uuid_body, distinct_id, email, pending_email, is_email_verified, has_password, is_impersonated, is_impersonated_until, sensitive_session_expires_at, team, organization, organizations, password, is_2fa_enabled, has_social_auth, scene_personalisation, first_name=None, last_name=None, notification_settings=None, anonymize_data=None, toolbar_mode=None, is_staff=None, set_current_organization=None, set_current_team=None, current_password=None, events_column_config=None, has_seen_product_intro_for=None, theme_mode=None, hedgehog_config=None, role_at_organization=None) -> Any:
+    async def users_two_factor_disable_create(
+        self,
+        uuid,
+        date_joined,
+        uuid_body,
+        distinct_id,
+        email,
+        pending_email,
+        is_email_verified,
+        has_password,
+        is_impersonated,
+        is_impersonated_until,
+        sensitive_session_expires_at,
+        team,
+        organization,
+        organizations,
+        password,
+        is_2fa_enabled,
+        has_social_auth,
+        scene_personalisation,
+        first_name=None,
+        last_name=None,
+        notification_settings=None,
+        anonymize_data=None,
+        toolbar_mode=None,
+        is_staff=None,
+        set_current_organization=None,
+        set_current_team=None,
+        current_password=None,
+        events_column_config=None,
+        has_seen_product_intro_for=None,
+        theme_mode=None,
+        hedgehog_config=None,
+        role_at_organization=None,
+    ) -> Any:
         """
         Disables two-factor authentication for a specific user identified by their UUID.
 
@@ -4567,9 +6147,41 @@ class PosthogApp(APIApplication):
         """
         if uuid is None:
             raise ValueError("Missing required parameter 'uuid'")
-        request_body = {'date_joined': date_joined, 'uuid': uuid_body, 'distinct_id': distinct_id, 'first_name': first_name, 'last_name': last_name, 'email': email, 'pending_email': pending_email, 'is_email_verified': is_email_verified, 'notification_settings': notification_settings, 'anonymize_data': anonymize_data, 'toolbar_mode': toolbar_mode, 'has_password': has_password, 'is_staff': is_staff, 'is_impersonated': is_impersonated, 'is_impersonated_until': is_impersonated_until, 'sensitive_session_expires_at': sensitive_session_expires_at, 'team': team, 'organization': organization, 'organizations': organizations, 'set_current_organization': set_current_organization, 'set_current_team': set_current_team, 'password': password, 'current_password': current_password, 'events_column_config': events_column_config, 'is_2fa_enabled': is_2fa_enabled, 'has_social_auth': has_social_auth, 'has_seen_product_intro_for': has_seen_product_intro_for, 'scene_personalisation': scene_personalisation, 'theme_mode': theme_mode, 'hedgehog_config': hedgehog_config, 'role_at_organization': role_at_organization}
+        request_body = {
+            "date_joined": date_joined,
+            "uuid": uuid_body,
+            "distinct_id": distinct_id,
+            "first_name": first_name,
+            "last_name": last_name,
+            "email": email,
+            "pending_email": pending_email,
+            "is_email_verified": is_email_verified,
+            "notification_settings": notification_settings,
+            "anonymize_data": anonymize_data,
+            "toolbar_mode": toolbar_mode,
+            "has_password": has_password,
+            "is_staff": is_staff,
+            "is_impersonated": is_impersonated,
+            "is_impersonated_until": is_impersonated_until,
+            "sensitive_session_expires_at": sensitive_session_expires_at,
+            "team": team,
+            "organization": organization,
+            "organizations": organizations,
+            "set_current_organization": set_current_organization,
+            "set_current_team": set_current_team,
+            "password": password,
+            "current_password": current_password,
+            "events_column_config": events_column_config,
+            "is_2fa_enabled": is_2fa_enabled,
+            "has_social_auth": has_social_auth,
+            "has_seen_product_intro_for": has_seen_product_intro_for,
+            "scene_personalisation": scene_personalisation,
+            "theme_mode": theme_mode,
+            "hedgehog_config": hedgehog_config,
+            "role_at_organization": role_at_organization,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/users/{uuid}/two_factor_disable/'
+        url = f"{self.base_url}/api/users/{uuid}/two_factor_disable/"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -4590,7 +6202,7 @@ class PosthogApp(APIApplication):
         """
         if uuid is None:
             raise ValueError("Missing required parameter 'uuid'")
-        url = f'{self.base_url}/api/users/{uuid}/two_factor_start_setup/'
+        url = f"{self.base_url}/api/users/{uuid}/two_factor_start_setup/"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -4611,13 +6223,47 @@ class PosthogApp(APIApplication):
         """
         if uuid is None:
             raise ValueError("Missing required parameter 'uuid'")
-        url = f'{self.base_url}/api/users/{uuid}/two_factor_status/'
+        url = f"{self.base_url}/api/users/{uuid}/two_factor_status/"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def users_two_factor_validate_create(self, uuid, date_joined, uuid_body, distinct_id, email, pending_email, is_email_verified, has_password, is_impersonated, is_impersonated_until, sensitive_session_expires_at, team, organization, organizations, password, is_2fa_enabled, has_social_auth, scene_personalisation, first_name=None, last_name=None, notification_settings=None, anonymize_data=None, toolbar_mode=None, is_staff=None, set_current_organization=None, set_current_team=None, current_password=None, events_column_config=None, has_seen_product_intro_for=None, theme_mode=None, hedgehog_config=None, role_at_organization=None) -> Any:
+    async def users_two_factor_validate_create(
+        self,
+        uuid,
+        date_joined,
+        uuid_body,
+        distinct_id,
+        email,
+        pending_email,
+        is_email_verified,
+        has_password,
+        is_impersonated,
+        is_impersonated_until,
+        sensitive_session_expires_at,
+        team,
+        organization,
+        organizations,
+        password,
+        is_2fa_enabled,
+        has_social_auth,
+        scene_personalisation,
+        first_name=None,
+        last_name=None,
+        notification_settings=None,
+        anonymize_data=None,
+        toolbar_mode=None,
+        is_staff=None,
+        set_current_organization=None,
+        set_current_team=None,
+        current_password=None,
+        events_column_config=None,
+        has_seen_product_intro_for=None,
+        theme_mode=None,
+        hedgehog_config=None,
+        role_at_organization=None,
+    ) -> Any:
         """
         Validates two-factor authentication for a user identified by the provided UUID using the POST method.
 
@@ -4670,15 +6316,81 @@ class PosthogApp(APIApplication):
         """
         if uuid is None:
             raise ValueError("Missing required parameter 'uuid'")
-        request_body = {'date_joined': date_joined, 'uuid': uuid_body, 'distinct_id': distinct_id, 'first_name': first_name, 'last_name': last_name, 'email': email, 'pending_email': pending_email, 'is_email_verified': is_email_verified, 'notification_settings': notification_settings, 'anonymize_data': anonymize_data, 'toolbar_mode': toolbar_mode, 'has_password': has_password, 'is_staff': is_staff, 'is_impersonated': is_impersonated, 'is_impersonated_until': is_impersonated_until, 'sensitive_session_expires_at': sensitive_session_expires_at, 'team': team, 'organization': organization, 'organizations': organizations, 'set_current_organization': set_current_organization, 'set_current_team': set_current_team, 'password': password, 'current_password': current_password, 'events_column_config': events_column_config, 'is_2fa_enabled': is_2fa_enabled, 'has_social_auth': has_social_auth, 'has_seen_product_intro_for': has_seen_product_intro_for, 'scene_personalisation': scene_personalisation, 'theme_mode': theme_mode, 'hedgehog_config': hedgehog_config, 'role_at_organization': role_at_organization}
+        request_body = {
+            "date_joined": date_joined,
+            "uuid": uuid_body,
+            "distinct_id": distinct_id,
+            "first_name": first_name,
+            "last_name": last_name,
+            "email": email,
+            "pending_email": pending_email,
+            "is_email_verified": is_email_verified,
+            "notification_settings": notification_settings,
+            "anonymize_data": anonymize_data,
+            "toolbar_mode": toolbar_mode,
+            "has_password": has_password,
+            "is_staff": is_staff,
+            "is_impersonated": is_impersonated,
+            "is_impersonated_until": is_impersonated_until,
+            "sensitive_session_expires_at": sensitive_session_expires_at,
+            "team": team,
+            "organization": organization,
+            "organizations": organizations,
+            "set_current_organization": set_current_organization,
+            "set_current_team": set_current_team,
+            "password": password,
+            "current_password": current_password,
+            "events_column_config": events_column_config,
+            "is_2fa_enabled": is_2fa_enabled,
+            "has_social_auth": has_social_auth,
+            "has_seen_product_intro_for": has_seen_product_intro_for,
+            "scene_personalisation": scene_personalisation,
+            "theme_mode": theme_mode,
+            "hedgehog_config": hedgehog_config,
+            "role_at_organization": role_at_organization,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/users/{uuid}/two_factor_validate/'
+        url = f"{self.base_url}/api/users/{uuid}/two_factor_validate/"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def users_validate_2fa_create(self, uuid, date_joined, uuid_body, distinct_id, email, pending_email, is_email_verified, has_password, is_impersonated, is_impersonated_until, sensitive_session_expires_at, team, organization, organizations, password, is_2fa_enabled, has_social_auth, scene_personalisation, first_name=None, last_name=None, notification_settings=None, anonymize_data=None, toolbar_mode=None, is_staff=None, set_current_organization=None, set_current_team=None, current_password=None, events_column_config=None, has_seen_product_intro_for=None, theme_mode=None, hedgehog_config=None, role_at_organization=None) -> Any:
+    async def users_validate_2fa_create(
+        self,
+        uuid,
+        date_joined,
+        uuid_body,
+        distinct_id,
+        email,
+        pending_email,
+        is_email_verified,
+        has_password,
+        is_impersonated,
+        is_impersonated_until,
+        sensitive_session_expires_at,
+        team,
+        organization,
+        organizations,
+        password,
+        is_2fa_enabled,
+        has_social_auth,
+        scene_personalisation,
+        first_name=None,
+        last_name=None,
+        notification_settings=None,
+        anonymize_data=None,
+        toolbar_mode=None,
+        is_staff=None,
+        set_current_organization=None,
+        set_current_team=None,
+        current_password=None,
+        events_column_config=None,
+        has_seen_product_intro_for=None,
+        theme_mode=None,
+        hedgehog_config=None,
+        role_at_organization=None,
+    ) -> Any:
         """
         Validates two-factor authentication for a user identified by the provided UUID using the API.
 
@@ -4731,15 +6443,80 @@ class PosthogApp(APIApplication):
         """
         if uuid is None:
             raise ValueError("Missing required parameter 'uuid'")
-        request_body = {'date_joined': date_joined, 'uuid': uuid_body, 'distinct_id': distinct_id, 'first_name': first_name, 'last_name': last_name, 'email': email, 'pending_email': pending_email, 'is_email_verified': is_email_verified, 'notification_settings': notification_settings, 'anonymize_data': anonymize_data, 'toolbar_mode': toolbar_mode, 'has_password': has_password, 'is_staff': is_staff, 'is_impersonated': is_impersonated, 'is_impersonated_until': is_impersonated_until, 'sensitive_session_expires_at': sensitive_session_expires_at, 'team': team, 'organization': organization, 'organizations': organizations, 'set_current_organization': set_current_organization, 'set_current_team': set_current_team, 'password': password, 'current_password': current_password, 'events_column_config': events_column_config, 'is_2fa_enabled': is_2fa_enabled, 'has_social_auth': has_social_auth, 'has_seen_product_intro_for': has_seen_product_intro_for, 'scene_personalisation': scene_personalisation, 'theme_mode': theme_mode, 'hedgehog_config': hedgehog_config, 'role_at_organization': role_at_organization}
+        request_body = {
+            "date_joined": date_joined,
+            "uuid": uuid_body,
+            "distinct_id": distinct_id,
+            "first_name": first_name,
+            "last_name": last_name,
+            "email": email,
+            "pending_email": pending_email,
+            "is_email_verified": is_email_verified,
+            "notification_settings": notification_settings,
+            "anonymize_data": anonymize_data,
+            "toolbar_mode": toolbar_mode,
+            "has_password": has_password,
+            "is_staff": is_staff,
+            "is_impersonated": is_impersonated,
+            "is_impersonated_until": is_impersonated_until,
+            "sensitive_session_expires_at": sensitive_session_expires_at,
+            "team": team,
+            "organization": organization,
+            "organizations": organizations,
+            "set_current_organization": set_current_organization,
+            "set_current_team": set_current_team,
+            "password": password,
+            "current_password": current_password,
+            "events_column_config": events_column_config,
+            "is_2fa_enabled": is_2fa_enabled,
+            "has_social_auth": has_social_auth,
+            "has_seen_product_intro_for": has_seen_product_intro_for,
+            "scene_personalisation": scene_personalisation,
+            "theme_mode": theme_mode,
+            "hedgehog_config": hedgehog_config,
+            "role_at_organization": role_at_organization,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/users/{uuid}/validate_2fa/'
+        url = f"{self.base_url}/api/users/{uuid}/validate_2fa/"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def users_request_email_verification_create(self, date_joined, uuid, distinct_id, email, pending_email, is_email_verified, has_password, is_impersonated, is_impersonated_until, sensitive_session_expires_at, team, organization, organizations, password, is_2fa_enabled, has_social_auth, scene_personalisation, first_name=None, last_name=None, notification_settings=None, anonymize_data=None, toolbar_mode=None, is_staff=None, set_current_organization=None, set_current_team=None, current_password=None, events_column_config=None, has_seen_product_intro_for=None, theme_mode=None, hedgehog_config=None, role_at_organization=None) -> Any:
+    async def users_request_email_verification_create(
+        self,
+        date_joined,
+        uuid,
+        distinct_id,
+        email,
+        pending_email,
+        is_email_verified,
+        has_password,
+        is_impersonated,
+        is_impersonated_until,
+        sensitive_session_expires_at,
+        team,
+        organization,
+        organizations,
+        password,
+        is_2fa_enabled,
+        has_social_auth,
+        scene_personalisation,
+        first_name=None,
+        last_name=None,
+        notification_settings=None,
+        anonymize_data=None,
+        toolbar_mode=None,
+        is_staff=None,
+        set_current_organization=None,
+        set_current_team=None,
+        current_password=None,
+        events_column_config=None,
+        has_seen_product_intro_for=None,
+        theme_mode=None,
+        hedgehog_config=None,
+        role_at_organization=None,
+    ) -> Any:
         """
         Sends an email verification request to a user using the POST method at the path "/api/users/request_email_verification/".
 
@@ -4789,15 +6566,80 @@ class PosthogApp(APIApplication):
         Tags:
             users, users
         """
-        request_body = {'date_joined': date_joined, 'uuid': uuid, 'distinct_id': distinct_id, 'first_name': first_name, 'last_name': last_name, 'email': email, 'pending_email': pending_email, 'is_email_verified': is_email_verified, 'notification_settings': notification_settings, 'anonymize_data': anonymize_data, 'toolbar_mode': toolbar_mode, 'has_password': has_password, 'is_staff': is_staff, 'is_impersonated': is_impersonated, 'is_impersonated_until': is_impersonated_until, 'sensitive_session_expires_at': sensitive_session_expires_at, 'team': team, 'organization': organization, 'organizations': organizations, 'set_current_organization': set_current_organization, 'set_current_team': set_current_team, 'password': password, 'current_password': current_password, 'events_column_config': events_column_config, 'is_2fa_enabled': is_2fa_enabled, 'has_social_auth': has_social_auth, 'has_seen_product_intro_for': has_seen_product_intro_for, 'scene_personalisation': scene_personalisation, 'theme_mode': theme_mode, 'hedgehog_config': hedgehog_config, 'role_at_organization': role_at_organization}
+        request_body = {
+            "date_joined": date_joined,
+            "uuid": uuid,
+            "distinct_id": distinct_id,
+            "first_name": first_name,
+            "last_name": last_name,
+            "email": email,
+            "pending_email": pending_email,
+            "is_email_verified": is_email_verified,
+            "notification_settings": notification_settings,
+            "anonymize_data": anonymize_data,
+            "toolbar_mode": toolbar_mode,
+            "has_password": has_password,
+            "is_staff": is_staff,
+            "is_impersonated": is_impersonated,
+            "is_impersonated_until": is_impersonated_until,
+            "sensitive_session_expires_at": sensitive_session_expires_at,
+            "team": team,
+            "organization": organization,
+            "organizations": organizations,
+            "set_current_organization": set_current_organization,
+            "set_current_team": set_current_team,
+            "password": password,
+            "current_password": current_password,
+            "events_column_config": events_column_config,
+            "is_2fa_enabled": is_2fa_enabled,
+            "has_social_auth": has_social_auth,
+            "has_seen_product_intro_for": has_seen_product_intro_for,
+            "scene_personalisation": scene_personalisation,
+            "theme_mode": theme_mode,
+            "hedgehog_config": hedgehog_config,
+            "role_at_organization": role_at_organization,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/users/request_email_verification/'
+        url = f"{self.base_url}/api/users/request_email_verification/"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def users_verify_email_create(self, date_joined, uuid, distinct_id, email, pending_email, is_email_verified, has_password, is_impersonated, is_impersonated_until, sensitive_session_expires_at, team, organization, organizations, password, is_2fa_enabled, has_social_auth, scene_personalisation, first_name=None, last_name=None, notification_settings=None, anonymize_data=None, toolbar_mode=None, is_staff=None, set_current_organization=None, set_current_team=None, current_password=None, events_column_config=None, has_seen_product_intro_for=None, theme_mode=None, hedgehog_config=None, role_at_organization=None) -> Any:
+    async def users_verify_email_create(
+        self,
+        date_joined,
+        uuid,
+        distinct_id,
+        email,
+        pending_email,
+        is_email_verified,
+        has_password,
+        is_impersonated,
+        is_impersonated_until,
+        sensitive_session_expires_at,
+        team,
+        organization,
+        organizations,
+        password,
+        is_2fa_enabled,
+        has_social_auth,
+        scene_personalisation,
+        first_name=None,
+        last_name=None,
+        notification_settings=None,
+        anonymize_data=None,
+        toolbar_mode=None,
+        is_staff=None,
+        set_current_organization=None,
+        set_current_team=None,
+        current_password=None,
+        events_column_config=None,
+        has_seen_product_intro_for=None,
+        theme_mode=None,
+        hedgehog_config=None,
+        role_at_organization=None,
+    ) -> Any:
         """
         Verifies an email address for a user using a POST request to the "/api/users/verify_email/" endpoint.
 
@@ -4847,13 +6689,168 @@ class PosthogApp(APIApplication):
         Tags:
             users, users
         """
-        request_body = {'date_joined': date_joined, 'uuid': uuid, 'distinct_id': distinct_id, 'first_name': first_name, 'last_name': last_name, 'email': email, 'pending_email': pending_email, 'is_email_verified': is_email_verified, 'notification_settings': notification_settings, 'anonymize_data': anonymize_data, 'toolbar_mode': toolbar_mode, 'has_password': has_password, 'is_staff': is_staff, 'is_impersonated': is_impersonated, 'is_impersonated_until': is_impersonated_until, 'sensitive_session_expires_at': sensitive_session_expires_at, 'team': team, 'organization': organization, 'organizations': organizations, 'set_current_organization': set_current_organization, 'set_current_team': set_current_team, 'password': password, 'current_password': current_password, 'events_column_config': events_column_config, 'is_2fa_enabled': is_2fa_enabled, 'has_social_auth': has_social_auth, 'has_seen_product_intro_for': has_seen_product_intro_for, 'scene_personalisation': scene_personalisation, 'theme_mode': theme_mode, 'hedgehog_config': hedgehog_config, 'role_at_organization': role_at_organization}
+        request_body = {
+            "date_joined": date_joined,
+            "uuid": uuid,
+            "distinct_id": distinct_id,
+            "first_name": first_name,
+            "last_name": last_name,
+            "email": email,
+            "pending_email": pending_email,
+            "is_email_verified": is_email_verified,
+            "notification_settings": notification_settings,
+            "anonymize_data": anonymize_data,
+            "toolbar_mode": toolbar_mode,
+            "has_password": has_password,
+            "is_staff": is_staff,
+            "is_impersonated": is_impersonated,
+            "is_impersonated_until": is_impersonated_until,
+            "sensitive_session_expires_at": sensitive_session_expires_at,
+            "team": team,
+            "organization": organization,
+            "organizations": organizations,
+            "set_current_organization": set_current_organization,
+            "set_current_team": set_current_team,
+            "password": password,
+            "current_password": current_password,
+            "events_column_config": events_column_config,
+            "is_2fa_enabled": is_2fa_enabled,
+            "has_social_auth": has_social_auth,
+            "has_seen_product_intro_for": has_seen_product_intro_for,
+            "scene_personalisation": scene_personalisation,
+            "theme_mode": theme_mode,
+            "hedgehog_config": hedgehog_config,
+            "role_at_organization": role_at_organization,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/api/users/verify_email/'
+        url = f"{self.base_url}/api/users/verify_email/"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
     def list_tools(self):
-        return [self.is_generating_demo_data_retrieve, self.reset_token_partial_update, self.proxy_records_list, self.proxy_records_create, self.proxy_records_retrieve, self.proxy_records_update, self.proxy_records_partial_update, self.proxy_records_destroy, self.roles_list, self.roles_create, self.roles_retrieve, self.roles_update, self.roles_partial_update, self.roles_destroy, self.roles_role_memberships_list, self.roles_role_memberships_create, self.roles_role_memberships_destroy, self.actions_list, self.actions_create, self.notebooks_list, self.notebooks_create, self.notebooks_retrieve, self.notebooks_update, self.notebooks_partial_update, self.notebooks_destroy, self.notebooks_activity_retrieve_2, self.notebooks_activity_retrieve, self.notebooks_recording_comments_retrieve, self.persons_list, self.persons_retrieve, self.persons_update, self.persons_partial_update, self.persons_destroy, self.persons_activity_retrieve_2, self.persons_delete_events_create, self.persons_delete_property_create, self.persons_properties_timeline_retrieve, self.persons_split_create, self.persons_update_property_create, self.persons_activity_retrieve, self.persons_bulk_delete_create, self.persons_cohorts_retrieve, self.persons_funnel_retrieve, self.persons_funnel_create, self.persons_funnel_correlation_retrieve, self.persons_funnel_correlation_create, self.persons_lifecycle_retrieve, self.persons_reset_person_distinct_id_create, self.persons_stickiness_retrieve, self.persons_trends_retrieve, self.persons_values_retrieve, self.plugin_configs_logs_list, self.property_definitions_list, self.property_definitions_retrieve, self.property_definitions_update, self.property_definitions_partial_update, self.property_definitions_destroy, self.property_definitions_seen_together_retrieve, self.query_create, self.query_retrieve, self.query_destroy, self.query_check_auth_for_async_create, self.query_draft_sql_retrieve, self.session_recording_playlists_list, self.session_recording_playlists_create, self.session_recording_playlists_retrieve, self.session_recording_playlists_update, self.session_recording_playlists_partial_update, self.session_recording_playlists_destroy, self.session_recording_playlists_recordings_retrieve, self.session_recording_playlists_recordings_create, self.session_recording_playlists_recordings_destroy, self.session_recordings_list, self.session_recordings_retrieve, self.session_recordings_update, self.session_recordings_partial_update, self.session_recordings_destroy, self.session_recordings_analyze_similar_retrieve, self.session_recordings_sharing_list, self.session_recordings_ai_regex_create, self.sessions_property_definitions_retrieve, self.sessions_values_retrieve, self.subscriptions_list, self.subscriptions_create, self.subscriptions_retrieve, self.subscriptions_update, self.subscriptions_partial_update, self.subscriptions_destroy, self.surveys_list, self.surveys_create, self.surveys_retrieve, self.surveys_update, self.surveys_partial_update, self.surveys_destroy, self.surveys_activity_retrieve_2, self.surveys_stats_retrieve_2, self.surveys_summarize_responses_create, self.surveys_activity_retrieve, self.surveys_responses_count_retrieve, self.surveys_stats_retrieve, self.web_experiments_list, self.web_experiments_create, self.web_experiments_retrieve, self.web_experiments_update, self.web_experiments_partial_update, self.web_experiments_destroy, self.users_list, self.users_retrieve, self.users_update, self.users_partial_update, self.users_hedgehog_config_retrieve, self.users_hedgehog_config_partial_update, self.users_scene_personalisation_create, self.users_start_2fa_setup_retrieve, self.users_two_factor_backup_codes_create, self.users_two_factor_disable_create, self.users_two_factor_start_setup_retrieve, self.users_two_factor_status_retrieve, self.users_two_factor_validate_create, self.users_validate_2fa_create, self.users_request_email_verification_create, self.users_verify_email_create]
+        return [
+            self.is_generating_demo_data_retrieve,
+            self.reset_token_partial_update,
+            self.proxy_records_list,
+            self.proxy_records_create,
+            self.proxy_records_retrieve,
+            self.proxy_records_update,
+            self.proxy_records_partial_update,
+            self.proxy_records_destroy,
+            self.roles_list,
+            self.roles_create,
+            self.roles_retrieve,
+            self.roles_update,
+            self.roles_partial_update,
+            self.roles_destroy,
+            self.roles_role_memberships_list,
+            self.roles_role_memberships_create,
+            self.roles_role_memberships_destroy,
+            self.actions_list,
+            self.actions_create,
+            self.notebooks_list,
+            self.notebooks_create,
+            self.notebooks_retrieve,
+            self.notebooks_update,
+            self.notebooks_partial_update,
+            self.notebooks_destroy,
+            self.notebooks_activity_retrieve_2,
+            self.notebooks_activity_retrieve,
+            self.notebooks_recording_comments_retrieve,
+            self.persons_list,
+            self.persons_retrieve,
+            self.persons_update,
+            self.persons_partial_update,
+            self.persons_destroy,
+            self.persons_activity_retrieve_2,
+            self.persons_delete_events_create,
+            self.persons_delete_property_create,
+            self.persons_properties_timeline_retrieve,
+            self.persons_split_create,
+            self.persons_update_property_create,
+            self.persons_activity_retrieve,
+            self.persons_bulk_delete_create,
+            self.persons_cohorts_retrieve,
+            self.persons_funnel_retrieve,
+            self.persons_funnel_create,
+            self.persons_funnel_correlation_retrieve,
+            self.persons_funnel_correlation_create,
+            self.persons_lifecycle_retrieve,
+            self.persons_reset_person_distinct_id_create,
+            self.persons_stickiness_retrieve,
+            self.persons_trends_retrieve,
+            self.persons_values_retrieve,
+            self.plugin_configs_logs_list,
+            self.property_definitions_list,
+            self.property_definitions_retrieve,
+            self.property_definitions_update,
+            self.property_definitions_partial_update,
+            self.property_definitions_destroy,
+            self.property_definitions_seen_together_retrieve,
+            self.query_create,
+            self.query_retrieve,
+            self.query_destroy,
+            self.query_check_auth_for_async_create,
+            self.query_draft_sql_retrieve,
+            self.session_recording_playlists_list,
+            self.session_recording_playlists_create,
+            self.session_recording_playlists_retrieve,
+            self.session_recording_playlists_update,
+            self.session_recording_playlists_partial_update,
+            self.session_recording_playlists_destroy,
+            self.session_recording_playlists_recordings_retrieve,
+            self.session_recording_playlists_recordings_create,
+            self.session_recording_playlists_recordings_destroy,
+            self.session_recordings_list,
+            self.session_recordings_retrieve,
+            self.session_recordings_update,
+            self.session_recordings_partial_update,
+            self.session_recordings_destroy,
+            self.session_recordings_analyze_similar_retrieve,
+            self.session_recordings_sharing_list,
+            self.session_recordings_ai_regex_create,
+            self.sessions_property_definitions_retrieve,
+            self.sessions_values_retrieve,
+            self.subscriptions_list,
+            self.subscriptions_create,
+            self.subscriptions_retrieve,
+            self.subscriptions_update,
+            self.subscriptions_partial_update,
+            self.subscriptions_destroy,
+            self.surveys_list,
+            self.surveys_create,
+            self.surveys_retrieve,
+            self.surveys_update,
+            self.surveys_partial_update,
+            self.surveys_destroy,
+            self.surveys_activity_retrieve_2,
+            self.surveys_stats_retrieve_2,
+            self.surveys_summarize_responses_create,
+            self.surveys_activity_retrieve,
+            self.surveys_responses_count_retrieve,
+            self.surveys_stats_retrieve,
+            self.web_experiments_list,
+            self.web_experiments_create,
+            self.web_experiments_retrieve,
+            self.web_experiments_update,
+            self.web_experiments_partial_update,
+            self.web_experiments_destroy,
+            self.users_list,
+            self.users_retrieve,
+            self.users_update,
+            self.users_partial_update,
+            self.users_hedgehog_config_retrieve,
+            self.users_hedgehog_config_partial_update,
+            self.users_scene_personalisation_create,
+            self.users_start_2fa_setup_retrieve,
+            self.users_two_factor_backup_codes_create,
+            self.users_two_factor_disable_create,
+            self.users_two_factor_start_setup_retrieve,
+            self.users_two_factor_status_retrieve,
+            self.users_two_factor_validate_create,
+            self.users_validate_2fa_create,
+            self.users_request_email_verification_create,
+            self.users_verify_email_create,
+        ]

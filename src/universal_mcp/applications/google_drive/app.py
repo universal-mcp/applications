@@ -4,15 +4,16 @@ from loguru import logger
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
+
 class GoogleDriveApp(APIApplication):
     """
     Application for interacting with Google Drive API.
     Provides tools to manage files, folders, and access Drive information.
     """
 
-    def __init__(self, integration: Integration | None=None) -> None:
-        super().__init__(name='google_drive', integration=integration)
-        self.base_url = 'https://www.googleapis.com/drive/v3'
+    def __init__(self, integration: Integration | None = None) -> None:
+        super().__init__(name="google_drive", integration=integration)
+        self.base_url = "https://www.googleapis.com/drive/v3"
 
     async def move_file(self, file_id: str, add_parents: str, remove_parents: str) -> dict[str, Any]:
         """
@@ -34,9 +35,9 @@ class GoogleDriveApp(APIApplication):
         Tags:
             move, file, folder, parent, patch, api, important
         """
-        url = f'{self.base_url}/files/{file_id}'
+        url = f"{self.base_url}/files/{file_id}"
         data = {}
-        params = {'addParents': add_parents, 'removeParents': remove_parents}
+        params = {"addParents": add_parents, "removeParents": remove_parents}
         response = self._patch(url, params=params, data=data)
         response.raise_for_status()
         return response.json()
@@ -56,12 +57,12 @@ class GoogleDriveApp(APIApplication):
         Tags:
             get, info, storage, drive, quota, user, api, important
         """
-        url = f'{self.base_url}/about'
-        params = {'fields': 'storageQuota,user'}
+        url = f"{self.base_url}/about"
+        params = {"fields": "storageQuota,user"}
         response = await self._aget(url, params=params)
         return response.json()
 
-    async def search_files(self, page_size: int=10, q: str | None=None, order_by: str | None=None) -> dict[str, Any]:
+    async def search_files(self, page_size: int = 10, q: str | None = None, order_by: str | None = None) -> dict[str, Any]:
         """
         Searches for files in Google Drive, allowing for powerful filtering, sorting, and pagination.
         This streamlined function offers a more user-friendly alternative to the comprehensive search_files_advanced method, making it ideal for targeted queries like finding files by name, type, or parent folder.
@@ -92,12 +93,12 @@ class GoogleDriveApp(APIApplication):
         Tags:
             list, files, search, google-drive, pagination, important
         """
-        url = f'{self.base_url}/files'
-        params = {'pageSize': page_size}
+        url = f"{self.base_url}/files"
+        params = {"pageSize": page_size}
         if q:
-            params['q'] = q
+            params["q"] = q
         if order_by:
-            params['orderBy'] = order_by
+            params["orderBy"] = order_by
         response = await self._aget(url, params=params)
         response.raise_for_status()
         return response.json()
@@ -119,7 +120,7 @@ class GoogleDriveApp(APIApplication):
         Tags:
             retrieve, file, metadata, get, api, important
         """
-        url = f'{self.base_url}/files/{file_id}'
+        url = f"{self.base_url}/files/{file_id}"
         response = await self._aget(url)
         return response.json()
 
@@ -139,14 +140,16 @@ class GoogleDriveApp(APIApplication):
         Tags:
             delete, file-management, google-drive, api, important
         """
-        url = f'{self.base_url}/files/{file_id}'
+        url = f"{self.base_url}/files/{file_id}"
         try:
             await self._adelete(url)
-            return {'message': 'File deleted successfully'}
+            return {"message": "File deleted successfully"}
         except Exception as e:
-            return {'error': str(e)}
+            return {"error": str(e)}
 
-    async def create_text_file(self, file_name: str, text_content: str, parent_id: str=None, mime_type: str='text/plain') -> dict[str, Any]:
+    async def create_text_file(
+        self, file_name: str, text_content: str, parent_id: str = None, mime_type: str = "text/plain"
+    ) -> dict[str, Any]:
         """
         Creates a file in Google Drive using an in-memory text string. Unlike `upload_file_from_path`, which reads from a local file, this function first creates the file's metadata (name, parent) and then uploads the provided string content, returning the new file's complete metadata upon completion.
 
@@ -166,17 +169,17 @@ class GoogleDriveApp(APIApplication):
         Tags:
             create, file, upload, drive, text, important, storage, document
         """
-        metadata = {'name': file_name, 'mimeType': mime_type}
+        metadata = {"name": file_name, "mimeType": mime_type}
         if parent_id:
-            metadata['parents'] = [parent_id]
-        create_url = f'{self.base_url}/files'
+            metadata["parents"] = [parent_id]
+        create_url = f"{self.base_url}/files"
         create_response = await self._apost(create_url, data=metadata)
         file_data = create_response.json()
-        file_id = file_data.get('id')
-        upload_url = f'https://www.googleapis.com/upload/drive/v3/files/{file_id}?uploadType=media'
+        file_id = file_data.get("id")
+        upload_url = f"https://www.googleapis.com/upload/drive/v3/files/{file_id}?uploadType=media"
         upload_headers = self._get_headers()
-        upload_headers['Content-Type'] = f'{mime_type}; charset=utf-8'
-        upload_response = httpx.patch(upload_url, headers=upload_headers, content=text_content.encode('utf-8'))
+        upload_headers["Content-Type"] = f"{mime_type}; charset=utf-8"
+        upload_response = httpx.patch(upload_url, headers=upload_headers, content=text_content.encode("utf-8"))
         upload_response.raise_for_status()
         response_data = upload_response.json()
         return response_data
@@ -199,14 +202,14 @@ class GoogleDriveApp(APIApplication):
         """
         query = f"mimeType='application/vnd.google-apps.folder' and name='{folder_name}' and trashed=false"
         try:
-            response = await self._aget(f'{self.base_url}/files', params={'q': query, 'fields': 'files(id,name)'})
-            files = response.json().get('files', [])
-            return files[0]['id'] if files else None
+            response = await self._aget(f"{self.base_url}/files", params={"q": query, "fields": "files(id,name)"})
+            files = response.json().get("files", [])
+            return files[0]["id"] if files else None
         except Exception as e:
-            logger.error(f'Error finding folder ID by name: {e}')
+            logger.error(f"Error finding folder ID by name: {e}")
             return None
 
-    async def create_folder(self, folder_name: str, parent_id: str=None) -> dict[str, Any]:
+    async def create_folder(self, folder_name: str, parent_id: str = None) -> dict[str, Any]:
         """
         Creates a new folder in Google Drive, optionally within a parent specified by name or ID. If a parent name is given, it internally resolves it to an ID using the `find_folder_id_by_name` function. Returns the metadata for the newly created folder upon successful creation.
 
@@ -224,22 +227,23 @@ class GoogleDriveApp(APIApplication):
             create, folder, drive, storage, important, management
         """
         import re
-        metadata = {'name': folder_name, 'mimeType': 'application/vnd.google-apps.folder'}
+
+        metadata = {"name": folder_name, "mimeType": "application/vnd.google-apps.folder"}
         if parent_id:
-            if not re.match('^[a-zA-Z0-9_-]{28,33}$', parent_id):
+            if not re.match("^[a-zA-Z0-9_-]{28,33}$", parent_id):
                 found_id = await self.find_folder_id_by_name(parent_id)
                 if found_id:
-                    metadata['parents'] = [found_id]
+                    metadata["parents"] = [found_id]
                 else:
-                    raise ValueError(f'Could not find parent folder with name: {parent_id}')
+                    raise ValueError(f"Could not find parent folder with name: {parent_id}")
             else:
-                metadata['parents'] = [parent_id]
-        url = f'{self.base_url}/files'
-        params = {'supportsAllDrives': 'true'}
+                metadata["parents"] = [parent_id]
+        url = f"{self.base_url}/files"
+        params = {"supportsAllDrives": "true"}
         response = await self._apost(url, data=metadata, params=params)
         return response.json()
 
-    async def upload_file_from_path(self, file_name: str, file_path: str, parent_id: str=None, mime_type: str=None) -> dict[str, Any]:
+    async def upload_file_from_path(self, file_name: str, file_path: str, parent_id: str = None, mime_type: str = None) -> dict[str, Any]:
         """
         Uploads a local file to Google Drive by reading its binary content from a path. It creates the file's metadata, uploads the content, and returns the new file's metadata. This differs from `create_text_file` which uses in-memory string content instead of a local file path.
 
@@ -260,24 +264,40 @@ class GoogleDriveApp(APIApplication):
         Tags:
             upload, file-handling, google-drive, api, important, binary, storage
         """
-        metadata = {'name': file_name, 'mimeType': mime_type}
+        metadata = {"name": file_name, "mimeType": mime_type}
         if parent_id:
-            metadata['parents'] = [parent_id]
-        create_url = f'{self.base_url}/files'
+            metadata["parents"] = [parent_id]
+        create_url = f"{self.base_url}/files"
         create_response = await self._apost(create_url, data=metadata)
         file_data = create_response.json()
-        file_id = file_data.get('id')
-        with open(file_path, 'rb') as file_content:
+        file_id = file_data.get("id")
+        with open(file_path, "rb") as file_content:
             binary_content = file_content.read()
-            upload_url = f'https://www.googleapis.com/upload/drive/v3/files/{file_id}?uploadType=media'
+            upload_url = f"https://www.googleapis.com/upload/drive/v3/files/{file_id}?uploadType=media"
             upload_headers = self._get_headers()
-            upload_headers['Content-Type'] = mime_type
+            upload_headers["Content-Type"] = mime_type
             upload_response = httpx.patch(upload_url, headers=upload_headers, content=binary_content)
             upload_response.raise_for_status()
         response_data = upload_response.json()
         return response_data
 
-    async def list_installed_apps(self, appFilterExtensions: str | None=None, appFilterMimeTypes: str | None=None, languageCode: str | None=None, access_token: str | None=None, alt: str | None=None, callback: str | None=None, fields: str | None=None, key: str | None=None, oauth_token: str | None=None, prettyPrint: str | None=None, quotaUser: str | None=None, upload_protocol: str | None=None, uploadType: str | None=None, xgafv: str | None=None) -> dict[str, Any]:
+    async def list_installed_apps(
+        self,
+        appFilterExtensions: str | None = None,
+        appFilterMimeTypes: str | None = None,
+        languageCode: str | None = None,
+        access_token: str | None = None,
+        alt: str | None = None,
+        callback: str | None = None,
+        fields: str | None = None,
+        key: str | None = None,
+        oauth_token: str | None = None,
+        prettyPrint: str | None = None,
+        quotaUser: str | None = None,
+        upload_protocol: str | None = None,
+        uploadType: str | None = None,
+        xgafv: str | None = None,
+    ) -> dict[str, Any]:
         """
         Retrieves a list of the user's installed Google Drive applications. Allows optional filtering by file extensions or MIME types to find apps capable of opening specific file formats, returning a detailed list of matching applications.
 
@@ -307,8 +327,27 @@ class GoogleDriveApp(APIApplication):
         Tags:
             Apps
         """
-        url = f'{self.base_url}/apps'
-        query_params = {k: v for k, v in [('appFilterExtensions', appFilterExtensions), ('appFilterMimeTypes', appFilterMimeTypes), ('languageCode', languageCode), ('access_token', access_token), ('alt', alt), ('callback', callback), ('fields', fields), ('key', key), ('oauth_token', oauth_token), ('prettyPrint', prettyPrint), ('quotaUser', quotaUser), ('upload_protocol', upload_protocol), ('uploadType', uploadType), ('$.xgafv', xgafv)] if v is not None}
+        url = f"{self.base_url}/apps"
+        query_params = {
+            k: v
+            for k, v in [
+                ("appFilterExtensions", appFilterExtensions),
+                ("appFilterMimeTypes", appFilterMimeTypes),
+                ("languageCode", languageCode),
+                ("access_token", access_token),
+                ("alt", alt),
+                ("callback", callback),
+                ("fields", fields),
+                ("key", key),
+                ("oauth_token", oauth_token),
+                ("prettyPrint", prettyPrint),
+                ("quotaUser", quotaUser),
+                ("upload_protocol", upload_protocol),
+                ("uploadType", uploadType),
+                ("$.xgafv", xgafv),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -318,7 +357,21 @@ class GoogleDriveApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_app_by_id(self, appId: str, access_token: str | None=None, alt: str | None=None, callback: str | None=None, fields: str | None=None, key: str | None=None, oauth_token: str | None=None, prettyPrint: str | None=None, quotaUser: str | None=None, upload_protocol: str | None=None, uploadType: str | None=None, xgafv: str | None=None) -> dict[str, Any]:
+    async def get_app_by_id(
+        self,
+        appId: str,
+        access_token: str | None = None,
+        alt: str | None = None,
+        callback: str | None = None,
+        fields: str | None = None,
+        key: str | None = None,
+        oauth_token: str | None = None,
+        prettyPrint: str | None = None,
+        quotaUser: str | None = None,
+        upload_protocol: str | None = None,
+        uploadType: str | None = None,
+        xgafv: str | None = None,
+    ) -> dict[str, Any]:
         """
         Retrieves detailed information for a single installed Google Drive application using its unique ID. This provides a targeted alternative to `list_installed_apps`, which returns a complete list, allowing for focused data retrieval about a specific application.
 
@@ -348,8 +401,24 @@ class GoogleDriveApp(APIApplication):
         """
         if appId is None:
             raise ValueError("Missing required parameter 'appId'.")
-        url = f'{self.base_url}/apps/{appId}'
-        query_params = {k: v for k, v in [('access_token', access_token), ('alt', alt), ('callback', callback), ('fields', fields), ('key', key), ('oauth_token', oauth_token), ('prettyPrint', prettyPrint), ('quotaUser', quotaUser), ('upload_protocol', upload_protocol), ('uploadType', uploadType), ('$.xgafv', xgafv)] if v is not None}
+        url = f"{self.base_url}/apps/{appId}"
+        query_params = {
+            k: v
+            for k, v in [
+                ("access_token", access_token),
+                ("alt", alt),
+                ("callback", callback),
+                ("fields", fields),
+                ("key", key),
+                ("oauth_token", oauth_token),
+                ("prettyPrint", prettyPrint),
+                ("quotaUser", quotaUser),
+                ("upload_protocol", upload_protocol),
+                ("uploadType", uploadType),
+                ("$.xgafv", xgafv),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -359,7 +428,16 @@ class GoogleDriveApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_about_info(self, alt: str | None=None, fields: str | None=None, key: str | None=None, oauth_token: str | None=None, prettyPrint: str | None=None, quotaUser: str | None=None, userIp: str | None=None) -> dict[str, Any]:
+    async def get_about_info(
+        self,
+        alt: str | None = None,
+        fields: str | None = None,
+        key: str | None = None,
+        oauth_token: str | None = None,
+        prettyPrint: str | None = None,
+        quotaUser: str | None = None,
+        userIp: str | None = None,
+    ) -> dict[str, Any]:
         """
         Retrieves user account and Drive settings from the `/about` endpoint. This generic function provides full parameter control, offering a flexible alternative to the `get_drive_info` method, which requests specific, predefined fields like storage quota and user details.
 
@@ -382,8 +460,20 @@ class GoogleDriveApp(APIApplication):
         Tags:
             Information
         """
-        url = f'{self.base_url}/about'
-        query_params = {k: v for k, v in [('alt', alt), ('fields', fields), ('key', key), ('oauth_token', oauth_token), ('prettyPrint', prettyPrint), ('quotaUser', quotaUser), ('userIp', userIp)] if v is not None}
+        url = f"{self.base_url}/about"
+        query_params = {
+            k: v
+            for k, v in [
+                ("alt", alt),
+                ("fields", fields),
+                ("key", key),
+                ("oauth_token", oauth_token),
+                ("prettyPrint", prettyPrint),
+                ("quotaUser", quotaUser),
+                ("userIp", userIp),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -393,7 +483,30 @@ class GoogleDriveApp(APIApplication):
         except ValueError:
             return None
 
-    async def list_drive_changes(self, pageToken: str | None=None, driveId: str | None=None, includeCorpusRemovals: str | None=None, includeItemsFromAllDrives: str | None=None, includeLabels: str | None=None, includePermissionsForView: str | None=None, includeRemoved: str | None=None, includeTeamDriveItems: str | None=None, pageSize: str | None=None, restrictToMyDrive: str | None=None, spaces: str | None=None, supportsAllDrives: str | None=None, supportsTeamDrives: str | None=None, teamDriveId: str | None=None, alt: str | None=None, fields: str | None=None, key: str | None=None, oauth_token: str | None=None, prettyPrint: str | None=None, quotaUser: str | None=None, userIp: str | None=None) -> dict[str, Any]:
+    async def list_drive_changes(
+        self,
+        pageToken: str | None = None,
+        driveId: str | None = None,
+        includeCorpusRemovals: str | None = None,
+        includeItemsFromAllDrives: str | None = None,
+        includeLabels: str | None = None,
+        includePermissionsForView: str | None = None,
+        includeRemoved: str | None = None,
+        includeTeamDriveItems: str | None = None,
+        pageSize: str | None = None,
+        restrictToMyDrive: str | None = None,
+        spaces: str | None = None,
+        supportsAllDrives: str | None = None,
+        supportsTeamDrives: str | None = None,
+        teamDriveId: str | None = None,
+        alt: str | None = None,
+        fields: str | None = None,
+        key: str | None = None,
+        oauth_token: str | None = None,
+        prettyPrint: str | None = None,
+        quotaUser: str | None = None,
+        userIp: str | None = None,
+    ) -> dict[str, Any]:
         """
         Fetches a paginated list of file changes for a user's account or a specific shared drive, using a required page token. Supports various filters to customize the change log, enabling tracking of file activity for synchronization or auditing.
 
@@ -430,8 +543,34 @@ class GoogleDriveApp(APIApplication):
         Tags:
             Changes
         """
-        url = f'{self.base_url}/changes'
-        query_params = {k: v for k, v in [('pageToken', pageToken), ('driveId', driveId), ('includeCorpusRemovals', includeCorpusRemovals), ('includeItemsFromAllDrives', includeItemsFromAllDrives), ('includeLabels', includeLabels), ('includePermissionsForView', includePermissionsForView), ('includeRemoved', includeRemoved), ('includeTeamDriveItems', includeTeamDriveItems), ('pageSize', pageSize), ('restrictToMyDrive', restrictToMyDrive), ('spaces', spaces), ('supportsAllDrives', supportsAllDrives), ('supportsTeamDrives', supportsTeamDrives), ('teamDriveId', teamDriveId), ('alt', alt), ('fields', fields), ('key', key), ('oauth_token', oauth_token), ('prettyPrint', prettyPrint), ('quotaUser', quotaUser), ('userIp', userIp)] if v is not None}
+        url = f"{self.base_url}/changes"
+        query_params = {
+            k: v
+            for k, v in [
+                ("pageToken", pageToken),
+                ("driveId", driveId),
+                ("includeCorpusRemovals", includeCorpusRemovals),
+                ("includeItemsFromAllDrives", includeItemsFromAllDrives),
+                ("includeLabels", includeLabels),
+                ("includePermissionsForView", includePermissionsForView),
+                ("includeRemoved", includeRemoved),
+                ("includeTeamDriveItems", includeTeamDriveItems),
+                ("pageSize", pageSize),
+                ("restrictToMyDrive", restrictToMyDrive),
+                ("spaces", spaces),
+                ("supportsAllDrives", supportsAllDrives),
+                ("supportsTeamDrives", supportsTeamDrives),
+                ("teamDriveId", teamDriveId),
+                ("alt", alt),
+                ("fields", fields),
+                ("key", key),
+                ("oauth_token", oauth_token),
+                ("prettyPrint", prettyPrint),
+                ("quotaUser", quotaUser),
+                ("userIp", userIp),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -441,7 +580,20 @@ class GoogleDriveApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_changes_start_token(self, driveId: str | None=None, supportsAllDrives: str | None=None, supportsTeamDrives: str | None=None, teamDriveId: str | None=None, alt: str | None=None, fields: str | None=None, key: str | None=None, oauth_token: str | None=None, prettyPrint: str | None=None, quotaUser: str | None=None, userIp: str | None=None) -> dict[str, Any]:
+    async def get_changes_start_token(
+        self,
+        driveId: str | None = None,
+        supportsAllDrives: str | None = None,
+        supportsTeamDrives: str | None = None,
+        teamDriveId: str | None = None,
+        alt: str | None = None,
+        fields: str | None = None,
+        key: str | None = None,
+        oauth_token: str | None = None,
+        prettyPrint: str | None = None,
+        quotaUser: str | None = None,
+        userIp: str | None = None,
+    ) -> dict[str, Any]:
         """
         Retrieves a starting page token representing the current state of a user's Drive or a shared drive. This token serves as a baseline for subsequent calls to list future file and folder changes, enabling efficient, incremental change tracking.
 
@@ -468,8 +620,24 @@ class GoogleDriveApp(APIApplication):
         Tags:
             Changes
         """
-        url = f'{self.base_url}/changes/startPageToken'
-        query_params = {k: v for k, v in [('driveId', driveId), ('supportsAllDrives', supportsAllDrives), ('supportsTeamDrives', supportsTeamDrives), ('teamDriveId', teamDriveId), ('alt', alt), ('fields', fields), ('key', key), ('oauth_token', oauth_token), ('prettyPrint', prettyPrint), ('quotaUser', quotaUser), ('userIp', userIp)] if v is not None}
+        url = f"{self.base_url}/changes/startPageToken"
+        query_params = {
+            k: v
+            for k, v in [
+                ("driveId", driveId),
+                ("supportsAllDrives", supportsAllDrives),
+                ("supportsTeamDrives", supportsTeamDrives),
+                ("teamDriveId", teamDriveId),
+                ("alt", alt),
+                ("fields", fields),
+                ("key", key),
+                ("oauth_token", oauth_token),
+                ("prettyPrint", prettyPrint),
+                ("quotaUser", quotaUser),
+                ("userIp", userIp),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -479,7 +647,40 @@ class GoogleDriveApp(APIApplication):
         except ValueError:
             return None
 
-    async def watch_drive_changes(self, pageToken: str | None=None, driveId: str | None=None, includeCorpusRemovals: str | None=None, includeItemsFromAllDrives: str | None=None, includeLabels: str | None=None, includePermissionsForView: str | None=None, includeRemoved: str | None=None, includeTeamDriveItems: str | None=None, pageSize: str | None=None, restrictToMyDrive: str | None=None, spaces: str | None=None, supportsAllDrives: str | None=None, supportsTeamDrives: str | None=None, teamDriveId: str | None=None, alt: str | None=None, fields: str | None=None, key: str | None=None, oauth_token: str | None=None, prettyPrint: str | None=None, quotaUser: str | None=None, userIp: str | None=None, address: str | None=None, expiration: str | None=None, id: str | None=None, kind: str | None=None, params: dict[str, Any] | None=None, payload: str | None=None, resourceId: str | None=None, resourceUri: str | None=None, token: str | None=None, type: str | None=None) -> dict[str, Any]:
+    async def watch_drive_changes(
+        self,
+        pageToken: str | None = None,
+        driveId: str | None = None,
+        includeCorpusRemovals: str | None = None,
+        includeItemsFromAllDrives: str | None = None,
+        includeLabels: str | None = None,
+        includePermissionsForView: str | None = None,
+        includeRemoved: str | None = None,
+        includeTeamDriveItems: str | None = None,
+        pageSize: str | None = None,
+        restrictToMyDrive: str | None = None,
+        spaces: str | None = None,
+        supportsAllDrives: str | None = None,
+        supportsTeamDrives: str | None = None,
+        teamDriveId: str | None = None,
+        alt: str | None = None,
+        fields: str | None = None,
+        key: str | None = None,
+        oauth_token: str | None = None,
+        prettyPrint: str | None = None,
+        quotaUser: str | None = None,
+        userIp: str | None = None,
+        address: str | None = None,
+        expiration: str | None = None,
+        id: str | None = None,
+        kind: str | None = None,
+        params: dict[str, Any] | None = None,
+        payload: str | None = None,
+        resourceId: str | None = None,
+        resourceUri: str | None = None,
+        token: str | None = None,
+        type: str | None = None,
+    ) -> dict[str, Any]:
         """
         Sets up a push notification channel to monitor changes across a user's Google Drive or a specific shared drive. This allows an external service to receive updates when files are modified, added, or deleted, based on specified filters.
 
@@ -527,11 +728,48 @@ class GoogleDriveApp(APIApplication):
             Changes
         """
         request_body_data = None
-        request_body_data = {'address': address, 'expiration': expiration, 'id': id, 'kind': kind, 'params': params, 'payload': payload, 'resourceId': resourceId, 'resourceUri': resourceUri, 'token': token, 'type': type}
+        request_body_data = {
+            "address": address,
+            "expiration": expiration,
+            "id": id,
+            "kind": kind,
+            "params": params,
+            "payload": payload,
+            "resourceId": resourceId,
+            "resourceUri": resourceUri,
+            "token": token,
+            "type": type,
+        }
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/changes/watch'
-        query_params = {k: v for k, v in [('pageToken', pageToken), ('driveId', driveId), ('includeCorpusRemovals', includeCorpusRemovals), ('includeItemsFromAllDrives', includeItemsFromAllDrives), ('includeLabels', includeLabels), ('includePermissionsForView', includePermissionsForView), ('includeRemoved', includeRemoved), ('includeTeamDriveItems', includeTeamDriveItems), ('pageSize', pageSize), ('restrictToMyDrive', restrictToMyDrive), ('spaces', spaces), ('supportsAllDrives', supportsAllDrives), ('supportsTeamDrives', supportsTeamDrives), ('teamDriveId', teamDriveId), ('alt', alt), ('fields', fields), ('key', key), ('oauth_token', oauth_token), ('prettyPrint', prettyPrint), ('quotaUser', quotaUser), ('userIp', userIp)] if v is not None}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        url = f"{self.base_url}/changes/watch"
+        query_params = {
+            k: v
+            for k, v in [
+                ("pageToken", pageToken),
+                ("driveId", driveId),
+                ("includeCorpusRemovals", includeCorpusRemovals),
+                ("includeItemsFromAllDrives", includeItemsFromAllDrives),
+                ("includeLabels", includeLabels),
+                ("includePermissionsForView", includePermissionsForView),
+                ("includeRemoved", includeRemoved),
+                ("includeTeamDriveItems", includeTeamDriveItems),
+                ("pageSize", pageSize),
+                ("restrictToMyDrive", restrictToMyDrive),
+                ("spaces", spaces),
+                ("supportsAllDrives", supportsAllDrives),
+                ("supportsTeamDrives", supportsTeamDrives),
+                ("teamDriveId", teamDriveId),
+                ("alt", alt),
+                ("fields", fields),
+                ("key", key),
+                ("oauth_token", oauth_token),
+                ("prettyPrint", prettyPrint),
+                ("quotaUser", quotaUser),
+                ("userIp", userIp),
+            ]
+            if v is not None
+        }
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -540,7 +778,26 @@ class GoogleDriveApp(APIApplication):
         except ValueError:
             return None
 
-    async def stop_watching_channel(self, alt: str | None=None, fields: str | None=None, key: str | None=None, oauth_token: str | None=None, prettyPrint: str | None=None, quotaUser: str | None=None, userIp: str | None=None, address: str | None=None, expiration: str | None=None, id: str | None=None, kind: str | None=None, params: dict[str, Any] | None=None, payload: str | None=None, resourceId: str | None=None, resourceUri: str | None=None, token: str | None=None, type: str | None=None) -> Any:
+    async def stop_watching_channel(
+        self,
+        alt: str | None = None,
+        fields: str | None = None,
+        key: str | None = None,
+        oauth_token: str | None = None,
+        prettyPrint: str | None = None,
+        quotaUser: str | None = None,
+        userIp: str | None = None,
+        address: str | None = None,
+        expiration: str | None = None,
+        id: str | None = None,
+        kind: str | None = None,
+        params: dict[str, Any] | None = None,
+        payload: str | None = None,
+        resourceId: str | None = None,
+        resourceUri: str | None = None,
+        token: str | None = None,
+        type: str | None = None,
+    ) -> Any:
         """
         Terminates an active push notification channel, ceasing the delivery of updates for a watched Google Drive resource. This requires the channel's ID and resource ID to identify and close the specific notification stream, effectively unsubscribing from real-time changes.
 
@@ -574,11 +831,34 @@ class GoogleDriveApp(APIApplication):
             Channels
         """
         request_body_data = None
-        request_body_data = {'address': address, 'expiration': expiration, 'id': id, 'kind': kind, 'params': params, 'payload': payload, 'resourceId': resourceId, 'resourceUri': resourceUri, 'token': token, 'type': type}
+        request_body_data = {
+            "address": address,
+            "expiration": expiration,
+            "id": id,
+            "kind": kind,
+            "params": params,
+            "payload": payload,
+            "resourceId": resourceId,
+            "resourceUri": resourceUri,
+            "token": token,
+            "type": type,
+        }
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/channels/stop'
-        query_params = {k: v for k, v in [('alt', alt), ('fields', fields), ('key', key), ('oauth_token', oauth_token), ('prettyPrint', prettyPrint), ('quotaUser', quotaUser), ('userIp', userIp)] if v is not None}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        url = f"{self.base_url}/channels/stop"
+        query_params = {
+            k: v
+            for k, v in [
+                ("alt", alt),
+                ("fields", fields),
+                ("key", key),
+                ("oauth_token", oauth_token),
+                ("prettyPrint", prettyPrint),
+                ("quotaUser", quotaUser),
+                ("userIp", userIp),
+            ]
+            if v is not None
+        }
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -587,7 +867,21 @@ class GoogleDriveApp(APIApplication):
         except ValueError:
             return None
 
-    async def list_file_comments(self, fileId: str, includeDeleted: str | None=None, pageSize: str | None=None, pageToken: str | None=None, startModifiedTime: str | None=None, alt: str | None=None, fields: str | None=None, key: str | None=None, oauth_token: str | None=None, prettyPrint: str | None=None, quotaUser: str | None=None, userIp: str | None=None) -> dict[str, Any]:
+    async def list_file_comments(
+        self,
+        fileId: str,
+        includeDeleted: str | None = None,
+        pageSize: str | None = None,
+        pageToken: str | None = None,
+        startModifiedTime: str | None = None,
+        alt: str | None = None,
+        fields: str | None = None,
+        key: str | None = None,
+        oauth_token: str | None = None,
+        prettyPrint: str | None = None,
+        quotaUser: str | None = None,
+        userIp: str | None = None,
+    ) -> dict[str, Any]:
         """
         Retrieves a paginated list of all top-level comments for a specified Google Drive file. It supports filtering by modification time and including deleted comments, fetching parent comments rather than replies, unlike `list_comment_replies`.
 
@@ -617,8 +911,24 @@ class GoogleDriveApp(APIApplication):
         """
         if fileId is None:
             raise ValueError("Missing required parameter 'fileId'.")
-        url = f'{self.base_url}/files/{fileId}/comments'
-        query_params = {k: v for k, v in [('includeDeleted', includeDeleted), ('pageSize', pageSize), ('pageToken', pageToken), ('startModifiedTime', startModifiedTime), ('alt', alt), ('fields', fields), ('key', key), ('oauth_token', oauth_token), ('prettyPrint', prettyPrint), ('quotaUser', quotaUser), ('userIp', userIp)] if v is not None}
+        url = f"{self.base_url}/files/{fileId}/comments"
+        query_params = {
+            k: v
+            for k, v in [
+                ("includeDeleted", includeDeleted),
+                ("pageSize", pageSize),
+                ("pageToken", pageToken),
+                ("startModifiedTime", startModifiedTime),
+                ("alt", alt),
+                ("fields", fields),
+                ("key", key),
+                ("oauth_token", oauth_token),
+                ("prettyPrint", prettyPrint),
+                ("quotaUser", quotaUser),
+                ("userIp", userIp),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -628,7 +938,29 @@ class GoogleDriveApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_file_comment(self, fileId: str, alt: str | None=None, fields: str | None=None, key: str | None=None, oauth_token: str | None=None, prettyPrint: str | None=None, quotaUser: str | None=None, userIp: str | None=None, anchor: str | None=None, author: dict[str, Any] | None=None, content: str | None=None, createdTime: str | None=None, deleted: str | None=None, htmlContent: str | None=None, id: str | None=None, kind: str | None=None, modifiedTime: str | None=None, quotedFileContent: dict[str, Any] | None=None, replies: list[dict[str, Any]] | None=None, resolved: str | None=None) -> dict[str, Any]:
+    async def create_file_comment(
+        self,
+        fileId: str,
+        alt: str | None = None,
+        fields: str | None = None,
+        key: str | None = None,
+        oauth_token: str | None = None,
+        prettyPrint: str | None = None,
+        quotaUser: str | None = None,
+        userIp: str | None = None,
+        anchor: str | None = None,
+        author: dict[str, Any] | None = None,
+        content: str | None = None,
+        createdTime: str | None = None,
+        deleted: str | None = None,
+        htmlContent: str | None = None,
+        id: str | None = None,
+        kind: str | None = None,
+        modifiedTime: str | None = None,
+        quotedFileContent: dict[str, Any] | None = None,
+        replies: list[dict[str, Any]] | None = None,
+        resolved: str | None = None,
+    ) -> dict[str, Any]:
         """
         Creates a new comment on a specified Google Drive file. It requires a file ID and the comment's content, returning the new comment's metadata. This adds top-level comments, distinct from `create_comment_reply` which replies to existing comments.
 
@@ -667,11 +999,36 @@ class GoogleDriveApp(APIApplication):
         if fileId is None:
             raise ValueError("Missing required parameter 'fileId'.")
         request_body_data = None
-        request_body_data = {'anchor': anchor, 'author': author, 'content': content, 'createdTime': createdTime, 'deleted': deleted, 'htmlContent': htmlContent, 'id': id, 'kind': kind, 'modifiedTime': modifiedTime, 'quotedFileContent': quotedFileContent, 'replies': replies, 'resolved': resolved}
+        request_body_data = {
+            "anchor": anchor,
+            "author": author,
+            "content": content,
+            "createdTime": createdTime,
+            "deleted": deleted,
+            "htmlContent": htmlContent,
+            "id": id,
+            "kind": kind,
+            "modifiedTime": modifiedTime,
+            "quotedFileContent": quotedFileContent,
+            "replies": replies,
+            "resolved": resolved,
+        }
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/files/{fileId}/comments'
-        query_params = {k: v for k, v in [('alt', alt), ('fields', fields), ('key', key), ('oauth_token', oauth_token), ('prettyPrint', prettyPrint), ('quotaUser', quotaUser), ('userIp', userIp)] if v is not None}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        url = f"{self.base_url}/files/{fileId}/comments"
+        query_params = {
+            k: v
+            for k, v in [
+                ("alt", alt),
+                ("fields", fields),
+                ("key", key),
+                ("oauth_token", oauth_token),
+                ("prettyPrint", prettyPrint),
+                ("quotaUser", quotaUser),
+                ("userIp", userIp),
+            ]
+            if v is not None
+        }
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -680,7 +1037,19 @@ class GoogleDriveApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_file_comment_by_id(self, fileId: str, commentId: str, includeDeleted: str | None=None, alt: str | None=None, fields: str | None=None, key: str | None=None, oauth_token: str | None=None, prettyPrint: str | None=None, quotaUser: str | None=None, userIp: str | None=None) -> dict[str, Any]:
+    async def get_file_comment_by_id(
+        self,
+        fileId: str,
+        commentId: str,
+        includeDeleted: str | None = None,
+        alt: str | None = None,
+        fields: str | None = None,
+        key: str | None = None,
+        oauth_token: str | None = None,
+        prettyPrint: str | None = None,
+        quotaUser: str | None = None,
+        userIp: str | None = None,
+    ) -> dict[str, Any]:
         """
         Retrieves a single comment's metadata using its unique comment and file IDs. This provides targeted access to one comment, unlike `list_file_comments` which lists all comments for a file. It can optionally include deleted comments in the returned data.
 
@@ -710,8 +1079,21 @@ class GoogleDriveApp(APIApplication):
             raise ValueError("Missing required parameter 'fileId'.")
         if commentId is None:
             raise ValueError("Missing required parameter 'commentId'.")
-        url = f'{self.base_url}/files/{fileId}/comments/{commentId}'
-        query_params = {k: v for k, v in [('includeDeleted', includeDeleted), ('alt', alt), ('fields', fields), ('key', key), ('oauth_token', oauth_token), ('prettyPrint', prettyPrint), ('quotaUser', quotaUser), ('userIp', userIp)] if v is not None}
+        url = f"{self.base_url}/files/{fileId}/comments/{commentId}"
+        query_params = {
+            k: v
+            for k, v in [
+                ("includeDeleted", includeDeleted),
+                ("alt", alt),
+                ("fields", fields),
+                ("key", key),
+                ("oauth_token", oauth_token),
+                ("prettyPrint", prettyPrint),
+                ("quotaUser", quotaUser),
+                ("userIp", userIp),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -721,7 +1103,18 @@ class GoogleDriveApp(APIApplication):
         except ValueError:
             return None
 
-    async def delete_comment(self, fileId: str, commentId: str, alt: str | None=None, fields: str | None=None, key: str | None=None, oauth_token: str | None=None, prettyPrint: str | None=None, quotaUser: str | None=None, userIp: str | None=None) -> Any:
+    async def delete_comment(
+        self,
+        fileId: str,
+        commentId: str,
+        alt: str | None = None,
+        fields: str | None = None,
+        key: str | None = None,
+        oauth_token: str | None = None,
+        prettyPrint: str | None = None,
+        quotaUser: str | None = None,
+        userIp: str | None = None,
+    ) -> Any:
         """
         Permanently deletes a specific comment from a Google Drive file, identified by both the file and comment IDs. This irreversible action removes the top-level comment and its replies, distinguishing it from the `delete_reply` function which targets only individual replies within a comment thread.
 
@@ -750,8 +1143,20 @@ class GoogleDriveApp(APIApplication):
             raise ValueError("Missing required parameter 'fileId'.")
         if commentId is None:
             raise ValueError("Missing required parameter 'commentId'.")
-        url = f'{self.base_url}/files/{fileId}/comments/{commentId}'
-        query_params = {k: v for k, v in [('alt', alt), ('fields', fields), ('key', key), ('oauth_token', oauth_token), ('prettyPrint', prettyPrint), ('quotaUser', quotaUser), ('userIp', userIp)] if v is not None}
+        url = f"{self.base_url}/files/{fileId}/comments/{commentId}"
+        query_params = {
+            k: v
+            for k, v in [
+                ("alt", alt),
+                ("fields", fields),
+                ("key", key),
+                ("oauth_token", oauth_token),
+                ("prettyPrint", prettyPrint),
+                ("quotaUser", quotaUser),
+                ("userIp", userIp),
+            ]
+            if v is not None
+        }
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -761,7 +1166,30 @@ class GoogleDriveApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_comment(self, fileId: str, commentId: str, alt: str | None=None, fields: str | None=None, key: str | None=None, oauth_token: str | None=None, prettyPrint: str | None=None, quotaUser: str | None=None, userIp: str | None=None, anchor: str | None=None, author: dict[str, Any] | None=None, content: str | None=None, createdTime: str | None=None, deleted: str | None=None, htmlContent: str | None=None, id: str | None=None, kind: str | None=None, modifiedTime: str | None=None, quotedFileContent: dict[str, Any] | None=None, replies: list[dict[str, Any]] | None=None, resolved: str | None=None) -> dict[str, Any]:
+    async def update_comment(
+        self,
+        fileId: str,
+        commentId: str,
+        alt: str | None = None,
+        fields: str | None = None,
+        key: str | None = None,
+        oauth_token: str | None = None,
+        prettyPrint: str | None = None,
+        quotaUser: str | None = None,
+        userIp: str | None = None,
+        anchor: str | None = None,
+        author: dict[str, Any] | None = None,
+        content: str | None = None,
+        createdTime: str | None = None,
+        deleted: str | None = None,
+        htmlContent: str | None = None,
+        id: str | None = None,
+        kind: str | None = None,
+        modifiedTime: str | None = None,
+        quotedFileContent: dict[str, Any] | None = None,
+        replies: list[dict[str, Any]] | None = None,
+        resolved: str | None = None,
+    ) -> dict[str, Any]:
         """
         Updates an existing comment on a specified file using its unique ID. This function allows for partial modification of the comment's properties, such as its content or resolved status, and returns the updated comment's metadata.
 
@@ -803,10 +1231,35 @@ class GoogleDriveApp(APIApplication):
         if commentId is None:
             raise ValueError("Missing required parameter 'commentId'.")
         request_body_data = None
-        request_body_data = {'anchor': anchor, 'author': author, 'content': content, 'createdTime': createdTime, 'deleted': deleted, 'htmlContent': htmlContent, 'id': id, 'kind': kind, 'modifiedTime': modifiedTime, 'quotedFileContent': quotedFileContent, 'replies': replies, 'resolved': resolved}
+        request_body_data = {
+            "anchor": anchor,
+            "author": author,
+            "content": content,
+            "createdTime": createdTime,
+            "deleted": deleted,
+            "htmlContent": htmlContent,
+            "id": id,
+            "kind": kind,
+            "modifiedTime": modifiedTime,
+            "quotedFileContent": quotedFileContent,
+            "replies": replies,
+            "resolved": resolved,
+        }
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/files/{fileId}/comments/{commentId}'
-        query_params = {k: v for k, v in [('alt', alt), ('fields', fields), ('key', key), ('oauth_token', oauth_token), ('prettyPrint', prettyPrint), ('quotaUser', quotaUser), ('userIp', userIp)] if v is not None}
+        url = f"{self.base_url}/files/{fileId}/comments/{commentId}"
+        query_params = {
+            k: v
+            for k, v in [
+                ("alt", alt),
+                ("fields", fields),
+                ("key", key),
+                ("oauth_token", oauth_token),
+                ("prettyPrint", prettyPrint),
+                ("quotaUser", quotaUser),
+                ("userIp", userIp),
+            ]
+            if v is not None
+        }
         response = self._patch(url, data=request_body_data, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -816,7 +1269,20 @@ class GoogleDriveApp(APIApplication):
         except ValueError:
             return None
 
-    async def list_shared_drives(self, pageSize: str | None=None, pageToken: str | None=None, q: str | None=None, useDomainAdminAccess: str | None=None, alt: str | None=None, fields: str | None=None, key: str | None=None, oauth_token: str | None=None, prettyPrint: str | None=None, quotaUser: str | None=None, userIp: str | None=None) -> dict[str, Any]:
+    async def list_shared_drives(
+        self,
+        pageSize: str | None = None,
+        pageToken: str | None = None,
+        q: str | None = None,
+        useDomainAdminAccess: str | None = None,
+        alt: str | None = None,
+        fields: str | None = None,
+        key: str | None = None,
+        oauth_token: str | None = None,
+        prettyPrint: str | None = None,
+        quotaUser: str | None = None,
+        userIp: str | None = None,
+    ) -> dict[str, Any]:
         """
         Retrieves a paginated list of shared drives accessible to the user. Supports optional query-based filtering and can be executed with domain administrator privileges to list all shared drives within the domain, returning a dictionary containing the list of drives and pagination details.
 
@@ -843,8 +1309,24 @@ class GoogleDriveApp(APIApplication):
         Tags:
             Shared Drive
         """
-        url = f'{self.base_url}/drives'
-        query_params = {k: v for k, v in [('pageSize', pageSize), ('pageToken', pageToken), ('q', q), ('useDomainAdminAccess', useDomainAdminAccess), ('alt', alt), ('fields', fields), ('key', key), ('oauth_token', oauth_token), ('prettyPrint', prettyPrint), ('quotaUser', quotaUser), ('userIp', userIp)] if v is not None}
+        url = f"{self.base_url}/drives"
+        query_params = {
+            k: v
+            for k, v in [
+                ("pageSize", pageSize),
+                ("pageToken", pageToken),
+                ("q", q),
+                ("useDomainAdminAccess", useDomainAdminAccess),
+                ("alt", alt),
+                ("fields", fields),
+                ("key", key),
+                ("oauth_token", oauth_token),
+                ("prettyPrint", prettyPrint),
+                ("quotaUser", quotaUser),
+                ("userIp", userIp),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -854,7 +1336,29 @@ class GoogleDriveApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_shared_drive(self, requestId: str | None=None, alt: str | None=None, fields: str | None=None, key: str | None=None, oauth_token: str | None=None, prettyPrint: str | None=None, quotaUser: str | None=None, userIp: str | None=None, backgroundImageFile: dict[str, Any] | None=None, backgroundImageLink: str | None=None, capabilities: dict[str, Any] | None=None, colorRgb: str | None=None, createdTime: str | None=None, hidden: str | None=None, id: str | None=None, kind: str | None=None, name: str | None=None, orgUnitId: str | None=None, restrictions: dict[str, Any] | None=None, themeId: str | None=None) -> dict[str, Any]:
+    async def create_shared_drive(
+        self,
+        requestId: str | None = None,
+        alt: str | None = None,
+        fields: str | None = None,
+        key: str | None = None,
+        oauth_token: str | None = None,
+        prettyPrint: str | None = None,
+        quotaUser: str | None = None,
+        userIp: str | None = None,
+        backgroundImageFile: dict[str, Any] | None = None,
+        backgroundImageLink: str | None = None,
+        capabilities: dict[str, Any] | None = None,
+        colorRgb: str | None = None,
+        createdTime: str | None = None,
+        hidden: str | None = None,
+        id: str | None = None,
+        kind: str | None = None,
+        name: str | None = None,
+        orgUnitId: str | None = None,
+        restrictions: dict[str, Any] | None = None,
+        themeId: str | None = None,
+    ) -> dict[str, Any]:
         """
         Creates a new shared drive using a unique `requestId` for idempotency. This function allows specifying initial properties such as its name, background image, and access restrictions, returning the created drive's metadata on success.
 
@@ -891,11 +1395,37 @@ class GoogleDriveApp(APIApplication):
             Shared Drive
         """
         request_body_data = None
-        request_body_data = {'backgroundImageFile': backgroundImageFile, 'backgroundImageLink': backgroundImageLink, 'capabilities': capabilities, 'colorRgb': colorRgb, 'createdTime': createdTime, 'hidden': hidden, 'id': id, 'kind': kind, 'name': name, 'orgUnitId': orgUnitId, 'restrictions': restrictions, 'themeId': themeId}
+        request_body_data = {
+            "backgroundImageFile": backgroundImageFile,
+            "backgroundImageLink": backgroundImageLink,
+            "capabilities": capabilities,
+            "colorRgb": colorRgb,
+            "createdTime": createdTime,
+            "hidden": hidden,
+            "id": id,
+            "kind": kind,
+            "name": name,
+            "orgUnitId": orgUnitId,
+            "restrictions": restrictions,
+            "themeId": themeId,
+        }
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/drives'
-        query_params = {k: v for k, v in [('requestId', requestId), ('alt', alt), ('fields', fields), ('key', key), ('oauth_token', oauth_token), ('prettyPrint', prettyPrint), ('quotaUser', quotaUser), ('userIp', userIp)] if v is not None}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        url = f"{self.base_url}/drives"
+        query_params = {
+            k: v
+            for k, v in [
+                ("requestId", requestId),
+                ("alt", alt),
+                ("fields", fields),
+                ("key", key),
+                ("oauth_token", oauth_token),
+                ("prettyPrint", prettyPrint),
+                ("quotaUser", quotaUser),
+                ("userIp", userIp),
+            ]
+            if v is not None
+        }
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -904,7 +1434,18 @@ class GoogleDriveApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_shared_drive_metadata(self, driveId: str, useDomainAdminAccess: str | None=None, alt: str | None=None, fields: str | None=None, key: str | None=None, oauth_token: str | None=None, prettyPrint: str | None=None, quotaUser: str | None=None, userIp: str | None=None) -> dict[str, Any]:
+    async def get_shared_drive_metadata(
+        self,
+        driveId: str,
+        useDomainAdminAccess: str | None = None,
+        alt: str | None = None,
+        fields: str | None = None,
+        key: str | None = None,
+        oauth_token: str | None = None,
+        prettyPrint: str | None = None,
+        quotaUser: str | None = None,
+        userIp: str | None = None,
+    ) -> dict[str, Any]:
         """
         Retrieves metadata for a specific shared drive using its ID. Unlike `get_drive_info`, which gets user account data, this function targets a single drive's properties. It supports domain administrator access and allows specifying fields to customize the response, returning the drive's detailed information.
 
@@ -931,8 +1472,21 @@ class GoogleDriveApp(APIApplication):
         """
         if driveId is None:
             raise ValueError("Missing required parameter 'driveId'.")
-        url = f'{self.base_url}/drives/{driveId}'
-        query_params = {k: v for k, v in [('useDomainAdminAccess', useDomainAdminAccess), ('alt', alt), ('fields', fields), ('key', key), ('oauth_token', oauth_token), ('prettyPrint', prettyPrint), ('quotaUser', quotaUser), ('userIp', userIp)] if v is not None}
+        url = f"{self.base_url}/drives/{driveId}"
+        query_params = {
+            k: v
+            for k, v in [
+                ("useDomainAdminAccess", useDomainAdminAccess),
+                ("alt", alt),
+                ("fields", fields),
+                ("key", key),
+                ("oauth_token", oauth_token),
+                ("prettyPrint", prettyPrint),
+                ("quotaUser", quotaUser),
+                ("userIp", userIp),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -942,7 +1496,19 @@ class GoogleDriveApp(APIApplication):
         except ValueError:
             return None
 
-    async def delete_shared_drive(self, driveId: str, allowItemDeletion: str | None=None, useDomainAdminAccess: str | None=None, alt: str | None=None, fields: str | None=None, key: str | None=None, oauth_token: str | None=None, prettyPrint: str | None=None, quotaUser: str | None=None, userIp: str | None=None) -> Any:
+    async def delete_shared_drive(
+        self,
+        driveId: str,
+        allowItemDeletion: str | None = None,
+        useDomainAdminAccess: str | None = None,
+        alt: str | None = None,
+        fields: str | None = None,
+        key: str | None = None,
+        oauth_token: str | None = None,
+        prettyPrint: str | None = None,
+        quotaUser: str | None = None,
+        userIp: str | None = None,
+    ) -> Any:
         """
         Permanently deletes a shared drive by its ID. This irreversible action removes the entire drive and, unlike `trash_file`, can optionally delete all its contents for domain administrators, providing a complete removal solution for a shared workspace.
 
@@ -970,8 +1536,22 @@ class GoogleDriveApp(APIApplication):
         """
         if driveId is None:
             raise ValueError("Missing required parameter 'driveId'.")
-        url = f'{self.base_url}/drives/{driveId}'
-        query_params = {k: v for k, v in [('allowItemDeletion', allowItemDeletion), ('useDomainAdminAccess', useDomainAdminAccess), ('alt', alt), ('fields', fields), ('key', key), ('oauth_token', oauth_token), ('prettyPrint', prettyPrint), ('quotaUser', quotaUser), ('userIp', userIp)] if v is not None}
+        url = f"{self.base_url}/drives/{driveId}"
+        query_params = {
+            k: v
+            for k, v in [
+                ("allowItemDeletion", allowItemDeletion),
+                ("useDomainAdminAccess", useDomainAdminAccess),
+                ("alt", alt),
+                ("fields", fields),
+                ("key", key),
+                ("oauth_token", oauth_token),
+                ("prettyPrint", prettyPrint),
+                ("quotaUser", quotaUser),
+                ("userIp", userIp),
+            ]
+            if v is not None
+        }
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -981,7 +1561,30 @@ class GoogleDriveApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_shared_drive(self, driveId: str, useDomainAdminAccess: str | None=None, alt: str | None=None, fields: str | None=None, key: str | None=None, oauth_token: str | None=None, prettyPrint: str | None=None, quotaUser: str | None=None, userIp: str | None=None, backgroundImageFile: dict[str, Any] | None=None, backgroundImageLink: str | None=None, capabilities: dict[str, Any] | None=None, colorRgb: str | None=None, createdTime: str | None=None, hidden: str | None=None, id: str | None=None, kind: str | None=None, name: str | None=None, orgUnitId: str | None=None, restrictions: dict[str, Any] | None=None, themeId: str | None=None) -> dict[str, Any]:
+    async def update_shared_drive(
+        self,
+        driveId: str,
+        useDomainAdminAccess: str | None = None,
+        alt: str | None = None,
+        fields: str | None = None,
+        key: str | None = None,
+        oauth_token: str | None = None,
+        prettyPrint: str | None = None,
+        quotaUser: str | None = None,
+        userIp: str | None = None,
+        backgroundImageFile: dict[str, Any] | None = None,
+        backgroundImageLink: str | None = None,
+        capabilities: dict[str, Any] | None = None,
+        colorRgb: str | None = None,
+        createdTime: str | None = None,
+        hidden: str | None = None,
+        id: str | None = None,
+        kind: str | None = None,
+        name: str | None = None,
+        orgUnitId: str | None = None,
+        restrictions: dict[str, Any] | None = None,
+        themeId: str | None = None,
+    ) -> dict[str, Any]:
         """
         Updates a shared drive's metadata properties, such as its name, theme, or color, using its ID. This function sends a PATCH request to modify the drive and returns a dictionary containing the complete, updated metadata for the shared drive upon success.
 
@@ -1021,10 +1624,36 @@ class GoogleDriveApp(APIApplication):
         if driveId is None:
             raise ValueError("Missing required parameter 'driveId'.")
         request_body_data = None
-        request_body_data = {'backgroundImageFile': backgroundImageFile, 'backgroundImageLink': backgroundImageLink, 'capabilities': capabilities, 'colorRgb': colorRgb, 'createdTime': createdTime, 'hidden': hidden, 'id': id, 'kind': kind, 'name': name, 'orgUnitId': orgUnitId, 'restrictions': restrictions, 'themeId': themeId}
+        request_body_data = {
+            "backgroundImageFile": backgroundImageFile,
+            "backgroundImageLink": backgroundImageLink,
+            "capabilities": capabilities,
+            "colorRgb": colorRgb,
+            "createdTime": createdTime,
+            "hidden": hidden,
+            "id": id,
+            "kind": kind,
+            "name": name,
+            "orgUnitId": orgUnitId,
+            "restrictions": restrictions,
+            "themeId": themeId,
+        }
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/drives/{driveId}'
-        query_params = {k: v for k, v in [('useDomainAdminAccess', useDomainAdminAccess), ('alt', alt), ('fields', fields), ('key', key), ('oauth_token', oauth_token), ('prettyPrint', prettyPrint), ('quotaUser', quotaUser), ('userIp', userIp)] if v is not None}
+        url = f"{self.base_url}/drives/{driveId}"
+        query_params = {
+            k: v
+            for k, v in [
+                ("useDomainAdminAccess", useDomainAdminAccess),
+                ("alt", alt),
+                ("fields", fields),
+                ("key", key),
+                ("oauth_token", oauth_token),
+                ("prettyPrint", prettyPrint),
+                ("quotaUser", quotaUser),
+                ("userIp", userIp),
+            ]
+            if v is not None
+        }
         response = self._patch(url, data=request_body_data, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -1034,7 +1663,17 @@ class GoogleDriveApp(APIApplication):
         except ValueError:
             return None
 
-    async def hide_drive(self, driveId: str, alt: str | None=None, fields: str | None=None, key: str | None=None, oauth_token: str | None=None, prettyPrint: str | None=None, quotaUser: str | None=None, userIp: str | None=None) -> dict[str, Any]:
+    async def hide_drive(
+        self,
+        driveId: str,
+        alt: str | None = None,
+        fields: str | None = None,
+        key: str | None = None,
+        oauth_token: str | None = None,
+        prettyPrint: str | None = None,
+        quotaUser: str | None = None,
+        userIp: str | None = None,
+    ) -> dict[str, Any]:
         """
         Hides a specified shared drive from the user's default view using its ID. This function sends a POST request to the API's hide endpoint, returning updated drive metadata. It is the direct counterpart to the `unhide_drive` function, which restores visibility.
 
@@ -1061,9 +1700,21 @@ class GoogleDriveApp(APIApplication):
         if driveId is None:
             raise ValueError("Missing required parameter 'driveId'.")
         request_body_data = None
-        url = f'{self.base_url}/drives/{driveId}/hide'
-        query_params = {k: v for k, v in [('alt', alt), ('fields', fields), ('key', key), ('oauth_token', oauth_token), ('prettyPrint', prettyPrint), ('quotaUser', quotaUser), ('userIp', userIp)] if v is not None}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        url = f"{self.base_url}/drives/{driveId}/hide"
+        query_params = {
+            k: v
+            for k, v in [
+                ("alt", alt),
+                ("fields", fields),
+                ("key", key),
+                ("oauth_token", oauth_token),
+                ("prettyPrint", prettyPrint),
+                ("quotaUser", quotaUser),
+                ("userIp", userIp),
+            ]
+            if v is not None
+        }
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1072,7 +1723,17 @@ class GoogleDriveApp(APIApplication):
         except ValueError:
             return None
 
-    async def unhide_drive(self, driveId: str, alt: str | None=None, fields: str | None=None, key: str | None=None, oauth_token: str | None=None, prettyPrint: str | None=None, quotaUser: str | None=None, userIp: str | None=None) -> dict[str, Any]:
+    async def unhide_drive(
+        self,
+        driveId: str,
+        alt: str | None = None,
+        fields: str | None = None,
+        key: str | None = None,
+        oauth_token: str | None = None,
+        prettyPrint: str | None = None,
+        quotaUser: str | None = None,
+        userIp: str | None = None,
+    ) -> dict[str, Any]:
         """
         Makes a hidden shared drive visible again in the user's default view by its ID. This function sends a POST request to the Google Drive API's `/unhide` endpoint, effectively reversing the action of the `hide_drive` function, and returns the updated drive metadata.
 
@@ -1099,9 +1760,21 @@ class GoogleDriveApp(APIApplication):
         if driveId is None:
             raise ValueError("Missing required parameter 'driveId'.")
         request_body_data = None
-        url = f'{self.base_url}/drives/{driveId}/unhide'
-        query_params = {k: v for k, v in [('alt', alt), ('fields', fields), ('key', key), ('oauth_token', oauth_token), ('prettyPrint', prettyPrint), ('quotaUser', quotaUser), ('userIp', userIp)] if v is not None}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        url = f"{self.base_url}/drives/{driveId}/unhide"
+        query_params = {
+            k: v
+            for k, v in [
+                ("alt", alt),
+                ("fields", fields),
+                ("key", key),
+                ("oauth_token", oauth_token),
+                ("prettyPrint", prettyPrint),
+                ("quotaUser", quotaUser),
+                ("userIp", userIp),
+            ]
+            if v is not None
+        }
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1110,7 +1783,30 @@ class GoogleDriveApp(APIApplication):
         except ValueError:
             return None
 
-    async def search_files_advanced(self, corpora: str | None=None, driveId: str | None=None, includeItemsFromAllDrives: str | None=None, includeLabels: str | None=None, includePermissionsForView: str | None=None, includeTeamDriveItems: str | None=None, orderBy: str | None=None, pageSize: str | None=None, pageToken: str | None=None, q: str | None=None, spaces: str | None=None, supportsAllDrives: str | None=None, supportsTeamDrives: str | None=None, teamDriveId: str | None=None, alt: str | None=None, fields: str | None=None, key: str | None=None, oauth_token: str | None=None, prettyPrint: str | None=None, quotaUser: str | None=None, userIp: str | None=None) -> dict[str, Any]:
+    async def search_files_advanced(
+        self,
+        corpora: str | None = None,
+        driveId: str | None = None,
+        includeItemsFromAllDrives: str | None = None,
+        includeLabels: str | None = None,
+        includePermissionsForView: str | None = None,
+        includeTeamDriveItems: str | None = None,
+        orderBy: str | None = None,
+        pageSize: str | None = None,
+        pageToken: str | None = None,
+        q: str | None = None,
+        spaces: str | None = None,
+        supportsAllDrives: str | None = None,
+        supportsTeamDrives: str | None = None,
+        teamDriveId: str | None = None,
+        alt: str | None = None,
+        fields: str | None = None,
+        key: str | None = None,
+        oauth_token: str | None = None,
+        prettyPrint: str | None = None,
+        quotaUser: str | None = None,
+        userIp: str | None = None,
+    ) -> dict[str, Any]:
         """
         Exhaustively lists or searches files using advanced parameters for filtering, sorting, and pagination. As a low-level alternative to the simplified `search_files` function, it provides granular control by exposing the full range of Google Drive API query options for complex retrieval.
 
@@ -1147,8 +1843,34 @@ class GoogleDriveApp(APIApplication):
         Tags:
             Files
         """
-        url = f'{self.base_url}/files'
-        query_params = {k: v for k, v in [('corpora', corpora), ('driveId', driveId), ('includeItemsFromAllDrives', includeItemsFromAllDrives), ('includeLabels', includeLabels), ('includePermissionsForView', includePermissionsForView), ('includeTeamDriveItems', includeTeamDriveItems), ('orderBy', orderBy), ('pageSize', pageSize), ('pageToken', pageToken), ('q', q), ('spaces', spaces), ('supportsAllDrives', supportsAllDrives), ('supportsTeamDrives', supportsTeamDrives), ('teamDriveId', teamDriveId), ('alt', alt), ('fields', fields), ('key', key), ('oauth_token', oauth_token), ('prettyPrint', prettyPrint), ('quotaUser', quotaUser), ('userIp', userIp)] if v is not None}
+        url = f"{self.base_url}/files"
+        query_params = {
+            k: v
+            for k, v in [
+                ("corpora", corpora),
+                ("driveId", driveId),
+                ("includeItemsFromAllDrives", includeItemsFromAllDrives),
+                ("includeLabels", includeLabels),
+                ("includePermissionsForView", includePermissionsForView),
+                ("includeTeamDriveItems", includeTeamDriveItems),
+                ("orderBy", orderBy),
+                ("pageSize", pageSize),
+                ("pageToken", pageToken),
+                ("q", q),
+                ("spaces", spaces),
+                ("supportsAllDrives", supportsAllDrives),
+                ("supportsTeamDrives", supportsTeamDrives),
+                ("teamDriveId", teamDriveId),
+                ("alt", alt),
+                ("fields", fields),
+                ("key", key),
+                ("oauth_token", oauth_token),
+                ("prettyPrint", prettyPrint),
+                ("quotaUser", quotaUser),
+                ("userIp", userIp),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -1158,7 +1880,87 @@ class GoogleDriveApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_file_metadata(self, enforceSingleParent: str | None=None, ignoreDefaultVisibility: str | None=None, includeLabels: str | None=None, includePermissionsForView: str | None=None, keepRevisionForever: str | None=None, ocrLanguage: str | None=None, supportsAllDrives: str | None=None, supportsTeamDrives: str | None=None, useContentAsIndexableText: str | None=None, alt: str | None=None, fields: str | None=None, key: str | None=None, oauth_token: str | None=None, prettyPrint: str | None=None, quotaUser: str | None=None, userIp: str | None=None, appProperties: dict[str, Any] | None=None, capabilities: dict[str, Any] | None=None, contentHints: dict[str, Any] | None=None, contentRestrictions: list[dict[str, Any]] | None=None, copyRequiresWriterPermission: str | None=None, createdTime: str | None=None, description: str | None=None, driveId: str | None=None, explicitlyTrashed: str | None=None, exportLinks: dict[str, Any] | None=None, fileExtension: str | None=None, folderColorRgb: str | None=None, fullFileExtension: str | None=None, hasAugmentedPermissions: str | None=None, hasThumbnail: str | None=None, headRevisionId: str | None=None, iconLink: str | None=None, id: str | None=None, imageMediaMetadata: dict[str, Any] | None=None, isAppAuthorized: str | None=None, kind: str | None=None, labelInfo: dict[str, Any] | None=None, lastModifyingUser: dict[str, Any] | None=None, linkShareMetadata: dict[str, Any] | None=None, md5Checksum: str | None=None, mimeType: str | None=None, modifiedByMe: str | None=None, modifiedByMeTime: str | None=None, modifiedTime: str | None=None, name: str | None=None, originalFilename: str | None=None, ownedByMe: str | None=None, owners: list[dict[str, Any]] | None=None, parents: list[str] | None=None, permissionIds: list[str] | None=None, permissions: list[dict[str, Any]] | None=None, properties: dict[str, Any] | None=None, quotaBytesUsed: str | None=None, resourceKey: str | None=None, sha1Checksum: str | None=None, sha256Checksum: str | None=None, shared: str | None=None, sharedWithMeTime: str | None=None, sharingUser: dict[str, Any] | None=None, shortcutDetails: dict[str, Any] | None=None, size: str | None=None, spaces: list[str] | None=None, starred: str | None=None, teamDriveId: str | None=None, thumbnailLink: str | None=None, thumbnailVersion: str | None=None, trashed: str | None=None, trashedTime: str | None=None, trashingUser: dict[str, Any] | None=None, version: str | None=None, videoMediaMetadata: dict[str, Any] | None=None, viewedByMe: str | None=None, viewedByMeTime: str | None=None, viewersCanCopyContent: str | None=None, webContentLink: str | None=None, webViewLink: str | None=None, writersCanShare: str | None=None) -> dict[str, Any]:
+    async def create_file_metadata(
+        self,
+        enforceSingleParent: str | None = None,
+        ignoreDefaultVisibility: str | None = None,
+        includeLabels: str | None = None,
+        includePermissionsForView: str | None = None,
+        keepRevisionForever: str | None = None,
+        ocrLanguage: str | None = None,
+        supportsAllDrives: str | None = None,
+        supportsTeamDrives: str | None = None,
+        useContentAsIndexableText: str | None = None,
+        alt: str | None = None,
+        fields: str | None = None,
+        key: str | None = None,
+        oauth_token: str | None = None,
+        prettyPrint: str | None = None,
+        quotaUser: str | None = None,
+        userIp: str | None = None,
+        appProperties: dict[str, Any] | None = None,
+        capabilities: dict[str, Any] | None = None,
+        contentHints: dict[str, Any] | None = None,
+        contentRestrictions: list[dict[str, Any]] | None = None,
+        copyRequiresWriterPermission: str | None = None,
+        createdTime: str | None = None,
+        description: str | None = None,
+        driveId: str | None = None,
+        explicitlyTrashed: str | None = None,
+        exportLinks: dict[str, Any] | None = None,
+        fileExtension: str | None = None,
+        folderColorRgb: str | None = None,
+        fullFileExtension: str | None = None,
+        hasAugmentedPermissions: str | None = None,
+        hasThumbnail: str | None = None,
+        headRevisionId: str | None = None,
+        iconLink: str | None = None,
+        id: str | None = None,
+        imageMediaMetadata: dict[str, Any] | None = None,
+        isAppAuthorized: str | None = None,
+        kind: str | None = None,
+        labelInfo: dict[str, Any] | None = None,
+        lastModifyingUser: dict[str, Any] | None = None,
+        linkShareMetadata: dict[str, Any] | None = None,
+        md5Checksum: str | None = None,
+        mimeType: str | None = None,
+        modifiedByMe: str | None = None,
+        modifiedByMeTime: str | None = None,
+        modifiedTime: str | None = None,
+        name: str | None = None,
+        originalFilename: str | None = None,
+        ownedByMe: str | None = None,
+        owners: list[dict[str, Any]] | None = None,
+        parents: list[str] | None = None,
+        permissionIds: list[str] | None = None,
+        permissions: list[dict[str, Any]] | None = None,
+        properties: dict[str, Any] | None = None,
+        quotaBytesUsed: str | None = None,
+        resourceKey: str | None = None,
+        sha1Checksum: str | None = None,
+        sha256Checksum: str | None = None,
+        shared: str | None = None,
+        sharedWithMeTime: str | None = None,
+        sharingUser: dict[str, Any] | None = None,
+        shortcutDetails: dict[str, Any] | None = None,
+        size: str | None = None,
+        spaces: list[str] | None = None,
+        starred: str | None = None,
+        teamDriveId: str | None = None,
+        thumbnailLink: str | None = None,
+        thumbnailVersion: str | None = None,
+        trashed: str | None = None,
+        trashedTime: str | None = None,
+        trashingUser: dict[str, Any] | None = None,
+        version: str | None = None,
+        videoMediaMetadata: dict[str, Any] | None = None,
+        viewedByMe: str | None = None,
+        viewedByMeTime: str | None = None,
+        viewersCanCopyContent: str | None = None,
+        webContentLink: str | None = None,
+        webViewLink: str | None = None,
+        writersCanShare: str | None = None,
+    ) -> dict[str, Any]:
         """
         Creates a new file's metadata resource in Google Drive, allowing detailed configuration of properties like name, MIME type, and parent folders. Unlike `upload_file_from_path` or `create_text_file`, this function only creates the metadata entry without uploading any file content.
 
@@ -1253,11 +2055,95 @@ class GoogleDriveApp(APIApplication):
             Files
         """
         request_body_data = None
-        request_body_data = {'appProperties': appProperties, 'capabilities': capabilities, 'contentHints': contentHints, 'contentRestrictions': contentRestrictions, 'copyRequiresWriterPermission': copyRequiresWriterPermission, 'createdTime': createdTime, 'description': description, 'driveId': driveId, 'explicitlyTrashed': explicitlyTrashed, 'exportLinks': exportLinks, 'fileExtension': fileExtension, 'folderColorRgb': folderColorRgb, 'fullFileExtension': fullFileExtension, 'hasAugmentedPermissions': hasAugmentedPermissions, 'hasThumbnail': hasThumbnail, 'headRevisionId': headRevisionId, 'iconLink': iconLink, 'id': id, 'imageMediaMetadata': imageMediaMetadata, 'isAppAuthorized': isAppAuthorized, 'kind': kind, 'labelInfo': labelInfo, 'lastModifyingUser': lastModifyingUser, 'linkShareMetadata': linkShareMetadata, 'md5Checksum': md5Checksum, 'mimeType': mimeType, 'modifiedByMe': modifiedByMe, 'modifiedByMeTime': modifiedByMeTime, 'modifiedTime': modifiedTime, 'name': name, 'originalFilename': originalFilename, 'ownedByMe': ownedByMe, 'owners': owners, 'parents': parents, 'permissionIds': permissionIds, 'permissions': permissions, 'properties': properties, 'quotaBytesUsed': quotaBytesUsed, 'resourceKey': resourceKey, 'sha1Checksum': sha1Checksum, 'sha256Checksum': sha256Checksum, 'shared': shared, 'sharedWithMeTime': sharedWithMeTime, 'sharingUser': sharingUser, 'shortcutDetails': shortcutDetails, 'size': size, 'spaces': spaces, 'starred': starred, 'teamDriveId': teamDriveId, 'thumbnailLink': thumbnailLink, 'thumbnailVersion': thumbnailVersion, 'trashed': trashed, 'trashedTime': trashedTime, 'trashingUser': trashingUser, 'version': version, 'videoMediaMetadata': videoMediaMetadata, 'viewedByMe': viewedByMe, 'viewedByMeTime': viewedByMeTime, 'viewersCanCopyContent': viewersCanCopyContent, 'webContentLink': webContentLink, 'webViewLink': webViewLink, 'writersCanShare': writersCanShare}
+        request_body_data = {
+            "appProperties": appProperties,
+            "capabilities": capabilities,
+            "contentHints": contentHints,
+            "contentRestrictions": contentRestrictions,
+            "copyRequiresWriterPermission": copyRequiresWriterPermission,
+            "createdTime": createdTime,
+            "description": description,
+            "driveId": driveId,
+            "explicitlyTrashed": explicitlyTrashed,
+            "exportLinks": exportLinks,
+            "fileExtension": fileExtension,
+            "folderColorRgb": folderColorRgb,
+            "fullFileExtension": fullFileExtension,
+            "hasAugmentedPermissions": hasAugmentedPermissions,
+            "hasThumbnail": hasThumbnail,
+            "headRevisionId": headRevisionId,
+            "iconLink": iconLink,
+            "id": id,
+            "imageMediaMetadata": imageMediaMetadata,
+            "isAppAuthorized": isAppAuthorized,
+            "kind": kind,
+            "labelInfo": labelInfo,
+            "lastModifyingUser": lastModifyingUser,
+            "linkShareMetadata": linkShareMetadata,
+            "md5Checksum": md5Checksum,
+            "mimeType": mimeType,
+            "modifiedByMe": modifiedByMe,
+            "modifiedByMeTime": modifiedByMeTime,
+            "modifiedTime": modifiedTime,
+            "name": name,
+            "originalFilename": originalFilename,
+            "ownedByMe": ownedByMe,
+            "owners": owners,
+            "parents": parents,
+            "permissionIds": permissionIds,
+            "permissions": permissions,
+            "properties": properties,
+            "quotaBytesUsed": quotaBytesUsed,
+            "resourceKey": resourceKey,
+            "sha1Checksum": sha1Checksum,
+            "sha256Checksum": sha256Checksum,
+            "shared": shared,
+            "sharedWithMeTime": sharedWithMeTime,
+            "sharingUser": sharingUser,
+            "shortcutDetails": shortcutDetails,
+            "size": size,
+            "spaces": spaces,
+            "starred": starred,
+            "teamDriveId": teamDriveId,
+            "thumbnailLink": thumbnailLink,
+            "thumbnailVersion": thumbnailVersion,
+            "trashed": trashed,
+            "trashedTime": trashedTime,
+            "trashingUser": trashingUser,
+            "version": version,
+            "videoMediaMetadata": videoMediaMetadata,
+            "viewedByMe": viewedByMe,
+            "viewedByMeTime": viewedByMeTime,
+            "viewersCanCopyContent": viewersCanCopyContent,
+            "webContentLink": webContentLink,
+            "webViewLink": webViewLink,
+            "writersCanShare": writersCanShare,
+        }
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/files'
-        query_params = {k: v for k, v in [('enforceSingleParent', enforceSingleParent), ('ignoreDefaultVisibility', ignoreDefaultVisibility), ('includeLabels', includeLabels), ('includePermissionsForView', includePermissionsForView), ('keepRevisionForever', keepRevisionForever), ('ocrLanguage', ocrLanguage), ('supportsAllDrives', supportsAllDrives), ('supportsTeamDrives', supportsTeamDrives), ('useContentAsIndexableText', useContentAsIndexableText), ('alt', alt), ('fields', fields), ('key', key), ('oauth_token', oauth_token), ('prettyPrint', prettyPrint), ('quotaUser', quotaUser), ('userIp', userIp)] if v is not None}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        url = f"{self.base_url}/files"
+        query_params = {
+            k: v
+            for k, v in [
+                ("enforceSingleParent", enforceSingleParent),
+                ("ignoreDefaultVisibility", ignoreDefaultVisibility),
+                ("includeLabels", includeLabels),
+                ("includePermissionsForView", includePermissionsForView),
+                ("keepRevisionForever", keepRevisionForever),
+                ("ocrLanguage", ocrLanguage),
+                ("supportsAllDrives", supportsAllDrives),
+                ("supportsTeamDrives", supportsTeamDrives),
+                ("useContentAsIndexableText", useContentAsIndexableText),
+                ("alt", alt),
+                ("fields", fields),
+                ("key", key),
+                ("oauth_token", oauth_token),
+                ("prettyPrint", prettyPrint),
+                ("quotaUser", quotaUser),
+                ("userIp", userIp),
+            ]
+            if v is not None
+        }
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1266,7 +2152,19 @@ class GoogleDriveApp(APIApplication):
         except ValueError:
             return None
 
-    async def generate_file_ids(self, count: str | None=None, space: str | None=None, type: str | None=None, alt: str | None=None, fields: str | None=None, key: str | None=None, oauth_token: str | None=None, prettyPrint: str | None=None, quotaUser: str | None=None, userIp: str | None=None) -> dict[str, Any]:
+    async def generate_file_ids(
+        self,
+        count: str | None = None,
+        space: str | None = None,
+        type: str | None = None,
+        alt: str | None = None,
+        fields: str | None = None,
+        key: str | None = None,
+        oauth_token: str | None = None,
+        prettyPrint: str | None = None,
+        quotaUser: str | None = None,
+        userIp: str | None = None,
+    ) -> dict[str, Any]:
         """
         Generates a batch of unique IDs for future Google Drive files or shortcuts. This utility optimizes creation workflows by allowing identifiers to be fetched in advance, specifying quantity, storage space (e.g., 'drive'), and item type (e.g., 'files').
 
@@ -1292,8 +2190,23 @@ class GoogleDriveApp(APIApplication):
         Tags:
             Files
         """
-        url = f'{self.base_url}/files/generateIds'
-        query_params = {k: v for k, v in [('count', count), ('space', space), ('type', type), ('alt', alt), ('fields', fields), ('key', key), ('oauth_token', oauth_token), ('prettyPrint', prettyPrint), ('quotaUser', quotaUser), ('userIp', userIp)] if v is not None}
+        url = f"{self.base_url}/files/generateIds"
+        query_params = {
+            k: v
+            for k, v in [
+                ("count", count),
+                ("space", space),
+                ("type", type),
+                ("alt", alt),
+                ("fields", fields),
+                ("key", key),
+                ("oauth_token", oauth_token),
+                ("prettyPrint", prettyPrint),
+                ("quotaUser", quotaUser),
+                ("userIp", userIp),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -1303,7 +2216,18 @@ class GoogleDriveApp(APIApplication):
         except ValueError:
             return None
 
-    async def empty_trash(self, driveId: str | None=None, enforceSingleParent: str | None=None, alt: str | None=None, fields: str | None=None, key: str | None=None, oauth_token: str | None=None, prettyPrint: str | None=None, quotaUser: str | None=None, userIp: str | None=None) -> Any:
+    async def empty_trash(
+        self,
+        driveId: str | None = None,
+        enforceSingleParent: str | None = None,
+        alt: str | None = None,
+        fields: str | None = None,
+        key: str | None = None,
+        oauth_token: str | None = None,
+        prettyPrint: str | None = None,
+        quotaUser: str | None = None,
+        userIp: str | None = None,
+    ) -> Any:
         """
         Permanently deletes all files and folders from the trash. This irreversible action can target the user's main trash or a specific shared drive's trash via its `driveId`, distinguishing it from `trash_file` which only moves a single item to the trash.
 
@@ -1328,8 +2252,22 @@ class GoogleDriveApp(APIApplication):
         Tags:
             Files
         """
-        url = f'{self.base_url}/files/trash'
-        query_params = {k: v for k, v in [('driveId', driveId), ('enforceSingleParent', enforceSingleParent), ('alt', alt), ('fields', fields), ('key', key), ('oauth_token', oauth_token), ('prettyPrint', prettyPrint), ('quotaUser', quotaUser), ('userIp', userIp)] if v is not None}
+        url = f"{self.base_url}/files/trash"
+        query_params = {
+            k: v
+            for k, v in [
+                ("driveId", driveId),
+                ("enforceSingleParent", enforceSingleParent),
+                ("alt", alt),
+                ("fields", fields),
+                ("key", key),
+                ("oauth_token", oauth_token),
+                ("prettyPrint", prettyPrint),
+                ("quotaUser", quotaUser),
+                ("userIp", userIp),
+            ]
+            if v is not None
+        }
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -1339,7 +2277,20 @@ class GoogleDriveApp(APIApplication):
         except ValueError:
             return None
 
-    async def permanently_delete_file(self, fileId: str, enforceSingleParent: str | None=None, supportsAllDrives: str | None=None, supportsTeamDrives: str | None=None, alt: str | None=None, fields: str | None=None, key: str | None=None, oauth_token: str | None=None, prettyPrint: str | None=None, quotaUser: str | None=None, userIp: str | None=None) -> Any:
+    async def permanently_delete_file(
+        self,
+        fileId: str,
+        enforceSingleParent: str | None = None,
+        supportsAllDrives: str | None = None,
+        supportsTeamDrives: str | None = None,
+        alt: str | None = None,
+        fields: str | None = None,
+        key: str | None = None,
+        oauth_token: str | None = None,
+        prettyPrint: str | None = None,
+        quotaUser: str | None = None,
+        userIp: str | None = None,
+    ) -> Any:
         """
         Permanently deletes a file by its ID, bypassing the trash for irreversible removal. Unlike the simpler `trash_file` function, this method offers advanced control through numerous optional API parameters, such as handling files located in shared drives.
 
@@ -1368,8 +2319,23 @@ class GoogleDriveApp(APIApplication):
         """
         if fileId is None:
             raise ValueError("Missing required parameter 'fileId'.")
-        url = f'{self.base_url}/files/{fileId}'
-        query_params = {k: v for k, v in [('enforceSingleParent', enforceSingleParent), ('supportsAllDrives', supportsAllDrives), ('supportsTeamDrives', supportsTeamDrives), ('alt', alt), ('fields', fields), ('key', key), ('oauth_token', oauth_token), ('prettyPrint', prettyPrint), ('quotaUser', quotaUser), ('userIp', userIp)] if v is not None}
+        url = f"{self.base_url}/files/{fileId}"
+        query_params = {
+            k: v
+            for k, v in [
+                ("enforceSingleParent", enforceSingleParent),
+                ("supportsAllDrives", supportsAllDrives),
+                ("supportsTeamDrives", supportsTeamDrives),
+                ("alt", alt),
+                ("fields", fields),
+                ("key", key),
+                ("oauth_token", oauth_token),
+                ("prettyPrint", prettyPrint),
+                ("quotaUser", quotaUser),
+                ("userIp", userIp),
+            ]
+            if v is not None
+        }
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -1379,7 +2345,89 @@ class GoogleDriveApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_file_metadata(self, fileId: str, addParents: str | None=None, enforceSingleParent: str | None=None, includeLabels: str | None=None, includePermissionsForView: str | None=None, keepRevisionForever: str | None=None, ocrLanguage: str | None=None, removeParents: str | None=None, supportsAllDrives: str | None=None, supportsTeamDrives: str | None=None, useContentAsIndexableText: str | None=None, alt: str | None=None, fields: str | None=None, key: str | None=None, oauth_token: str | None=None, prettyPrint: str | None=None, quotaUser: str | None=None, userIp: str | None=None, appProperties: dict[str, Any] | None=None, capabilities: dict[str, Any] | None=None, contentHints: dict[str, Any] | None=None, contentRestrictions: list[dict[str, Any]] | None=None, copyRequiresWriterPermission: str | None=None, createdTime: str | None=None, description: str | None=None, driveId: str | None=None, explicitlyTrashed: str | None=None, exportLinks: dict[str, Any] | None=None, fileExtension: str | None=None, folderColorRgb: str | None=None, fullFileExtension: str | None=None, hasAugmentedPermissions: str | None=None, hasThumbnail: str | None=None, headRevisionId: str | None=None, iconLink: str | None=None, id: str | None=None, imageMediaMetadata: dict[str, Any] | None=None, isAppAuthorized: str | None=None, kind: str | None=None, labelInfo: dict[str, Any] | None=None, lastModifyingUser: dict[str, Any] | None=None, linkShareMetadata: dict[str, Any] | None=None, md5Checksum: str | None=None, mimeType: str | None=None, modifiedByMe: str | None=None, modifiedByMeTime: str | None=None, modifiedTime: str | None=None, name: str | None=None, originalFilename: str | None=None, ownedByMe: str | None=None, owners: list[dict[str, Any]] | None=None, parents: list[str] | None=None, permissionIds: list[str] | None=None, permissions: list[dict[str, Any]] | None=None, properties: dict[str, Any] | None=None, quotaBytesUsed: str | None=None, resourceKey: str | None=None, sha1Checksum: str | None=None, sha256Checksum: str | None=None, shared: str | None=None, sharedWithMeTime: str | None=None, sharingUser: dict[str, Any] | None=None, shortcutDetails: dict[str, Any] | None=None, size: str | None=None, spaces: list[str] | None=None, starred: str | None=None, teamDriveId: str | None=None, thumbnailLink: str | None=None, thumbnailVersion: str | None=None, trashed: str | None=None, trashedTime: str | None=None, trashingUser: dict[str, Any] | None=None, version: str | None=None, videoMediaMetadata: dict[str, Any] | None=None, viewedByMe: str | None=None, viewedByMeTime: str | None=None, viewersCanCopyContent: str | None=None, webContentLink: str | None=None, webViewLink: str | None=None, writersCanShare: str | None=None) -> dict[str, Any]:
+    async def update_file_metadata(
+        self,
+        fileId: str,
+        addParents: str | None = None,
+        enforceSingleParent: str | None = None,
+        includeLabels: str | None = None,
+        includePermissionsForView: str | None = None,
+        keepRevisionForever: str | None = None,
+        ocrLanguage: str | None = None,
+        removeParents: str | None = None,
+        supportsAllDrives: str | None = None,
+        supportsTeamDrives: str | None = None,
+        useContentAsIndexableText: str | None = None,
+        alt: str | None = None,
+        fields: str | None = None,
+        key: str | None = None,
+        oauth_token: str | None = None,
+        prettyPrint: str | None = None,
+        quotaUser: str | None = None,
+        userIp: str | None = None,
+        appProperties: dict[str, Any] | None = None,
+        capabilities: dict[str, Any] | None = None,
+        contentHints: dict[str, Any] | None = None,
+        contentRestrictions: list[dict[str, Any]] | None = None,
+        copyRequiresWriterPermission: str | None = None,
+        createdTime: str | None = None,
+        description: str | None = None,
+        driveId: str | None = None,
+        explicitlyTrashed: str | None = None,
+        exportLinks: dict[str, Any] | None = None,
+        fileExtension: str | None = None,
+        folderColorRgb: str | None = None,
+        fullFileExtension: str | None = None,
+        hasAugmentedPermissions: str | None = None,
+        hasThumbnail: str | None = None,
+        headRevisionId: str | None = None,
+        iconLink: str | None = None,
+        id: str | None = None,
+        imageMediaMetadata: dict[str, Any] | None = None,
+        isAppAuthorized: str | None = None,
+        kind: str | None = None,
+        labelInfo: dict[str, Any] | None = None,
+        lastModifyingUser: dict[str, Any] | None = None,
+        linkShareMetadata: dict[str, Any] | None = None,
+        md5Checksum: str | None = None,
+        mimeType: str | None = None,
+        modifiedByMe: str | None = None,
+        modifiedByMeTime: str | None = None,
+        modifiedTime: str | None = None,
+        name: str | None = None,
+        originalFilename: str | None = None,
+        ownedByMe: str | None = None,
+        owners: list[dict[str, Any]] | None = None,
+        parents: list[str] | None = None,
+        permissionIds: list[str] | None = None,
+        permissions: list[dict[str, Any]] | None = None,
+        properties: dict[str, Any] | None = None,
+        quotaBytesUsed: str | None = None,
+        resourceKey: str | None = None,
+        sha1Checksum: str | None = None,
+        sha256Checksum: str | None = None,
+        shared: str | None = None,
+        sharedWithMeTime: str | None = None,
+        sharingUser: dict[str, Any] | None = None,
+        shortcutDetails: dict[str, Any] | None = None,
+        size: str | None = None,
+        spaces: list[str] | None = None,
+        starred: str | None = None,
+        teamDriveId: str | None = None,
+        thumbnailLink: str | None = None,
+        thumbnailVersion: str | None = None,
+        trashed: str | None = None,
+        trashedTime: str | None = None,
+        trashingUser: dict[str, Any] | None = None,
+        version: str | None = None,
+        videoMediaMetadata: dict[str, Any] | None = None,
+        viewedByMe: str | None = None,
+        viewedByMeTime: str | None = None,
+        viewersCanCopyContent: str | None = None,
+        webContentLink: str | None = None,
+        webViewLink: str | None = None,
+        writersCanShare: str | None = None,
+    ) -> dict[str, Any]:
         """
         Modifies a file's metadata properties, such as name, description, or trashed status, using its unique ID. It also moves files by changing parent attributes, acting as a comprehensive alternative to the more specialized `move_file` function.
 
@@ -1478,10 +2526,95 @@ class GoogleDriveApp(APIApplication):
         if fileId is None:
             raise ValueError("Missing required parameter 'fileId'.")
         request_body_data = None
-        request_body_data = {'appProperties': appProperties, 'capabilities': capabilities, 'contentHints': contentHints, 'contentRestrictions': contentRestrictions, 'copyRequiresWriterPermission': copyRequiresWriterPermission, 'createdTime': createdTime, 'description': description, 'driveId': driveId, 'explicitlyTrashed': explicitlyTrashed, 'exportLinks': exportLinks, 'fileExtension': fileExtension, 'folderColorRgb': folderColorRgb, 'fullFileExtension': fullFileExtension, 'hasAugmentedPermissions': hasAugmentedPermissions, 'hasThumbnail': hasThumbnail, 'headRevisionId': headRevisionId, 'iconLink': iconLink, 'id': id, 'imageMediaMetadata': imageMediaMetadata, 'isAppAuthorized': isAppAuthorized, 'kind': kind, 'labelInfo': labelInfo, 'lastModifyingUser': lastModifyingUser, 'linkShareMetadata': linkShareMetadata, 'md5Checksum': md5Checksum, 'mimeType': mimeType, 'modifiedByMe': modifiedByMe, 'modifiedByMeTime': modifiedByMeTime, 'modifiedTime': modifiedTime, 'name': name, 'originalFilename': originalFilename, 'ownedByMe': ownedByMe, 'owners': owners, 'parents': parents, 'permissionIds': permissionIds, 'permissions': permissions, 'properties': properties, 'quotaBytesUsed': quotaBytesUsed, 'resourceKey': resourceKey, 'sha1Checksum': sha1Checksum, 'sha256Checksum': sha256Checksum, 'shared': shared, 'sharedWithMeTime': sharedWithMeTime, 'sharingUser': sharingUser, 'shortcutDetails': shortcutDetails, 'size': size, 'spaces': spaces, 'starred': starred, 'teamDriveId': teamDriveId, 'thumbnailLink': thumbnailLink, 'thumbnailVersion': thumbnailVersion, 'trashed': trashed, 'trashedTime': trashedTime, 'trashingUser': trashingUser, 'version': version, 'videoMediaMetadata': videoMediaMetadata, 'viewedByMe': viewedByMe, 'viewedByMeTime': viewedByMeTime, 'viewersCanCopyContent': viewersCanCopyContent, 'webContentLink': webContentLink, 'webViewLink': webViewLink, 'writersCanShare': writersCanShare}
+        request_body_data = {
+            "appProperties": appProperties,
+            "capabilities": capabilities,
+            "contentHints": contentHints,
+            "contentRestrictions": contentRestrictions,
+            "copyRequiresWriterPermission": copyRequiresWriterPermission,
+            "createdTime": createdTime,
+            "description": description,
+            "driveId": driveId,
+            "explicitlyTrashed": explicitlyTrashed,
+            "exportLinks": exportLinks,
+            "fileExtension": fileExtension,
+            "folderColorRgb": folderColorRgb,
+            "fullFileExtension": fullFileExtension,
+            "hasAugmentedPermissions": hasAugmentedPermissions,
+            "hasThumbnail": hasThumbnail,
+            "headRevisionId": headRevisionId,
+            "iconLink": iconLink,
+            "id": id,
+            "imageMediaMetadata": imageMediaMetadata,
+            "isAppAuthorized": isAppAuthorized,
+            "kind": kind,
+            "labelInfo": labelInfo,
+            "lastModifyingUser": lastModifyingUser,
+            "linkShareMetadata": linkShareMetadata,
+            "md5Checksum": md5Checksum,
+            "mimeType": mimeType,
+            "modifiedByMe": modifiedByMe,
+            "modifiedByMeTime": modifiedByMeTime,
+            "modifiedTime": modifiedTime,
+            "name": name,
+            "originalFilename": originalFilename,
+            "ownedByMe": ownedByMe,
+            "owners": owners,
+            "parents": parents,
+            "permissionIds": permissionIds,
+            "permissions": permissions,
+            "properties": properties,
+            "quotaBytesUsed": quotaBytesUsed,
+            "resourceKey": resourceKey,
+            "sha1Checksum": sha1Checksum,
+            "sha256Checksum": sha256Checksum,
+            "shared": shared,
+            "sharedWithMeTime": sharedWithMeTime,
+            "sharingUser": sharingUser,
+            "shortcutDetails": shortcutDetails,
+            "size": size,
+            "spaces": spaces,
+            "starred": starred,
+            "teamDriveId": teamDriveId,
+            "thumbnailLink": thumbnailLink,
+            "thumbnailVersion": thumbnailVersion,
+            "trashed": trashed,
+            "trashedTime": trashedTime,
+            "trashingUser": trashingUser,
+            "version": version,
+            "videoMediaMetadata": videoMediaMetadata,
+            "viewedByMe": viewedByMe,
+            "viewedByMeTime": viewedByMeTime,
+            "viewersCanCopyContent": viewersCanCopyContent,
+            "webContentLink": webContentLink,
+            "webViewLink": webViewLink,
+            "writersCanShare": writersCanShare,
+        }
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/files/{fileId}'
-        query_params = {k: v for k, v in [('addParents', addParents), ('enforceSingleParent', enforceSingleParent), ('includeLabels', includeLabels), ('includePermissionsForView', includePermissionsForView), ('keepRevisionForever', keepRevisionForever), ('ocrLanguage', ocrLanguage), ('removeParents', removeParents), ('supportsAllDrives', supportsAllDrives), ('supportsTeamDrives', supportsTeamDrives), ('useContentAsIndexableText', useContentAsIndexableText), ('alt', alt), ('fields', fields), ('key', key), ('oauth_token', oauth_token), ('prettyPrint', prettyPrint), ('quotaUser', quotaUser), ('userIp', userIp)] if v is not None}
+        url = f"{self.base_url}/files/{fileId}"
+        query_params = {
+            k: v
+            for k, v in [
+                ("addParents", addParents),
+                ("enforceSingleParent", enforceSingleParent),
+                ("includeLabels", includeLabels),
+                ("includePermissionsForView", includePermissionsForView),
+                ("keepRevisionForever", keepRevisionForever),
+                ("ocrLanguage", ocrLanguage),
+                ("removeParents", removeParents),
+                ("supportsAllDrives", supportsAllDrives),
+                ("supportsTeamDrives", supportsTeamDrives),
+                ("useContentAsIndexableText", useContentAsIndexableText),
+                ("alt", alt),
+                ("fields", fields),
+                ("key", key),
+                ("oauth_token", oauth_token),
+                ("prettyPrint", prettyPrint),
+                ("quotaUser", quotaUser),
+                ("userIp", userIp),
+            ]
+            if v is not None
+        }
         response = self._patch(url, data=request_body_data, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -1491,7 +2624,87 @@ class GoogleDriveApp(APIApplication):
         except ValueError:
             return None
 
-    async def copy_file(self, fileId: str, enforceSingleParent: str | None=None, ignoreDefaultVisibility: str | None=None, includeLabels: str | None=None, includePermissionsForView: str | None=None, keepRevisionForever: str | None=None, ocrLanguage: str | None=None, supportsAllDrives: str | None=None, supportsTeamDrives: str | None=None, alt: str | None=None, fields: str | None=None, key: str | None=None, oauth_token: str | None=None, prettyPrint: str | None=None, quotaUser: str | None=None, userIp: str | None=None, appProperties: dict[str, Any] | None=None, capabilities: dict[str, Any] | None=None, contentHints: dict[str, Any] | None=None, contentRestrictions: list[dict[str, Any]] | None=None, copyRequiresWriterPermission: str | None=None, createdTime: str | None=None, description: str | None=None, driveId: str | None=None, explicitlyTrashed: str | None=None, exportLinks: dict[str, Any] | None=None, fileExtension: str | None=None, folderColorRgb: str | None=None, fullFileExtension: str | None=None, hasAugmentedPermissions: str | None=None, hasThumbnail: str | None=None, headRevisionId: str | None=None, iconLink: str | None=None, id: str | None=None, imageMediaMetadata: dict[str, Any] | None=None, isAppAuthorized: str | None=None, kind: str | None=None, labelInfo: dict[str, Any] | None=None, lastModifyingUser: dict[str, Any] | None=None, linkShareMetadata: dict[str, Any] | None=None, md5Checksum: str | None=None, mimeType: str | None=None, modifiedByMe: str | None=None, modifiedByMeTime: str | None=None, modifiedTime: str | None=None, name: str | None=None, originalFilename: str | None=None, ownedByMe: str | None=None, owners: list[dict[str, Any]] | None=None, parents: list[str] | None=None, permissionIds: list[str] | None=None, permissions: list[dict[str, Any]] | None=None, properties: dict[str, Any] | None=None, quotaBytesUsed: str | None=None, resourceKey: str | None=None, sha1Checksum: str | None=None, sha256Checksum: str | None=None, shared: str | None=None, sharedWithMeTime: str | None=None, sharingUser: dict[str, Any] | None=None, shortcutDetails: dict[str, Any] | None=None, size: str | None=None, spaces: list[str] | None=None, starred: str | None=None, teamDriveId: str | None=None, thumbnailLink: str | None=None, thumbnailVersion: str | None=None, trashed: str | None=None, trashedTime: str | None=None, trashingUser: dict[str, Any] | None=None, version: str | None=None, videoMediaMetadata: dict[str, Any] | None=None, viewedByMe: str | None=None, viewedByMeTime: str | None=None, viewersCanCopyContent: str | None=None, webContentLink: str | None=None, webViewLink: str | None=None, writersCanShare: str | None=None) -> dict[str, Any]:
+    async def copy_file(
+        self,
+        fileId: str,
+        enforceSingleParent: str | None = None,
+        ignoreDefaultVisibility: str | None = None,
+        includeLabels: str | None = None,
+        includePermissionsForView: str | None = None,
+        keepRevisionForever: str | None = None,
+        ocrLanguage: str | None = None,
+        supportsAllDrives: str | None = None,
+        supportsTeamDrives: str | None = None,
+        alt: str | None = None,
+        fields: str | None = None,
+        key: str | None = None,
+        oauth_token: str | None = None,
+        prettyPrint: str | None = None,
+        quotaUser: str | None = None,
+        userIp: str | None = None,
+        appProperties: dict[str, Any] | None = None,
+        capabilities: dict[str, Any] | None = None,
+        contentHints: dict[str, Any] | None = None,
+        contentRestrictions: list[dict[str, Any]] | None = None,
+        copyRequiresWriterPermission: str | None = None,
+        createdTime: str | None = None,
+        description: str | None = None,
+        driveId: str | None = None,
+        explicitlyTrashed: str | None = None,
+        exportLinks: dict[str, Any] | None = None,
+        fileExtension: str | None = None,
+        folderColorRgb: str | None = None,
+        fullFileExtension: str | None = None,
+        hasAugmentedPermissions: str | None = None,
+        hasThumbnail: str | None = None,
+        headRevisionId: str | None = None,
+        iconLink: str | None = None,
+        id: str | None = None,
+        imageMediaMetadata: dict[str, Any] | None = None,
+        isAppAuthorized: str | None = None,
+        kind: str | None = None,
+        labelInfo: dict[str, Any] | None = None,
+        lastModifyingUser: dict[str, Any] | None = None,
+        linkShareMetadata: dict[str, Any] | None = None,
+        md5Checksum: str | None = None,
+        mimeType: str | None = None,
+        modifiedByMe: str | None = None,
+        modifiedByMeTime: str | None = None,
+        modifiedTime: str | None = None,
+        name: str | None = None,
+        originalFilename: str | None = None,
+        ownedByMe: str | None = None,
+        owners: list[dict[str, Any]] | None = None,
+        parents: list[str] | None = None,
+        permissionIds: list[str] | None = None,
+        permissions: list[dict[str, Any]] | None = None,
+        properties: dict[str, Any] | None = None,
+        quotaBytesUsed: str | None = None,
+        resourceKey: str | None = None,
+        sha1Checksum: str | None = None,
+        sha256Checksum: str | None = None,
+        shared: str | None = None,
+        sharedWithMeTime: str | None = None,
+        sharingUser: dict[str, Any] | None = None,
+        shortcutDetails: dict[str, Any] | None = None,
+        size: str | None = None,
+        spaces: list[str] | None = None,
+        starred: str | None = None,
+        teamDriveId: str | None = None,
+        thumbnailLink: str | None = None,
+        thumbnailVersion: str | None = None,
+        trashed: str | None = None,
+        trashedTime: str | None = None,
+        trashingUser: dict[str, Any] | None = None,
+        version: str | None = None,
+        videoMediaMetadata: dict[str, Any] | None = None,
+        viewedByMe: str | None = None,
+        viewedByMeTime: str | None = None,
+        viewersCanCopyContent: str | None = None,
+        webContentLink: str | None = None,
+        webViewLink: str | None = None,
+        writersCanShare: str | None = None,
+    ) -> dict[str, Any]:
         """
         Creates a copy of a file using its ID. This function can simultaneously apply metadata updates, such as a new name or parent folder, to the duplicate upon creation and returns the new file's metadata.
 
@@ -1588,11 +2801,94 @@ class GoogleDriveApp(APIApplication):
         if fileId is None:
             raise ValueError("Missing required parameter 'fileId'.")
         request_body_data = None
-        request_body_data = {'appProperties': appProperties, 'capabilities': capabilities, 'contentHints': contentHints, 'contentRestrictions': contentRestrictions, 'copyRequiresWriterPermission': copyRequiresWriterPermission, 'createdTime': createdTime, 'description': description, 'driveId': driveId, 'explicitlyTrashed': explicitlyTrashed, 'exportLinks': exportLinks, 'fileExtension': fileExtension, 'folderColorRgb': folderColorRgb, 'fullFileExtension': fullFileExtension, 'hasAugmentedPermissions': hasAugmentedPermissions, 'hasThumbnail': hasThumbnail, 'headRevisionId': headRevisionId, 'iconLink': iconLink, 'id': id, 'imageMediaMetadata': imageMediaMetadata, 'isAppAuthorized': isAppAuthorized, 'kind': kind, 'labelInfo': labelInfo, 'lastModifyingUser': lastModifyingUser, 'linkShareMetadata': linkShareMetadata, 'md5Checksum': md5Checksum, 'mimeType': mimeType, 'modifiedByMe': modifiedByMe, 'modifiedByMeTime': modifiedByMeTime, 'modifiedTime': modifiedTime, 'name': name, 'originalFilename': originalFilename, 'ownedByMe': ownedByMe, 'owners': owners, 'parents': parents, 'permissionIds': permissionIds, 'permissions': permissions, 'properties': properties, 'quotaBytesUsed': quotaBytesUsed, 'resourceKey': resourceKey, 'sha1Checksum': sha1Checksum, 'sha256Checksum': sha256Checksum, 'shared': shared, 'sharedWithMeTime': sharedWithMeTime, 'sharingUser': sharingUser, 'shortcutDetails': shortcutDetails, 'size': size, 'spaces': spaces, 'starred': starred, 'teamDriveId': teamDriveId, 'thumbnailLink': thumbnailLink, 'thumbnailVersion': thumbnailVersion, 'trashed': trashed, 'trashedTime': trashedTime, 'trashingUser': trashingUser, 'version': version, 'videoMediaMetadata': videoMediaMetadata, 'viewedByMe': viewedByMe, 'viewedByMeTime': viewedByMeTime, 'viewersCanCopyContent': viewersCanCopyContent, 'webContentLink': webContentLink, 'webViewLink': webViewLink, 'writersCanShare': writersCanShare}
+        request_body_data = {
+            "appProperties": appProperties,
+            "capabilities": capabilities,
+            "contentHints": contentHints,
+            "contentRestrictions": contentRestrictions,
+            "copyRequiresWriterPermission": copyRequiresWriterPermission,
+            "createdTime": createdTime,
+            "description": description,
+            "driveId": driveId,
+            "explicitlyTrashed": explicitlyTrashed,
+            "exportLinks": exportLinks,
+            "fileExtension": fileExtension,
+            "folderColorRgb": folderColorRgb,
+            "fullFileExtension": fullFileExtension,
+            "hasAugmentedPermissions": hasAugmentedPermissions,
+            "hasThumbnail": hasThumbnail,
+            "headRevisionId": headRevisionId,
+            "iconLink": iconLink,
+            "id": id,
+            "imageMediaMetadata": imageMediaMetadata,
+            "isAppAuthorized": isAppAuthorized,
+            "kind": kind,
+            "labelInfo": labelInfo,
+            "lastModifyingUser": lastModifyingUser,
+            "linkShareMetadata": linkShareMetadata,
+            "md5Checksum": md5Checksum,
+            "mimeType": mimeType,
+            "modifiedByMe": modifiedByMe,
+            "modifiedByMeTime": modifiedByMeTime,
+            "modifiedTime": modifiedTime,
+            "name": name,
+            "originalFilename": originalFilename,
+            "ownedByMe": ownedByMe,
+            "owners": owners,
+            "parents": parents,
+            "permissionIds": permissionIds,
+            "permissions": permissions,
+            "properties": properties,
+            "quotaBytesUsed": quotaBytesUsed,
+            "resourceKey": resourceKey,
+            "sha1Checksum": sha1Checksum,
+            "sha256Checksum": sha256Checksum,
+            "shared": shared,
+            "sharedWithMeTime": sharedWithMeTime,
+            "sharingUser": sharingUser,
+            "shortcutDetails": shortcutDetails,
+            "size": size,
+            "spaces": spaces,
+            "starred": starred,
+            "teamDriveId": teamDriveId,
+            "thumbnailLink": thumbnailLink,
+            "thumbnailVersion": thumbnailVersion,
+            "trashed": trashed,
+            "trashedTime": trashedTime,
+            "trashingUser": trashingUser,
+            "version": version,
+            "videoMediaMetadata": videoMediaMetadata,
+            "viewedByMe": viewedByMe,
+            "viewedByMeTime": viewedByMeTime,
+            "viewersCanCopyContent": viewersCanCopyContent,
+            "webContentLink": webContentLink,
+            "webViewLink": webViewLink,
+            "writersCanShare": writersCanShare,
+        }
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/files/{fileId}/copy'
-        query_params = {k: v for k, v in [('enforceSingleParent', enforceSingleParent), ('ignoreDefaultVisibility', ignoreDefaultVisibility), ('includeLabels', includeLabels), ('includePermissionsForView', includePermissionsForView), ('keepRevisionForever', keepRevisionForever), ('ocrLanguage', ocrLanguage), ('supportsAllDrives', supportsAllDrives), ('supportsTeamDrives', supportsTeamDrives), ('alt', alt), ('fields', fields), ('key', key), ('oauth_token', oauth_token), ('prettyPrint', prettyPrint), ('quotaUser', quotaUser), ('userIp', userIp)] if v is not None}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        url = f"{self.base_url}/files/{fileId}/copy"
+        query_params = {
+            k: v
+            for k, v in [
+                ("enforceSingleParent", enforceSingleParent),
+                ("ignoreDefaultVisibility", ignoreDefaultVisibility),
+                ("includeLabels", includeLabels),
+                ("includePermissionsForView", includePermissionsForView),
+                ("keepRevisionForever", keepRevisionForever),
+                ("ocrLanguage", ocrLanguage),
+                ("supportsAllDrives", supportsAllDrives),
+                ("supportsTeamDrives", supportsTeamDrives),
+                ("alt", alt),
+                ("fields", fields),
+                ("key", key),
+                ("oauth_token", oauth_token),
+                ("prettyPrint", prettyPrint),
+                ("quotaUser", quotaUser),
+                ("userIp", userIp),
+            ]
+            if v is not None
+        }
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1601,7 +2897,18 @@ class GoogleDriveApp(APIApplication):
         except ValueError:
             return None
 
-    async def export_file(self, fileId: str, mimeType: str | None=None, alt: str | None=None, fields: str | None=None, key: str | None=None, oauth_token: str | None=None, prettyPrint: str | None=None, quotaUser: str | None=None, userIp: str | None=None) -> Any:
+    async def export_file(
+        self,
+        fileId: str,
+        mimeType: str | None = None,
+        alt: str | None = None,
+        fields: str | None = None,
+        key: str | None = None,
+        oauth_token: str | None = None,
+        prettyPrint: str | None = None,
+        quotaUser: str | None = None,
+        userIp: str | None = None,
+    ) -> Any:
         """
         Exports a Google Workspace document (e.g., Google Doc) by its ID, converting it to a specified format like PDF using the `mimeType` argument. This function returns the raw, converted file content for download, differentiating it from methods that retrieve metadata.
 
@@ -1628,8 +2935,21 @@ class GoogleDriveApp(APIApplication):
         """
         if fileId is None:
             raise ValueError("Missing required parameter 'fileId'.")
-        url = f'{self.base_url}/files/{fileId}/export'
-        query_params = {k: v for k, v in [('mimeType', mimeType), ('alt', alt), ('fields', fields), ('key', key), ('oauth_token', oauth_token), ('prettyPrint', prettyPrint), ('quotaUser', quotaUser), ('userIp', userIp)] if v is not None}
+        url = f"{self.base_url}/files/{fileId}/export"
+        query_params = {
+            k: v
+            for k, v in [
+                ("mimeType", mimeType),
+                ("alt", alt),
+                ("fields", fields),
+                ("key", key),
+                ("oauth_token", oauth_token),
+                ("prettyPrint", prettyPrint),
+                ("quotaUser", quotaUser),
+                ("userIp", userIp),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -1639,7 +2959,19 @@ class GoogleDriveApp(APIApplication):
         except ValueError:
             return None
 
-    async def list_file_labels(self, fileId: str, maxResults: str | None=None, pageToken: str | None=None, alt: str | None=None, fields: str | None=None, key: str | None=None, oauth_token: str | None=None, prettyPrint: str | None=None, quotaUser: str | None=None, userIp: str | None=None) -> dict[str, Any]:
+    async def list_file_labels(
+        self,
+        fileId: str,
+        maxResults: str | None = None,
+        pageToken: str | None = None,
+        alt: str | None = None,
+        fields: str | None = None,
+        key: str | None = None,
+        oauth_token: str | None = None,
+        prettyPrint: str | None = None,
+        quotaUser: str | None = None,
+        userIp: str | None = None,
+    ) -> dict[str, Any]:
         """
         Retrieves a paginated list of all labels applied to a specific file in Google Drive, identified by its unique ID. It allows controlling the number of results per page and navigating through pages of labels, differing from `modify_file_labels` which alters them.
 
@@ -1667,8 +2999,22 @@ class GoogleDriveApp(APIApplication):
         """
         if fileId is None:
             raise ValueError("Missing required parameter 'fileId'.")
-        url = f'{self.base_url}/files/{fileId}/listLabels'
-        query_params = {k: v for k, v in [('maxResults', maxResults), ('pageToken', pageToken), ('alt', alt), ('fields', fields), ('key', key), ('oauth_token', oauth_token), ('prettyPrint', prettyPrint), ('quotaUser', quotaUser), ('userIp', userIp)] if v is not None}
+        url = f"{self.base_url}/files/{fileId}/listLabels"
+        query_params = {
+            k: v
+            for k, v in [
+                ("maxResults", maxResults),
+                ("pageToken", pageToken),
+                ("alt", alt),
+                ("fields", fields),
+                ("key", key),
+                ("oauth_token", oauth_token),
+                ("prettyPrint", prettyPrint),
+                ("quotaUser", quotaUser),
+                ("userIp", userIp),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -1678,7 +3024,19 @@ class GoogleDriveApp(APIApplication):
         except ValueError:
             return None
 
-    async def modify_file_labels(self, fileId: str, alt: str | None=None, fields: str | None=None, key: str | None=None, oauth_token: str | None=None, prettyPrint: str | None=None, quotaUser: str | None=None, userIp: str | None=None, kind: str | None=None, labelModifications: list[dict[str, Any]] | None=None) -> dict[str, Any]:
+    async def modify_file_labels(
+        self,
+        fileId: str,
+        alt: str | None = None,
+        fields: str | None = None,
+        key: str | None = None,
+        oauth_token: str | None = None,
+        prettyPrint: str | None = None,
+        quotaUser: str | None = None,
+        userIp: str | None = None,
+        kind: str | None = None,
+        labelModifications: list[dict[str, Any]] | None = None,
+    ) -> dict[str, Any]:
         """
         Atomically modifies the set of labels on a specified file in Google Drive. It can add, update, or remove labels based on the provided list of modifications, returning the updated label metadata for the file.
 
@@ -1707,11 +3065,23 @@ class GoogleDriveApp(APIApplication):
         if fileId is None:
             raise ValueError("Missing required parameter 'fileId'.")
         request_body_data = None
-        request_body_data = {'kind': kind, 'labelModifications': labelModifications}
+        request_body_data = {"kind": kind, "labelModifications": labelModifications}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/files/{fileId}/modifyLabels'
-        query_params = {k: v for k, v in [('alt', alt), ('fields', fields), ('key', key), ('oauth_token', oauth_token), ('prettyPrint', prettyPrint), ('quotaUser', quotaUser), ('userIp', userIp)] if v is not None}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        url = f"{self.base_url}/files/{fileId}/modifyLabels"
+        query_params = {
+            k: v
+            for k, v in [
+                ("alt", alt),
+                ("fields", fields),
+                ("key", key),
+                ("oauth_token", oauth_token),
+                ("prettyPrint", prettyPrint),
+                ("quotaUser", quotaUser),
+                ("userIp", userIp),
+            ]
+            if v is not None
+        }
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1720,7 +3090,32 @@ class GoogleDriveApp(APIApplication):
         except ValueError:
             return None
 
-    async def watch_file_for_changes(self, fileId: str, acknowledgeAbuse: str | None=None, includeLabels: str | None=None, includePermissionsForView: str | None=None, supportsAllDrives: str | None=None, supportsTeamDrives: str | None=None, alt: str | None=None, fields: str | None=None, key: str | None=None, oauth_token: str | None=None, prettyPrint: str | None=None, quotaUser: str | None=None, userIp: str | None=None, address: str | None=None, expiration: str | None=None, id: str | None=None, kind: str | None=None, params: dict[str, Any] | None=None, payload: str | None=None, resourceId: str | None=None, resourceUri: str | None=None, token: str | None=None, type: str | None=None) -> dict[str, Any]:
+    async def watch_file_for_changes(
+        self,
+        fileId: str,
+        acknowledgeAbuse: str | None = None,
+        includeLabels: str | None = None,
+        includePermissionsForView: str | None = None,
+        supportsAllDrives: str | None = None,
+        supportsTeamDrives: str | None = None,
+        alt: str | None = None,
+        fields: str | None = None,
+        key: str | None = None,
+        oauth_token: str | None = None,
+        prettyPrint: str | None = None,
+        quotaUser: str | None = None,
+        userIp: str | None = None,
+        address: str | None = None,
+        expiration: str | None = None,
+        id: str | None = None,
+        kind: str | None = None,
+        params: dict[str, Any] | None = None,
+        payload: str | None = None,
+        resourceId: str | None = None,
+        resourceUri: str | None = None,
+        token: str | None = None,
+        type: str | None = None,
+    ) -> dict[str, Any]:
         """
         Establishes a push notification channel for a specific file, enabling real-time updates via webhook. Unlike `watch_drive_changes`, which monitors an entire drive, this function provides targeted notifications for content or metadata updates to a single file identified by its ID.
 
@@ -1762,11 +3157,39 @@ class GoogleDriveApp(APIApplication):
         if fileId is None:
             raise ValueError("Missing required parameter 'fileId'.")
         request_body_data = None
-        request_body_data = {'address': address, 'expiration': expiration, 'id': id, 'kind': kind, 'params': params, 'payload': payload, 'resourceId': resourceId, 'resourceUri': resourceUri, 'token': token, 'type': type}
+        request_body_data = {
+            "address": address,
+            "expiration": expiration,
+            "id": id,
+            "kind": kind,
+            "params": params,
+            "payload": payload,
+            "resourceId": resourceId,
+            "resourceUri": resourceUri,
+            "token": token,
+            "type": type,
+        }
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/files/{fileId}/watch'
-        query_params = {k: v for k, v in [('acknowledgeAbuse', acknowledgeAbuse), ('includeLabels', includeLabels), ('includePermissionsForView', includePermissionsForView), ('supportsAllDrives', supportsAllDrives), ('supportsTeamDrives', supportsTeamDrives), ('alt', alt), ('fields', fields), ('key', key), ('oauth_token', oauth_token), ('prettyPrint', prettyPrint), ('quotaUser', quotaUser), ('userIp', userIp)] if v is not None}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        url = f"{self.base_url}/files/{fileId}/watch"
+        query_params = {
+            k: v
+            for k, v in [
+                ("acknowledgeAbuse", acknowledgeAbuse),
+                ("includeLabels", includeLabels),
+                ("includePermissionsForView", includePermissionsForView),
+                ("supportsAllDrives", supportsAllDrives),
+                ("supportsTeamDrives", supportsTeamDrives),
+                ("alt", alt),
+                ("fields", fields),
+                ("key", key),
+                ("oauth_token", oauth_token),
+                ("prettyPrint", prettyPrint),
+                ("quotaUser", quotaUser),
+                ("userIp", userIp),
+            ]
+            if v is not None
+        }
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1775,7 +3198,23 @@ class GoogleDriveApp(APIApplication):
         except ValueError:
             return None
 
-    async def list_file_permissions(self, fileId: str, includePermissionsForView: str | None=None, pageSize: str | None=None, pageToken: str | None=None, supportsAllDrives: str | None=None, supportsTeamDrives: str | None=None, useDomainAdminAccess: str | None=None, alt: str | None=None, fields: str | None=None, key: str | None=None, oauth_token: str | None=None, prettyPrint: str | None=None, quotaUser: str | None=None, userIp: str | None=None) -> dict[str, Any]:
+    async def list_file_permissions(
+        self,
+        fileId: str,
+        includePermissionsForView: str | None = None,
+        pageSize: str | None = None,
+        pageToken: str | None = None,
+        supportsAllDrives: str | None = None,
+        supportsTeamDrives: str | None = None,
+        useDomainAdminAccess: str | None = None,
+        alt: str | None = None,
+        fields: str | None = None,
+        key: str | None = None,
+        oauth_token: str | None = None,
+        prettyPrint: str | None = None,
+        quotaUser: str | None = None,
+        userIp: str | None = None,
+    ) -> dict[str, Any]:
         """
         Retrieves the list of permissions for a specified file or shared drive. This function supports pagination and various query parameters to customize results for different access levels, such as domain administration, unlike `get_permission_by_id` which fetches a single permission.
 
@@ -1807,8 +3246,26 @@ class GoogleDriveApp(APIApplication):
         """
         if fileId is None:
             raise ValueError("Missing required parameter 'fileId'.")
-        url = f'{self.base_url}/files/{fileId}/permissions'
-        query_params = {k: v for k, v in [('includePermissionsForView', includePermissionsForView), ('pageSize', pageSize), ('pageToken', pageToken), ('supportsAllDrives', supportsAllDrives), ('supportsTeamDrives', supportsTeamDrives), ('useDomainAdminAccess', useDomainAdminAccess), ('alt', alt), ('fields', fields), ('key', key), ('oauth_token', oauth_token), ('prettyPrint', prettyPrint), ('quotaUser', quotaUser), ('userIp', userIp)] if v is not None}
+        url = f"{self.base_url}/files/{fileId}/permissions"
+        query_params = {
+            k: v
+            for k, v in [
+                ("includePermissionsForView", includePermissionsForView),
+                ("pageSize", pageSize),
+                ("pageToken", pageToken),
+                ("supportsAllDrives", supportsAllDrives),
+                ("supportsTeamDrives", supportsTeamDrives),
+                ("useDomainAdminAccess", useDomainAdminAccess),
+                ("alt", alt),
+                ("fields", fields),
+                ("key", key),
+                ("oauth_token", oauth_token),
+                ("prettyPrint", prettyPrint),
+                ("quotaUser", quotaUser),
+                ("userIp", userIp),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -1818,7 +3275,40 @@ class GoogleDriveApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_file_permission(self, fileId: str, emailMessage: str | None=None, enforceSingleParent: str | None=None, moveToNewOwnersRoot: str | None=None, sendNotificationEmail: str | None=None, supportsAllDrives: str | None=None, supportsTeamDrives: str | None=None, transferOwnership: str | None=None, useDomainAdminAccess: str | None=None, alt: str | None=None, fields: str | None=None, key: str | None=None, oauth_token: str | None=None, prettyPrint: str | None=None, quotaUser: str | None=None, userIp: str | None=None, allowFileDiscovery: str | None=None, deleted: str | None=None, displayName: str | None=None, domain: str | None=None, emailAddress: str | None=None, expirationTime: str | None=None, id: str | None=None, kind: str | None=None, pendingOwner: str | None=None, permissionDetails: list[dict[str, Any]] | None=None, photoLink: str | None=None, role: str | None=None, teamDrivePermissionDetails: list[dict[str, Any]] | None=None, type: str | None=None, view: str | None=None) -> dict[str, Any]:
+    async def create_file_permission(
+        self,
+        fileId: str,
+        emailMessage: str | None = None,
+        enforceSingleParent: str | None = None,
+        moveToNewOwnersRoot: str | None = None,
+        sendNotificationEmail: str | None = None,
+        supportsAllDrives: str | None = None,
+        supportsTeamDrives: str | None = None,
+        transferOwnership: str | None = None,
+        useDomainAdminAccess: str | None = None,
+        alt: str | None = None,
+        fields: str | None = None,
+        key: str | None = None,
+        oauth_token: str | None = None,
+        prettyPrint: str | None = None,
+        quotaUser: str | None = None,
+        userIp: str | None = None,
+        allowFileDiscovery: str | None = None,
+        deleted: str | None = None,
+        displayName: str | None = None,
+        domain: str | None = None,
+        emailAddress: str | None = None,
+        expirationTime: str | None = None,
+        id: str | None = None,
+        kind: str | None = None,
+        pendingOwner: str | None = None,
+        permissionDetails: list[dict[str, Any]] | None = None,
+        photoLink: str | None = None,
+        role: str | None = None,
+        teamDrivePermissionDetails: list[dict[str, Any]] | None = None,
+        type: str | None = None,
+        view: str | None = None,
+    ) -> dict[str, Any]:
         """
         Creates a permission for a file or shared drive, assigning roles like 'reader' to a user, group, or domain. This comprehensive method supports advanced options like notification emails and ownership transfer, distinguishing it from the simplified `create_permission` function which offers fewer parameters.
 
@@ -1868,11 +3358,47 @@ class GoogleDriveApp(APIApplication):
         if fileId is None:
             raise ValueError("Missing required parameter 'fileId'.")
         request_body_data = None
-        request_body_data = {'allowFileDiscovery': allowFileDiscovery, 'deleted': deleted, 'displayName': displayName, 'domain': domain, 'emailAddress': emailAddress, 'expirationTime': expirationTime, 'id': id, 'kind': kind, 'pendingOwner': pendingOwner, 'permissionDetails': permissionDetails, 'photoLink': photoLink, 'role': role, 'teamDrivePermissionDetails': teamDrivePermissionDetails, 'type': type, 'view': view}
+        request_body_data = {
+            "allowFileDiscovery": allowFileDiscovery,
+            "deleted": deleted,
+            "displayName": displayName,
+            "domain": domain,
+            "emailAddress": emailAddress,
+            "expirationTime": expirationTime,
+            "id": id,
+            "kind": kind,
+            "pendingOwner": pendingOwner,
+            "permissionDetails": permissionDetails,
+            "photoLink": photoLink,
+            "role": role,
+            "teamDrivePermissionDetails": teamDrivePermissionDetails,
+            "type": type,
+            "view": view,
+        }
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/files/{fileId}/permissions'
-        query_params = {k: v for k, v in [('emailMessage', emailMessage), ('enforceSingleParent', enforceSingleParent), ('moveToNewOwnersRoot', moveToNewOwnersRoot), ('sendNotificationEmail', sendNotificationEmail), ('supportsAllDrives', supportsAllDrives), ('supportsTeamDrives', supportsTeamDrives), ('transferOwnership', transferOwnership), ('useDomainAdminAccess', useDomainAdminAccess), ('alt', alt), ('fields', fields), ('key', key), ('oauth_token', oauth_token), ('prettyPrint', prettyPrint), ('quotaUser', quotaUser), ('userIp', userIp)] if v is not None}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        url = f"{self.base_url}/files/{fileId}/permissions"
+        query_params = {
+            k: v
+            for k, v in [
+                ("emailMessage", emailMessage),
+                ("enforceSingleParent", enforceSingleParent),
+                ("moveToNewOwnersRoot", moveToNewOwnersRoot),
+                ("sendNotificationEmail", sendNotificationEmail),
+                ("supportsAllDrives", supportsAllDrives),
+                ("supportsTeamDrives", supportsTeamDrives),
+                ("transferOwnership", transferOwnership),
+                ("useDomainAdminAccess", useDomainAdminAccess),
+                ("alt", alt),
+                ("fields", fields),
+                ("key", key),
+                ("oauth_token", oauth_token),
+                ("prettyPrint", prettyPrint),
+                ("quotaUser", quotaUser),
+                ("userIp", userIp),
+            ]
+            if v is not None
+        }
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1881,7 +3407,21 @@ class GoogleDriveApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_permission_by_id(self, fileId: str, permissionId: str, supportsAllDrives: str | None=None, supportsTeamDrives: str | None=None, useDomainAdminAccess: str | None=None, alt: str | None=None, fields: str | None=None, key: str | None=None, oauth_token: str | None=None, prettyPrint: str | None=None, quotaUser: str | None=None, userIp: str | None=None) -> dict[str, Any]:
+    async def get_permission_by_id(
+        self,
+        fileId: str,
+        permissionId: str,
+        supportsAllDrives: str | None = None,
+        supportsTeamDrives: str | None = None,
+        useDomainAdminAccess: str | None = None,
+        alt: str | None = None,
+        fields: str | None = None,
+        key: str | None = None,
+        oauth_token: str | None = None,
+        prettyPrint: str | None = None,
+        quotaUser: str | None = None,
+        userIp: str | None = None,
+    ) -> dict[str, Any]:
         """
         Retrieves metadata for a specific permission on a file or shared drive, identified by its unique ID. This provides targeted access information, unlike `list_file_permissions` which fetches all permissions for a file.
 
@@ -1913,8 +3453,23 @@ class GoogleDriveApp(APIApplication):
             raise ValueError("Missing required parameter 'fileId'.")
         if permissionId is None:
             raise ValueError("Missing required parameter 'permissionId'.")
-        url = f'{self.base_url}/files/{fileId}/permissions/{permissionId}'
-        query_params = {k: v for k, v in [('supportsAllDrives', supportsAllDrives), ('supportsTeamDrives', supportsTeamDrives), ('useDomainAdminAccess', useDomainAdminAccess), ('alt', alt), ('fields', fields), ('key', key), ('oauth_token', oauth_token), ('prettyPrint', prettyPrint), ('quotaUser', quotaUser), ('userIp', userIp)] if v is not None}
+        url = f"{self.base_url}/files/{fileId}/permissions/{permissionId}"
+        query_params = {
+            k: v
+            for k, v in [
+                ("supportsAllDrives", supportsAllDrives),
+                ("supportsTeamDrives", supportsTeamDrives),
+                ("useDomainAdminAccess", useDomainAdminAccess),
+                ("alt", alt),
+                ("fields", fields),
+                ("key", key),
+                ("oauth_token", oauth_token),
+                ("prettyPrint", prettyPrint),
+                ("quotaUser", quotaUser),
+                ("userIp", userIp),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -1924,7 +3479,21 @@ class GoogleDriveApp(APIApplication):
         except ValueError:
             return None
 
-    async def delete_permission(self, fileId: str, permissionId: str, supportsAllDrives: str | None=None, supportsTeamDrives: str | None=None, useDomainAdminAccess: str | None=None, alt: str | None=None, fields: str | None=None, key: str | None=None, oauth_token: str | None=None, prettyPrint: str | None=None, quotaUser: str | None=None, userIp: str | None=None) -> Any:
+    async def delete_permission(
+        self,
+        fileId: str,
+        permissionId: str,
+        supportsAllDrives: str | None = None,
+        supportsTeamDrives: str | None = None,
+        useDomainAdminAccess: str | None = None,
+        alt: str | None = None,
+        fields: str | None = None,
+        key: str | None = None,
+        oauth_token: str | None = None,
+        prettyPrint: str | None = None,
+        quotaUser: str | None = None,
+        userIp: str | None = None,
+    ) -> Any:
         """
         Deletes a specific permission from a Google Drive file or shared drive, identified by their respective IDs. This action permanently revokes the access associated with that permission, with optional parameters for shared drives and domain administrator access.
 
@@ -1956,8 +3525,23 @@ class GoogleDriveApp(APIApplication):
             raise ValueError("Missing required parameter 'fileId'.")
         if permissionId is None:
             raise ValueError("Missing required parameter 'permissionId'.")
-        url = f'{self.base_url}/files/{fileId}/permissions/{permissionId}'
-        query_params = {k: v for k, v in [('supportsAllDrives', supportsAllDrives), ('supportsTeamDrives', supportsTeamDrives), ('useDomainAdminAccess', useDomainAdminAccess), ('alt', alt), ('fields', fields), ('key', key), ('oauth_token', oauth_token), ('prettyPrint', prettyPrint), ('quotaUser', quotaUser), ('userIp', userIp)] if v is not None}
+        url = f"{self.base_url}/files/{fileId}/permissions/{permissionId}"
+        query_params = {
+            k: v
+            for k, v in [
+                ("supportsAllDrives", supportsAllDrives),
+                ("supportsTeamDrives", supportsTeamDrives),
+                ("useDomainAdminAccess", useDomainAdminAccess),
+                ("alt", alt),
+                ("fields", fields),
+                ("key", key),
+                ("oauth_token", oauth_token),
+                ("prettyPrint", prettyPrint),
+                ("quotaUser", quotaUser),
+                ("userIp", userIp),
+            ]
+            if v is not None
+        }
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -1967,7 +3551,38 @@ class GoogleDriveApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_permission(self, fileId: str, permissionId: str, removeExpiration: str | None=None, supportsAllDrives: str | None=None, supportsTeamDrives: str | None=None, transferOwnership: str | None=None, useDomainAdminAccess: str | None=None, alt: str | None=None, fields: str | None=None, key: str | None=None, oauth_token: str | None=None, prettyPrint: str | None=None, quotaUser: str | None=None, userIp: str | None=None, allowFileDiscovery: str | None=None, deleted: str | None=None, displayName: str | None=None, domain: str | None=None, emailAddress: str | None=None, expirationTime: str | None=None, id: str | None=None, kind: str | None=None, pendingOwner: str | None=None, permissionDetails: list[dict[str, Any]] | None=None, photoLink: str | None=None, role: str | None=None, teamDrivePermissionDetails: list[dict[str, Any]] | None=None, type: str | None=None, view: str | None=None) -> dict[str, Any]:
+    async def update_permission(
+        self,
+        fileId: str,
+        permissionId: str,
+        removeExpiration: str | None = None,
+        supportsAllDrives: str | None = None,
+        supportsTeamDrives: str | None = None,
+        transferOwnership: str | None = None,
+        useDomainAdminAccess: str | None = None,
+        alt: str | None = None,
+        fields: str | None = None,
+        key: str | None = None,
+        oauth_token: str | None = None,
+        prettyPrint: str | None = None,
+        quotaUser: str | None = None,
+        userIp: str | None = None,
+        allowFileDiscovery: str | None = None,
+        deleted: str | None = None,
+        displayName: str | None = None,
+        domain: str | None = None,
+        emailAddress: str | None = None,
+        expirationTime: str | None = None,
+        id: str | None = None,
+        kind: str | None = None,
+        pendingOwner: str | None = None,
+        permissionDetails: list[dict[str, Any]] | None = None,
+        photoLink: str | None = None,
+        role: str | None = None,
+        teamDrivePermissionDetails: list[dict[str, Any]] | None = None,
+        type: str | None = None,
+        view: str | None = None,
+    ) -> dict[str, Any]:
         """
         Updates an existing permission for a file or shared drive using its permission ID. This function can modify a user's role (e.g., from reader to writer), transfer ownership, or change expiration settings, returning the updated permission object upon success.
 
@@ -2017,10 +3632,43 @@ class GoogleDriveApp(APIApplication):
         if permissionId is None:
             raise ValueError("Missing required parameter 'permissionId'.")
         request_body_data = None
-        request_body_data = {'allowFileDiscovery': allowFileDiscovery, 'deleted': deleted, 'displayName': displayName, 'domain': domain, 'emailAddress': emailAddress, 'expirationTime': expirationTime, 'id': id, 'kind': kind, 'pendingOwner': pendingOwner, 'permissionDetails': permissionDetails, 'photoLink': photoLink, 'role': role, 'teamDrivePermissionDetails': teamDrivePermissionDetails, 'type': type, 'view': view}
+        request_body_data = {
+            "allowFileDiscovery": allowFileDiscovery,
+            "deleted": deleted,
+            "displayName": displayName,
+            "domain": domain,
+            "emailAddress": emailAddress,
+            "expirationTime": expirationTime,
+            "id": id,
+            "kind": kind,
+            "pendingOwner": pendingOwner,
+            "permissionDetails": permissionDetails,
+            "photoLink": photoLink,
+            "role": role,
+            "teamDrivePermissionDetails": teamDrivePermissionDetails,
+            "type": type,
+            "view": view,
+        }
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/files/{fileId}/permissions/{permissionId}'
-        query_params = {k: v for k, v in [('removeExpiration', removeExpiration), ('supportsAllDrives', supportsAllDrives), ('supportsTeamDrives', supportsTeamDrives), ('transferOwnership', transferOwnership), ('useDomainAdminAccess', useDomainAdminAccess), ('alt', alt), ('fields', fields), ('key', key), ('oauth_token', oauth_token), ('prettyPrint', prettyPrint), ('quotaUser', quotaUser), ('userIp', userIp)] if v is not None}
+        url = f"{self.base_url}/files/{fileId}/permissions/{permissionId}"
+        query_params = {
+            k: v
+            for k, v in [
+                ("removeExpiration", removeExpiration),
+                ("supportsAllDrives", supportsAllDrives),
+                ("supportsTeamDrives", supportsTeamDrives),
+                ("transferOwnership", transferOwnership),
+                ("useDomainAdminAccess", useDomainAdminAccess),
+                ("alt", alt),
+                ("fields", fields),
+                ("key", key),
+                ("oauth_token", oauth_token),
+                ("prettyPrint", prettyPrint),
+                ("quotaUser", quotaUser),
+                ("userIp", userIp),
+            ]
+            if v is not None
+        }
         response = self._patch(url, data=request_body_data, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -2030,7 +3678,21 @@ class GoogleDriveApp(APIApplication):
         except ValueError:
             return None
 
-    async def list_comment_replies(self, fileId: str, commentId: str, includeDeleted: str | None=None, pageSize: str | None=None, pageToken: str | None=None, alt: str | None=None, fields: str | None=None, key: str | None=None, oauth_token: str | None=None, prettyPrint: str | None=None, quotaUser: str | None=None, userIp: str | None=None) -> dict[str, Any]:
+    async def list_comment_replies(
+        self,
+        fileId: str,
+        commentId: str,
+        includeDeleted: str | None = None,
+        pageSize: str | None = None,
+        pageToken: str | None = None,
+        alt: str | None = None,
+        fields: str | None = None,
+        key: str | None = None,
+        oauth_token: str | None = None,
+        prettyPrint: str | None = None,
+        quotaUser: str | None = None,
+        userIp: str | None = None,
+    ) -> dict[str, Any]:
         """
         Fetches a paginated list of replies for a specific comment, requiring both file and comment IDs. It can optionally include deleted replies. Unlike `list_file_comments`, which retrieves all top-level comments, this function targets replies within a single comment's thread.
 
@@ -2062,8 +3724,23 @@ class GoogleDriveApp(APIApplication):
             raise ValueError("Missing required parameter 'fileId'.")
         if commentId is None:
             raise ValueError("Missing required parameter 'commentId'.")
-        url = f'{self.base_url}/files/{fileId}/comments/{commentId}/replies'
-        query_params = {k: v for k, v in [('includeDeleted', includeDeleted), ('pageSize', pageSize), ('pageToken', pageToken), ('alt', alt), ('fields', fields), ('key', key), ('oauth_token', oauth_token), ('prettyPrint', prettyPrint), ('quotaUser', quotaUser), ('userIp', userIp)] if v is not None}
+        url = f"{self.base_url}/files/{fileId}/comments/{commentId}/replies"
+        query_params = {
+            k: v
+            for k, v in [
+                ("includeDeleted", includeDeleted),
+                ("pageSize", pageSize),
+                ("pageToken", pageToken),
+                ("alt", alt),
+                ("fields", fields),
+                ("key", key),
+                ("oauth_token", oauth_token),
+                ("prettyPrint", prettyPrint),
+                ("quotaUser", quotaUser),
+                ("userIp", userIp),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -2073,7 +3750,27 @@ class GoogleDriveApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_comment_reply(self, fileId: str, commentId: str, alt: str | None=None, fields: str | None=None, key: str | None=None, oauth_token: str | None=None, prettyPrint: str | None=None, quotaUser: str | None=None, userIp: str | None=None, action: str | None=None, author: dict[str, Any] | None=None, content: str | None=None, createdTime: str | None=None, deleted: str | None=None, htmlContent: str | None=None, id: str | None=None, kind: str | None=None, modifiedTime: str | None=None) -> dict[str, Any]:
+    async def create_comment_reply(
+        self,
+        fileId: str,
+        commentId: str,
+        alt: str | None = None,
+        fields: str | None = None,
+        key: str | None = None,
+        oauth_token: str | None = None,
+        prettyPrint: str | None = None,
+        quotaUser: str | None = None,
+        userIp: str | None = None,
+        action: str | None = None,
+        author: dict[str, Any] | None = None,
+        content: str | None = None,
+        createdTime: str | None = None,
+        deleted: str | None = None,
+        htmlContent: str | None = None,
+        id: str | None = None,
+        kind: str | None = None,
+        modifiedTime: str | None = None,
+    ) -> dict[str, Any]:
         """
         Creates a reply to a specific comment on a Google Drive file. It requires the file ID and the parent comment ID, posting the new reply's content to the correct comment thread.
 
@@ -2112,11 +3809,33 @@ class GoogleDriveApp(APIApplication):
         if commentId is None:
             raise ValueError("Missing required parameter 'commentId'.")
         request_body_data = None
-        request_body_data = {'action': action, 'author': author, 'content': content, 'createdTime': createdTime, 'deleted': deleted, 'htmlContent': htmlContent, 'id': id, 'kind': kind, 'modifiedTime': modifiedTime}
+        request_body_data = {
+            "action": action,
+            "author": author,
+            "content": content,
+            "createdTime": createdTime,
+            "deleted": deleted,
+            "htmlContent": htmlContent,
+            "id": id,
+            "kind": kind,
+            "modifiedTime": modifiedTime,
+        }
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/files/{fileId}/comments/{commentId}/replies'
-        query_params = {k: v for k, v in [('alt', alt), ('fields', fields), ('key', key), ('oauth_token', oauth_token), ('prettyPrint', prettyPrint), ('quotaUser', quotaUser), ('userIp', userIp)] if v is not None}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        url = f"{self.base_url}/files/{fileId}/comments/{commentId}/replies"
+        query_params = {
+            k: v
+            for k, v in [
+                ("alt", alt),
+                ("fields", fields),
+                ("key", key),
+                ("oauth_token", oauth_token),
+                ("prettyPrint", prettyPrint),
+                ("quotaUser", quotaUser),
+                ("userIp", userIp),
+            ]
+            if v is not None
+        }
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2125,7 +3844,20 @@ class GoogleDriveApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_reply_by_id(self, fileId: str, commentId: str, replyId: str, includeDeleted: str | None=None, alt: str | None=None, fields: str | None=None, key: str | None=None, oauth_token: str | None=None, prettyPrint: str | None=None, quotaUser: str | None=None, userIp: str | None=None) -> dict[str, Any]:
+    async def get_reply_by_id(
+        self,
+        fileId: str,
+        commentId: str,
+        replyId: str,
+        includeDeleted: str | None = None,
+        alt: str | None = None,
+        fields: str | None = None,
+        key: str | None = None,
+        oauth_token: str | None = None,
+        prettyPrint: str | None = None,
+        quotaUser: str | None = None,
+        userIp: str | None = None,
+    ) -> dict[str, Any]:
         """
         Retrieves a specific reply's metadata from a comment thread using file, comment, and reply IDs. Unlike `list_comment_replies`, which fetches all replies for a comment, this function targets a single one and can optionally include deleted replies in the result.
 
@@ -2158,8 +3890,21 @@ class GoogleDriveApp(APIApplication):
             raise ValueError("Missing required parameter 'commentId'.")
         if replyId is None:
             raise ValueError("Missing required parameter 'replyId'.")
-        url = f'{self.base_url}/files/{fileId}/comments/{commentId}/replies/{replyId}'
-        query_params = {k: v for k, v in [('includeDeleted', includeDeleted), ('alt', alt), ('fields', fields), ('key', key), ('oauth_token', oauth_token), ('prettyPrint', prettyPrint), ('quotaUser', quotaUser), ('userIp', userIp)] if v is not None}
+        url = f"{self.base_url}/files/{fileId}/comments/{commentId}/replies/{replyId}"
+        query_params = {
+            k: v
+            for k, v in [
+                ("includeDeleted", includeDeleted),
+                ("alt", alt),
+                ("fields", fields),
+                ("key", key),
+                ("oauth_token", oauth_token),
+                ("prettyPrint", prettyPrint),
+                ("quotaUser", quotaUser),
+                ("userIp", userIp),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -2169,7 +3914,19 @@ class GoogleDriveApp(APIApplication):
         except ValueError:
             return None
 
-    async def delete_reply(self, fileId: str, commentId: str, replyId: str, alt: str | None=None, fields: str | None=None, key: str | None=None, oauth_token: str | None=None, prettyPrint: str | None=None, quotaUser: str | None=None, userIp: str | None=None) -> Any:
+    async def delete_reply(
+        self,
+        fileId: str,
+        commentId: str,
+        replyId: str,
+        alt: str | None = None,
+        fields: str | None = None,
+        key: str | None = None,
+        oauth_token: str | None = None,
+        prettyPrint: str | None = None,
+        quotaUser: str | None = None,
+        userIp: str | None = None,
+    ) -> Any:
         """
         Permanently deletes a specific reply from a comment on a Google Drive file. This targeted operation requires file, comment, and reply IDs to remove a single nested reply, distinguishing it from `delete_comment` which removes an entire top-level comment.
 
@@ -2201,8 +3958,20 @@ class GoogleDriveApp(APIApplication):
             raise ValueError("Missing required parameter 'commentId'.")
         if replyId is None:
             raise ValueError("Missing required parameter 'replyId'.")
-        url = f'{self.base_url}/files/{fileId}/comments/{commentId}/replies/{replyId}'
-        query_params = {k: v for k, v in [('alt', alt), ('fields', fields), ('key', key), ('oauth_token', oauth_token), ('prettyPrint', prettyPrint), ('quotaUser', quotaUser), ('userIp', userIp)] if v is not None}
+        url = f"{self.base_url}/files/{fileId}/comments/{commentId}/replies/{replyId}"
+        query_params = {
+            k: v
+            for k, v in [
+                ("alt", alt),
+                ("fields", fields),
+                ("key", key),
+                ("oauth_token", oauth_token),
+                ("prettyPrint", prettyPrint),
+                ("quotaUser", quotaUser),
+                ("userIp", userIp),
+            ]
+            if v is not None
+        }
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -2212,7 +3981,28 @@ class GoogleDriveApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_reply(self, fileId: str, commentId: str, replyId: str, alt: str | None=None, fields: str | None=None, key: str | None=None, oauth_token: str | None=None, prettyPrint: str | None=None, quotaUser: str | None=None, userIp: str | None=None, action: str | None=None, author: dict[str, Any] | None=None, content: str | None=None, createdTime: str | None=None, deleted: str | None=None, htmlContent: str | None=None, id: str | None=None, kind: str | None=None, modifiedTime: str | None=None) -> dict[str, Any]:
+    async def update_reply(
+        self,
+        fileId: str,
+        commentId: str,
+        replyId: str,
+        alt: str | None = None,
+        fields: str | None = None,
+        key: str | None = None,
+        oauth_token: str | None = None,
+        prettyPrint: str | None = None,
+        quotaUser: str | None = None,
+        userIp: str | None = None,
+        action: str | None = None,
+        author: dict[str, Any] | None = None,
+        content: str | None = None,
+        createdTime: str | None = None,
+        deleted: str | None = None,
+        htmlContent: str | None = None,
+        id: str | None = None,
+        kind: str | None = None,
+        modifiedTime: str | None = None,
+    ) -> dict[str, Any]:
         """
         Updates a specific reply to a comment on a file in Google Drive. It uses file, comment, and reply IDs to locate the reply, allowing modification of its properties like content. The function then returns the updated reply's metadata.
 
@@ -2254,10 +4044,32 @@ class GoogleDriveApp(APIApplication):
         if replyId is None:
             raise ValueError("Missing required parameter 'replyId'.")
         request_body_data = None
-        request_body_data = {'action': action, 'author': author, 'content': content, 'createdTime': createdTime, 'deleted': deleted, 'htmlContent': htmlContent, 'id': id, 'kind': kind, 'modifiedTime': modifiedTime}
+        request_body_data = {
+            "action": action,
+            "author": author,
+            "content": content,
+            "createdTime": createdTime,
+            "deleted": deleted,
+            "htmlContent": htmlContent,
+            "id": id,
+            "kind": kind,
+            "modifiedTime": modifiedTime,
+        }
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/files/{fileId}/comments/{commentId}/replies/{replyId}'
-        query_params = {k: v for k, v in [('alt', alt), ('fields', fields), ('key', key), ('oauth_token', oauth_token), ('prettyPrint', prettyPrint), ('quotaUser', quotaUser), ('userIp', userIp)] if v is not None}
+        url = f"{self.base_url}/files/{fileId}/comments/{commentId}/replies/{replyId}"
+        query_params = {
+            k: v
+            for k, v in [
+                ("alt", alt),
+                ("fields", fields),
+                ("key", key),
+                ("oauth_token", oauth_token),
+                ("prettyPrint", prettyPrint),
+                ("quotaUser", quotaUser),
+                ("userIp", userIp),
+            ]
+            if v is not None
+        }
         response = self._patch(url, data=request_body_data, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -2267,7 +4079,19 @@ class GoogleDriveApp(APIApplication):
         except ValueError:
             return None
 
-    async def list_file_revisions(self, fileId: str, pageSize: str | None=None, pageToken: str | None=None, alt: str | None=None, fields: str | None=None, key: str | None=None, oauth_token: str | None=None, prettyPrint: str | None=None, quotaUser: str | None=None, userIp: str | None=None) -> dict[str, Any]:
+    async def list_file_revisions(
+        self,
+        fileId: str,
+        pageSize: str | None = None,
+        pageToken: str | None = None,
+        alt: str | None = None,
+        fields: str | None = None,
+        key: str | None = None,
+        oauth_token: str | None = None,
+        prettyPrint: str | None = None,
+        quotaUser: str | None = None,
+        userIp: str | None = None,
+    ) -> dict[str, Any]:
         """
         Retrieves a paginated list of all historical versions (revisions) for a specific file in Google Drive. Supports page size and token parameters to navigate a file's change history, differentiating it from functions that get, update, or delete a single revision.
 
@@ -2295,8 +4119,22 @@ class GoogleDriveApp(APIApplication):
         """
         if fileId is None:
             raise ValueError("Missing required parameter 'fileId'.")
-        url = f'{self.base_url}/files/{fileId}/revisions'
-        query_params = {k: v for k, v in [('pageSize', pageSize), ('pageToken', pageToken), ('alt', alt), ('fields', fields), ('key', key), ('oauth_token', oauth_token), ('prettyPrint', prettyPrint), ('quotaUser', quotaUser), ('userIp', userIp)] if v is not None}
+        url = f"{self.base_url}/files/{fileId}/revisions"
+        query_params = {
+            k: v
+            for k, v in [
+                ("pageSize", pageSize),
+                ("pageToken", pageToken),
+                ("alt", alt),
+                ("fields", fields),
+                ("key", key),
+                ("oauth_token", oauth_token),
+                ("prettyPrint", prettyPrint),
+                ("quotaUser", quotaUser),
+                ("userIp", userIp),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -2306,7 +4144,19 @@ class GoogleDriveApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_revision(self, fileId: str, revisionId: str, acknowledgeAbuse: str | None=None, alt: str | None=None, fields: str | None=None, key: str | None=None, oauth_token: str | None=None, prettyPrint: str | None=None, quotaUser: str | None=None, userIp: str | None=None) -> dict[str, Any]:
+    async def get_revision(
+        self,
+        fileId: str,
+        revisionId: str,
+        acknowledgeAbuse: str | None = None,
+        alt: str | None = None,
+        fields: str | None = None,
+        key: str | None = None,
+        oauth_token: str | None = None,
+        prettyPrint: str | None = None,
+        quotaUser: str | None = None,
+        userIp: str | None = None,
+    ) -> dict[str, Any]:
         """
         Fetches metadata for a single, specific file revision using its file and revision IDs. Unlike `list_file_revisions` which lists a file's complete version history, this function targets one historical version to retrieve its unique metadata.
 
@@ -2336,8 +4186,21 @@ class GoogleDriveApp(APIApplication):
             raise ValueError("Missing required parameter 'fileId'.")
         if revisionId is None:
             raise ValueError("Missing required parameter 'revisionId'.")
-        url = f'{self.base_url}/files/{fileId}/revisions/{revisionId}'
-        query_params = {k: v for k, v in [('acknowledgeAbuse', acknowledgeAbuse), ('alt', alt), ('fields', fields), ('key', key), ('oauth_token', oauth_token), ('prettyPrint', prettyPrint), ('quotaUser', quotaUser), ('userIp', userIp)] if v is not None}
+        url = f"{self.base_url}/files/{fileId}/revisions/{revisionId}"
+        query_params = {
+            k: v
+            for k, v in [
+                ("acknowledgeAbuse", acknowledgeAbuse),
+                ("alt", alt),
+                ("fields", fields),
+                ("key", key),
+                ("oauth_token", oauth_token),
+                ("prettyPrint", prettyPrint),
+                ("quotaUser", quotaUser),
+                ("userIp", userIp),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -2347,7 +4210,18 @@ class GoogleDriveApp(APIApplication):
         except ValueError:
             return None
 
-    async def delete_file_revision(self, fileId: str, revisionId: str, alt: str | None=None, fields: str | None=None, key: str | None=None, oauth_token: str | None=None, prettyPrint: str | None=None, quotaUser: str | None=None, userIp: str | None=None) -> Any:
+    async def delete_file_revision(
+        self,
+        fileId: str,
+        revisionId: str,
+        alt: str | None = None,
+        fields: str | None = None,
+        key: str | None = None,
+        oauth_token: str | None = None,
+        prettyPrint: str | None = None,
+        quotaUser: str | None = None,
+        userIp: str | None = None,
+    ) -> Any:
         """
         Permanently deletes a specific revision of a file, identified by its file and revision IDs. This irreversible action removes a single historical version, distinguishing it from functions like `permanently_delete_file`, which deletes the entire file, or `trash_file`, which moves it to the trash.
 
@@ -2376,8 +4250,20 @@ class GoogleDriveApp(APIApplication):
             raise ValueError("Missing required parameter 'fileId'.")
         if revisionId is None:
             raise ValueError("Missing required parameter 'revisionId'.")
-        url = f'{self.base_url}/files/{fileId}/revisions/{revisionId}'
-        query_params = {k: v for k, v in [('alt', alt), ('fields', fields), ('key', key), ('oauth_token', oauth_token), ('prettyPrint', prettyPrint), ('quotaUser', quotaUser), ('userIp', userIp)] if v is not None}
+        url = f"{self.base_url}/files/{fileId}/revisions/{revisionId}"
+        query_params = {
+            k: v
+            for k, v in [
+                ("alt", alt),
+                ("fields", fields),
+                ("key", key),
+                ("oauth_token", oauth_token),
+                ("prettyPrint", prettyPrint),
+                ("quotaUser", quotaUser),
+                ("userIp", userIp),
+            ]
+            if v is not None
+        }
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -2387,7 +4273,32 @@ class GoogleDriveApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_revision(self, fileId: str, revisionId: str, alt: str | None=None, fields: str | None=None, key: str | None=None, oauth_token: str | None=None, prettyPrint: str | None=None, quotaUser: str | None=None, userIp: str | None=None, exportLinks: dict[str, Any] | None=None, id: str | None=None, keepForever: str | None=None, kind: str | None=None, lastModifyingUser: dict[str, Any] | None=None, md5Checksum: str | None=None, mimeType: str | None=None, modifiedTime: str | None=None, originalFilename: str | None=None, publishAuto: str | None=None, published: str | None=None, publishedLink: str | None=None, publishedOutsideDomain: str | None=None, size: str | None=None) -> dict[str, Any]:
+    async def update_revision(
+        self,
+        fileId: str,
+        revisionId: str,
+        alt: str | None = None,
+        fields: str | None = None,
+        key: str | None = None,
+        oauth_token: str | None = None,
+        prettyPrint: str | None = None,
+        quotaUser: str | None = None,
+        userIp: str | None = None,
+        exportLinks: dict[str, Any] | None = None,
+        id: str | None = None,
+        keepForever: str | None = None,
+        kind: str | None = None,
+        lastModifyingUser: dict[str, Any] | None = None,
+        md5Checksum: str | None = None,
+        mimeType: str | None = None,
+        modifiedTime: str | None = None,
+        originalFilename: str | None = None,
+        publishAuto: str | None = None,
+        published: str | None = None,
+        publishedLink: str | None = None,
+        publishedOutsideDomain: str | None = None,
+        size: str | None = None,
+    ) -> dict[str, Any]:
         """
         Updates the metadata for a specific file revision using its file and revision IDs. It modifies properties such as pinning the revision (`keepForever`) or its publication status, and returns the updated revision metadata upon success.
 
@@ -2431,10 +4342,37 @@ class GoogleDriveApp(APIApplication):
         if revisionId is None:
             raise ValueError("Missing required parameter 'revisionId'.")
         request_body_data = None
-        request_body_data = {'exportLinks': exportLinks, 'id': id, 'keepForever': keepForever, 'kind': kind, 'lastModifyingUser': lastModifyingUser, 'md5Checksum': md5Checksum, 'mimeType': mimeType, 'modifiedTime': modifiedTime, 'originalFilename': originalFilename, 'publishAuto': publishAuto, 'published': published, 'publishedLink': publishedLink, 'publishedOutsideDomain': publishedOutsideDomain, 'size': size}
+        request_body_data = {
+            "exportLinks": exportLinks,
+            "id": id,
+            "keepForever": keepForever,
+            "kind": kind,
+            "lastModifyingUser": lastModifyingUser,
+            "md5Checksum": md5Checksum,
+            "mimeType": mimeType,
+            "modifiedTime": modifiedTime,
+            "originalFilename": originalFilename,
+            "publishAuto": publishAuto,
+            "published": published,
+            "publishedLink": publishedLink,
+            "publishedOutsideDomain": publishedOutsideDomain,
+            "size": size,
+        }
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/files/{fileId}/revisions/{revisionId}'
-        query_params = {k: v for k, v in [('alt', alt), ('fields', fields), ('key', key), ('oauth_token', oauth_token), ('prettyPrint', prettyPrint), ('quotaUser', quotaUser), ('userIp', userIp)] if v is not None}
+        url = f"{self.base_url}/files/{fileId}/revisions/{revisionId}"
+        query_params = {
+            k: v
+            for k, v in [
+                ("alt", alt),
+                ("fields", fields),
+                ("key", key),
+                ("oauth_token", oauth_token),
+                ("prettyPrint", prettyPrint),
+                ("quotaUser", quotaUser),
+                ("userIp", userIp),
+            ]
+            if v is not None
+        }
         response = self._patch(url, data=request_body_data, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -2444,7 +4382,9 @@ class GoogleDriveApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_permission(self, fileId: str, emailAddress: str | None=None, role: str | None=None, type: str | None=None) -> dict[str, Any]:
+    async def create_permission(
+        self, fileId: str, emailAddress: str | None = None, role: str | None = None, type: str | None = None
+    ) -> dict[str, Any]:
         """
         Grants a specified role (e.g., 'reader') to a user or group for a file. This is a simplified alternative to the comprehensive `create_file_permission` function, focusing only on the core arguments required for basic sharing operations and omitting advanced options like notification settings or ownership transfer.
 
@@ -2467,11 +4407,11 @@ class GoogleDriveApp(APIApplication):
         if fileId is None:
             raise ValueError("Missing required parameter 'fileId'.")
         request_body_data = None
-        request_body_data = {'emailAddress': emailAddress, 'role': role, 'type': type}
+        request_body_data = {"emailAddress": emailAddress, "role": role, "type": type}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f'{self.base_url}/drive/v3/files/{fileId}/permissions'
+        url = f"{self.base_url}/drive/v3/files/{fileId}/permissions"
         query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2481,4 +4421,59 @@ class GoogleDriveApp(APIApplication):
             return None
 
     def list_tools(self):
-        return [self.get_drive_info, self.search_files, self.create_text_file, self.upload_file_from_path, self.find_folder_id_by_name, self.create_folder, self.get_file_details, self.trash_file, self.list_installed_apps, self.get_app_by_id, self.get_about_info, self.list_drive_changes, self.get_changes_start_token, self.watch_drive_changes, self.stop_watching_channel, self.list_file_comments, self.create_file_comment, self.get_file_comment_by_id, self.delete_comment, self.update_comment, self.list_shared_drives, self.create_shared_drive, self.get_shared_drive_metadata, self.delete_shared_drive, self.update_shared_drive, self.hide_drive, self.unhide_drive, self.search_files_advanced, self.create_file_metadata, self.generate_file_ids, self.empty_trash, self.permanently_delete_file, self.update_file_metadata, self.copy_file, self.export_file, self.list_file_labels, self.modify_file_labels, self.watch_file_for_changes, self.list_file_permissions, self.create_file_permission, self.get_permission_by_id, self.delete_permission, self.update_permission, self.list_comment_replies, self.create_comment_reply, self.get_reply_by_id, self.delete_reply, self.update_reply, self.list_file_revisions, self.get_revision, self.delete_file_revision, self.update_revision, self.create_permission, self.move_file]
+        return [
+            self.get_drive_info,
+            self.search_files,
+            self.create_text_file,
+            self.upload_file_from_path,
+            self.find_folder_id_by_name,
+            self.create_folder,
+            self.get_file_details,
+            self.trash_file,
+            self.list_installed_apps,
+            self.get_app_by_id,
+            self.get_about_info,
+            self.list_drive_changes,
+            self.get_changes_start_token,
+            self.watch_drive_changes,
+            self.stop_watching_channel,
+            self.list_file_comments,
+            self.create_file_comment,
+            self.get_file_comment_by_id,
+            self.delete_comment,
+            self.update_comment,
+            self.list_shared_drives,
+            self.create_shared_drive,
+            self.get_shared_drive_metadata,
+            self.delete_shared_drive,
+            self.update_shared_drive,
+            self.hide_drive,
+            self.unhide_drive,
+            self.search_files_advanced,
+            self.create_file_metadata,
+            self.generate_file_ids,
+            self.empty_trash,
+            self.permanently_delete_file,
+            self.update_file_metadata,
+            self.copy_file,
+            self.export_file,
+            self.list_file_labels,
+            self.modify_file_labels,
+            self.watch_file_for_changes,
+            self.list_file_permissions,
+            self.create_file_permission,
+            self.get_permission_by_id,
+            self.delete_permission,
+            self.update_permission,
+            self.list_comment_replies,
+            self.create_comment_reply,
+            self.get_reply_by_id,
+            self.delete_reply,
+            self.update_reply,
+            self.list_file_revisions,
+            self.get_revision,
+            self.delete_file_revision,
+            self.update_revision,
+            self.create_permission,
+            self.move_file,
+        ]

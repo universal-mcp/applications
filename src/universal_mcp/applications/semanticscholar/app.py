@@ -2,11 +2,11 @@ from typing import Any
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
-class SemanticscholarApp(APIApplication):
 
-    def __init__(self, integration: Integration=None, **kwargs) -> None:
-        super().__init__(name='semanticscholar', integration=integration, **kwargs)
-        self.base_url = '/graph/v1'
+class SemanticscholarApp(APIApplication):
+    def __init__(self, integration: Integration = None, **kwargs) -> None:
+        super().__init__(name="semanticscholar", integration=integration, **kwargs)
+        self.base_url = "/graph/v1"
 
     async def post_graph_get_authors(self, fields=None, ids=None) -> dict[str, Any]:
         """
@@ -22,10 +22,10 @@ class SemanticscholarApp(APIApplication):
         Tags:
             Author Data
         """
-        request_body = {'ids': ids}
+        request_body = {"ids": ids}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/author/batch'
-        query_params = {k: v for k, v in [('fields', fields)] if v is not None}
+        url = f"{self.base_url}/author/batch"
+        query_params = {k: v for k, v in [("fields", fields)] if v is not None}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -46,8 +46,8 @@ class SemanticscholarApp(APIApplication):
         Tags:
             Author Data
         """
-        url = f'{self.base_url}/author/search'
-        query_params = {k: v for k, v in [('offset', offset), ('limit', limit), ('fields', fields), ('query', query)] if v is not None}
+        url = f"{self.base_url}/author/search"
+        query_params = {k: v for k, v in [("offset", offset), ("limit", limit), ("fields", fields), ("query", query)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -68,8 +68,8 @@ class SemanticscholarApp(APIApplication):
         """
         if author_id is None:
             raise ValueError("Missing required parameter 'author_id'")
-        url = f'{self.base_url}/author/{author_id}'
-        query_params = {k: v for k, v in [('fields', fields)] if v is not None}
+        url = f"{self.base_url}/author/{author_id}"
+        query_params = {k: v for k, v in [("fields", fields)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -92,8 +92,8 @@ class SemanticscholarApp(APIApplication):
         """
         if author_id is None:
             raise ValueError("Missing required parameter 'author_id'")
-        url = f'{self.base_url}/author/{author_id}/papers'
-        query_params = {k: v for k, v in [('offset', offset), ('limit', limit), ('fields', fields)] if v is not None}
+        url = f"{self.base_url}/author/{author_id}/papers"
+        query_params = {k: v for k, v in [("offset", offset), ("limit", limit), ("fields", fields)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -111,8 +111,8 @@ class SemanticscholarApp(APIApplication):
         Tags:
             Paper Data
         """
-        url = f'{self.base_url}/paper/autocomplete'
-        query_params = {k: v for k, v in [('query', query)] if v is not None}
+        url = f"{self.base_url}/paper/autocomplete"
+        query_params = {k: v for k, v in [("query", query)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -131,15 +131,28 @@ class SemanticscholarApp(APIApplication):
         Tags:
             Paper Data
         """
-        request_body = {'ids': ids}
+        request_body = {"ids": ids}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/paper/batch'
-        query_params = {k: v for k, v in [('fields', fields)] if v is not None}
+        url = f"{self.base_url}/paper/batch"
+        query_params = {k: v for k, v in [("fields", fields)] if v is not None}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def get_graph_paper_relevance_search(self, query, fields=None, publicationTypes=None, openAccessPdf=None, minCitationCount=None, publicationDateOrYear=None, year=None, venue=None, fieldsOfStudy=None, offset=None, limit=None) -> dict[str, Any]:
+    async def get_graph_paper_relevance_search(
+        self,
+        query,
+        fields=None,
+        publicationTypes=None,
+        openAccessPdf=None,
+        minCitationCount=None,
+        publicationDateOrYear=None,
+        year=None,
+        venue=None,
+        fieldsOfStudy=None,
+        offset=None,
+        limit=None,
+    ) -> dict[str, Any]:
         """
         Searches for academic papers using the "GET" method at the "/paper/search" endpoint, allowing filtering by query, publication types, open access PDF availability, citation count, publication date or year, venue, fields of study, and pagination parameters.
 
@@ -162,13 +175,42 @@ class SemanticscholarApp(APIApplication):
         Tags:
             Paper Data
         """
-        url = f'{self.base_url}/paper/search'
-        query_params = {k: v for k, v in [('query', query), ('fields', fields), ('publicationTypes', publicationTypes), ('openAccessPdf', openAccessPdf), ('minCitationCount', minCitationCount), ('publicationDateOrYear', publicationDateOrYear), ('year', year), ('venue', venue), ('fieldsOfStudy', fieldsOfStudy), ('offset', offset), ('limit', limit)] if v is not None}
+        url = f"{self.base_url}/paper/search"
+        query_params = {
+            k: v
+            for k, v in [
+                ("query", query),
+                ("fields", fields),
+                ("publicationTypes", publicationTypes),
+                ("openAccessPdf", openAccessPdf),
+                ("minCitationCount", minCitationCount),
+                ("publicationDateOrYear", publicationDateOrYear),
+                ("year", year),
+                ("venue", venue),
+                ("fieldsOfStudy", fieldsOfStudy),
+                ("offset", offset),
+                ("limit", limit),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def get_graph_paper_bulk_search(self, query, token=None, fields=None, sort=None, publicationTypes=None, openAccessPdf=None, minCitationCount=None, publicationDateOrYear=None, year=None, venue=None, fieldsOfStudy=None) -> dict[str, Any]:
+    async def get_graph_paper_bulk_search(
+        self,
+        query,
+        token=None,
+        fields=None,
+        sort=None,
+        publicationTypes=None,
+        openAccessPdf=None,
+        minCitationCount=None,
+        publicationDateOrYear=None,
+        year=None,
+        venue=None,
+        fieldsOfStudy=None,
+    ) -> dict[str, Any]:
         """
         Retrieves bulk search results of academic papers based on various query parameters such as keywords, fields of study, publication types, and sorting criteria.
 
@@ -191,13 +233,40 @@ class SemanticscholarApp(APIApplication):
         Tags:
             Paper Data
         """
-        url = f'{self.base_url}/paper/search/bulk'
-        query_params = {k: v for k, v in [('query', query), ('token', token), ('fields', fields), ('sort', sort), ('publicationTypes', publicationTypes), ('openAccessPdf', openAccessPdf), ('minCitationCount', minCitationCount), ('publicationDateOrYear', publicationDateOrYear), ('year', year), ('venue', venue), ('fieldsOfStudy', fieldsOfStudy)] if v is not None}
+        url = f"{self.base_url}/paper/search/bulk"
+        query_params = {
+            k: v
+            for k, v in [
+                ("query", query),
+                ("token", token),
+                ("fields", fields),
+                ("sort", sort),
+                ("publicationTypes", publicationTypes),
+                ("openAccessPdf", openAccessPdf),
+                ("minCitationCount", minCitationCount),
+                ("publicationDateOrYear", publicationDateOrYear),
+                ("year", year),
+                ("venue", venue),
+                ("fieldsOfStudy", fieldsOfStudy),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def get_graph_paper_title_search(self, query, fields=None, publicationTypes=None, openAccessPdf=None, minCitationCount=None, publicationDateOrYear=None, year=None, venue=None, fieldsOfStudy=None) -> dict[str, Any]:
+    async def get_graph_paper_title_search(
+        self,
+        query,
+        fields=None,
+        publicationTypes=None,
+        openAccessPdf=None,
+        minCitationCount=None,
+        publicationDateOrYear=None,
+        year=None,
+        venue=None,
+        fieldsOfStudy=None,
+    ) -> dict[str, Any]:
         """
         Searches for matching papers based on specified query parameters, such as query string, fields, publication types, open access status, citation count, publication date, year, venue, and fields of study, using the "GET" method.
 
@@ -218,8 +287,22 @@ class SemanticscholarApp(APIApplication):
         Tags:
             Paper Data ,important
         """
-        url = f'{self.base_url}/paper/search/match'
-        query_params = {k: v for k, v in [('query', query), ('fields', fields), ('publicationTypes', publicationTypes), ('openAccessPdf', openAccessPdf), ('minCitationCount', minCitationCount), ('publicationDateOrYear', publicationDateOrYear), ('year', year), ('venue', venue), ('fieldsOfStudy', fieldsOfStudy)] if v is not None}
+        url = f"{self.base_url}/paper/search/match"
+        query_params = {
+            k: v
+            for k, v in [
+                ("query", query),
+                ("fields", fields),
+                ("publicationTypes", publicationTypes),
+                ("openAccessPdf", openAccessPdf),
+                ("minCitationCount", minCitationCount),
+                ("publicationDateOrYear", publicationDateOrYear),
+                ("year", year),
+                ("venue", venue),
+                ("fieldsOfStudy", fieldsOfStudy),
+            ]
+            if v is not None
+        }
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -240,8 +323,8 @@ class SemanticscholarApp(APIApplication):
         """
         if paper_id is None:
             raise ValueError("Missing required parameter 'paper_id'")
-        url = f'{self.base_url}/paper/{paper_id}'
-        query_params = {k: v for k, v in [('fields', fields)] if v is not None}
+        url = f"{self.base_url}/paper/{paper_id}"
+        query_params = {k: v for k, v in [("fields", fields)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -264,8 +347,8 @@ class SemanticscholarApp(APIApplication):
         """
         if paper_id is None:
             raise ValueError("Missing required parameter 'paper_id'")
-        url = f'{self.base_url}/paper/{paper_id}/authors'
-        query_params = {k: v for k, v in [('offset', offset), ('limit', limit), ('fields', fields)] if v is not None}
+        url = f"{self.base_url}/paper/{paper_id}/authors"
+        query_params = {k: v for k, v in [("offset", offset), ("limit", limit), ("fields", fields)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -288,8 +371,8 @@ class SemanticscholarApp(APIApplication):
         """
         if paper_id is None:
             raise ValueError("Missing required parameter 'paper_id'")
-        url = f'{self.base_url}/paper/{paper_id}/citations'
-        query_params = {k: v for k, v in [('offset', offset), ('limit', limit), ('fields', fields)] if v is not None}
+        url = f"{self.base_url}/paper/{paper_id}/citations"
+        query_params = {k: v for k, v in [("offset", offset), ("limit", limit), ("fields", fields)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -312,8 +395,8 @@ class SemanticscholarApp(APIApplication):
         """
         if paper_id is None:
             raise ValueError("Missing required parameter 'paper_id'")
-        url = f'{self.base_url}/paper/{paper_id}/references'
-        query_params = {k: v for k, v in [('offset', offset), ('limit', limit), ('fields', fields)] if v is not None}
+        url = f"{self.base_url}/paper/{paper_id}/references"
+        query_params = {k: v for k, v in [("offset", offset), ("limit", limit), ("fields", fields)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -332,11 +415,26 @@ class SemanticscholarApp(APIApplication):
         Tags:
             Snippet Text
         """
-        url = f'{self.base_url}/snippet/search'
-        query_params = {k: v for k, v in [('query', query), ('limit', limit)] if v is not None}
+        url = f"{self.base_url}/snippet/search"
+        query_params = {k: v for k, v in [("query", query), ("limit", limit)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
     def list_tools(self):
-        return [self.post_graph_get_authors, self.get_graph_get_author_search, self.get_graph_get_author, self.get_graph_get_author_papers, self.get_graph_get_paper_autocomplete, self.post_graph_get_papers, self.get_graph_paper_relevance_search, self.get_graph_paper_bulk_search, self.get_graph_paper_title_search, self.get_graph_get_paper, self.get_graph_get_paper_authors, self.get_graph_get_paper_citations, self.get_graph_get_paper_references, self.get_snippet_search]
+        return [
+            self.post_graph_get_authors,
+            self.get_graph_get_author_search,
+            self.get_graph_get_author,
+            self.get_graph_get_author_papers,
+            self.get_graph_get_paper_autocomplete,
+            self.post_graph_get_papers,
+            self.get_graph_paper_relevance_search,
+            self.get_graph_paper_bulk_search,
+            self.get_graph_paper_title_search,
+            self.get_graph_get_paper,
+            self.get_graph_get_paper_authors,
+            self.get_graph_get_paper_citations,
+            self.get_graph_get_paper_references,
+            self.get_snippet_search,
+        ]

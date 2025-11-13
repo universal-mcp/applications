@@ -6,6 +6,7 @@ import requests
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
+
 class LinkedinApp(APIApplication):
     """
     Base class for Universal MCP Applications.
@@ -21,28 +22,28 @@ class LinkedinApp(APIApplication):
                          via headers in `integration.get_credentials()`, e.g.,
                          `{"headers": {"x-api-key": "YOUR_API_KEY"}}`.
         """
-        super().__init__(name='linkedin', integration=integration)
+        super().__init__(name="linkedin", integration=integration)
         self._base_url = None
         self.account_id = None
         if self.integration:
             credentials = self.integration.get_credentials()
             if credentials:
-                self.account_id = credentials.get('account_id')
+                self.account_id = credentials.get("account_id")
 
     @property
     def base_url(self) -> str:
         if not self._base_url:
-            unipile_dsn = os.getenv('UNIPILE_DSN')
+            unipile_dsn = os.getenv("UNIPILE_DSN")
             if not unipile_dsn:
-                logger.error('UnipileApp: UNIPILE_DSN environment variable is not set.')
-                raise ValueError('UnipileApp: UNIPILE_DSN environment variable is required.')
-            self._base_url = f'https://{unipile_dsn}'
+                logger.error("UnipileApp: UNIPILE_DSN environment variable is not set.")
+                raise ValueError("UnipileApp: UNIPILE_DSN environment variable is required.")
+            self._base_url = f"https://{unipile_dsn}"
         return self._base_url
 
     @base_url.setter
     def base_url(self, base_url: str) -> None:
         self._base_url = base_url
-        logger.info(f'UnipileApp: Base URL set to {self._base_url}')
+        logger.info(f"UnipileApp: Base URL set to {self._base_url}")
 
     def _get_headers(self) -> dict[str, str]:
         """
@@ -50,14 +51,14 @@ class LinkedinApp(APIApplication):
         Overrides the base class method to use X-Api-Key.
         """
         if not self.integration:
-            logger.warning('UnipileApp: No integration configured, returning empty headers.')
+            logger.warning("UnipileApp: No integration configured, returning empty headers.")
             return {}
-        api_key = os.getenv('UNIPILE_API_KEY')
+        api_key = os.getenv("UNIPILE_API_KEY")
         if not api_key:
-            logger.error('UnipileApp: API key not found in integration credentials for Unipile.')
-            return {'Content-Type': 'application/json', 'Cache-Control': 'no-cache'}
-        logger.debug('UnipileApp: Using X-Api-Key for authentication.')
-        return {'x-api-key': api_key, 'Content-Type': 'application/json', 'Cache-Control': 'no-cache'}
+            logger.error("UnipileApp: API key not found in integration credentials for Unipile.")
+            return {"Content-Type": "application/json", "Cache-Control": "no-cache"}
+        logger.debug("UnipileApp: Using X-Api-Key for authentication.")
+        return {"x-api-key": api_key, "Content-Type": "application/json", "Cache-Control": "no-cache"}
 
     def _get_search_parameter_id(self, param_type: str, keywords: str) -> str:
         """
@@ -74,48 +75,56 @@ class LinkedinApp(APIApplication):
             ValueError: If no exact match for the keywords is found.
             httpx.HTTPError: If the API request fails.
         """
-        url = f'{self.base_url}/api/v1/linkedin/search/parameters'
-        params = {'account_id': self.account_id, 'keywords': keywords, 'type': param_type}
+        url = f"{self.base_url}/api/v1/linkedin/search/parameters"
+        params = {"account_id": self.account_id, "keywords": keywords, "type": param_type}
         response = self._get(url, params=params)
         results = self._handle_response(response)
-        items = results.get('items', [])
+        items = results.get("items", [])
         if items:
-            return items[0]['id']
+            return items[0]["id"]
         raise ValueError(f'Could not find a matching ID for {param_type}: "{keywords}"')
 
     async def start_new_chat(self, provider_id: str, text: str) -> dict[str, Any]:
         """
-            Starts a new chat conversation with a specified user by sending an initial message.
-            This function constructs a multipart/form-data request using the `files` parameter
-            to ensure correct formatting and headers, working around potential issues in the
-            underlying request method.
+        Starts a new chat conversation with a specified user by sending an initial message.
+        This function constructs a multipart/form-data request using the `files` parameter
+        to ensure correct formatting and headers, working around potential issues in the
+        underlying request method.
 
-            Args:
-                provider_id: The LinkedIn provider ID of the user to start the chat with.
-                            This is available in the response of the `retrieve_user_profile` tool.
-                text: The initial message content. For LinkedIn Recruiter accounts, this can include
-                    HTML tags like <strong>, <em>, <a>, <ul>, <ol>, and <li>.
+        Args:
+            provider_id: The LinkedIn provider ID of the user to start the chat with.
+                        This is available in the response of the `retrieve_user_profile` tool.
+            text: The initial message content. For LinkedIn Recruiter accounts, this can include
+                HTML tags like <strong>, <em>, <a>, <ul>, <ol>, and <li>.
 
-            Returns:
-                A dictionary containing the details of the newly created chat.
+        Returns:
+            A dictionary containing the details of the newly created chat.
 
-            Raises:
-                httpx.HTTPError: If the API request fails.
+        Raises:
+            httpx.HTTPError: If the API request fails.
 
-            Tags:
-                linkedin, chat, create, start, new, messaging, api, important
-            """
-        url = f'{self.base_url}/api/v1/chats'
-        form_payload = {'account_id': (None, self.account_id), 'text': (None, text), 'attendees_ids': (None, provider_id)}
-        api_key = os.getenv('UNIPILE_API_KEY')
+        Tags:
+            linkedin, chat, create, start, new, messaging, api, important
+        """
+        url = f"{self.base_url}/api/v1/chats"
+        form_payload = {"account_id": (None, self.account_id), "text": (None, text), "attendees_ids": (None, provider_id)}
+        api_key = os.getenv("UNIPILE_API_KEY")
         if not api_key:
-            raise ValueError('UNIPILE_API_KEY environment variable is not set.')
-        headers = {'x-api-key': api_key}
+            raise ValueError("UNIPILE_API_KEY environment variable is not set.")
+        headers = {"x-api-key": api_key}
         response = requests.post(url, files=form_payload, headers=headers)
         response.raise_for_status()
         return response.json()
 
-    async def list_all_chats(self, unread: bool | None=None, cursor: str | None=None, before: str | None=None, after: str | None=None, limit: int | None=None, account_type: str | None=None) -> dict[str, Any]:
+    async def list_all_chats(
+        self,
+        unread: bool | None = None,
+        cursor: str | None = None,
+        before: str | None = None,
+        after: str | None = None,
+        limit: int | None = None,
+        account_type: str | None = None,
+    ) -> dict[str, Any]:
         """
         Retrieves a paginated list of all chat conversations across linked accounts. Supports filtering by unread status, date range, and account provider, distinguishing it from functions listing messages within a single chat.
 
@@ -136,25 +145,33 @@ class LinkedinApp(APIApplication):
         Tags:
             linkedin, chat, list, messaging, api
         """
-        url = f'{self.base_url}/api/v1/chats'
+        url = f"{self.base_url}/api/v1/chats"
         params: dict[str, Any] = {}
-        params['account_id'] = self.account_id
+        params["account_id"] = self.account_id
         if unread is not None:
-            params['unread'] = unread
+            params["unread"] = unread
         if cursor:
-            params['cursor'] = cursor
+            params["cursor"] = cursor
         if before:
-            params['before'] = before
+            params["before"] = before
         if after:
-            params['after'] = after
+            params["after"] = after
         if limit:
-            params['limit'] = limit
+            params["limit"] = limit
         if account_type:
-            params['account_type'] = account_type
+            params["account_type"] = account_type
         response = await self._aget(url, params=params)
         return response.json()
 
-    async def list_chat_messages(self, chat_id: str, cursor: str | None=None, before: str | None=None, after: str | None=None, limit: int | None=None, sender_id: str | None=None) -> dict[str, Any]:
+    async def list_chat_messages(
+        self,
+        chat_id: str,
+        cursor: str | None = None,
+        before: str | None = None,
+        after: str | None = None,
+        limit: int | None = None,
+        sender_id: str | None = None,
+    ) -> dict[str, Any]:
         """
         Retrieves messages from a specific chat identified by `chat_id`. Supports pagination and filtering by date or sender. Unlike `list_all_messages`, which fetches from all chats, this function targets the contents of a single conversation.
 
@@ -175,18 +192,18 @@ class LinkedinApp(APIApplication):
         Tags:
             linkedin, chat, message, list, messaging, api
         """
-        url = f'{self.base_url}/api/v1/chats/{chat_id}/messages'
+        url = f"{self.base_url}/api/v1/chats/{chat_id}/messages"
         params: dict[str, Any] = {}
         if cursor:
-            params['cursor'] = cursor
+            params["cursor"] = cursor
         if before:
-            params['before'] = before
+            params["before"] = before
         if after:
-            params['after'] = after
+            params["after"] = after
         if limit:
-            params['limit'] = limit
+            params["limit"] = limit
         if sender_id:
-            params['sender_id'] = sender_id
+            params["sender_id"] = sender_id
         response = await self._aget(url, params=params)
         return response.json()
 
@@ -208,8 +225,8 @@ class LinkedinApp(APIApplication):
         Tags:
             linkedin, chat, message, send, create, messaging, api
         """
-        url = f'{self.base_url}/api/v1/chats/{chat_id}/messages'
-        payload: dict[str, Any] = {'text': text}
+        url = f"{self.base_url}/api/v1/chats/{chat_id}/messages"
+        payload: dict[str, Any] = {"text": text}
         response = await self._apost(url, data=payload)
         return response.json()
 
@@ -229,14 +246,21 @@ class LinkedinApp(APIApplication):
         Tags:
             linkedin, chat, retrieve, get, messaging, api
         """
-        url = f'{self.base_url}/api/v1/chats/{chat_id}'
+        url = f"{self.base_url}/api/v1/chats/{chat_id}"
         params: dict[str, Any] = {}
         if self.account_id:
-            params['account_id'] = self.account_id
+            params["account_id"] = self.account_id
         response = await self._aget(url, params=params)
         return response.json()
 
-    async def list_all_messages(self, cursor: str | None=None, before: str | None=None, after: str | None=None, limit: int | None=None, sender_id: str | None=None) -> dict[str, Any]:
+    async def list_all_messages(
+        self,
+        cursor: str | None = None,
+        before: str | None = None,
+        after: str | None = None,
+        limit: int | None = None,
+        sender_id: str | None = None,
+    ) -> dict[str, Any]:
         """
         Retrieves a paginated list of messages from all chats associated with the account. Unlike `list_chat_messages` which targets a specific conversation, this function provides a global message view, filterable by sender and date range.
 
@@ -256,24 +280,26 @@ class LinkedinApp(APIApplication):
         Tags:
             linkedin, message, list, all_messages, messaging, api
         """
-        url = f'{self.base_url}/api/v1/messages'
+        url = f"{self.base_url}/api/v1/messages"
         params: dict[str, Any] = {}
         if cursor:
-            params['cursor'] = cursor
+            params["cursor"] = cursor
         if before:
-            params['before'] = before
+            params["before"] = before
         if after:
-            params['after'] = after
+            params["after"] = after
         if limit:
-            params['limit'] = limit
+            params["limit"] = limit
         if sender_id:
-            params['sender_id'] = sender_id
+            params["sender_id"] = sender_id
         if self.account_id:
-            params['account_id'] = self.account_id
+            params["account_id"] = self.account_id
         response = await self._aget(url, params=params)
         return response.json()
 
-    async def list_profile_posts(self, identifier: str, cursor: str | None=None, limit: int | None=None, is_company: bool | None=None) -> dict[str, Any]:
+    async def list_profile_posts(
+        self, identifier: str, cursor: str | None = None, limit: int | None = None, is_company: bool | None = None
+    ) -> dict[str, Any]:
         """
         Retrieves a paginated list of posts from a specific user or company profile using their provider ID. An authorizing `account_id` is required, and the `is_company` flag must specify the entity type, distinguishing this from `retrieve_post` which fetches a single post by its own ID.
 
@@ -292,14 +318,14 @@ class LinkedinApp(APIApplication):
         Tags:
             linkedin, post, list, user_posts, company_posts, content, api, important
         """
-        url = f'{self.base_url}/api/v1/users/{identifier}/posts'
-        params: dict[str, Any] = {'account_id': self.account_id}
+        url = f"{self.base_url}/api/v1/users/{identifier}/posts"
+        params: dict[str, Any] = {"account_id": self.account_id}
         if cursor:
-            params['cursor'] = cursor
+            params["cursor"] = cursor
         if limit:
-            params['limit'] = limit
+            params["limit"] = limit
         if is_company is not None:
-            params['is_company'] = is_company
+            params["is_company"] = is_company
         response = await self._aget(url, params=params)
         return response.json()
 
@@ -316,8 +342,8 @@ class LinkedinApp(APIApplication):
         Tags:
             linkedin, user, profile, me, retrieve, get, api
         """
-        url = f'{self.base_url}/api/v1/users/me'
-        params: dict[str, Any] = {'account_id': self.account_id}
+        url = f"{self.base_url}/api/v1/users/me"
+        params: dict[str, Any] = {"account_id": self.account_id}
         response = await self._aget(url, params=params)
         return response.json()
 
@@ -337,12 +363,14 @@ class LinkedinApp(APIApplication):
         Tags:
             linkedin, post, retrieve, get, content, api, important
         """
-        url = f'{self.base_url}/api/v1/posts/{post_id}'
-        params: dict[str, Any] = {'account_id': self.account_id}
+        url = f"{self.base_url}/api/v1/posts/{post_id}"
+        params: dict[str, Any] = {"account_id": self.account_id}
         response = await self._aget(url, params=params)
         return response.json()
 
-    async def list_post_comments(self, post_id: str, comment_id: str | None=None, cursor: str | None=None, limit: int | None=None) -> dict[str, Any]:
+    async def list_post_comments(
+        self, post_id: str, comment_id: str | None = None, cursor: str | None = None, limit: int | None = None
+    ) -> dict[str, Any]:
         """
         Fetches comments for a specific post. Providing an optional `comment_id` retrieves threaded replies instead of top-level comments. `retrieve_post` or `list_profile_posts` can be used to obtain the `post_id` which is the social_id in their response.
 
@@ -361,18 +389,20 @@ class LinkedinApp(APIApplication):
         Tags:
             linkedin, post, comment, list, content, api, important
         """
-        url = f'{self.base_url}/api/v1/posts/{post_id}/comments'
-        params: dict[str, Any] = {'account_id': self.account_id}
+        url = f"{self.base_url}/api/v1/posts/{post_id}/comments"
+        params: dict[str, Any] = {"account_id": self.account_id}
         if cursor:
-            params['cursor'] = cursor
+            params["cursor"] = cursor
         if limit is not None:
-            params['limit'] = str(limit)
+            params["limit"] = str(limit)
         if comment_id:
-            params['comment_id'] = comment_id
+            params["comment_id"] = comment_id
         response = await self._aget(url, params=params)
         return response.json()
 
-    async def create_post(self, text: str, mentions: list[dict[str, Any]] | None=None, external_link: str | None=None) -> dict[str, Any]:
+    async def create_post(
+        self, text: str, mentions: list[dict[str, Any]] | None = None, external_link: str | None = None
+    ) -> dict[str, Any]:
         """
         Publishes a new top-level post from the account, including text, user mentions, and an external link. This function creates original content, distinguishing it from `create_post_comment` which adds replies to existing posts.
 
@@ -391,16 +421,18 @@ class LinkedinApp(APIApplication):
         Tags:
             linkedin, post, create, share, content, api, important
         """
-        url = f'{self.base_url}/api/v1/posts'
-        params: dict[str, str] = {'account_id': self.account_id, 'text': text}
+        url = f"{self.base_url}/api/v1/posts"
+        params: dict[str, str] = {"account_id": self.account_id, "text": text}
         if mentions:
-            params['mentions'] = mentions
+            params["mentions"] = mentions
         if external_link:
-            params['external_link'] = external_link
+            params["external_link"] = external_link
         response = await self._apost(url, data=params)
         return response.json()
 
-    async def list_content_reactions(self, post_id: str, comment_id: str | None=None, cursor: str | None=None, limit: int | None=None) -> dict[str, Any]:
+    async def list_content_reactions(
+        self, post_id: str, comment_id: str | None = None, cursor: str | None = None, limit: int | None = None
+    ) -> dict[str, Any]:
         """
         Retrieves a paginated list of reactions for a given post or, optionally, a specific comment. This read-only operation uses the account for the request, distinguishing it from the `create_reaction` function which adds new reactions.
 
@@ -419,18 +451,20 @@ class LinkedinApp(APIApplication):
         Tags:
             linkedin, post, reaction, list, like, content, api
         """
-        url = f'{self.base_url}/api/v1/posts/{post_id}/reactions'
-        params: dict[str, Any] = {'account_id': self.account_id}
+        url = f"{self.base_url}/api/v1/posts/{post_id}/reactions"
+        params: dict[str, Any] = {"account_id": self.account_id}
         if cursor:
-            params['cursor'] = cursor
+            params["cursor"] = cursor
         if limit:
-            params['limit'] = limit
+            params["limit"] = limit
         if comment_id:
-            params['comment_id'] = comment_id
+            params["comment_id"] = comment_id
         response = await self._aget(url, params=params)
         return response.json()
 
-    async def create_post_comment(self, post_social_id: str, text: str, comment_id: str | None=None, mentions_body: list[dict[str, Any]] | None=None) -> dict[str, Any]:
+    async def create_post_comment(
+        self, post_social_id: str, text: str, comment_id: str | None = None, mentions_body: list[dict[str, Any]] | None = None
+    ) -> dict[str, Any]:
         """
         Publishes a comment on a specified post. By providing an optional `comment_id`, it creates a threaded reply to an existing comment instead of a new top-level one. This function's dual capability distinguishes it from `list_post_comments`, which only retrieves comments and their replies.
 
@@ -450,19 +484,24 @@ class LinkedinApp(APIApplication):
         Tags:
             linkedin, post, comment, create, content, api, important
         """
-        url = f'{self.base_url}/api/v1/posts/{post_social_id}/comments'
-        params: dict[str, Any] = {'account_id': self.account_id, 'text': text}
+        url = f"{self.base_url}/api/v1/posts/{post_social_id}/comments"
+        params: dict[str, Any] = {"account_id": self.account_id, "text": text}
         if comment_id:
-            params['comment_id'] = comment_id
+            params["comment_id"] = comment_id
         if mentions_body:
-            params = {'mentions': mentions_body}
+            params = {"mentions": mentions_body}
         response = await self._apost(url, data=params)
         try:
             return response.json()
         except json.JSONDecodeError:
-            return {'status': response.status_code, 'message': 'Comment action processed.'}
+            return {"status": response.status_code, "message": "Comment action processed."}
 
-    async def create_reaction(self, post_social_id: str, reaction_type: Literal['like', 'celebrate', 'love', 'insightful', 'funny', 'support'], comment_id: str | None=None) -> dict[str, Any]:
+    async def create_reaction(
+        self,
+        post_social_id: str,
+        reaction_type: Literal["like", "celebrate", "love", "insightful", "funny", "support"],
+        comment_id: str | None = None,
+    ) -> dict[str, Any]:
         """
         Adds a specified reaction (e.g., 'like', 'love') to a LinkedIn post or, optionally, to a specific comment. This function performs a POST request to create the reaction, differentiating it from `list_content_reactions` which only retrieves existing ones.
 
@@ -480,15 +519,15 @@ class LinkedinApp(APIApplication):
         Tags:
             linkedin, post, reaction, create, like, content, api, important
         """
-        url = f'{self.base_url}/api/v1/posts/reaction'
-        params: dict[str, str] = {'account_id': self.account_id, 'post_id': post_social_id, 'reaction_type': reaction_type}
+        url = f"{self.base_url}/api/v1/posts/reaction"
+        params: dict[str, str] = {"account_id": self.account_id, "post_id": post_social_id, "reaction_type": reaction_type}
         if comment_id:
-            params['comment_id'] = comment_id
+            params["comment_id"] = comment_id
         response = await self._apost(url, data=params)
         try:
             return response.json()
         except json.JSONDecodeError:
-            return {'status': response.status_code, 'message': 'Reaction action processed.'}
+            return {"status": response.status_code, "message": "Reaction action processed."}
 
     async def retrieve_user_profile(self, public_identifier: str) -> dict[str, Any]:
         """
@@ -506,12 +545,20 @@ class LinkedinApp(APIApplication):
         Tags:
             linkedin, user, profile, retrieve, get, api, important
         """
-        url = f'{self.base_url}/api/v1/users/{public_identifier}'
-        params: dict[str, Any] = {'account_id': self.account_id}
+        url = f"{self.base_url}/api/v1/users/{public_identifier}"
+        params: dict[str, Any] = {"account_id": self.account_id}
         response = await self._aget(url, params=params)
         return self._handle_response(response)
 
-    async def search_people(self, cursor: str | None=None, limit: int | None=None, keywords: str | None=None, location: str | None=None, industry: str | None=None, company: str | None=None) -> dict[str, Any]:
+    async def search_people(
+        self,
+        cursor: str | None = None,
+        limit: int | None = None,
+        keywords: str | None = None,
+        location: str | None = None,
+        industry: str | None = None,
+        company: str | None = None,
+    ) -> dict[str, Any]:
         """
         Searches for LinkedIn user profiles using keywords, with optional filters for location, industry, and company. This function specifically targets the 'people' category, distinguishing it from other search methods like `search_companies` or `search_jobs` that query different entity types through the same API endpoint.
 
@@ -529,28 +576,35 @@ class LinkedinApp(APIApplication):
         Raises:
             httpx.HTTPError: If the API request fails.
         """
-        url = f'{self.base_url}/api/v1/linkedin/search'
-        params: dict[str, Any] = {'account_id': self.account_id}
+        url = f"{self.base_url}/api/v1/linkedin/search"
+        params: dict[str, Any] = {"account_id": self.account_id}
         if cursor:
-            params['cursor'] = cursor
+            params["cursor"] = cursor
         if limit is not None:
-            params['limit'] = limit
-        payload: dict[str, Any] = {'api': 'classic', 'category': 'people'}
+            params["limit"] = limit
+        payload: dict[str, Any] = {"api": "classic", "category": "people"}
         if keywords:
-            payload['keywords'] = keywords
+            payload["keywords"] = keywords
         if location:
-            location_id = self._get_search_parameter_id('LOCATION', location)
-            payload['location'] = [location_id]
+            location_id = self._get_search_parameter_id("LOCATION", location)
+            payload["location"] = [location_id]
         if industry:
-            industry_id = self._get_search_parameter_id('INDUSTRY', industry)
-            payload['industry'] = [industry_id]
+            industry_id = self._get_search_parameter_id("INDUSTRY", industry)
+            payload["industry"] = [industry_id]
         if company:
-            company_id = self._get_search_parameter_id('COMPANY', company)
-            payload['company'] = [company_id]
+            company_id = self._get_search_parameter_id("COMPANY", company)
+            payload["company"] = [company_id]
         response = await self._apost(url, params=params, data=payload)
         return self._handle_response(response)
 
-    async def search_companies(self, cursor: str | None=None, limit: int | None=None, keywords: str | None=None, location: str | None=None, industry: str | None=None) -> dict[str, Any]:
+    async def search_companies(
+        self,
+        cursor: str | None = None,
+        limit: int | None = None,
+        keywords: str | None = None,
+        location: str | None = None,
+        industry: str | None = None,
+    ) -> dict[str, Any]:
         """
         Performs a paginated search for companies on LinkedIn using keywords, with optional location and industry filters. Its specific 'companies' search category distinguishes it from other methods like `search_people` or `search_posts`, ensuring that only company profiles are returned.
 
@@ -567,25 +621,32 @@ class LinkedinApp(APIApplication):
         Raises:
             httpx.HTTPError: If the API request fails.
         """
-        url = f'{self.base_url}/api/v1/linkedin/search'
-        params: dict[str, Any] = {'account_id': self.account_id}
+        url = f"{self.base_url}/api/v1/linkedin/search"
+        params: dict[str, Any] = {"account_id": self.account_id}
         if cursor:
-            params['cursor'] = cursor
+            params["cursor"] = cursor
         if limit is not None:
-            params['limit'] = limit
-        payload: dict[str, Any] = {'api': 'classic', 'category': 'companies'}
+            params["limit"] = limit
+        payload: dict[str, Any] = {"api": "classic", "category": "companies"}
         if keywords:
-            payload['keywords'] = keywords
+            payload["keywords"] = keywords
         if location:
-            location_id = self._get_search_parameter_id('LOCATION', location)
-            payload['location'] = [location_id]
+            location_id = self._get_search_parameter_id("LOCATION", location)
+            payload["location"] = [location_id]
         if industry:
-            industry_id = self._get_search_parameter_id('INDUSTRY', industry)
-            payload['industry'] = [industry_id]
+            industry_id = self._get_search_parameter_id("INDUSTRY", industry)
+            payload["industry"] = [industry_id]
         response = await self._apost(url, params=params, data=payload)
         return self._handle_response(response)
 
-    async def search_posts(self, cursor: str | None=None, limit: int | None=None, keywords: str | None=None, date_posted: Literal['past_day', 'past_week', 'past_month'] | None=None, sort_by: Literal['relevance', 'date']='relevance') -> dict[str, Any]:
+    async def search_posts(
+        self,
+        cursor: str | None = None,
+        limit: int | None = None,
+        keywords: str | None = None,
+        date_posted: Literal["past_day", "past_week", "past_month"] | None = None,
+        sort_by: Literal["relevance", "date"] = "relevance",
+    ) -> dict[str, Any]:
         """
         Performs a keyword-based search for LinkedIn posts, allowing filters for date and sorting by relevance. This function executes a general, platform-wide content search, distinguishing it from other search functions that target people, companies, or jobs, and from `list_profile_posts` which retrieves from a specific profile.
 
@@ -602,23 +663,32 @@ class LinkedinApp(APIApplication):
         Raises:
             httpx.HTTPError: If the API request fails.
         """
-        url = f'{self.base_url}/api/v1/linkedin/search'
-        params: dict[str, Any] = {'account_id': self.account_id}
+        url = f"{self.base_url}/api/v1/linkedin/search"
+        params: dict[str, Any] = {"account_id": self.account_id}
         if cursor:
-            params['cursor'] = cursor
+            params["cursor"] = cursor
         if limit is not None:
-            params['limit'] = limit
-        payload: dict[str, Any] = {'api': 'classic', 'category': 'posts'}
+            params["limit"] = limit
+        payload: dict[str, Any] = {"api": "classic", "category": "posts"}
         if keywords:
-            payload['keywords'] = keywords
+            payload["keywords"] = keywords
         if date_posted:
-            payload['date_posted'] = date_posted
+            payload["date_posted"] = date_posted
         if sort_by:
-            payload['sort_by'] = sort_by
+            payload["sort_by"] = sort_by
         response = await self._apost(url, params=params, data=payload)
         return self._handle_response(response)
 
-    async def search_jobs(self, cursor: str | None=None, limit: int | None=None, keywords: str | None=None, region: str | None=None, sort_by: Literal['relevance', 'date']='relevance', minimum_salary_value: int=40, industry: str | None=None) -> dict[str, Any]:
+    async def search_jobs(
+        self,
+        cursor: str | None = None,
+        limit: int | None = None,
+        keywords: str | None = None,
+        region: str | None = None,
+        sort_by: Literal["relevance", "date"] = "relevance",
+        minimum_salary_value: int = 40,
+        industry: str | None = None,
+    ) -> dict[str, Any]:
         """
         Performs a LinkedIn search for jobs, filtering results by keywords, region, industry, and minimum salary. Unlike other search functions (`search_people`, `search_companies`), this method is specifically configured to query the 'jobs' category, providing a paginated list of relevant employment opportunities.
 
@@ -638,27 +708,31 @@ class LinkedinApp(APIApplication):
             httpx.HTTPError: If the API request fails.
             ValueError: If the specified location is not found.
         """
-        url = f'{self.base_url}/api/v1/linkedin/search'
-        params: dict[str, Any] = {'account_id': self.account_id}
+        url = f"{self.base_url}/api/v1/linkedin/search"
+        params: dict[str, Any] = {"account_id": self.account_id}
         if cursor:
-            params['cursor'] = cursor
+            params["cursor"] = cursor
         if limit is not None:
-            params['limit'] = limit
-        payload: dict[str, Any] = {'api': 'classic', 'category': 'jobs', 'minimum_salary': {'currency': 'USD', 'value': minimum_salary_value}}
+            params["limit"] = limit
+        payload: dict[str, Any] = {
+            "api": "classic",
+            "category": "jobs",
+            "minimum_salary": {"currency": "USD", "value": minimum_salary_value},
+        }
         if keywords:
-            payload['keywords'] = keywords
+            payload["keywords"] = keywords
         if sort_by:
-            payload['sort_by'] = sort_by
+            payload["sort_by"] = sort_by
         if region:
-            location_id = self._get_search_parameter_id('LOCATION', region)
-            payload['region'] = location_id
+            location_id = self._get_search_parameter_id("LOCATION", region)
+            payload["region"] = location_id
         if industry:
-            industry_id = self._get_search_parameter_id('INDUSTRY', industry)
-            payload['industry'] = [industry_id]
+            industry_id = self._get_search_parameter_id("INDUSTRY", industry)
+            payload["industry"] = [industry_id]
         response = await self._apost(url, params=params, data=payload)
         return self._handle_response(response)
 
-    async def send_invitation(self, provider_id: str, user_email: str | None=None, message: str | None=None) -> dict[str, Any]:
+    async def send_invitation(self, provider_id: str, user_email: str | None = None, message: str | None = None) -> dict[str, Any]:
         """
         Sends a connection invitation to a LinkedIn user specified by their provider ID. An optional message and the user's email can be included.
 
@@ -677,21 +751,21 @@ class LinkedinApp(APIApplication):
         Tags:
             linkedin, user, invite, connect, contact, api, important
         """
-        url = f'{self.base_url}/api/v1/users/invite'
-        payload: dict[str, Any] = {'account_id': self.account_id, 'provider_id': provider_id}
+        url = f"{self.base_url}/api/v1/users/invite"
+        payload: dict[str, Any] = {"account_id": self.account_id, "provider_id": provider_id}
         if user_email:
-            payload['user_email'] = user_email
+            payload["user_email"] = user_email
         if message:
             if len(message) > 300:
-                raise ValueError('Message cannot exceed 300 characters.')
-            payload['message'] = message
+                raise ValueError("Message cannot exceed 300 characters.")
+            payload["message"] = message
         response = await self._apost(url, data=payload)
         try:
             return response.json()
         except json.JSONDecodeError:
-            return {'status': response.status_code, 'message': 'Invitation action processed.'}
+            return {"status": response.status_code, "message": "Invitation action processed."}
 
-    async def list_sent_invitations(self, cursor: str | None=None, limit: int | None=None) -> dict[str, Any]:
+    async def list_sent_invitations(self, cursor: str | None = None, limit: int | None = None) -> dict[str, Any]:
         """
         Retrieves a paginated list of all sent connection invitations that are currently pending. This function allows for iterating through the history of outstanding connection requests made from the specified account.
 
@@ -708,16 +782,16 @@ class LinkedinApp(APIApplication):
         Tags:
             linkedin, user, invite, sent, list, contacts, api
         """
-        url = f'{self.base_url}/api/v1/users/invite/sent'
-        params: dict[str, Any] = {'account_id': self.account_id}
+        url = f"{self.base_url}/api/v1/users/invite/sent"
+        params: dict[str, Any] = {"account_id": self.account_id}
         if cursor:
-            params['cursor'] = cursor
+            params["cursor"] = cursor
         if limit is not None:
-            params['limit'] = limit
+            params["limit"] = limit
         response = await self._aget(url, params=params)
         return response.json()
 
-    async def list_received_invitations(self, cursor: str | None=None, limit: int | None=None) -> dict[str, Any]:
+    async def list_received_invitations(self, cursor: str | None = None, limit: int | None = None) -> dict[str, Any]:
         """
         Retrieves a paginated list of all received connection invitations. This function allows for reviewing and processing incoming connection requests to the specified account.
 
@@ -734,16 +808,18 @@ class LinkedinApp(APIApplication):
         Tags:
             linkedin, user, invite, received, list, contacts, api
         """
-        url = f'{self.base_url}/api/v1/users/invite/received'
-        params: dict[str, Any] = {'account_id': self.account_id}
+        url = f"{self.base_url}/api/v1/users/invite/received"
+        params: dict[str, Any] = {"account_id": self.account_id}
         if cursor:
-            params['cursor'] = cursor
+            params["cursor"] = cursor
         if limit is not None:
-            params['limit'] = limit
+            params["limit"] = limit
         response = await self._aget(url, params=params)
         return response.json()
 
-    async def handle_received_invitation(self, invitation_id: str, action: Literal['accept', 'decline'], shared_secret: str) -> dict[str, Any]:
+    async def handle_received_invitation(
+        self, invitation_id: str, action: Literal["accept", "decline"], shared_secret: str
+    ) -> dict[str, Any]:
         """
         Accepts or declines a received LinkedIn connection invitation using its ID and a required shared secret. This function performs a POST request to update the invitation's status, distinguishing it from read-only functions like `list_received_invitations`.
 
@@ -761,15 +837,15 @@ class LinkedinApp(APIApplication):
         Tags:
             linkedin, user, invite, received, handle, accept, decline, api
         """
-        url = f'{self.base_url}/api/v1/users/invite/received/{invitation_id}'
-        payload: dict[str, Any] = {'provider': 'LINKEDIN', 'action': action, 'shared_secret': shared_secret, 'account_id': self.account_id}
+        url = f"{self.base_url}/api/v1/users/invite/received/{invitation_id}"
+        payload: dict[str, Any] = {"provider": "LINKEDIN", "action": action, "shared_secret": shared_secret, "account_id": self.account_id}
         response = await self._apost(url, data=payload)
         try:
             return response.json()
         except json.JSONDecodeError:
-            return {'status': response.status_code, 'message': f"Invitation action '{action}' processed."}
+            return {"status": response.status_code, "message": f"Invitation action '{action}' processed."}
 
-    async def list_followers(self, cursor: str | None=None, limit: int | None=None) -> dict[str, Any]:
+    async def list_followers(self, cursor: str | None = None, limit: int | None = None) -> dict[str, Any]:
         """
         Retrieves a paginated list of all followers for the current user's account. This function is distinct from `list_following` as it shows who follows the user, not who the user follows.
 
@@ -786,16 +862,16 @@ class LinkedinApp(APIApplication):
         Tags:
             linkedin, user, followers, list, contacts, api
         """
-        url = f'{self.base_url}/api/v1/users/followers'
-        params: dict[str, Any] = {'account_id': self.account_id}
+        url = f"{self.base_url}/api/v1/users/followers"
+        params: dict[str, Any] = {"account_id": self.account_id}
         if cursor:
-            params['cursor'] = cursor
+            params["cursor"] = cursor
         if limit is not None:
-            params['limit'] = limit
+            params["limit"] = limit
         response = await self._aget(url, params=params)
         return response.json()
 
-    async def list_following(self, cursor: str | None=None, limit: int | None=None) -> dict[str, Any]:
+    async def list_following(self, cursor: str | None = None, limit: int | None = None) -> dict[str, Any]:
         """
         Retrieves a paginated list of all accounts that the current user is following. This function is the counterpart to `list_followers`, focusing on the user's outgoing connections rather than incoming ones.
 
@@ -812,14 +888,40 @@ class LinkedinApp(APIApplication):
         Tags:
             linkedin, user, following, list, contacts, api
         """
-        url = f'{self.base_url}/api/v1/users/following'
-        params: dict[str, Any] = {'account_id': self.account_id}
+        url = f"{self.base_url}/api/v1/users/following"
+        params: dict[str, Any] = {"account_id": self.account_id}
         if cursor:
-            params['cursor'] = cursor
+            params["cursor"] = cursor
         if limit is not None:
-            params['limit'] = limit
+            params["limit"] = limit
         response = self._get(url, params=params)
         return response.json()
 
     def list_tools(self) -> list[Callable]:
-        return [self.start_new_chat, self.list_all_chats, self.list_chat_messages, self.send_chat_message, self.retrieve_chat, self.list_all_messages, self.list_profile_posts, self.retrieve_own_profile, self.retrieve_user_profile, self.retrieve_post, self.list_post_comments, self.create_post, self.list_content_reactions, self.create_post_comment, self.create_reaction, self.search_companies, self.search_jobs, self.search_people, self.search_posts, self.send_invitation, self.list_sent_invitations, self.list_received_invitations, self.handle_received_invitation, self.list_followers]
+        return [
+            self.start_new_chat,
+            self.list_all_chats,
+            self.list_chat_messages,
+            self.send_chat_message,
+            self.retrieve_chat,
+            self.list_all_messages,
+            self.list_profile_posts,
+            self.retrieve_own_profile,
+            self.retrieve_user_profile,
+            self.retrieve_post,
+            self.list_post_comments,
+            self.create_post,
+            self.list_content_reactions,
+            self.create_post_comment,
+            self.create_reaction,
+            self.search_companies,
+            self.search_jobs,
+            self.search_people,
+            self.search_posts,
+            self.send_invitation,
+            self.list_sent_invitations,
+            self.list_received_invitations,
+            self.handle_received_invitation,
+            self.list_followers,
+            # self.list_following       this endpoint is not yet implemented by unipile
+        ]

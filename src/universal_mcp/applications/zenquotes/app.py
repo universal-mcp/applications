@@ -1,9 +1,9 @@
 from universal_mcp.applications.application import APIApplication
 
-class ZenquotesApp(APIApplication):
 
+class ZenquotesApp(APIApplication):
     def __init__(self, **kwargs) -> None:
-        super().__init__(name='zenquotes')
+        super().__init__(name="zenquotes")
 
     async def get_random_quote(self) -> str:
         """
@@ -21,11 +21,11 @@ class ZenquotesApp(APIApplication):
         Tags:
             fetch, quotes, api, http, important
         """
-        url = 'https://zenquotes.io/api/random'
+        url = "https://zenquotes.io/api/random"
         response = await self._aget(url)
         data = response.json()
         quote = data[0]
-        return {'quote': quote['q'], 'author': quote['a']}
+        return {"quote": quote["q"], "author": quote["a"]}
 
     def list_tools(self):
         return [self.get_random_quote]

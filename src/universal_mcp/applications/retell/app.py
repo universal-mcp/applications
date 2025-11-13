@@ -2,11 +2,11 @@ from typing import Any
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
-class RetellApp(APIApplication):
 
-    def __init__(self, integration: Integration=None, **kwargs) -> None:
-        super().__init__(name='retell', integration=integration, **kwargs)
-        self.base_url = 'https://api.retellai.com'
+class RetellApp(APIApplication):
+    def __init__(self, integration: Integration = None, **kwargs) -> None:
+        super().__init__(name="retell", integration=integration, **kwargs)
+        self.base_url = "https://api.retellai.com"
 
     async def get_v2_get_call_by_call_id(self, call_id) -> dict[str, Any]:
         """
@@ -27,13 +27,15 @@ class RetellApp(APIApplication):
         """
         if call_id is None:
             raise ValueError("Missing required parameter 'call_id'")
-        url = f'{self.base_url}/v2/get-call/{call_id}'
+        url = f"{self.base_url}/v2/get-call/{call_id}"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def post_v2_create_phone_call(self, from_number, to_number, override_agent_id=None, metadata=None, retell_llm_dynamic_variables=None) -> dict[str, Any]:
+    async def post_v2_create_phone_call(
+        self, from_number, to_number, override_agent_id=None, metadata=None, retell_llm_dynamic_variables=None
+    ) -> dict[str, Any]:
         """
         Initiates a phone call using a JSON payload with specified parameters.
 
@@ -57,9 +59,15 @@ class RetellApp(APIApplication):
             raise ValueError("Missing required parameter 'from_number'")
         if to_number is None:
             raise ValueError("Missing required parameter 'to_number'")
-        request_body = {'from_number': from_number, 'to_number': to_number, 'override_agent_id': override_agent_id, 'metadata': metadata, 'retell_llm_dynamic_variables': retell_llm_dynamic_variables}
+        request_body = {
+            "from_number": from_number,
+            "to_number": to_number,
+            "override_agent_id": override_agent_id,
+            "metadata": metadata,
+            "retell_llm_dynamic_variables": retell_llm_dynamic_variables,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/create-phone-call'
+        url = f"{self.base_url}/v2/create-phone-call"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -85,9 +93,9 @@ class RetellApp(APIApplication):
         """
         if agent_id is None:
             raise ValueError("Missing required parameter 'agent_id'")
-        request_body = {'agent_id': agent_id, 'metadata': metadata, 'retell_llm_dynamic_variables': retell_llm_dynamic_variables}
+        request_body = {"agent_id": agent_id, "metadata": metadata, "retell_llm_dynamic_variables": retell_llm_dynamic_variables}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/create-web-call'
+        url = f"{self.base_url}/v2/create-web-call"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -111,7 +119,7 @@ class RetellApp(APIApplication):
         """
         if voice_id is None:
             raise ValueError("Missing required parameter 'voice_id'")
-        url = f'{self.base_url}/get-voice/{voice_id}'
+        url = f"{self.base_url}/get-voice/{voice_id}"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -136,9 +144,9 @@ class RetellApp(APIApplication):
         Tags:
             list, calls, api, batch, management, important
         """
-        request_body = {'filter_criteria': filter_criteria, 'sort_order': sort_order, 'limit': limit, 'pagination_key': pagination_key}
+        request_body = {"filter_criteria": filter_criteria, "sort_order": sort_order, "limit": limit, "pagination_key": pagination_key}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/v2/list-calls'
+        url = f"{self.base_url}/v2/list-calls"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -166,9 +174,14 @@ class RetellApp(APIApplication):
         """
         if area_code is None:
             raise ValueError("Missing required parameter 'area_code'")
-        request_body = {'inbound_agent_id': inbound_agent_id, 'outbound_agent_id': outbound_agent_id, 'area_code': area_code, 'nickname': nickname}
+        request_body = {
+            "inbound_agent_id": inbound_agent_id,
+            "outbound_agent_id": outbound_agent_id,
+            "area_code": area_code,
+            "nickname": nickname,
+        }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/create-phone-number'
+        url = f"{self.base_url}/create-phone-number"
         query_params = {}
         response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -193,7 +206,7 @@ class RetellApp(APIApplication):
         """
         if phone_number is None:
             raise ValueError("Missing required parameter 'phone_number'")
-        url = f'{self.base_url}/get-phone-number/{phone_number}'
+        url = f"{self.base_url}/get-phone-number/{phone_number}"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
@@ -215,13 +228,15 @@ class RetellApp(APIApplication):
         Tags:
             get, list, phone-numbers, api, synchronous
         """
-        url = f'{self.base_url}/list-phone-numbers'
+        url = f"{self.base_url}/list-phone-numbers"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def patch_update_phone_number_by_phone_number(self, phone_number, inbound_agent_id=None, outbound_agent_id=None, nickname=None) -> dict[str, Any]:
+    async def patch_update_phone_number_by_phone_number(
+        self, phone_number, inbound_agent_id=None, outbound_agent_id=None, nickname=None
+    ) -> dict[str, Any]:
         """
         Updates the information of a phone number by its number, allowing optional modification of inbound and outbound agent IDs and nickname.
 
@@ -243,9 +258,9 @@ class RetellApp(APIApplication):
         """
         if phone_number is None:
             raise ValueError("Missing required parameter 'phone_number'")
-        request_body = {'inbound_agent_id': inbound_agent_id, 'outbound_agent_id': outbound_agent_id, 'nickname': nickname}
+        request_body = {"inbound_agent_id": inbound_agent_id, "outbound_agent_id": outbound_agent_id, "nickname": nickname}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f'{self.base_url}/update-phone-number/{phone_number}'
+        url = f"{self.base_url}/update-phone-number/{phone_number}"
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -270,11 +285,22 @@ class RetellApp(APIApplication):
         """
         if phone_number is None:
             raise ValueError("Missing required parameter 'phone_number'")
-        url = f'{self.base_url}/delete-phone-number/{phone_number}'
+        url = f"{self.base_url}/delete-phone-number/{phone_number}"
         query_params = {}
         response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
     def list_tools(self):
-        return [self.get_v2_get_call_by_call_id, self.post_v2_create_phone_call, self.post_v2_create_web_call, self.get_get_voice_by_voice_id, self.post_v2_list_calls, self.post_create_phone_number, self.get_get_phone_number_by_phone_number, self.get_list_phone_numbers, self.patch_update_phone_number_by_phone_number, self.delete_delete_phone_number_by_phone_number]
+        return [
+            self.get_v2_get_call_by_call_id,
+            self.post_v2_create_phone_call,
+            self.post_v2_create_web_call,
+            self.get_get_voice_by_voice_id,
+            self.post_v2_list_calls,
+            self.post_create_phone_number,
+            self.get_get_phone_number_by_phone_number,
+            self.get_list_phone_numbers,
+            self.patch_update_phone_number_by_phone_number,
+            self.delete_delete_phone_number_by_phone_number,
+        ]
