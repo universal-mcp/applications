@@ -2034,6 +2034,18 @@ wheels = [
 ]
 
 [[package]]
+name = "json-schema-to-pydantic"
+version = "0.4.7"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pydantic" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/e6/b1/fbcbda5e23ecb5ff987076d9caccb11d182a249cedd5424236aaca4e65b8/json_schema_to_pydantic-0.4.7.tar.gz", hash = "sha256:a6384825fee7609715641a1e5095ddf41aa3bdd06cd91d4a6b6d88a3dfcad920", size = 50054, upload-time = "2025-11-03T19:28:30.65Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/b2/af/f64664df8d4d52a371195e16c6ff4419968ee3eb6f96b21e596e3623dcf3/json_schema_to_pydantic-0.4.7-py3-none-any.whl", hash = "sha256:e329506e42b63f9a0ae0a17f7082ec7fc7cb3326138ec5c24904e0af5a660e63", size = 14709, upload-time = "2025-11-03T19:28:29.168Z" },
+]
+
+[[package]]
 name = "jsonpatch"
 version = "1.33"
 source = { registry = "https://pypi.org/simple" }
@@ -5116,20 +5128,21 @@ wheels = [
 
 [[package]]
 name = "universal-mcp-agents"
-version = "0.1.21"
+version = "0.1.25rc2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
+    { name = "cloudpickle" },
+    { name = "json-schema-to-pydantic" },
     { name = "langchain-anthropic" },
     { name = "langchain-google-genai" },
     { name = "langchain-openai" },
     { name = "langgraph" },
-    { name = "typer" },
     { name = "universal-mcp" },
     { name = "universal-mcp-applications" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/b0/45/72d14ee9ddce831629ac4cc2052c912bf9fd66ea06e9ebc5d1af3bdff6c2/universal_mcp_agents-0.1.21.tar.gz", hash = "sha256:eccf2ab0066f73c373d5aaefc8ae2dc5eb0f388767ae2d663681f8c13240733c", size = 358534, upload-time = "2025-10-15T07:09:39.824Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/12/5c/341ec19861ea2185ca967a106e3ad535e6c50867650f5fe99ab61f089474/universal_mcp_agents-0.1.25rc2.tar.gz", hash = "sha256:e782836c22096cc62bbcac960c03062884320ab8b95a4705ac4963ef8cfdd86b", size = 379551, upload-time = "2025-11-13T09:27:49.891Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/d1/25/9d5c7cb2ea366fdb20a38d8aa7f6dc3e4ec1c5366c69396c05cf8366587c/universal_mcp_agents-0.1.21-py3-none-any.whl", hash = "sha256:d64a7a7b0882121e1b43ddb0268b92511a6277551a7793a5146ebb773cb6c901", size = 66669, upload-time = "2025-10-15T07:09:37.421Z" },
+    { url = "https://files.pythonhosted.org/packages/62/98/cdd6db7dd85e230f33bf43774f8717cec3d4ed8248ddc2fc1fbbf89b4cc4/universal_mcp_agents-0.1.25rc2-py3-none-any.whl", hash = "sha256:778b1fd5946988fa9c847a920961846c4541b72e7c1ce223c380ec9917c0ff0e", size = 94954, upload-time = "2025-11-13T09:27:46.3Z" },
 ]
 
 [[package]]
@@ -5160,6 +5173,7 @@ dependencies = [
     { name = "resend" },
     { name = "twilio" },
     { name = "universal-mcp" },
+    { name = "universal-mcp-agents" },
     { name = "yfinance" },
     { name = "youtube-transcript-api" },
 ]
@@ -5210,6 +5224,7 @@ requires-dist = [
     { name = "ruff", marker = "extra == 'dev'" },
     { name = "twilio", specifier = ">=9.8.0" },
     { name = "universal-mcp", specifier = ">=0.1.24" },
+    { name = "universal-mcp-agents", specifier = ">=0.1.25rc2" },
     { name = "yfinance", specifier = ">=0.2.66" },
     { name = "youtube-transcript-api", specifier = "==1.2.2" },
 ]
