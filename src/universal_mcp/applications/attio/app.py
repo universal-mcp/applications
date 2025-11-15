@@ -1,11 +1,11 @@
 from typing import Any, Optional, List
-from universal_mcp.applications import APIApplication
+from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 from .schemas import *
 
 
 class AttioApiApp(APIApplication):
-    def __init__(self, integration: Integration = None, **kwargs) -> None:
+    def __init__(self, integration: Integration, **kwargs) -> None:
         super().__init__(name="attioapiapp", integration=integration, **kwargs)
         self.base_url = "https://api.attio.com"
 
@@ -1503,6 +1503,87 @@ class AttioApiApp(APIApplication):
         response = self._delete(url, params=query_params)
         return Deleterecordsresponse.model_validate(self._handle_response(response))
 
+    def get_v2_tasks(
+        self,
+        limit: Optional[int] = None,
+        offset: Optional[int] = None,
+        sort: Optional[str] = None,
+        linked_object: Optional[str] = None,
+        linked_record_id: Optional[str] = None,
+        assignee: Optional[str] = None,
+        is_completed: Optional[bool] = None,
+    ) -> Gettasksresponse:
+        """
+        List tasks
+
+        Args:
+            limit (integer): The maximum number of results to return. Defaults to 500. See the [full guide to pagination here](/rest-api/how-to/pagination). Example: 10.
+            offset (integer): The number of results to skip over before returning. Defaults to 0. See the [full guide to pagination here](/rest-api/how-to/pagination). Example: 5.
+            sort (string): Optionally sort the results. "created_at:asc" returns oldest results first, "created_at:desc" returns the newest results first. If unspecified, defaults to "created_at:asc" (oldest results first). Example: "created_at:desc".
+            linked_object (string): Pass a value to this parameter to filter results to only those tasks that contain the specified record in the `linked_records` property of the task. This parameter should identify the object that the linked record belongs to. For example, if filtering to tasks that link to a specific person record, this parameter should be `people`. If provided, `linked_record_id` must also be provided. Example: "people".
+            linked_record_id (string): Pass a value to this parameter to filter results to only those tasks that contain the specified record in the `linked_records` property of the task. This parameter should contain the record ID of the linked record. If provided, `linked_object` must also be provided. Example: "891dcbfc-9141-415d-9b2a-2238a6cc012d".
+            assignee (string): Filter tasks by workspace member assignees. Workspace members can be referenced by either their email address or ID. Pass an empty value or the string `null` to find tasks with no assignee. Example: "50cf242c-7fa3-4cad-87d0-75b1af71c57b".
+            is_completed (boolean): Filter tasks by whether they have been completed. By default, both completed and non-completed tasks are returned. Specify `true` to only return completed tasks, or `false` to only return non-completed tasks. Example: True.
+
+        Returns:
+            Gettasksresponse: Success
+
+        Raises:
+            HTTPStatusError: Raised when the API request fails with detailed error information including status code and response body.
+
+        Tags:
+            Tasks
+        """
+        url = f"{self.base_url}/v2/tasks"
+        query_params = {
+            k: v
+            for k, v in [
+                ("limit", limit),
+                ("offset", offset),
+                ("sort", sort),
+                ("linked_object", linked_object),
+                ("linked_record_id", linked_record_id),
+                ("assignee", assignee),
+                ("is_completed", is_completed),
+            ]
+            if v is not None
+        }
+        response = self._get(url, params=query_params)
+        return Gettasksresponse.model_validate(self._handle_response(response))
+
+    def post_v2_tasks(self, data: dict[str, Any]) -> Gettasksresponse:
+        """
+        Create a task
+
+        Args:
+            data (object): data
+
+        Returns:
+            Gettasksresponse: Success
+
+        Raises:
+            HTTPStatusError: Raised when the API request fails with detailed error information including status code and response body.
+
+        Tags:
+            Tasks
+        """
+        request_body_data = None
+        request_body_data = {
+            "data": data,
+        }
+        request_body_data = {
+            k: v for k, v in request_body_data.items() if v is not None
+        }
+        url = f"{self.base_url}/v2/tasks"
+        query_params = {}
+        response = self._post(
+            url,
+            data=request_body_data,
+            params=query_params,
+            content_type="application/json",
+        )
+        return Gettasksresponse.model_validate(self._handle_response(response))
+
     def get_v2_tasks_by_task_id(self, task_id: str) -> Gettasksresponse:
         """
         Get a task
@@ -1730,6 +1811,60 @@ class AttioApiApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         return Deleterecordsresponse.model_validate(self._handle_response(response))
+
+    def get_v2_meetings(
+        self,
+        limit: Optional[int] = None,
+        cursor: Optional[str] = None,
+        linked_object: Optional[str] = None,
+        linked_record_id: Optional[str] = None,
+        participants: Optional[str] = None,
+        sort: Optional[str] = None,
+        ends_from: Optional[str] = None,
+        starts_before: Optional[str] = None,
+        timezone: Optional[str] = None,
+    ) -> Getmeetingsresponse:
+        """
+        List meetings
+
+        Args:
+            limit (integer): The maximum number of meetings to return. Must be between 1 and 200. Defaults to 50. Example: 50.
+            cursor (string): A pagination cursor used to fetch the next page of meetings. Responses with more meetings will include a cursor for you to use here. If not provided, the first page will be returned.
+            linked_object (string): The object to filter meetings by. Must be a valid object slug or ID. If provided, linked_record_id must also be provided.
+            linked_record_id (string): Used to filter meetings to only those values that include a specific linked record. Must be a valid record ID. If provided, linked_object must also be provided.
+            participants (string): A comma-separated list of emails to filter meetings by. If provided, meetings will be filtered to only include meetings that include at least one of the provided emails as participants.
+            sort (string): The order in which to sort the meetings. Defaults to start_asc.
+            ends_from (string): Use `ends_from` to filter meetings to only those that end after the specified timestamp. `ends_from` is inclusive, meaning that meetings that end at the exact timestamp will be included in results. When evaluating all-day meetings, we filter results from the perspective of a specific timezone (see `timezone` for more information).
+            starts_before (string): Use `starts_before` to filter meetings to only those that start before the specified timestamp. `starts_before` is exclusive, meaning that meetings that start at the exact timestamp will not be included in results. When evaluating all-day meetings, we filter results from the perspective of a specific timezone (see `timezone` for more information).
+            timezone (string): The timezone to use when filtering meetings using `ends_from` and `starts_before`. Defaults to UTC. This property has no effect for non-all-day meetings.
+
+        Returns:
+            Getmeetingsresponse: Success
+
+        Raises:
+            HTTPStatusError: Raised when the API request fails with detailed error information including status code and response body.
+
+        Tags:
+            Meetings
+        """
+        url = f"{self.base_url}/v2/meetings"
+        query_params = {
+            k: v
+            for k, v in [
+                ("limit", limit),
+                ("cursor", cursor),
+                ("linked_object", linked_object),
+                ("linked_record_id", linked_record_id),
+                ("participants", participants),
+                ("sort", sort),
+                ("ends_from", ends_from),
+                ("starts_before", starts_before),
+                ("timezone", timezone),
+            ]
+            if v is not None
+        }
+        response = self._get(url, params=query_params)
+        return Getmeetingsresponse.model_validate(self._handle_response(response))
 
     def get_v2_meetings_by_meeting_id(self, meeting_id: str) -> Getmeetingsresponse:
         """
@@ -2044,6 +2179,8 @@ class AttioApiApp(APIApplication):
             self.post_v2_notes,
             self.get_v2_notes_by_note_id,
             self.delete_v2_notes_by_note_id,
+            self.get_v2_tasks,
+            self.post_v2_tasks,
             self.get_v2_tasks_by_task_id,
             self.patch_v2_tasks_by_task_id,
             self.delete_v2_tasks_by_task_id,
@@ -2052,6 +2189,7 @@ class AttioApiApp(APIApplication):
             self.post_v2_comments,
             self.get_v2_comments_by_comment_id,
             self.delete_v2_comments_by_comment_id,
+            self.get_v2_meetings,
             self.get_v2_meetings_by_meeting_id,
             self.get_v2_meetings_by_meeting_id_call_recordings,
             self.get_v2_meetings_by_meeting_id_call_recordings_by_call_recording_id,
