@@ -7,6 +7,7 @@ ALL_APPS = [
     "airtable",
     "apollo",
     "asana",
+    "attio",
     "aws_s3",
     "bill",  # not seeded
     "box",
