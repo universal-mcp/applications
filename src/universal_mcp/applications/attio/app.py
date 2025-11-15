@@ -4,9 +4,9 @@ from universal_mcp.integrations import Integration
 from .schemas import *
 
 
-class AttioApiApp(APIApplication):
+class AttioApp(APIApplication):
     def __init__(self, integration: Integration, **kwargs) -> None:
-        super().__init__(name="attioapiapp", integration=integration, **kwargs)
+        super().__init__(name="attio", integration=integration, **kwargs)
         self.base_url = "https://api.attio.com"
 
     def get_v2_objects(self) -> Getobjectsresponse:
