@@ -176,8 +176,17 @@ class GoogleMailApp(APIApplication):
             message_id: The unique identifier of the Gmail message to retrieve
 
         Returns:
-            A dictionary containing the cleaned message details (serializable as JSON)
-
+            A dictionary containing the message details with the following keys:
+                - message_id (str): The unique ID of the email.
+                - from (str): The sender's email address or "Unknown sender" if unavailable.
+                - to (str): The recipient(s) email address(es) or "Unknown recipient" if unavailable.
+                - date (str): The date the email was sent or "Unknown date" if unavailable.
+                - subject (str): The subject of the email or "No subject" if unavailable.
+                - body (str): The plain text content of the email or a preview/snippet.
+                - thread_id (str | None): The ID of the email thread this message belongs to.
+                - attachments (list[dict]): A list of attachments, each represented as a dictionary
+                with metadata (e.g., filename, MIME type, attachment ID).
+        
         Tags:
             retrieve, email, format, api, gmail, message, important, body, content, attachments
         """
@@ -198,11 +207,11 @@ class GoogleMailApp(APIApplication):
         attachments = self._extract_attachments(raw_data.get("payload", {}))
         return {
             "message_id": message_id,
-            "from_addr": headers.get("From", "Unknown sender"),
+            "from": headers.get("From", "Unknown sender"),
             "to": headers.get("To", "Unknown recipient"),
             "date": headers.get("Date", "Unknown date"),
             "subject": headers.get("Subject", "No subject"),
-            "body_content": body_content,
+            "body": body_content,
             "thread_id": raw_data.get("threadId"),
             "attachments": attachments,
         }
@@ -330,7 +339,17 @@ class GoogleMailApp(APIApplication):
             include_spam_trash: Boolean flag to include messages from spam and trash folders (default False)
 
         Returns:
-            A dictionary containing the list of messages and next page token for pagination
+            A dictionary with the following keys:
+                - messages (list[dict]): A list of detailed message dictionaries. Each dictionary contains:
+                    - message_id (str): Unique ID of the email.
+                    - from (str): Sender's email address or "Unknown sender" if unavailable.
+                    - to (str): Recipient(s) email address(es) or "Unknown recipient" if unavailable.
+                    - date (str): Date the email was sent or "Unknown date" if unavailable.
+                    - subject (str): Subject of the email or "No subject" if unavailable.
+                    - body (str): Plain text content of the email or a preview/snippet.
+                    - thread_id (str | None): ID of the email thread this message belongs to.
+                    - attachments (list[dict]): List of attachments with metadata (e.g., filename, MIME type, attachment ID).
+                - next_page_token (str | None): Token to retrieve the next page of messages; None if there are no further pages.
 
         Raises:
             NotAuthorizedError: When the Gmail API authentication is invalid or missing
