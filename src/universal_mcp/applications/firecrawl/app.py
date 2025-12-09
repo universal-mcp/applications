@@ -107,16 +107,50 @@ class FirecrawlApp(APIApplication):
             return obj.dict()
         return obj
 
-    async def scrape_url(self, url: str) -> Any:
+    async def scrape_url(
+        self,
+        url: str,
+        formats: list[str | dict[str, Any]] | None = None,
+        only_main_content: bool | None = None,
+        timeout: int | None = None,
+        wait_for: int | None = None,
+        mobile: bool | None = None,
+        skip_tls_verification: bool | None = None,
+        schema: dict[str, Any] | None = None,
+        prompt: str | None = None,
+    ) -> Any:
         """
-        Synchronously scrapes a single URL, immediately returning its content. This provides a direct method for single-page scraping, contrasting with asynchronous, job-based functions like `start_crawl` (for entire sites) and `start_batch_scrape` (for multiple URLs).
+        Synchronously scrapes a single URL, immediately returning its content. This provides a direct method for single-page scraping.
+        Supports structured output via `schema` or `prompt` arguments, or by specifying `formats`.
 
         Args:
             url: The URL of the web page to scrape.
+            formats: Optional list of desired output formats (e.g. ["json"] or [{"type": "json", ...}]).
+            only_main_content: Only scrape the main content of the page.
+            timeout: Timeout in milliseconds.
+            wait_for: Wait for a specific duration (ms) before scraping.
+            mobile: Use mobile user agent.
+            skip_tls_verification: Skip TLS verification.
+            schema: JSON schema for structured output extraction (V2).
+            prompt: Prompt for structured output extraction (V2).
 
         Returns:
             A dictionary containing the scraped data on success,
             or a string containing an error message on failure.
+
+        Examples:
+            Basic scraping:
+            >>> app.scrape_url("https://example.com")
+
+            Structured extraction with Pydantic:
+            >>> from pydantic import BaseModel
+            >>> class Article(BaseModel):
+            ...     title: str
+            ...     summary: str
+            >>> app.scrape_url("https://example.com", schema=Article.model_json_schema())
+
+            Extraction with prompt:
+            >>> app.scrape_url("https://example.com", prompt="Extract the main article content.")
 
         Raises:
             NotAuthorizedError: If API key is missing or invalid.
@@ -125,10 +159,29 @@ class FirecrawlApp(APIApplication):
         Tags:
             scrape, important
         """
-        logger.info(f"Attempting to scrape URL: {url}")
+        logger.info(f"Attempting to scrape URL: {url} with schema: {schema is not None}, prompt: {prompt is not None}")
         try:
             client = self._get_client()
-            response_data = client.scrape(url=url)
+            
+            # Construct formats if schema or prompt is provided (V2 structured output)
+            if schema or prompt:
+                formats = formats or []
+                json_format = {"type": "json"}
+                if schema:
+                    json_format["schema"] = schema
+                if prompt:
+                    json_format["prompt"] = prompt
+                formats.append(json_format)
+
+            response_data = client.scrape(
+                url=url,
+                formats=formats,
+                only_main_content=only_main_content,
+                timeout=timeout,
+                wait_for=wait_for,
+                mobile=mobile,
+                skip_tls_verification=skip_tls_verification,
+            )
             logger.info(f"Successfully scraped URL: {url}")
             return self._to_serializable(response_data)
         except NotAuthorizedError:
@@ -170,12 +223,13 @@ class FirecrawlApp(APIApplication):
         except Exception as e:
             return self._handle_firecrawl_exception(e, f"search for '{query}'")
 
-    async def start_crawl(self, url: str) -> dict[str, Any] | str:
+    async def start_crawl(self, url: str, limit: int = 10) -> dict[str, Any] | str:
         """
         Starts an asynchronous Firecrawl job to crawl a website from a given URL, returning a job ID. Unlike the synchronous `scrape_url` for single pages, this function initiates a comprehensive, link-following crawl. Progress can be monitored using the `check_crawl_status` function with the returned ID.
 
         Args:
             url: The starting URL for the crawl.
+            limit: The maximum number of pages to crawl.
 
         Returns:
             A dictionary containing the job initiation response on success,
@@ -191,7 +245,7 @@ class FirecrawlApp(APIApplication):
         logger.info(f"Attempting to start Firecrawl crawl for URL: {url}")
         try:
             client = self._get_client()
-            response = client.start_crawl(url=url)
+            response = client.start_crawl(url=url, limit=limit)
             job_id = response.id
             logger.info(f"Successfully started Firecrawl crawl for URL {url}, Job ID: {job_id}")
             return self._to_serializable(response)
