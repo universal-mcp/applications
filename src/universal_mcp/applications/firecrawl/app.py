@@ -2,9 +2,9 @@ from typing import Any
 from loguru import logger
 
 try:
-    from firecrawl import Firecrawl
+    from firecrawl import AsyncFirecrawl
 
-    FirecrawlApiClient: type[Firecrawl] | None = Firecrawl
+    FirecrawlApiClient: type[AsyncFirecrawl] | None = AsyncFirecrawl
 except ImportError:
     FirecrawlApiClient = None
     logger.error("Failed to import FirecrawlApp. Please ensure 'firecrawl-py' is installed.")
@@ -65,7 +65,7 @@ class FirecrawlApp(APIApplication):
         assert self._firecrawl_api_key is not None
         return self._firecrawl_api_key
 
-    def _get_client(self) -> Firecrawl:
+    def _get_client(self) -> AsyncFirecrawl:
         """
         Initializes and returns the Firecrawl client after ensuring API key is set.
         Raises NotAuthorizedError if API key cannot be obtained or SDK is not installed.
@@ -107,16 +107,50 @@ class FirecrawlApp(APIApplication):
             return obj.dict()
         return obj
 
-    async def scrape_url(self, url: str) -> Any:
+    async def scrape_url(
+        self,
+        url: str,
+        formats: list[str | dict[str, Any]] | None = None,
+        only_main_content: bool | None = None,
+        timeout: int | None = None,
+        wait_for: int | None = None,
+        mobile: bool | None = None,
+        skip_tls_verification: bool | None = None,
+        schema: dict[str, Any] | None = None,
+        prompt: str | None = None,
+    ) -> Any:
         """
-        Synchronously scrapes a single URL, immediately returning its content. This provides a direct method for single-page scraping, contrasting with asynchronous, job-based functions like `start_crawl` (for entire sites) and `start_batch_scrape` (for multiple URLs).
+        Synchronously scrapes a single URL, immediately returning its content. This provides a direct method for single-page scraping.
+        Supports structured output via `schema` or `prompt` arguments, or by specifying `formats`.
 
         Args:
             url: The URL of the web page to scrape.
+            formats: Optional list of desired output formats (e.g. ["json"] or [{"type": "json", ...}]).
+            only_main_content: Only scrape the main content of the page.
+            timeout: Timeout in milliseconds.
+            wait_for: Wait for a specific duration (ms) before scraping.
+            mobile: Use mobile user agent.
+            skip_tls_verification: Skip TLS verification.
+            schema: JSON schema for structured output extraction (V2).
+            prompt: Prompt for structured output extraction (V2).
 
         Returns:
             A dictionary containing the scraped data on success,
             or a string containing an error message on failure.
+
+        Examples:
+            Basic scraping:
+            >>> app.scrape_url("https://example.com")
+
+            Structured extraction with Pydantic:
+            >>> from pydantic import BaseModel
+            >>> class Article(BaseModel):
+            ...     title: str
+            ...     summary: str
+            >>> app.scrape_url("https://example.com", schema=Article.model_json_schema())
+
+            Extraction with prompt:
+            >>> app.scrape_url("https://example.com", prompt="Extract the main article content.")
 
         Raises:
             NotAuthorizedError: If API key is missing or invalid.
@@ -125,10 +159,29 @@ class FirecrawlApp(APIApplication):
         Tags:
             scrape, important
         """
-        logger.info(f"Attempting to scrape URL: {url}")
+        logger.info(f"Attempting to scrape URL: {url} with schema: {schema is not None}, prompt: {prompt is not None}")
         try:
             client = self._get_client()
-            response_data = client.scrape(url=url)
+            
+            # Construct formats if schema or prompt is provided (V2 structured output)
+            if schema or prompt:
+                formats = formats or []
+                json_format = {"type": "json"}
+                if schema:
+                    json_format["schema"] = schema
+                if prompt:
+                    json_format["prompt"] = prompt
+                formats.append(json_format)
+
+            response_data = await client.scrape(
+                url=url,
+                formats=formats,
+                only_main_content=only_main_content,
+                timeout=timeout,
+                wait_for=wait_for,
+                mobile=mobile,
+                skip_tls_verification=skip_tls_verification,
+            )
             logger.info(f"Successfully scraped URL: {url}")
             return self._to_serializable(response_data)
         except NotAuthorizedError:
@@ -160,7 +213,7 @@ class FirecrawlApp(APIApplication):
         logger.info(f"Attempting Firecrawl search for query: {query}")
         try:
             client = self._get_client()
-            response = client.search(query=query)
+            response = await client.search(query=query)
             logger.info(f"Successfully performed Firecrawl search for query: {query}")
             return self._to_serializable(response)
         except NotAuthorizedError:
@@ -170,12 +223,19 @@ class FirecrawlApp(APIApplication):
         except Exception as e:
             return self._handle_firecrawl_exception(e, f"search for '{query}'")
 
-    async def start_crawl(self, url: str) -> dict[str, Any] | str:
+    async def start_crawl(
+        self,
+        url: str,
+        limit: int = 10,
+        scrape_options: dict[str, Any] | None = None,
+    ) -> dict[str, Any] | str:
         """
         Starts an asynchronous Firecrawl job to crawl a website from a given URL, returning a job ID. Unlike the synchronous `scrape_url` for single pages, this function initiates a comprehensive, link-following crawl. Progress can be monitored using the `check_crawl_status` function with the returned ID.
 
         Args:
             url: The starting URL for the crawl.
+            limit: The maximum number of pages to crawl.
+            scrape_options: Optional dictionary of scrape options (e.g., {'formats': ['markdown']}).
 
         Returns:
             A dictionary containing the job initiation response on success,
@@ -188,10 +248,10 @@ class FirecrawlApp(APIApplication):
         Tags:
             crawl, async_job, start
         """
-        logger.info(f"Attempting to start Firecrawl crawl for URL: {url}")
+        logger.info(f"Attempting to start Firecrawl crawl for URL: {url} with limit: {limit}")
         try:
             client = self._get_client()
-            response = client.start_crawl(url=url)
+            response = await client.start_crawl(url=url, limit=limit, scrape_options=scrape_options)
             job_id = response.id
             logger.info(f"Successfully started Firecrawl crawl for URL {url}, Job ID: {job_id}")
             return self._to_serializable(response)
@@ -223,7 +283,7 @@ class FirecrawlApp(APIApplication):
         logger.info(f"Attempting to check Firecrawl crawl status for job ID: {job_id}")
         try:
             client = self._get_client()
-            status = client.get_crawl_status(job_id=job_id)
+            status = await client.get_crawl_status(job_id=job_id)
             logger.info(f"Successfully checked Firecrawl crawl status for job ID: {job_id}")
             return self._to_serializable(status)
         except NotAuthorizedError:
@@ -255,7 +315,7 @@ class FirecrawlApp(APIApplication):
         logger.info(f"Attempting to cancel Firecrawl crawl job ID: {job_id}")
         try:
             client = self._get_client()
-            response = client.cancel_crawl(crawl_id=job_id)
+            response = await client.cancel_crawl(crawl_id=job_id)
             logger.info(f"Successfully issued cancel command for Firecrawl crawl job ID: {job_id}")
             return self._to_serializable(response)
         except NotAuthorizedError:
@@ -286,7 +346,7 @@ class FirecrawlApp(APIApplication):
         logger.info(f"Attempting to start Firecrawl batch scrape for {len(urls)} URLs.")
         try:
             client = self._get_client()
-            response = client.start_batch_scrape(urls=urls)
+            response = await client.start_batch_scrape(urls=urls)
             logger.info(f"Successfully started Firecrawl batch scrape for {len(urls)} URLs.")
             return self._to_serializable(response)
         except NotAuthorizedError:
@@ -317,7 +377,7 @@ class FirecrawlApp(APIApplication):
         logger.info(f"Attempting to check Firecrawl batch scrape status for job ID: {job_id}")
         try:
             client = self._get_client()
-            status = client.get_batch_scrape_status(job_id=job_id)
+            status = await client.get_batch_scrape_status(job_id=job_id)
             logger.info(f"Successfully checked Firecrawl batch scrape status for job ID: {job_id}")
             return self._to_serializable(status)
         except NotAuthorizedError:
@@ -348,6 +408,35 @@ class FirecrawlApp(APIApplication):
         Returns:
             A dictionary containing the extracted data on success.
 
+        Examples:
+            Extraction with prompt:
+            >>> app.quick_web_extract(
+            ...     urls=["https://docs.firecrawl.dev"],
+            ...     prompt="Extract the page description"
+            ... )
+
+            Structured extraction with schema dictionary:
+            >>> schema = {
+            ...     "type": "object",
+            ...     "properties": {"description": {"type": "string"}},
+            ...     "required": ["description"],
+            ... }
+            >>> app.quick_web_extract(
+            ...     urls=["https://docs.firecrawl.dev"],
+            ...     schema=schema,
+            ...     prompt="Extract the page description"
+            ... )
+
+            Structured extraction with Pydantic model:
+            >>> from pydantic import BaseModel
+            >>> class PageInfo(BaseModel):
+            ...     description: str
+            >>> app.quick_web_extract(
+            ...     urls=["https://docs.firecrawl.dev"],
+            ...     schema=PageInfo.model_json_schema(),
+            ...     prompt="Extract the page description"
+            ... )
+
         Raises:
             NotAuthorizedError: If API key is missing or invalid.
             ToolError: If the Firecrawl SDK is not installed or extraction fails.
@@ -360,7 +449,7 @@ class FirecrawlApp(APIApplication):
         )
         try:
             client = self._get_client()
-            response = client.extract(
+            response = await client.extract(
                 urls=urls, prompt=prompt, schema=schema, system_prompt=system_prompt, allow_external_links=allow_external_links
             )
             logger.info(f"Successfully completed quick web extraction for {len(urls)} URLs.")
@@ -400,7 +489,7 @@ class FirecrawlApp(APIApplication):
         logger.info(f"Attempting to check Firecrawl extraction status for job ID: {job_id}")
         try:
             client = self._get_client()
-            status = client.get_extract_status(job_id=job_id)
+            status = await client.get_extract_status(job_id=job_id)
             logger.info(f"Successfully checked Firecrawl extraction status for job ID: {job_id}")
             return self._to_serializable(status)
         except NotAuthorizedError:
@@ -409,6 +498,40 @@ class FirecrawlApp(APIApplication):
             raise
         except Exception as e:
             return self._handle_firecrawl_exception(e, f"checking extraction status for job ID {job_id}")
+
+    async def map_site(self, url: str, limit: int | None = None) -> dict[str, Any] | str:
+        """
+        Maps a website to generate a list of all its URLs. This is useful for discovering content structure before crawling or scraping specific pages.
+
+        Args:
+            url: The starting URL to map.
+            limit: Optional limit on the number of URLs to return.
+
+        Returns:
+            A dictionary containing the list of URLs on success,
+            or a string containing an error message on failure.
+
+        Raises:
+            NotAuthorizedError: If API key is missing or invalid.
+            ToolError: If the Firecrawl SDK is not installed.
+
+        Tags:
+            map, discovery, links
+        """
+        logger.info(f"Attempting to map site: {url} with limit: {limit}")
+        try:
+            client = self._get_client()
+            # client.map signature (async): (url, search=None, ignoreSitemap=None, includeSubdomains=None, limit=None)
+            # We expose url and limit for now, maybe more if needed later.
+            response = await client.map(url=url, limit=limit)
+            logger.info(f"Successfully mapped site: {url}")
+            return self._to_serializable(response)
+        except NotAuthorizedError:
+            raise
+        except ToolError:
+            raise
+        except Exception as e:
+            return self._handle_firecrawl_exception(e, f"mapping site {url}")
 
     def list_tools(self):
         return [
@@ -421,4 +544,5 @@ class FirecrawlApp(APIApplication):
             self.check_batch_scrape_status,
             self.quick_web_extract,
             self.check_extract_status,
+            self.map_site,
         ]
