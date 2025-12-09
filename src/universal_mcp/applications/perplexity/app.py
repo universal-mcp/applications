@@ -134,7 +134,7 @@ class PerplexityApp(APIApplication):
             ValueError: If conflicting structured output parameters are provided.
 
         Tags:
-            chat, answer, search, web, research, citations, structured_output, extraction
+            chat, answer, search, web, research, citations, structured_output, extraction, important
         """
         if sum(x is not None for x in [response_format, json_schema, regex]) > 1:
             raise ValueError("Only one of 'response_format', 'json_schema', or 'regex' can be provided.")
