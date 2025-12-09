@@ -408,6 +408,35 @@ class FirecrawlApp(APIApplication):
         Returns:
             A dictionary containing the extracted data on success.
 
+        Examples:
+            Extraction with prompt:
+            >>> app.quick_web_extract(
+            ...     urls=["https://docs.firecrawl.dev"],
+            ...     prompt="Extract the page description"
+            ... )
+
+            Structured extraction with schema dictionary:
+            >>> schema = {
+            ...     "type": "object",
+            ...     "properties": {"description": {"type": "string"}},
+            ...     "required": ["description"],
+            ... }
+            >>> app.quick_web_extract(
+            ...     urls=["https://docs.firecrawl.dev"],
+            ...     schema=schema,
+            ...     prompt="Extract the page description"
+            ... )
+
+            Structured extraction with Pydantic model:
+            >>> from pydantic import BaseModel
+            >>> class PageInfo(BaseModel):
+            ...     description: str
+            >>> app.quick_web_extract(
+            ...     urls=["https://docs.firecrawl.dev"],
+            ...     schema=PageInfo.model_json_schema(),
+            ...     prompt="Extract the page description"
+            ... )
+
         Raises:
             NotAuthorizedError: If API key is missing or invalid.
             ToolError: If the Firecrawl SDK is not installed or extraction fails.

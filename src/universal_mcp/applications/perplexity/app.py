@@ -82,37 +82,85 @@ class PerplexityApp(APIApplication):
         ] = "sonar-pro",
         temperature: float = 1,
         system_prompt: str = "You are a helpful AI assistant that answers questions using real-time information from the web.",
+        response_format: dict[str, Any] | None = None,
+        json_schema: dict[str, Any] | None = None,
+        regex: str | None = None,
     ) -> dict[str, Any] | str:
         """
-        Queries the Perplexity Chat Completions API for a web-search-grounded answer. It sends the user's prompt and model parameters to the `/chat/completions` endpoint, then parses the response to return the synthesized content and a list of supporting source citations, ideal for real-time information retrieval.
+        Queries the Perplexity Chat Completions API for a web-search-grounded answer. It sends the user's prompt and model parameters to the `/chat/completions` endpoint, then parses the response to return the synthesized content and a list of supporting source citations.
+
+        This method supports **Structured Outputs** using `json_schema` or `regex` to enforce specific response formats.
 
         Args:
-            query: The search query or question to ask. For example: "What are the latest developments in AI regulation?"
+            query: The search query or question to ask.
             model: The Perplexity model to use.
-            temperature: Controls randomness in the model's output. Higher values make the output more random, lower values make it more deterministic. Defaults to 1.
+            temperature: Controls randomness in the model's output.
             system_prompt: The initial system message to guide the model's behavior.
+            response_format: A dict specifying the response format (e.g. `{"type": "json_schema", ...}`).
+            json_schema: A dictionary for the JSON schema to enforce (shortcut for `response_format`).
+            regex: A regex string to enforce (shortcut for `response_format`, only available for 'sonar').
 
         Returns:
             A dictionary containing the generated 'content' (str) and a list of 'citations' (list) from the web search.
 
+        Examples:
+            **1. Financial Analysis with JSON Schema**
+            ```python
+            from pydantic import BaseModel
+            class FinancialMetrics(BaseModel):
+                company: str
+                revenue: float
+                net_income: float
+
+            app.answer_with_search(
+                "Analyze Apple's latest earnings",
+                model="sonar-pro",
+                json_schema={"schema": FinancialMetrics.model_json_schema()}
+            )
+            ```
+
+            **2. Extract Contact Information with Regex**
+            ```python
+            app.answer_with_search(
+                "Find the investor relations email for Tesla",
+                model="sonar",
+                regex=r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"
+            )
+            ```
+
         Raises:
-            AuthenticationError: Raised when API authentication fails due to missing or invalid credentials.
-            HTTPError: Raised when the API request fails or returns an error status.
+            AuthenticationError: Raised when API authentication fails.
+            HTTPError: Raised when the API request fails.
+            ValueError: If conflicting structured output parameters are provided.
 
         Tags:
-            chat, answer, search, web, research, citations, current events, important
+            chat, answer, search, web, research, citations, structured_output, extraction
         """
+        if sum(x is not None for x in [response_format, json_schema, regex]) > 1:
+            raise ValueError("Only one of 'response_format', 'json_schema', or 'regex' can be provided.")
+
+        if json_schema:
+            response_format = {"type": "json_schema", "json_schema": json_schema}
+        elif regex:
+            response_format = {"type": "regex", "regex": {"regex": regex}}
+
         messages = []
         if system_prompt:
             messages.append({"role": "system", "content": system_prompt})
         messages.append({"role": "user", "content": query})
 
         client = self._get_client()
-        response = await client.chat.completions.create(
-            model=model,
-            messages=messages, # type: ignore
-            temperature=temperature,
-        )
+        # client.chat.completions.create supports response_format
+        kwargs: dict[str, Any] = {
+            "model": model,
+            "messages": messages,  # type: ignore
+            "temperature": temperature,
+        }
+        if response_format:
+            kwargs["response_format"] = response_format
+
+        response = await client.chat.completions.create(**kwargs)
+        
         # Assuming response structure matches OpenAI-like usage or Custom as per SDK docs
         content = response.choices[0].message.content
         citations = getattr(response, "citations", [])
