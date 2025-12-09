@@ -2,7 +2,7 @@ from typing import Any
 from loguru import logger
 
 try:
-    from firecrawl import AsyncFirecrawl, Firecrawl
+    from firecrawl import AsyncFirecrawl
 
     FirecrawlApiClient: type[AsyncFirecrawl] | None = AsyncFirecrawl
 except ImportError:
@@ -420,13 +420,6 @@ class FirecrawlApp(APIApplication):
         )
         try:
             client = self._get_client()
-            response = client.extract(
-                urls=urls, prompt=prompt, schema=schema, system_prompt=system_prompt, allow_external_links=allow_external_links
-            )
-            # Note: extract might be async in SDK? The logic for scrape was made async, likely extract too?
-            # Let's check logic: client is now AsyncFirecrawl.
-            # We must assume all methods on AsyncFirecrawl are async.
-            # I will await this one too.
             response = await client.extract(
                 urls=urls, prompt=prompt, schema=schema, system_prompt=system_prompt, allow_external_links=allow_external_links
             )
