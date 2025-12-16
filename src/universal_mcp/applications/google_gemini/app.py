@@ -52,7 +52,7 @@ class GoogleGeminiApp(APIApplication):
         self,
         prompt: Annotated[str, "The prompt to generate image from"],
         images: Annotated[list[str], "The reference image URLs"] | None = None,
-        model: str = "gemini-2.5-flash-image-preview",
+        model: str = "gemini-3-pro-image-preview",
     ) -> dict:
         """
         Generates an image based on a text prompt and an optional reference image using the Google Gemini model.
