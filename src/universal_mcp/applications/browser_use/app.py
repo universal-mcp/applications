@@ -59,7 +59,7 @@ class BrowserUseApp(APIApplication):
             dict: The task creation details including the task ID.
         
         Tags:
-            browser, automation, background, task, web, research, create
+            browser, automation, background, task, web, research, create, important
         """
         created_task = await self.browser_client.tasks.create_task(
             llm=llm, task=task, max_steps=max_steps, session_id=session_id
@@ -81,7 +81,7 @@ class BrowserUseApp(APIApplication):
             dict: The current task details including status ('created', 'running', 'completed', 'stopped', 'failed') and output (if completed).
 
         Tags:
-            status, poll, browser, task, monitoring, output
+            status, poll, browser, task, monitoring, output, important
         """
         task = await self.browser_client.tasks.get_task(task_id)
         return task.model_dump()
