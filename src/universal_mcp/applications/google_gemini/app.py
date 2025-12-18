@@ -62,7 +62,7 @@ class GoogleGeminiApp(APIApplication):
         Args:
             prompt (str): The descriptive text prompt to guide the image generation. For example: "A futuristic city at sunset with flying cars."
             images (list[str], optional): An optional list of URLs to reference images. These images will be used as a basis for the generation.
-            model (str, optional): The Gemini model to use for image generation. Defaults to "gemini-2.5-flash-image-preview".
+            model (str, optional): The Gemini model to use for image generation. Defaults to "gemini-3-pro-image-preview".
 
         Returns:
             dict: A dictionary containing:
