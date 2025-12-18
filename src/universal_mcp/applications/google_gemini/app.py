@@ -27,13 +27,13 @@ class GoogleGeminiApp(APIApplication):
         self._genai_client = genai.Client(api_key=api_key)
         return self._genai_client
 
-    async def generate_text(self, prompt: Annotated[str, "The prompt to generate text from"], model: str = "gemini-2.5-flash") -> str:
+    async def generate_text(self, prompt: Annotated[str, "The prompt to generate text from"], model: str = "gemini-3-flash-preview") -> str:
         """Generates text using the Google Gemini model based on a given prompt.
         This tool is suitable for various natural language processing tasks such as content generation, summarization, translation, and question answering.
 
         Args:
             prompt (str): The text prompt or instruction for the model to follow. For example: "Write a short story about a robot who learns to love."
-            model (str, optional): The Gemini model to use for text generation. Defaults to "gemini-2.5-flash".
+            model (str, optional): The Gemini model to use for text generation. Defaults to "gemini-3-flash-preview".
 
         Returns:
             str: The generated text response from the Gemini model.
