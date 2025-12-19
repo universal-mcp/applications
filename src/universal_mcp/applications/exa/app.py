@@ -240,7 +240,6 @@ class ExaApp(APIApplication):
         self,
         urls: list[str],
         text: bool = True,
-        highlights: bool = False,
         summary: dict[str, Any] | None = None,
         subpages: int | None = None,
         subpage_target: str | list[str] | None = None,
@@ -257,7 +256,6 @@ class ExaApp(APIApplication):
         Args:
             urls: List of URLs or Exa Result IDs to retrieve.
             text: Include full page text (default: True).
-            highlights: Include high-relevance snippets.
             summary: Generate structured or unstructured summaries of each URL.
             subpages: Number of additional pages to crawl automatically from the same domain.
             subpage_target: Focus subpage crawling on specific terms (e.g., 'pricing', 'technical doc').
@@ -281,7 +279,6 @@ class ExaApp(APIApplication):
         response = await self.exa_client.get_contents(
             urls=urls,
             text=text,
-            highlights=highlights,
             summary=summary,
             subpages=subpages,
             subpage_target=subpage_target,
@@ -353,7 +350,7 @@ class ExaApp(APIApplication):
                 - 'exa-research-pro': Maximum depth, exhaustive exploration.
 
         Returns:
-            A serialized ResearchDto containing the 'id' (Task ID) used for polling and status checks.
+            A serialized ResearchDto containing the 'research_id' (Task ID) used for polling and status checks.
 
         Tags:
             research, task, async, create
