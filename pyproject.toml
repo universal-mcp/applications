@@ -45,7 +45,7 @@ dependencies = [
     "requests>=2.31.0",
     "resend>=2.10.0",
     "twilio>=9.8.0",
-    "universal-mcp-agents>=0.1.25rc2",
+    "universal-mcp-agents>=0.1.28",
     "universal-mcp>=0.1.24",
     "yfinance>=0.2.66",
     "youtube-transcript-api==1.2.2",
