@@ -1,215 +1,448 @@
-from typing import Any
+from typing import Any, Literal
+
+from loguru import logger
+
+try:
+    from exa_py import AsyncExa
+
+    ExaClient: type[AsyncExa] | None = AsyncExa
+except ImportError:
+    ExaClient = None
+    logger.error("Failed to import Exa. Please ensure 'exa-py' is installed.")
+
 from universal_mcp.applications.application import APIApplication
+from universal_mcp.exceptions import NotAuthorizedError, ToolError
 from universal_mcp.integrations import Integration
 
 
 class ExaApp(APIApplication):
-    def __init__(self, integration: Integration = None, **kwargs) -> None:
+    """
+    Application for interacting with the Exa API (exa.ai) using the official SDK.
+    Provides advanced search, find similar links, page contents retrieval,
+    knowledge synthesis (answer), and multi-step research tasks.
+    """
+
+    def __init__(self, integration: Integration | None = None, **kwargs: Any) -> None:
         super().__init__(name="exa", integration=integration, **kwargs)
-        self.base_url = "https://api.exa.ai"
+        self._exa_client: AsyncExa | None = None
 
-    async def search_with_filters(
+    @property
+    def exa_client(self) -> AsyncExa:
+        """
+        Lazily initializes and returns the Exa client.
+        """
+        if self._exa_client is None:
+            if ExaClient is None:
+                raise ToolError("Exa SDK (exa-py) is not installed.")
+
+            if not self.integration:
+                raise NotAuthorizedError("Exa App: Integration not configured.")
+
+            credentials = self.integration.get_credentials()
+            api_key = credentials.get("api_key") or credentials.get("API_KEY") or credentials.get("apiKey")
+
+            if not api_key:
+                raise NotAuthorizedError("Exa API key not found in credentials.")
+
+            self._exa_client = ExaClient(api_key=api_key)
+            logger.info("Exa client successfully initialized.")
+
+        return self._exa_client
+
+    def _to_serializable(self, obj: Any) -> Any:
+        """
+        Recursively converts objects to dictionaries for JSON serialization.
+        """
+        if isinstance(obj, list):
+            return [self._to_serializable(item) for item in obj]
+        if hasattr(obj, "to_dict"):
+            return obj.to_dict()
+        if hasattr(obj, "dict"):
+            return obj.dict()
+        if hasattr(obj, "__dict__"):
+            return {k: self._to_serializable(v) for k, v in obj.__dict__.items() if not k.startswith("_")}
+        return obj
+
+    async def search(  # noqa: PLR0913
         self,
-        query,
-        useAutoprompt=None,
-        type=None,
-        category=None,
-        numResults=None,
-        includeDomains=None,
-        excludeDomains=None,
-        startCrawlDate=None,
-        endCrawlDate=None,
-        startPublishedDate=None,
-        endPublishedDate=None,
-        includeText=None,
-        excludeText=None,
-        contents=None,
-    ) -> dict[str, Any]:
+        query: str,
+        num_results: int | None = 10,
+        include_domains: list[str] | None = None,
+        exclude_domains: list[str] | None = None,
+        start_crawl_date: str | None = None,
+        end_crawl_date: str | None = None,
+        start_published_date: str | None = None,
+        end_published_date: str | None = None,
+        type: Literal["auto", "neural", "fast", "deep", "hybrid"] | None = "auto",
+        category: str | None = None,
+        include_text: list[str] | None = None,
+        exclude_text: list[str] | None = None,
+        additional_queries: list[str] | None = None,
+        text: bool = True,
+        highlights: bool = False,
+        summary: dict[str, Any] | None = None,
+        context: dict[str, Any] | bool | None = None,
+        flags: list[str] | None = None,
+        moderation: bool | None = None,
+        user_location: str | None = None,
+    ) -> Any:
         """
-        Executes a query against the Exa API's `/search` endpoint, returning a list of results. This function supports extensive filtering by search type, category, domains, publication dates, and specific text content to refine the search query and tailor the API's response.
+        Performs a semantic or keyword search across the web and returns ranked results.
+        Ideal for finding high-quality links, research papers, news, or general information.
 
         Args:
-            query (string): The query string for the search. Example: 'Latest developments in LLM capabilities'.
-            useAutoprompt (boolean): Autoprompt converts your query to an Exa-style query. Enabled by default for auto search, optional for neural search, and not available for keyword search. Example: 'True'.
-            type (string): The type of search. Neural uses an embeddings-based model, keyword is google-like SERP. Default is auto, which automatically decides between keyword and neural. Example: 'auto'.
-            category (string): A data category to focus on. Example: 'research paper'.
-            numResults (integer): Number of results to return (up to thousands of results available for custom plans) Example: '10'.
-            includeDomains (array): List of domains to include in the search. If specified, results will only come from these domains. Example: "['arxiv.org', 'paperswithcode.com']".
-            excludeDomains (array): List of domains to exclude from search results. If specified, no results will be returned from these domains.
-            startCrawlDate (string): Crawl date refers to the date that Exa discovered a link. Results will include links that were crawled after this date. Must be specified in ISO 8601 format. Example: '2023-01-01'.
-            endCrawlDate (string): Crawl date refers to the date that Exa discovered a link. Results will include links that were crawled before this date. Must be specified in ISO 8601 format. Example: '2023-12-31'.
-            startPublishedDate (string): Only links with a published date after this will be returned. Must be specified in ISO 8601 format. Example: '2023-01-01'.
-            endPublishedDate (string): Only links with a published date before this will be returned. Must be specified in ISO 8601 format. Example: '2023-12-31'.
-            includeText (array): List of strings that must be present in webpage text of results. Currently, only 1 string is supported, of up to 5 words. Example: "['large language model']".
-            excludeText (array): List of strings that must not be present in webpage text of results. Currently, only 1 string is supported, of up to 5 words. Example: "['course']".
-            contents (object): contents
+            query: The search query. For best results with 'neural' or 'deep' search, use a
+                descriptive natural language statement (e.g., "Check out this amazing new
+                AI tool for developers:").
+            num_results: Total results to return (default: 10). For 'deep' search, leave blank
+                to let the model determine the optimal number of results dynamically.
+            include_domains: Restrict search to these domains (e.g., ['github.com', 'arxiv.org']).
+            exclude_domains: Block these domains from appearing in results.
+            start_crawl_date: ISO 8601 date. Only results crawled after this (e.g., '2024-01-01').
+            end_crawl_date: ISO 8601 date. Only results crawled before this.
+            start_published_date: ISO 8601 date. Only results published after this.
+            end_published_date: ISO 8601 date. Only results published before this.
+            type: The search methodology:
+                - 'auto' (default): Automatically selects the best type based on query.
+                - 'neural': Semantic search using embeddings. Best for concept-based queries.
+                - 'fast': Keyword-based search. Best for specific names or terms.
+                - 'deep': Multi-query expansion and reasoning. Best for complex, multi-faceted research.
+                - 'hybrid': Combines neural and fast for balanced results.
+            category: Filter by content type (e.g., 'company', 'research paper', 'news', 'pdf', 'tweet').
+            include_text: Webpage MUST contain these exact strings (max 5 words per string).
+            exclude_text: Webpage MUST NOT contain these exact strings.
+            additional_queries: (Deep only) Up to 5 manually specified queries to skip automatic expansion.
+            text: Include the full webpage text in the response (default: True).
+            highlights: Include high-relevance snippets (highlights) from each result.
+            summary: Generate a concise summary of each page. Can be a boolean or a dict:
+                {"query": "Refining summary...", "schema": {"type": "object", "properties": {...}}}.
+            context: Optimized for RAG. Returns a combined context object instead of raw results.
+            flags: Experimental feature flags for specialized Exa behavior.
+            moderation: Enable safety filtering for sensitive content.
+            user_location: ISO country code (e.g., 'US') to personalize results.
 
         Returns:
-            dict[str, Any]: OK
+            A serialized SearchResponse containing 'results' (list of Result objects with url, title, text, etc.).
 
         Tags:
-            important
+            search, semantic, keyword, neural, important
         """
-        request_body = {
-            "query": query,
-            "useAutoprompt": useAutoprompt,
-            "type": type,
-            "category": category,
-            "numResults": numResults,
-            "includeDomains": includeDomains,
-            "excludeDomains": excludeDomains,
-            "startCrawlDate": startCrawlDate,
-            "endCrawlDate": endCrawlDate,
-            "startPublishedDate": startPublishedDate,
-            "endPublishedDate": endPublishedDate,
-            "includeText": includeText,
-            "excludeText": excludeText,
-            "contents": contents,
-        }
-        request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/search"
-        query_params = {}
-        response = await self._apost(url, data=request_body, params=query_params)
-        response.raise_for_status()
-        return response.json()
+        logger.info(f"Exa search for: {query}")
 
-    async def find_similar_by_url(
+        # Build contents options
+        contents = {}
+        if text:
+            contents["text"] = True
+        if highlights:
+            contents["highlights"] = True
+        if summary:
+            contents["summary"] = summary
+        if context:
+            contents["context"] = context
+
+        response = await self.exa_client.search(
+            query=query,
+            num_results=num_results,
+            include_domains=include_domains,
+            exclude_domains=exclude_domains,
+            start_crawl_date=start_crawl_date,
+            end_crawl_date=end_crawl_date,
+            start_published_date=start_published_date,
+            end_published_date=end_published_date,
+            type=type,
+            category=category,
+            include_text=include_text,
+            exclude_text=exclude_text,
+            additional_queries=additional_queries,
+            contents=contents if contents else None,
+            flags=flags,
+            moderation=moderation,
+            user_location=user_location,
+        )
+        return self._to_serializable(response)
+
+    async def find_similar(  # noqa: PLR0913
         self,
-        url,
-        numResults=None,
-        includeDomains=None,
-        excludeDomains=None,
-        startCrawlDate=None,
-        endCrawlDate=None,
-        startPublishedDate=None,
-        endPublishedDate=None,
-        includeText=None,
-        excludeText=None,
-        contents=None,
-    ) -> dict[str, Any]:
+        url: str,
+        num_results: int | None = 10,
+        include_domains: list[str] | None = None,
+        exclude_domains: list[str] | None = None,
+        start_crawl_date: str | None = None,
+        end_crawl_date: str | None = None,
+        start_published_date: str | None = None,
+        end_published_date: str | None = None,
+        exclude_source_domain: bool | None = None,
+        category: str | None = None,
+        include_text: list[str] | None = None,
+        exclude_text: list[str] | None = None,
+        text: bool = True,
+        highlights: bool = False,
+        summary: dict[str, Any] | None = None,
+        flags: list[str] | None = None,
+    ) -> Any:
         """
-        Finds web pages semantically similar to a given URL. Unlike the `search` function, which uses a text query, this method takes a specific link and returns a list of related results, with options to filter by domain, publication date, and content.
+        Retrieves webpages that are semantically similar to a provided URL.
+        Useful for finding "more like this", competitors, or related research.
 
         Args:
-            url (string): The url for which you would like to find similar links. Example: 'https://arxiv.org/abs/2307.06435'.
-            numResults (integer): Number of results to return (up to thousands of results available for custom plans) Example: '10'.
-            includeDomains (array): List of domains to include in the search. If specified, results will only come from these domains. Example: "['arxiv.org', 'paperswithcode.com']".
-            excludeDomains (array): List of domains to exclude from search results. If specified, no results will be returned from these domains.
-            startCrawlDate (string): Crawl date refers to the date that Exa discovered a link. Results will include links that were crawled after this date. Must be specified in ISO 8601 format. Example: '2023-01-01'.
-            endCrawlDate (string): Crawl date refers to the date that Exa discovered a link. Results will include links that were crawled before this date. Must be specified in ISO 8601 format. Example: '2023-12-31'.
-            startPublishedDate (string): Only links with a published date after this will be returned. Must be specified in ISO 8601 format. Example: '2023-01-01'.
-            endPublishedDate (string): Only links with a published date before this will be returned. Must be specified in ISO 8601 format. Example: '2023-12-31'.
-            includeText (array): List of strings that must be present in webpage text of results. Currently, only 1 string is supported, of up to 5 words. Example: "['large language model']".
-            excludeText (array): List of strings that must not be present in webpage text of results. Currently, only 1 string is supported, of up to 5 words. Example: "['course']".
-            contents (object): contents
+            url: The source URL to find similarity for.
+            num_results: Number of similar results to return (default: 10).
+            include_domains: List of domains to include in results.
+            exclude_domains: List of domains to block.
+            start_crawl_date: ISO 8601 date. Only results crawled after this.
+            end_crawl_date: ISO 8601 date. Only results crawled before this.
+            start_published_date: ISO 8601 date. Only results published after this.
+            end_published_date: ISO 8601 date. Only results published before this.
+            exclude_source_domain: If True, do not return results from the same domain as the input URL.
+            category: Filter similar results by content type (e.g., 'personal site', 'github').
+            include_text: Webpage MUST contain these exact strings.
+            exclude_text: Webpage MUST NOT contain these exact strings.
+            text: Include full text content in the response (default: True).
+            highlights: Include relevance snippets (highlights).
+            summary: Generate a summary for each similar page.
+            flags: Experimental feature flags.
 
         Returns:
-            dict[str, Any]: OK
+            A serialized SearchResponse with results semantically ranked by similarity to the input URL.
 
         Tags:
-            important
+            similar, related, mapping, semantic
         """
-        request_body = {
-            "url": url,
-            "numResults": numResults,
-            "includeDomains": includeDomains,
-            "excludeDomains": excludeDomains,
-            "startCrawlDate": startCrawlDate,
-            "endCrawlDate": endCrawlDate,
-            "startPublishedDate": startPublishedDate,
-            "endPublishedDate": endPublishedDate,
-            "includeText": includeText,
-            "excludeText": excludeText,
-            "contents": contents,
-        }
-        request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/findSimilar"
-        query_params = {}
-        response = await self._apost(url, data=request_body, params=query_params)
-        response.raise_for_status()
-        return response.json()
+        logger.info(f"Exa find_similar for URL: {url}")
 
-    async def fetch_page_content(
+        contents = {}
+        if text:
+            contents["text"] = True
+        if highlights:
+            contents["highlights"] = True
+        if summary:
+            contents["summary"] = summary
+
+        response = await self.exa_client.find_similar(
+            url=url,
+            num_results=num_results,
+            include_domains=include_domains,
+            exclude_domains=exclude_domains,
+            start_crawl_date=start_crawl_date,
+            end_crawl_date=end_crawl_date,
+            start_published_date=start_published_date,
+            end_published_date=end_published_date,
+            exclude_source_domain=exclude_source_domain,
+            category=category,
+            include_text=include_text,
+            exclude_text=exclude_text,
+            contents=contents if contents else None,
+            flags=flags,
+        )
+        return self._to_serializable(response)
+
+    async def get_contents(  # noqa: PLR0913
         self,
-        urls,
-        ids=None,
-        text=None,
-        highlights=None,
-        summary=None,
-        livecrawl=None,
-        livecrawlTimeout=None,
-        subpages=None,
-        subpageTarget=None,
-        extras=None,
-    ) -> dict[str, Any]:
+        urls: list[str],
+        text: bool = True,
+        summary: dict[str, Any] | None = None,
+        subpages: int | None = None,
+        subpage_target: str | list[str] | None = None,
+        livecrawl: Literal["always", "never", "fallback", "auto"] | None = None,
+        livecrawl_timeout: int | None = None,
+        filter_empty_results: bool | None = None,
+        extras: dict[str, Any] | None = None,
+        flags: list[str] | None = None,
+    ) -> Any:
         """
-        Retrieves and processes content from a list of URLs, returning full text, summaries, or highlights. Unlike the search function which finds links, this function fetches the actual page content, with optional support for live crawling to get the most up-to-date information.
+        Deep-fetches the actual content of specific URLs or Result IDs.
+        Provides robust data extraction including text, snippets, and structured summaries.
 
         Args:
-            urls (array): Array of URLs to crawl (backwards compatible with 'ids' parameter). Example: "['https://arxiv.org/pdf/2307.06435']".
-            ids (array): Deprecated - use 'urls' instead. Array of document IDs obtained from searches. Example: "['https://arxiv.org/pdf/2307.06435']".
-            text (string): text
-            highlights (object): Text snippets the LLM identifies as most relevant from each page.
-            summary (object): Summary of the webpage
-            livecrawl (string): Options for livecrawling pages.
-        'never': Disable livecrawling (default for neural search).
-        'fallback': Livecrawl when cache is empty (default for keyword search).
-        'always': Always livecrawl.
-        'auto': Use an LLM to detect if query needs real-time content.
-         Example: 'always'.
-            livecrawlTimeout (integer): The timeout for livecrawling in milliseconds. Example: '1000'.
-            subpages (integer): The number of subpages to crawl. The actual number crawled may be limited by system constraints. Example: '1'.
-            subpageTarget (string): Keyword to find specific subpages of search results. Can be a single string or an array of strings, comma delimited. Example: 'sources'.
-            extras (object): Extra parameters to pass.
+            urls: List of URLs or Exa Result IDs to retrieve.
+            text: Include full page text (default: True).
+            summary: Generate structured or unstructured summaries of each URL.
+            subpages: Number of additional pages to crawl automatically from the same domain.
+            subpage_target: Focus subpage crawling on specific terms (e.g., 'pricing', 'technical doc').
+            livecrawl: Controls real-time crawling behavior:
+                - 'auto' (default): Uses Exa's cache first, crawls if data is missing or stale.
+                - 'always': Forces a fresh crawl, bypassing cache entirely.
+                - 'never': Strictly uses cached data.
+                - 'fallback': Uses cache, only crawls if cache retrieval fails.
+            livecrawl_timeout: Maximum time allowed for fresh crawls (in milliseconds).
+            filter_empty_results: Automatically remove results where no meaningful content was found.
+            extras: Advanced extraction features (e.g., {'links': 20, 'image_links': 10}).
+            flags: Experimental feature flags.
 
         Returns:
-            dict[str, Any]: OK
+            A serialized SearchResponse containing enriched content for each URL.
 
         Tags:
-            important
+            content, fetch, crawl, subpages, extract
         """
-        request_body = {
-            "urls": urls,
-            "ids": ids,
-            "text": text,
-            "highlights": highlights,
-            "summary": summary,
-            "livecrawl": livecrawl,
-            "livecrawlTimeout": livecrawlTimeout,
-            "subpages": subpages,
-            "subpageTarget": subpageTarget,
-            "extras": extras,
-        }
-        request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/contents"
-        query_params = {}
-        response = await self._apost(url, data=request_body, params=query_params)
-        response.raise_for_status()
-        return response.json()
+        logger.info(f"Exa get_contents for {len(urls)} URLs.")
+        response = await self.exa_client.get_contents(
+            urls=urls,
+            text=text,
+            summary=summary,
+            subpages=subpages,
+            subpage_target=subpage_target,
+            livecrawl=livecrawl,
+            livecrawl_timeout=livecrawl_timeout,
+            filter_empty_results=filter_empty_results,
+            extras=extras,
+            flags=flags,
+        )
+        return self._to_serializable(response)
 
-    async def answer(self, query, stream=None, text=None, model=None) -> dict[str, Any]:
+    async def answer(  # noqa: PLR0913
+        self,
+        query: str,
+        text: bool = False,
+        system_prompt: str | None = None,
+        model: Literal["exa", "exa-pro"] | None = None,
+        output_schema: dict[str, Any] | None = None,
+        user_location: str | None = None,
+    ) -> Any:
         """
-        Retrieves a direct, synthesized answer for a given query by calling the Exa `/answer` API endpoint. Unlike `search`, which returns web results, this function provides a conclusive response. It supports streaming, including source text, and selecting a search model.
+        Synthesizes a direct, objective answer to a research question based on multiple web sources.
+        Includes inline citations linked to the original pages.
 
         Args:
-            query (string): The question or query to answer. Example: 'What is the latest valuation of SpaceX?'.
-            stream (boolean): If true, the response is returned as a server-sent events (SSS) stream.
-            text (boolean): If true, the response includes full text content in the search results
-            model (string): The search model to use for the answer. Exa passes only one query to exa, while exa-pro also passes 2 expanded queries to our search model.
+            query: The research question (e.g., "What are the latest breakthroughs in fusion power?").
+            text: Include the full text of cited pages in the response (default: False).
+            system_prompt: Guiding prompt to control the LLM's persona or formatting style.
+            model: Answer engine:
+                - 'exa-pro' (default): High-performance, multi-query reasoning for deep answers.
+                - 'exa': Faster, single-pass answer generation.
+            output_schema: Optional JSON Schema to force the result into a specific JSON structure.
+            user_location: ISO country code for localized answers.
 
         Returns:
-            dict[str, Any]: OK
+            A serialized AnswerResponse with the 'answer' text and 'citations' list.
 
         Tags:
-            important
+            answer, synthesis, knowledge, citations, research, important
         """
-        request_body = {"query": query, "stream": stream, "text": text, "model": model}
-        request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/answer"
-        query_params = {}
-        response = await self._apost(url, data=request_body, params=query_params)
-        response.raise_for_status()
-        return response.json()
+        logger.info(f"Exa answer for query: {query}")
+        response = await self.exa_client.answer(
+            query=query,
+            text=text,
+            system_prompt=system_prompt,
+            model=model,
+            output_schema=output_schema,
+            user_location=user_location,
+        )
+        return self._to_serializable(response)
+
+    async def create_research_task(
+        self,
+        instructions: str,
+        output_schema: dict[str, Any] | None = None,
+        model: Literal["exa-research", "exa-research-pro", "exa-research-fast"] | None = "exa-research-fast",
+    ) -> Any:
+        """
+        Initiates a long-running, autonomous research task that explores the web to fulfill complex instructions.
+        Ideal for tasks that require multiple searches and deep analysis.
+
+        Args:
+            instructions: Detailed briefing for the research goal (e.g., "Find all AI unicorns founded
+                in 2024 and summarize their lead investors and core technology.").
+            output_schema: Optional JSON Schema to structure the final researched output.
+            model: Research intelligence level:
+                - 'exa-research-fast' (default): Quick, focused investigation.
+                - 'exa-research': Standard depth, balanced speed.
+                - 'exa-research-pro': Maximum depth, exhaustive exploration.
+
+        Returns:
+            A serialized ResearchDto containing the 'research_id' (Task ID) used for polling and status checks.
+
+        Tags:
+            research, task, async, create
+        """
+        logger.info(f"Exa create_research_task: {instructions}")
+        response = await self.exa_client.research.create(
+            instructions=instructions,
+            output_schema=output_schema,
+            model=model,
+        )
+        return self._to_serializable(response)
+
+    async def get_research_task(self, task_id: str, events: bool = False) -> Any:
+        """
+        Retrieves the current status, metadata, and (if finished) final results of a research task.
+
+        Args:
+            task_id: The unique ID assigned during task creation.
+            events: If True, returns a chronological log of all actions the researcher has taken.
+
+        Returns:
+            A serialized ResearchDto with status ('queued', 'running', 'completed', etc.) and data.
+
+        Tags:
+            research, status, task, check
+        """
+        logger.info(f"Exa get_research_task: {task_id}")
+        response = await self.exa_client.research.get(research_id=task_id, events=events)
+        return self._to_serializable(response)
+
+    async def poll_research_task(
+        self,
+        task_id: str,
+        poll_interval_ms: int = 1000,
+        timeout_ms: int = 600000,
+        events: bool = False,
+    ) -> Any:
+        """
+        Blocks until a research task completes, fails, or times out.
+        Provides a convenient way to wait for results without manual looping.
+
+        Args:
+            task_id: The ID of the task to monitor.
+            poll_interval_ms: Frequency of status checks in milliseconds (default: 1000).
+            timeout_ms: Maximum duration to block before giving up (default: 10 minutes).
+            events: If True, include activity logs in the final response.
+
+        Returns:
+            The terminal ResearchDto state containing the final research findings.
+
+        Tags:
+            research, poll, wait, task, terminal
+        """
+        logger.info(f"Exa poll_research_task: {task_id}")
+        response = await self.exa_client.research.poll_until_finished(
+            research_id=task_id,
+            poll_interval=poll_interval_ms,
+            timeout_ms=timeout_ms,
+            events=events,
+        )
+        return self._to_serializable(response)
+
+    async def list_research_tasks(
+        self,
+        cursor: str | None = None,
+        limit: int | None = None,
+    ) -> Any:
+        """
+        Provides a paginated list of all past and current research tasks for auditing or recovery.
+
+        Args:
+            cursor: Token for retrieving the next page of task history.
+            limit: Maximum number of records to return in this call.
+
+        Returns:
+            A ListResearchResponseDto containing an array of research tasks.
+
+        Tags:
+            research, list, tasks, history
+        """
+        logger.info(f"Exa list_research_tasks (limit: {limit})")
+        response = await self.exa_client.research.list(cursor=cursor, limit=limit)
+        return self._to_serializable(response)
 
     def list_tools(self):
-        return [self.search_with_filters, self.find_similar_by_url, self.fetch_page_content, self.answer]
+        return [
+            self.search,
+            self.find_similar,
+            self.get_contents,
+            self.answer,
+            self.create_research_task,
+            self.get_research_task,
+            self.poll_research_task,
+            self.list_research_tasks,
+        ]

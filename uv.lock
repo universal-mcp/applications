@@ -1051,6 +1051,20 @@ wheels = [
 ]
 
 [[package]]
+name = "exa-py"
+version = "2.0.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "openai" },
+    { name = "requests" },
+    { name = "typing-extensions" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/72/7f/38cda469587b2c69645d3ccc2dda47a5c1213cc98e9090271b462704496e/exa_py-2.0.1.tar.gz", hash = "sha256:aaae32b6356ed855b4decee3fcb8e71272439c4614a20419612c1674c8c1f648", size = 43553, upload-time = "2025-11-21T15:54:51.306Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/a4/da/70ff6161914988ec756e6b2a57e23d28247cc825bfdbdcddf0bb967e87d0/exa_py-2.0.1-py3-none-any.whl", hash = "sha256:e2773f16dc2d70baad284139d58a292ac911307c6898ecd1dbb413035db0c950", size = 56043, upload-time = "2025-11-21T15:54:50.2Z" },
+]
+
+[[package]]
 name = "fal-client"
 version = "0.8.1"
 source = { registry = "https://pypi.org/simple" }
@@ -5164,7 +5178,7 @@ wheels = [
 
 [[package]]
 name = "universal-mcp-applications"
-version = "0.1.37rc1"
+version = "0.1.38rc2"
 source = { editable = "." }
 dependencies = [
     { name = "boto3" },
@@ -5172,6 +5186,7 @@ dependencies = [
     { name = "dnspython" },
     { name = "e2b-code-interpreter" },
     { name = "elevenlabs" },
+    { name = "exa-py" },
     { name = "fal-client" },
     { name = "firecrawl-py" },
     { name = "google-genai" },
@@ -5219,6 +5234,7 @@ requires-dist = [
     { name = "dnspython", specifier = ">=2.4.0" },
     { name = "e2b-code-interpreter", specifier = ">=1.2.1" },
     { name = "elevenlabs", specifier = ">=2.14.0" },
+    { name = "exa-py", specifier = ">=2.0.1" },
     { name = "fal-client", specifier = ">=0.5.9" },
     { name = "firecrawl-py", specifier = ">=3.0.3" },
     { name = "google-genai", specifier = ">=1.33.0" },

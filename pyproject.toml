@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "universal-mcp-applications"
-version = "0.1.37"
+version = "0.1.38-rc2"
 description = "A Universal MCP Application: universal_mcp_applications"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -25,6 +25,7 @@ dependencies = [
     "dnspython>=2.4.0",
     "e2b-code-interpreter>=1.2.1",
     "elevenlabs>=2.14.0",
+    "exa-py>=2.0.1",
     "fal-client>=0.5.9",
     "firecrawl-py>=3.0.3",
     "google-genai>=1.33.0",

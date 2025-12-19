@@ -11,6 +11,7 @@ ALL_APPS = [
     "bill",  # not seeded
     "box",
     "braze",
+    "browser_use",
     # "cal_com_v2",   # not seeded
     "calendly",
     "canva",

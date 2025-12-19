@@ -3,7 +3,7 @@ import io
 import os
 import uuid
 import wave
-from typing import Annotated
+from typing import Annotated, Literal
 from google import genai
 from google.genai import types
 from PIL import Image
@@ -27,7 +27,16 @@ class GoogleGeminiApp(APIApplication):
         self._genai_client = genai.Client(api_key=api_key)
         return self._genai_client
 
-    async def generate_text(self, prompt: Annotated[str, "The prompt to generate text from"], model: str = "gemini-2.5-flash") -> str:
+    async def generate_text(
+        self,
+        prompt: Annotated[str, "The prompt to generate text from"],
+        model: Literal[
+            "gemini-2.5-flash",
+            "gemini-2.5-pro",
+            "gemini-3-flash-preview",
+            "gemini-3-pro-preview",
+        ] = "gemini-2.5-flash",
+    ) -> str:
         """Generates text using the Google Gemini model based on a given prompt.
         This tool is suitable for various natural language processing tasks such as content generation, summarization, translation, and question answering.
 
@@ -52,7 +61,10 @@ class GoogleGeminiApp(APIApplication):
         self,
         prompt: Annotated[str, "The prompt to generate image from"],
         images: Annotated[list[str], "The reference image URLs"] | None = None,
-        model: str = "gemini-2.5-flash-image-preview",
+        model: Literal[
+            "gemini-3-pro-image-preview",
+            "gemini-2.5-flash-image"
+        ] = "gemini-2.5-flash-image",
     ) -> dict:
         """
         Generates an image based on a text prompt and an optional reference image using the Google Gemini model.
@@ -62,7 +74,7 @@ class GoogleGeminiApp(APIApplication):
         Args:
             prompt (str): The descriptive text prompt to guide the image generation. For example: "A futuristic city at sunset with flying cars."
             images (list[str], optional): An optional list of URLs to reference images. These images will be used as a basis for the generation.
-            model (str, optional): The Gemini model to use for image generation. Defaults to "gemini-2.5-flash-image-preview".
+            model (str, optional): The Gemini model to use for image generation. Defaults to "gemini-2.5-flash-image". 
 
         Returns:
             dict: A dictionary containing:
@@ -105,8 +117,13 @@ class GoogleGeminiApp(APIApplication):
                 return {"type": "image", "data": img_base64, "mime_type": "image/png", "file_name": file_name, "text": text}
 
     async def generate_audio(
-        self, prompt: Annotated[str, "The prompt to generate audio from"], model: str = "gemini-2.5-flash-preview-tts"
-    ) -> str:
+        self,
+        prompt: Annotated[str, "The prompt to generate audio from"],
+        model: Literal[
+            "gemini-2.5-flash-preview-tts",
+            "gemini-2.5-pro-preview-tts"
+        ] = "gemini-2.5-flash-preview-tts",
+    ) -> str:  
         """Generates audio from a given text prompt using the Google Gemini model's Text-to-Speech (TTS) capabilities.
         This tool is useful for converting text into spoken audio, which can be used for voiceovers, accessibility features, or interactive applications.
         It returns a dictionary containing the generated audio data (base64 encoded), its MIME type, and a suggested file name.
