@@ -1359,54 +1359,82 @@ class GoogleSheetApp(APIApplication):
                 }
             )
         cell_format = {}
+        updated_fields = []
+
         text_format = {}
         if bold is not None:
             text_format["bold"] = bold
+            updated_fields.append("userEnteredFormat.textFormat.bold")
         if italic is not None:
             text_format["italic"] = italic
+            updated_fields.append("userEnteredFormat.textFormat.italic")
         if underline is not None:
             text_format["underline"] = underline
+            updated_fields.append("userEnteredFormat.textFormat.underline")
         if strikethrough is not None:
             text_format["strikethrough"] = strikethrough
+            updated_fields.append("userEnteredFormat.textFormat.strikethrough")
         if fontSize is not None:
             text_format["fontSize"] = fontSize
+            updated_fields.append("userEnteredFormat.textFormat.fontSize")
         if fontFamily is not None:
             text_format["fontFamily"] = fontFamily
-        if any((color is not None for color in [textRed, textGreen, textBlue])):
-            text_color = {}
-            if textRed is not None:
-                text_color["red"] = textRed
-            if textGreen is not None:
-                text_color["green"] = textGreen
-            if textBlue is not None:
-                text_color["blue"] = textBlue
-            if text_color:
-                text_format["foregroundColor"] = {"rgbColor": text_color}
+            updated_fields.append("userEnteredFormat.textFormat.fontFamily")
+
+        text_color = {}
+        if textRed is not None:
+            text_color["red"] = textRed
+        if textGreen is not None:
+            text_color["green"] = textGreen
+        if textBlue is not None:
+            text_color["blue"] = textBlue
+        if text_color:
+            text_format["foregroundColor"] = text_color
+            updated_fields.append("userEnteredFormat.textFormat.foregroundColor")
+
         if text_format:
             cell_format["textFormat"] = text_format
-        if any((color is not None for color in [backgroundRed, backgroundGreen, backgroundBlue])):
-            background_color = {}
-            if backgroundRed is not None:
-                background_color["red"] = backgroundRed
-            if backgroundGreen is not None:
-                background_color["green"] = backgroundGreen
-            if backgroundBlue is not None:
-                background_color["blue"] = backgroundBlue
-            if background_color:
-                cell_format["backgroundColorStyle"] = {"rgbColor": background_color}
-        if horizontalAlignment or verticalAlignment:
+
+        background_color = {}
+        if backgroundRed is not None:
+            background_color["red"] = backgroundRed
+        if backgroundGreen is not None:
+            background_color["green"] = backgroundGreen
+        if backgroundBlue is not None:
+            background_color["blue"] = backgroundBlue
+        if background_color:
+            cell_format["backgroundColorStyle"] = {"rgbColor": background_color}
+            updated_fields.append("userEnteredFormat.backgroundColorStyle")
+
+        if horizontalAlignment:
             cell_format["horizontalAlignment"] = horizontalAlignment
+            updated_fields.append("userEnteredFormat.horizontalAlignment")
+        if verticalAlignment:
             cell_format["verticalAlignment"] = verticalAlignment
+            updated_fields.append("userEnteredFormat.verticalAlignment")
         if wrapStrategy:
             cell_format["wrapStrategy"] = wrapStrategy
+            updated_fields.append("userEnteredFormat.wrapStrategy")
         if numberFormat:
-            cell_format["numberFormat"] = {"type": "TEXT", "pattern": numberFormat}
+            cell_format["numberFormat"] = {"type": "NUMBER", "pattern": numberFormat}
+            updated_fields.append("userEnteredFormat.numberFormat")
+
         borders = {}
-        for border_side, border_config in [("top", borderTop), ("bottom", borderBottom), ("left", borderLeft), ("right", borderRight)]:
-            if border_config:
-                borders[border_side] = border_config
+        if borderTop:
+            borders["top"] = borderTop
+            updated_fields.append("userEnteredFormat.borders.top")
+        if borderBottom:
+            borders["bottom"] = borderBottom
+            updated_fields.append("userEnteredFormat.borders.bottom")
+        if borderLeft:
+            borders["left"] = borderLeft
+            updated_fields.append("userEnteredFormat.borders.left")
+        if borderRight:
+            borders["right"] = borderRight
+            updated_fields.append("userEnteredFormat.borders.right")
         if borders:
             cell_format["borders"] = borders
+
         if cell_format:
             requests.append(
                 {
@@ -1419,7 +1447,7 @@ class GoogleSheetApp(APIApplication):
                             "endColumnIndex": endColumnIndex,
                         },
                         "cell": {"userEnteredFormat": cell_format},
-                        "fields": "userEnteredFormat",
+                        "fields": ",".join(updated_fields),
                     }
                 }
             )
