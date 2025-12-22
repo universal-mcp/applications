@@ -1123,7 +1123,7 @@ class GoogleSheetApp(APIApplication):
             sheet_properties = sheet.get("properties", {})
             sheet_id = sheet_properties.get("sheetId")
             sheet_title = sheet_properties.get("title", "Sheet1")
-            sheet_tables = analyze_sheet_for_tables(
+            sheet_tables = await analyze_sheet_for_tables(
                 self.get_values, spreadsheetId, sheet_id, sheet_title, min_rows, min_columns, min_confidence
             )
             tables.extend(sheet_tables)
@@ -1169,7 +1169,7 @@ class GoogleSheetApp(APIApplication):
             sheet_title = sheet_properties.get("title", "Sheet1")
             if sheet_name and sheet_title != sheet_name:
                 continue
-            sheet_tables = analyze_sheet_for_tables(
+            sheet_tables = await analyze_sheet_for_tables(
                 self.get_values,
                 spreadsheetId,
                 sheet_properties.get("sheetId", 0),
@@ -1189,7 +1189,7 @@ class GoogleSheetApp(APIApplication):
                 break
         if not target_table:
             raise ValueError(f"Table '{table_name}' not found in spreadsheet")
-        return analyze_table_schema(self.get_values, spreadsheetId, target_table, sample_size)
+        return await analyze_table_schema(self.get_values, spreadsheetId, target_table, sample_size)
 
     async def set_basic_filter(self, spreadsheetId: str, filter: dict) -> dict[str, Any]:
         """
