@@ -9,12 +9,25 @@ This is automatically generated from OpenAPI schema for the OutlookApp API.
 
 | Tool | Description |
 |------|-------------|
-| `reply_to_message` | Replies to an email using its message ID, with either a simple comment or a full message object including attachments. Unlike `send_mail`, which creates a new email, this function targets an existing message. It defaults to the current user if no user ID is specified. |
-| `send_mail` | Sends a new email on behalf of a specified or current user, using a dictionary for content like recipients and subject. Unlike `reply_to_message`, which replies to an existing message, this function composes and sends an entirely new email from scratch. |
-| `get_mail_folder` | Retrieves a specific mail folder's metadata by its ID for a given user. The response can be customized to include hidden folders or select specific properties. Unlike `list_user_messages`, this function fetches folder details, not the emails contained within it. |
-| `list_user_messages` | Retrieves a list of messages from a user's mailbox. This function supports powerful querying using optional parameters for filtering, searching, sorting, and pagination, unlike `get_user_message`, which fetches a single email by its ID. |
-| `get_user_message` | Retrieves a specific email message by its ID for a given user, with options to select specific fields or expand related data. Unlike `list_user_messages`, which fetches a collection of emails with advanced filtering, this function is designed to retrieve a single, known message. |
-| `user_delete_message` | Permanently deletes a specific email, identified by `message_id`, from a user's mailbox. If `user_id` is not provided, it defaults to the current authenticated user. Unlike retrieval functions such as `get_user_message`, this performs a destructive action to remove the specified email from Outlook. |
-| `list_message_attachments` | Retrieves attachments for a specific email message, identified by its ID. Supports advanced querying for filtering, sorting, and pagination, allowing users to select specific fields to return in the result set, focusing only on attachments rather than the full message content. |
-| `get_current_user_profile` | Fetches the `userPrincipalName` for the currently authenticated user from the `/me` endpoint. This internal helper is used by other methods to automatically obtain the user's ID for API calls when a `user_id` is not explicitly provided. |
-| `get_next_page` | Executes a GET request for a full URL, typically the `@odata.nextLink` from a previous paginated API response. It simplifies retrieving subsequent pages of data from list functions by handling URL validation and parsing before fetching the results for the next page. |
+| `reply_to_email` | Replies to a specific email message. |
+| `send_email` | Sends a new email. |
+| `get_email_folder` | Retrieves a specific email folder's metadata by its ID. |
+| `list_emails` | Retrieves a list of emails from a user's mailbox. |
+| `get_email` | Retrieves a specific email by its ID. |
+| `delete_email` | Permanently deletes a specific email by its ID. |
+| `list_email_attachments` | Retrieves attachments for a specific email. |
+| `get_attachment` | Retrieves a specific attachment from an email message and formats it as a dictionary. |
+| `get_my_profile` | Fetches the userPrincipalName for the currently authenticated user. |
+| `get_next_page_results` | Retrieves the next page of results from a paginated API response. |
+| `list_calendars` | Retrieves a list of calendars for the user. |
+| `get_calendar` | Retrieves a specific calendar by its ID. |
+| `create_calendar` | Creates a new calendar for the user. |
+| `update_calendar` | Updates an existing calendar's name. |
+| `delete_calendar` | Deletes a specific calendar. |
+| `list_events` | Retrieves a list of events from a calendar or the user's default calendar. |
+| `get_event` | Retrieves a specific event by its ID. |
+| `create_event` | Creates a new event in a calendar. |
+| `update_event` | Updates an existing event. |
+| `delete_event` | Deletes a specific event. |
+| `list_calendar_view` | Retrieves events between a start and end time (includes expanded recurring events). |
+| `get_schedule` | Retrieves free/busy information for a set of users, groups, or resources. |
