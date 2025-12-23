@@ -5035,7 +5035,7 @@ wheels = [
 
 [[package]]
 name = "universal-mcp"
-version = "0.1.24"
+version = "0.1.25rc1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "agentevals" },
@@ -5065,9 +5065,9 @@ dependencies = [
     { name = "streamlit" },
     { name = "typer" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/fd/fe/d9d148cac1b07fdcfcb2f94c76003aaf23cc7e228c481496e21592ae5a83/universal_mcp-0.1.24.tar.gz", hash = "sha256:fe9f9030e2c377feec1df7010da9bc2c8ccb329e6bdbc55dd46e491b25bdb580", size = 110660, upload-time = "2025-11-10T10:26:18.002Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/bb/bc/f6a2d5b145448f3f44a97bc732d89d4a94784f45f496fc51d42f0b7f2660/universal_mcp-0.1.25rc1.tar.gz", hash = "sha256:91f4dacad3a4c008c0a08cf91ef70b83df86318437774f02afd051eed6b2dbc2", size = 111210, upload-time = "2025-11-13T14:41:12.342Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/ac/28/8adf9c0fe0327230c51ecc67e9f5da916194fb1e0dc572da14f24ed0b105/universal_mcp-0.1.24-py3-none-any.whl", hash = "sha256:10dbbbed9e022d038c11e77da24e658d1bbff4929032252a9d1cf7be9611e5b3", size = 123911, upload-time = "2025-11-10T10:26:15.992Z" },
+    { url = "https://files.pythonhosted.org/packages/7f/ee/8d9cfd9318e7d727c7a03bf4ffb8a3c88f88ffc6a05c8e8016ad3f05eb92/universal_mcp-0.1.25rc1-py3-none-any.whl", hash = "sha256:17174a79242198de1e9e18444e23410a863362776e713d03b6e24a7ffa02022d", size = 124317, upload-time = "2025-11-13T14:41:10.78Z" },
 ]
 
 [[package]]
@@ -5092,7 +5092,7 @@ wheels = [
 
 [[package]]
 name = "universal-mcp-applications"
-version = "0.1.38rc2"
+version = "0.1.38"
 source = { editable = "." }
 dependencies = [
     { name = "boto3" },
@@ -5172,7 +5172,7 @@ requires-dist = [
     { name = "resend", specifier = ">=2.10.0" },
     { name = "ruff", marker = "extra == 'dev'" },
     { name = "twilio", specifier = ">=9.8.0" },
-    { name = "universal-mcp", specifier = ">=0.1.24" },
+    { name = "universal-mcp", specifier = ">=0.1.25rc1" },
     { name = "universal-mcp-agents", specifier = ">=0.1.28" },
     { name = "yfinance", specifier = ">=0.2.66" },
     { name = "youtube-transcript-api", specifier = "==1.2.2" },

@@ -423,6 +423,420 @@ class OutlookApp(APIApplication):
         response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
+    async def list_calendars(
+        self,
+        user_id: str | None = None,
+        top: int | None = None,
+        skip: int | None = None,
+        select: list[str] | None = None,
+    ) -> dict[str, Any]:
+        """
+        Retrieves a list of calendars for the user.
+
+        Args:
+            user_id (str, optional): The ID of the user. Defaults to the authenticated user.
+            top (int, optional): The maximum number of calendars to return.
+            skip (int, optional): The number of calendars to skip.
+            select (list[str], optional): A list of properties to return for each calendar.
+
+        Returns:
+            dict[str, Any]: A dictionary containing a list of calendars.
+
+        Tags:
+            important
+        """
+        if user_id is None:
+            user_info = await self.get_my_profile()
+            user_id = user_info.get("userPrincipalName")
+            if not user_id:
+                raise ValueError("Could not retrieve user ID from get_my_profile response.")
+        url = f"{self.base_url}/users/{user_id}/calendars"
+        select_str = ",".join(select) if select else None
+        query_params = {k: v for k, v in [("$top", top), ("$skip", skip), ("$select", select_str)] if v is not None}
+        response = await self._aget(url, params=query_params)
+        return self._handle_response(response)
+
+    async def get_calendar(
+        self, calendar_id: str, user_id: str | None = None, select: list[str] | None = None
+    ) -> dict[str, Any]:
+        """
+        Retrieves a specific calendar by its ID.
+
+        Args:
+            calendar_id (str): The unique identifier for the calendar.
+            user_id (str, optional): The ID of the user. Defaults to the authenticated user.
+            select (list[str], optional): A list of properties to return.
+
+        Returns:
+            dict[str, Any]: A dictionary containing the calendar's details.
+
+        Tags:
+            important
+        """
+        if user_id is None:
+            user_info = await self.get_my_profile()
+            user_id = user_info.get("userPrincipalName")
+            if not user_id:
+                raise ValueError("Could not retrieve user ID from get_my_profile response.")
+        url = f"{self.base_url}/users/{user_id}/calendars/{calendar_id}"
+        select_str = ",".join(select) if select else None
+        query_params = {"$select": select_str} if select_str else {}
+        response = await self._aget(url, params=query_params)
+        return self._handle_response(response)
+
+    async def create_calendar(self, name: str, user_id: str | None = None) -> dict[str, Any]:
+        """
+        Creates a new calendar for the user.
+
+        Args:
+            name (str): The name of the new calendar.
+            user_id (str, optional): The ID of the user. Defaults to the authenticated user.
+
+        Returns:
+            dict[str, Any]: A dictionary containing the created calendar's details.
+
+        Tags:
+            important
+        """
+        if user_id is None:
+            user_info = await self.get_my_profile()
+            user_id = user_info.get("userPrincipalName")
+            if not user_id:
+                raise ValueError("Could not retrieve user ID from get_my_profile response.")
+        url = f"{self.base_url}/users/{user_id}/calendars"
+        request_body = {"name": name}
+        response = await self._apost(url, data=request_body, params={}, content_type="application/json")
+        return self._handle_response(response)
+
+    async def update_calendar(self, calendar_id: str, name: str, user_id: str | None = None) -> dict[str, Any]:
+        """
+        Updates an existing calendar's name.
+
+        Args:
+            calendar_id (str): The unique identifier for the calendar.
+            name (str): The new name for the calendar.
+            user_id (str, optional): The ID of the user. Defaults to the authenticated user.
+
+        Returns:
+            dict[str, Any]: A dictionary containing the updated calendar's details.
+
+        Tags:
+            important
+        """
+        if user_id is None:
+            user_info = await self.get_my_profile()
+            user_id = user_info.get("userPrincipalName")
+            if not user_id:
+                raise ValueError("Could not retrieve user ID from get_my_profile response.")
+        url = f"{self.base_url}/users/{user_id}/calendars/{calendar_id}"
+        request_body = {"name": name}
+        response = await self._apatch(url, data=request_body, params={}, content_type="application/json")
+        return self._handle_response(response)
+
+    async def delete_calendar(self, calendar_id: str, user_id: str | None = None) -> dict[str, Any]:
+        """
+        Deletes a specific calendar.
+
+        Args:
+            calendar_id (str): The unique identifier for the calendar to delete.
+            user_id (str, optional): The ID of the user. Defaults to the authenticated user.
+
+        Returns:
+            dict[str, Any]: A dictionary confirming the deletion.
+
+        Tags:
+            important
+        """
+        if user_id is None:
+            user_info = await self.get_my_profile()
+            user_id = user_info.get("userPrincipalName")
+            if not user_id:
+                raise ValueError("Could not retrieve user ID from get_my_profile response.")
+        url = f"{self.base_url}/users/{user_id}/calendars/{calendar_id}"
+        response = await self._adelete(url, params={})
+        return self._handle_response(response)
+
+    async def list_events(
+        self,
+        calendar_id: str | None = None,
+        user_id: str | None = None,
+        top: int | None = None,
+        skip: int | None = None,
+        filter: str | None = None,
+        select: list[str] | None = None,
+        orderby: list[str] | None = None,
+    ) -> dict[str, Any]:
+        """
+        Retrieves a list of events from a calendar or the user's default calendar.
+
+        Args:
+            calendar_id (str, optional): The ID of the calendar. If not provided, the default calendar is used.
+            user_id (str, optional): The ID of the user. Defaults to the authenticated user.
+            top (int, optional): The maximum number of events to return.
+            skip (int, optional): The number of events to skip.
+            filter (str, optional): A filter query (e.g., "start/dateTime ge '2023-01-01T00:00:00Z'").
+            select (list[str], optional): A list of properties to return for each event.
+            orderby (list[str], optional): A list of properties to sort the results by.
+
+        Returns:
+            dict[str, Any]: A dictionary containing a list of events.
+
+        Tags:
+            important
+        """
+        if user_id is None:
+            user_info = await self.get_my_profile()
+            user_id = user_info.get("userPrincipalName")
+            if not user_id:
+                raise ValueError("Could not retrieve user ID from get_my_profile response.")
+        if calendar_id:
+            url = f"{self.base_url}/users/{user_id}/calendars/{calendar_id}/events"
+        else:
+            url = f"{self.base_url}/users/{user_id}/calendar/events"
+        select_str = ",".join(select) if select else None
+        orderby_str = ",".join(orderby) if orderby else None
+        query_params = {
+            k: v
+            for k, v in [("$top", top), ("$skip", skip), ("$filter", filter), ("$select", select_str), ("$orderby", orderby_str)]
+            if v is not None
+        }
+        response = await self._aget(url, params=query_params)
+        return self._handle_response(response)
+
+    async def get_event(
+        self, event_id: str, user_id: str | None = None, select: list[str] | None = None
+    ) -> dict[str, Any]:
+        """
+        Retrieves a specific event by its ID.
+
+        Args:
+            event_id (str): The unique identifier for the event.
+            user_id (str, optional): The ID of the user. Defaults to the authenticated user.
+            select (list[str], optional): A list of properties to return.
+
+        Returns:
+            dict[str, Any]: A dictionary containing the event's details.
+
+        Tags:
+            important
+        """
+        if user_id is None:
+            user_info = await self.get_my_profile()
+            user_id = user_info.get("userPrincipalName")
+            if not user_id:
+                raise ValueError("Could not retrieve user ID from get_my_profile response.")
+        url = f"{self.base_url}/users/{user_id}/events/{event_id}"
+        select_str = ",".join(select) if select else None
+        query_params = {"$select": select_str} if select_str else {}
+        response = await self._aget(url, params=query_params)
+        return self._handle_response(response)
+
+    async def create_event(
+        self,
+        subject: str,
+        start_datetime: str,
+        end_datetime: str,
+        start_timezone: str = "UTC",
+        end_timezone: str = "UTC",
+        body: str | None = None,
+        body_content_type: str = "HTML",
+        location_display_name: str | None = None,
+        attendees: list[dict[str, Any]] | None = None,
+        calendar_id: str | None = None,
+        user_id: str | None = None,
+        **kwargs,
+    ) -> dict[str, Any]:
+        """
+        Creates a new event in a calendar.
+
+        Args:
+            subject (str): The subject of the event.
+            start_datetime (str): The start time of the event (ISO 8601 string, e.g., '2023-12-25T09:00:00').
+            end_datetime (str): The end time of the event (ISO 8601 string, e.g., '2023-12-25T10:00:00').
+            start_timezone (str, optional): The timezone for the start time. Defaults to 'UTC'.
+            end_timezone (str, optional): The timezone for the end time. Defaults to 'UTC'.
+            body (str, optional): The body content of the event.
+            body_content_type (str, optional): The content type of the body (Text or HTML). Defaults to 'HTML'.
+            location_display_name (str, optional): The display name for the event location.
+            attendees (list[dict[str, Any]], optional): A list of attendee objects.
+                Example attendee: {"type": "required", "emailAddress": {"address": "bob@example.com", "name": "Bob"}}
+            calendar_id (str, optional): The ID of the calendar. If not provided, the default calendar is used.
+            user_id (str, optional): The ID of the user. Defaults to the authenticated user.
+            **kwargs: Additional properties for the event (e.g., isOnlineMeeting, reminderMinutesBeforeStart).
+
+        Returns:
+            dict[str, Any]: A dictionary containing the created event's details.
+
+        Tags:
+            important
+        """
+        if user_id is None:
+            user_info = await self.get_my_profile()
+            user_id = user_info.get("userPrincipalName")
+            if not user_id:
+                raise ValueError("Could not retrieve user ID from get_my_profile response.")
+        if calendar_id:
+            url = f"{self.base_url}/users/{user_id}/calendars/{calendar_id}/events"
+        else:
+            url = f"{self.base_url}/users/{user_id}/calendar/events"
+        request_body = {
+            "subject": subject,
+            "start": {"dateTime": start_datetime, "timeZone": start_timezone},
+            "end": {"dateTime": end_datetime, "timeZone": end_timezone},
+        }
+        if body:
+            request_body["body"] = {"contentType": body_content_type, "content": body}
+        if location_display_name:
+            request_body["location"] = {"displayName": location_display_name}
+        if attendees:
+            request_body["attendees"] = attendees
+        request_body.update(kwargs)
+        response = await self._apost(url, data=request_body, params={}, content_type="application/json")
+        return self._handle_response(response)
+
+    async def update_event(
+        self,
+        event_id: str,
+        user_id: str | None = None,
+        **kwargs,
+    ) -> dict[str, Any]:
+        """
+        Updates an existing event.
+
+        Args:
+            event_id (str): The unique identifier for the event.
+            user_id (str, optional): The ID of the user. Defaults to the authenticated user.
+            **kwargs: Event properties to update (e.g., subject, start, end, body, attendees).
+                For start/end, use nested dictionaries: start={"dateTime": "...", "timeZone": "..."}.
+
+        Returns:
+            dict[str, Any]: A dictionary containing the updated event's details.
+
+        Tags:
+            important
+        """
+        if user_id is None:
+            user_info = await self.get_my_profile()
+            user_id = user_info.get("userPrincipalName")
+            if not user_id:
+                raise ValueError("Could not retrieve user ID from get_my_profile response.")
+        url = f"{self.base_url}/users/{user_id}/events/{event_id}"
+        response = await self._apatch(url, data=kwargs, params={}, content_type="application/json")
+        return self._handle_response(response)
+
+    async def delete_event(self, event_id: str, user_id: str | None = None) -> dict[str, Any]:
+        """
+        Deletes a specific event.
+
+        Args:
+            event_id (str): The unique identifier for the event to delete.
+            user_id (str, optional): The ID of the user. Defaults to the authenticated user.
+
+        Returns:
+            dict[str, Any]: A dictionary confirming the deletion.
+
+        Tags:
+            important
+        """
+        if user_id is None:
+            user_info = await self.get_my_profile()
+            user_id = user_info.get("userPrincipalName")
+            if not user_id:
+                raise ValueError("Could not retrieve user ID from get_my_profile response.")
+        url = f"{self.base_url}/users/{user_id}/events/{event_id}"
+        response = await self._adelete(url, params={})
+        return self._handle_response(response)
+
+    async def list_calendar_view(
+        self,
+        start_datetime: str,
+        end_datetime: str,
+        calendar_id: str | None = None,
+        user_id: str | None = None,
+        top: int | None = None,
+        skip: int | None = None,
+        select: list[str] | None = None,
+    ) -> dict[str, Any]:
+        """
+        Retrieves events between a start and end time (includes expanded recurring events).
+
+        Args:
+            start_datetime (str): The start of the time range (ISO 8601, e.g., '2023-12-25T00:00:00Z').
+            end_datetime (str): The end of the time range (ISO 8601, e.g., '2023-12-26T00:00:00Z').
+            calendar_id (str, optional): The ID of the calendar. If not provided, the default calendar is used.
+            user_id (str, optional): The ID of the user. Defaults to the authenticated user.
+            top (int, optional): The maximum number of events to return.
+            skip (int, optional): The number of events to skip.
+            select (list[str], optional): A list of properties to return for each event.
+
+        Returns:
+            dict[str, Any]: A dictionary containing a list of event instances.
+
+        Tags:
+            important
+        """
+        if user_id is None:
+            user_info = await self.get_my_profile()
+            user_id = user_info.get("userPrincipalName")
+            if not user_id:
+                raise ValueError("Could not retrieve user ID from get_my_profile response.")
+        if calendar_id:
+            url = f"{self.base_url}/users/{user_id}/calendars/{calendar_id}/calendarView"
+        else:
+            url = f"{self.base_url}/users/{user_id}/calendar/calendarView"
+        select_str = ",".join(select) if select else None
+        query_params = {
+            "startDateTime": start_datetime,
+            "endDateTime": end_datetime,
+        }
+        if top is not None:
+            query_params["$top"] = top
+        if skip is not None:
+            query_params["$skip"] = skip
+        if select_str:
+            query_params["$select"] = select_str
+        response = await self._aget(url, params=query_params)
+        return self._handle_response(response)
+
+    async def get_schedule(
+        self,
+        schedules: list[str],
+        start_datetime: str,
+        end_datetime: str,
+        availability_view_interval: int = 30,
+        user_id: str | None = None,
+    ) -> dict[str, Any]:
+        """
+        Retrieves free/busy information for a set of users, groups, or resources.
+
+        Args:
+            schedules (list[str]): A list of SMTP addresses (emails) to get schedules for.
+            start_datetime (str): The start of the time range (ISO 8601 with 'Z', e.g., '2023-12-25T00:00:00Z').
+            end_datetime (str): The end of the time range (ISO 8601 with 'Z', e.g., '2023-12-26T00:00:00Z').
+            availability_view_interval (int, optional): The duration of each time slot in minutes. Defaults to 30.
+            user_id (str, optional): The ID of the user performing the request. Defaults to the authenticated user.
+
+        Returns:
+            dict[str, Any]: A dictionary containing schedule information.
+
+        Tags:
+            important
+        """
+        if user_id is None:
+            user_info = await self.get_my_profile()
+            user_id = user_info.get("userPrincipalName")
+            if not user_id:
+                raise ValueError("Could not retrieve user ID from get_my_profile response.")
+        url = f"{self.base_url}/users/{user_id}/calendar/getSchedule"
+        request_body = {
+            "schedules": schedules,
+            "startTime": {"dateTime": start_datetime, "timeZone": "UTC"},
+            "endTime": {"dateTime": end_datetime, "timeZone": "UTC"},
+            "availabilityViewInterval": availability_view_interval,
+        }
+        response = await self._apost(url, data=request_body, params={}, content_type="application/json")
+        return self._handle_response(response)
+
     async def get_next_page_results(self, url: str) -> dict[str, Any]:
         """
         Retrieves the next page of results from a paginated API response.
@@ -461,4 +875,16 @@ class OutlookApp(APIApplication):
             self.get_attachment,
             self.get_my_profile,
             self.get_next_page_results,
+            self.list_calendars,
+            self.get_calendar,
+            self.create_calendar,
+            self.update_calendar,
+            self.delete_calendar,
+            self.list_events,
+            self.get_event,
+            self.create_event,
+            self.update_event,
+            self.delete_event,
+            self.list_calendar_view,
+            self.get_schedule,
         ]
