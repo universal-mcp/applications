@@ -845,6 +845,30 @@ class LinkedinApp(APIApplication):
         except json.JSONDecodeError:
             return {"status": response.status_code, "message": f"Invitation action '{action}' processed."}
 
+    async def cancel_sent_invitation(self, invitation_id: str) -> dict[str, Any]:
+        """
+        Cancels a sent LinkedIn connection invitation that is currently pending. This function performs a DELETE request to remove the invitation, withdrawing the connection request.
+
+        Args:
+            invitation_id: The unique ID of the invitation to cancel. This ID can be obtained from the 'list_sent_invitations' tool.
+
+        Returns:
+            A dictionary confirming the invitation was cancelled.
+
+        Raises:
+            httpx.HTTPError: If the API request fails.
+
+        Tags:
+            linkedin, user, invite, sent, cancel, delete, api
+        """
+        url = f"{self.base_url}/api/v1/users/invite/sent/{invitation_id}"
+        params: dict[str, Any] = {"account_id": self.account_id}
+        response = await self._adelete(url, params=params)
+        try:
+            return response.json()
+        except json.JSONDecodeError:
+            return {"status": response.status_code, "message": "Invitation cancellation processed."}
+
     async def list_followers(self, cursor: str | None = None, limit: int | None = None) -> dict[str, Any]:
         """
         Retrieves a paginated list of all followers for the current user's account. This function is distinct from `list_following` as it shows who follows the user, not who the user follows.
@@ -920,6 +944,7 @@ class LinkedinApp(APIApplication):
             self.search_posts,
             self.send_invitation,
             self.list_sent_invitations,
+            self.cancel_sent_invitation,
             self.list_received_invitations,
             self.handle_received_invitation,
             self.list_followers,
