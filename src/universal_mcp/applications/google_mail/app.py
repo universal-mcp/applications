@@ -587,8 +587,7 @@ class GoogleMailApp(APIApplication):
             if v is not None
         }
         response = await self._aput(url, data=request_body, params=query_params)
-        response.raise_for_status()
-        return response.json()
+        return self._handle_response(response)
 
     async def trash_message(
         self,
@@ -653,8 +652,7 @@ class GoogleMailApp(APIApplication):
             if v is not None
         }
         response = await self._apost(url, data={}, params=query_params)
-        response.raise_for_status()
-        return response.json()
+        return self._handle_response(response)
 
     async def untrash_message(
         self,
@@ -719,8 +717,7 @@ class GoogleMailApp(APIApplication):
             if v is not None
         }
         response = await self._apost(url, data={}, params=query_params)
-        response.raise_for_status()
-        return response.json()
+        return self._handle_response(response)
 
     async def get_attachment(
         self,
@@ -789,8 +786,7 @@ class GoogleMailApp(APIApplication):
             if v is not None
         }
         response = await self._aget(url, params=query_params)
-        response.raise_for_status()
-        return response.json()
+        return self._handle_response(response)
 
     async def update_label(
         self,
@@ -904,8 +900,7 @@ class GoogleMailApp(APIApplication):
             if v is not None
         }
         response = await self._aput(url, data=request_body, params=query_params)
-        response.raise_for_status()
-        return response.json()
+        return self._handle_response(response)
 
     async def delete_label(
         self,
@@ -970,8 +965,7 @@ class GoogleMailApp(APIApplication):
             if v is not None
         }
         response = await self._adelete(url, params=query_params)
-        response.raise_for_status()
-        return response.json()
+        return self._handle_response(response)
 
     async def get_filter(
         self,
@@ -1036,8 +1030,7 @@ class GoogleMailApp(APIApplication):
             if v is not None
         }
         response = await self._aget(url, params=query_params)
-        response.raise_for_status()
-        return response.json()
+        return self._handle_response(response)
 
     async def delete_filter(
         self,
@@ -1102,8 +1095,7 @@ class GoogleMailApp(APIApplication):
             if v is not None
         }
         response = await self._adelete(url, params=query_params)
-        response.raise_for_status()
-        return response.json()
+        return self._handle_response(response)
 
     async def get_all_filters(
         self,
@@ -1164,8 +1156,7 @@ class GoogleMailApp(APIApplication):
             if v is not None
         }
         response = await self._aget(url, params=query_params)
-        response.raise_for_status()
-        return response.json()
+        return self._handle_response(response)
 
     async def create_filter(
         self,
@@ -1262,8 +1253,7 @@ class GoogleMailApp(APIApplication):
             if v is not None
         }
         response = await self._apost(url, data=request_body, params=query_params)
-        response.raise_for_status()
-        return response.json()
+        return self._handle_response(response)
 
     def list_tools(self):
         return [

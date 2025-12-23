@@ -38,9 +38,8 @@ class GoogleDriveApp(APIApplication):
         url = f"{self.base_url}/files/{file_id}"
         data = {}
         params = {"addParents": add_parents, "removeParents": remove_parents}
-        response = self._patch(url, params=params, data=data)
-        response.raise_for_status()
-        return response.json()
+        response = await self._apatch(url, params=params, data=data)
+        return self._handle_response(response)
 
     async def get_drive_info(self) -> dict[str, Any]:
         """
@@ -60,7 +59,7 @@ class GoogleDriveApp(APIApplication):
         url = f"{self.base_url}/about"
         params = {"fields": "storageQuota,user"}
         response = await self._aget(url, params=params)
-        return response.json()
+        return self._handle_response(response)
 
     async def search_files(self, page_size: int = 10, q: str | None = None, order_by: str | None = None) -> dict[str, Any]:
         """
@@ -100,8 +99,7 @@ class GoogleDriveApp(APIApplication):
         if order_by:
             params["orderBy"] = order_by
         response = await self._aget(url, params=params)
-        response.raise_for_status()
-        return response.json()
+        return self._handle_response(response)
 
     async def get_file_details(self, file_id: str) -> dict[str, Any]:
         """
@@ -122,7 +120,7 @@ class GoogleDriveApp(APIApplication):
         """
         url = f"{self.base_url}/files/{file_id}"
         response = await self._aget(url)
-        return response.json()
+        return self._handle_response(response)
 
     async def trash_file(self, file_id: str) -> dict[str, Any]:
         """
@@ -174,15 +172,13 @@ class GoogleDriveApp(APIApplication):
             metadata["parents"] = [parent_id]
         create_url = f"{self.base_url}/files"
         create_response = await self._apost(create_url, data=metadata)
-        file_data = create_response.json()
+        file_data = self._handle_response(create_response)
         file_id = file_data.get("id")
         upload_url = f"https://www.googleapis.com/upload/drive/v3/files/{file_id}?uploadType=media"
-        upload_headers = self._get_headers()
-        upload_headers["Content-Type"] = f"{mime_type}; charset=utf-8"
-        upload_response = httpx.patch(upload_url, headers=upload_headers, content=text_content.encode("utf-8"))
-        upload_response.raise_for_status()
-        response_data = upload_response.json()
-        return response_data
+        upload_response = await self._apatch(
+            upload_url, data=text_content.encode("utf-8"), content_type=f"{mime_type}; charset=utf-8"
+        )
+        return self._handle_response(upload_response)
 
     async def find_folder_id_by_name(self, folder_name: str) -> str | None:
         """
@@ -203,7 +199,8 @@ class GoogleDriveApp(APIApplication):
         query = f"mimeType='application/vnd.google-apps.folder' and name='{folder_name}' and trashed=false"
         try:
             response = await self._aget(f"{self.base_url}/files", params={"q": query, "fields": "files(id,name)"})
-            files = response.json().get("files", [])
+            data = self._handle_response(response)
+            files = data.get("files", [])
             return files[0]["id"] if files else None
         except Exception as e:
             logger.error(f"Error finding folder ID by name: {e}")
@@ -241,7 +238,7 @@ class GoogleDriveApp(APIApplication):
         url = f"{self.base_url}/files"
         params = {"supportsAllDrives": "true"}
         response = await self._apost(url, data=metadata, params=params)
-        return response.json()
+        return self._handle_response(response)
 
     async def upload_file_from_path(self, file_name: str, file_path: str, parent_id: str = None, mime_type: str = None) -> dict[str, Any]:
         """
@@ -269,17 +266,13 @@ class GoogleDriveApp(APIApplication):
             metadata["parents"] = [parent_id]
         create_url = f"{self.base_url}/files"
         create_response = await self._apost(create_url, data=metadata)
-        file_data = create_response.json()
+        file_data = self._handle_response(create_response)
         file_id = file_data.get("id")
         with open(file_path, "rb") as file_content:
             binary_content = file_content.read()
             upload_url = f"https://www.googleapis.com/upload/drive/v3/files/{file_id}?uploadType=media"
-            upload_headers = self._get_headers()
-            upload_headers["Content-Type"] = mime_type
-            upload_response = httpx.patch(upload_url, headers=upload_headers, content=binary_content)
-            upload_response.raise_for_status()
-        response_data = upload_response.json()
-        return response_data
+            upload_response = await self._apatch(upload_url, data=binary_content, content_type=mime_type)
+        return self._handle_response(upload_response)
 
     async def list_installed_apps(
         self,
@@ -349,13 +342,7 @@ class GoogleDriveApp(APIApplication):
             if v is not None
         }
         response = await self._aget(url, params=query_params)
-        response.raise_for_status()
-        if response.status_code == 204 or not response.content or (not response.text.strip()):
-            return None
-        try:
-            return response.json()
-        except ValueError:
-            return None
+        return self._handle_response(response)
 
     async def get_app_by_id(
         self,
@@ -420,13 +407,7 @@ class GoogleDriveApp(APIApplication):
             if v is not None
         }
         response = await self._aget(url, params=query_params)
-        response.raise_for_status()
-        if response.status_code == 204 or not response.content or (not response.text.strip()):
-            return None
-        try:
-            return response.json()
-        except ValueError:
-            return None
+        return self._handle_response(response)
 
     async def get_about_info(
         self,
@@ -475,13 +456,7 @@ class GoogleDriveApp(APIApplication):
             if v is not None
         }
         response = await self._aget(url, params=query_params)
-        response.raise_for_status()
-        if response.status_code == 204 or not response.content or (not response.text.strip()):
-            return None
-        try:
-            return response.json()
-        except ValueError:
-            return None
+        return self._handle_response(response)
 
     async def list_drive_changes(
         self,
@@ -572,13 +547,7 @@ class GoogleDriveApp(APIApplication):
             if v is not None
         }
         response = await self._aget(url, params=query_params)
-        response.raise_for_status()
-        if response.status_code == 204 or not response.content or (not response.text.strip()):
-            return None
-        try:
-            return response.json()
-        except ValueError:
-            return None
+        return self._handle_response(response)
 
     async def get_changes_start_token(
         self,
@@ -639,13 +608,7 @@ class GoogleDriveApp(APIApplication):
             if v is not None
         }
         response = await self._aget(url, params=query_params)
-        response.raise_for_status()
-        if response.status_code == 204 or not response.content or (not response.text.strip()):
-            return None
-        try:
-            return response.json()
-        except ValueError:
-            return None
+        return self._handle_response(response)
 
     async def watch_drive_changes(
         self,
@@ -770,13 +733,7 @@ class GoogleDriveApp(APIApplication):
             if v is not None
         }
         response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
-        response.raise_for_status()
-        if response.status_code == 204 or not response.content or (not response.text.strip()):
-            return None
-        try:
-            return response.json()
-        except ValueError:
-            return None
+        return self._handle_response(response)
 
     async def stop_watching_channel(
         self,
@@ -859,13 +816,7 @@ class GoogleDriveApp(APIApplication):
             if v is not None
         }
         response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
-        response.raise_for_status()
-        if response.status_code == 204 or not response.content or (not response.text.strip()):
-            return None
-        try:
-            return response.json()
-        except ValueError:
-            return None
+        return self._handle_response(response)
 
     async def list_file_comments(
         self,
@@ -930,13 +881,7 @@ class GoogleDriveApp(APIApplication):
             if v is not None
         }
         response = await self._aget(url, params=query_params)
-        response.raise_for_status()
-        if response.status_code == 204 or not response.content or (not response.text.strip()):
-            return None
-        try:
-            return response.json()
-        except ValueError:
-            return None
+        return self._handle_response(response)
 
     async def create_file_comment(
         self,
@@ -1029,13 +974,7 @@ class GoogleDriveApp(APIApplication):
             if v is not None
         }
         response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
-        response.raise_for_status()
-        if response.status_code == 204 or not response.content or (not response.text.strip()):
-            return None
-        try:
-            return response.json()
-        except ValueError:
-            return None
+        return self._handle_response(response)
 
     async def get_file_comment_by_id(
         self,
@@ -1095,13 +1034,7 @@ class GoogleDriveApp(APIApplication):
             if v is not None
         }
         response = await self._aget(url, params=query_params)
-        response.raise_for_status()
-        if response.status_code == 204 or not response.content or (not response.text.strip()):
-            return None
-        try:
-            return response.json()
-        except ValueError:
-            return None
+        return self._handle_response(response)
 
     async def delete_comment(
         self,
@@ -1158,13 +1091,7 @@ class GoogleDriveApp(APIApplication):
             if v is not None
         }
         response = await self._adelete(url, params=query_params)
-        response.raise_for_status()
-        if response.status_code == 204 or not response.content or (not response.text.strip()):
-            return None
-        try:
-            return response.json()
-        except ValueError:
-            return None
+        return self._handle_response(response)
 
     async def update_comment(
         self,
@@ -1260,14 +1187,8 @@ class GoogleDriveApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._patch(url, data=request_body_data, params=query_params)
-        response.raise_for_status()
-        if response.status_code == 204 or not response.content or (not response.text.strip()):
-            return None
-        try:
-            return response.json()
-        except ValueError:
-            return None
+        response = await self._apatch(url, data=request_body_data, params=query_params)
+        return self._handle_response(response)
 
     async def list_shared_drives(
         self,
@@ -1328,13 +1249,7 @@ class GoogleDriveApp(APIApplication):
             if v is not None
         }
         response = await self._aget(url, params=query_params)
-        response.raise_for_status()
-        if response.status_code == 204 or not response.content or (not response.text.strip()):
-            return None
-        try:
-            return response.json()
-        except ValueError:
-            return None
+        return self._handle_response(response)
 
     async def create_shared_drive(
         self,
@@ -1426,13 +1341,7 @@ class GoogleDriveApp(APIApplication):
             if v is not None
         }
         response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
-        response.raise_for_status()
-        if response.status_code == 204 or not response.content or (not response.text.strip()):
-            return None
-        try:
-            return response.json()
-        except ValueError:
-            return None
+        return self._handle_response(response)
 
     async def get_shared_drive_metadata(
         self,
@@ -1488,13 +1397,7 @@ class GoogleDriveApp(APIApplication):
             if v is not None
         }
         response = await self._aget(url, params=query_params)
-        response.raise_for_status()
-        if response.status_code == 204 or not response.content or (not response.text.strip()):
-            return None
-        try:
-            return response.json()
-        except ValueError:
-            return None
+        return self._handle_response(response)
 
     async def delete_shared_drive(
         self,
@@ -1553,13 +1456,7 @@ class GoogleDriveApp(APIApplication):
             if v is not None
         }
         response = await self._adelete(url, params=query_params)
-        response.raise_for_status()
-        if response.status_code == 204 or not response.content or (not response.text.strip()):
-            return None
-        try:
-            return response.json()
-        except ValueError:
-            return None
+        return self._handle_response(response)
 
     async def update_shared_drive(
         self,
@@ -1654,14 +1551,8 @@ class GoogleDriveApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._patch(url, data=request_body_data, params=query_params)
-        response.raise_for_status()
-        if response.status_code == 204 or not response.content or (not response.text.strip()):
-            return None
-        try:
-            return response.json()
-        except ValueError:
-            return None
+        response = await self._apatch(url, data=request_body_data, params=query_params)
+        return self._handle_response(response)
 
     async def hide_drive(
         self,
@@ -1715,13 +1606,7 @@ class GoogleDriveApp(APIApplication):
             if v is not None
         }
         response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
-        response.raise_for_status()
-        if response.status_code == 204 or not response.content or (not response.text.strip()):
-            return None
-        try:
-            return response.json()
-        except ValueError:
-            return None
+        return self._handle_response(response)
 
     async def unhide_drive(
         self,
@@ -1775,13 +1660,7 @@ class GoogleDriveApp(APIApplication):
             if v is not None
         }
         response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
-        response.raise_for_status()
-        if response.status_code == 204 or not response.content or (not response.text.strip()):
-            return None
-        try:
-            return response.json()
-        except ValueError:
-            return None
+        return self._handle_response(response)
 
     async def search_files_advanced(
         self,
@@ -1872,13 +1751,7 @@ class GoogleDriveApp(APIApplication):
             if v is not None
         }
         response = await self._aget(url, params=query_params)
-        response.raise_for_status()
-        if response.status_code == 204 or not response.content or (not response.text.strip()):
-            return None
-        try:
-            return response.json()
-        except ValueError:
-            return None
+        return self._handle_response(response)
 
     async def create_file_metadata(
         self,
@@ -2144,13 +2017,7 @@ class GoogleDriveApp(APIApplication):
             if v is not None
         }
         response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
-        response.raise_for_status()
-        if response.status_code == 204 or not response.content or (not response.text.strip()):
-            return None
-        try:
-            return response.json()
-        except ValueError:
-            return None
+        return self._handle_response(response)
 
     async def generate_file_ids(
         self,
@@ -2208,13 +2075,7 @@ class GoogleDriveApp(APIApplication):
             if v is not None
         }
         response = await self._aget(url, params=query_params)
-        response.raise_for_status()
-        if response.status_code == 204 or not response.content or (not response.text.strip()):
-            return None
-        try:
-            return response.json()
-        except ValueError:
-            return None
+        return self._handle_response(response)
 
     async def empty_trash(
         self,
@@ -2269,13 +2130,7 @@ class GoogleDriveApp(APIApplication):
             if v is not None
         }
         response = await self._adelete(url, params=query_params)
-        response.raise_for_status()
-        if response.status_code == 204 or not response.content or (not response.text.strip()):
-            return None
-        try:
-            return response.json()
-        except ValueError:
-            return None
+        return self._handle_response(response)
 
     async def permanently_delete_file(
         self,
@@ -2337,13 +2192,7 @@ class GoogleDriveApp(APIApplication):
             if v is not None
         }
         response = await self._adelete(url, params=query_params)
-        response.raise_for_status()
-        if response.status_code == 204 or not response.content or (not response.text.strip()):
-            return None
-        try:
-            return response.json()
-        except ValueError:
-            return None
+        return self._handle_response(response)
 
     async def update_file_metadata(
         self,
@@ -2615,14 +2464,8 @@ class GoogleDriveApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._patch(url, data=request_body_data, params=query_params)
-        response.raise_for_status()
-        if response.status_code == 204 or not response.content or (not response.text.strip()):
-            return None
-        try:
-            return response.json()
-        except ValueError:
-            return None
+        response = await self._apatch(url, data=request_body_data, params=query_params)
+        return self._handle_response(response)
 
     async def copy_file(
         self,
@@ -2889,13 +2732,7 @@ class GoogleDriveApp(APIApplication):
             if v is not None
         }
         response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
-        response.raise_for_status()
-        if response.status_code == 204 or not response.content or (not response.text.strip()):
-            return None
-        try:
-            return response.json()
-        except ValueError:
-            return None
+        return self._handle_response(response)
 
     async def export_file(
         self,
@@ -2951,13 +2788,7 @@ class GoogleDriveApp(APIApplication):
             if v is not None
         }
         response = await self._aget(url, params=query_params)
-        response.raise_for_status()
-        if response.status_code == 204 or not response.content or (not response.text.strip()):
-            return None
-        try:
-            return response.json()
-        except ValueError:
-            return None
+        return self._handle_response(response)
 
     async def list_file_labels(
         self,
@@ -3016,13 +2847,7 @@ class GoogleDriveApp(APIApplication):
             if v is not None
         }
         response = await self._aget(url, params=query_params)
-        response.raise_for_status()
-        if response.status_code == 204 or not response.content or (not response.text.strip()):
-            return None
-        try:
-            return response.json()
-        except ValueError:
-            return None
+        return self._handle_response(response)
 
     async def modify_file_labels(
         self,
@@ -3082,13 +2907,7 @@ class GoogleDriveApp(APIApplication):
             if v is not None
         }
         response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
-        response.raise_for_status()
-        if response.status_code == 204 or not response.content or (not response.text.strip()):
-            return None
-        try:
-            return response.json()
-        except ValueError:
-            return None
+        return self._handle_response(response)
 
     async def watch_file_for_changes(
         self,
@@ -3190,13 +3009,7 @@ class GoogleDriveApp(APIApplication):
             if v is not None
         }
         response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
-        response.raise_for_status()
-        if response.status_code == 204 or not response.content or (not response.text.strip()):
-            return None
-        try:
-            return response.json()
-        except ValueError:
-            return None
+        return self._handle_response(response)
 
     async def list_file_permissions(
         self,
@@ -3267,13 +3080,7 @@ class GoogleDriveApp(APIApplication):
             if v is not None
         }
         response = await self._aget(url, params=query_params)
-        response.raise_for_status()
-        if response.status_code == 204 or not response.content or (not response.text.strip()):
-            return None
-        try:
-            return response.json()
-        except ValueError:
-            return None
+        return self._handle_response(response)
 
     async def create_file_permission(
         self,
@@ -3399,13 +3206,7 @@ class GoogleDriveApp(APIApplication):
             if v is not None
         }
         response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
-        response.raise_for_status()
-        if response.status_code == 204 or not response.content or (not response.text.strip()):
-            return None
-        try:
-            return response.json()
-        except ValueError:
-            return None
+        return self._handle_response(response)
 
     async def get_permission_by_id(
         self,
@@ -3471,13 +3272,7 @@ class GoogleDriveApp(APIApplication):
             if v is not None
         }
         response = await self._aget(url, params=query_params)
-        response.raise_for_status()
-        if response.status_code == 204 or not response.content or (not response.text.strip()):
-            return None
-        try:
-            return response.json()
-        except ValueError:
-            return None
+        return self._handle_response(response)
 
     async def delete_permission(
         self,
@@ -3543,13 +3338,7 @@ class GoogleDriveApp(APIApplication):
             if v is not None
         }
         response = await self._adelete(url, params=query_params)
-        response.raise_for_status()
-        if response.status_code == 204 or not response.content or (not response.text.strip()):
-            return None
-        try:
-            return response.json()
-        except ValueError:
-            return None
+        return self._handle_response(response)
 
     async def update_permission(
         self,
@@ -3669,14 +3458,8 @@ class GoogleDriveApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._patch(url, data=request_body_data, params=query_params)
-        response.raise_for_status()
-        if response.status_code == 204 or not response.content or (not response.text.strip()):
-            return None
-        try:
-            return response.json()
-        except ValueError:
-            return None
+        response = await self._apatch(url, data=request_body_data, params=query_params)
+        return self._handle_response(response)
 
     async def list_comment_replies(
         self,
@@ -3742,13 +3525,7 @@ class GoogleDriveApp(APIApplication):
             if v is not None
         }
         response = await self._aget(url, params=query_params)
-        response.raise_for_status()
-        if response.status_code == 204 or not response.content or (not response.text.strip()):
-            return None
-        try:
-            return response.json()
-        except ValueError:
-            return None
+        return self._handle_response(response)
 
     async def create_comment_reply(
         self,
@@ -3836,13 +3613,7 @@ class GoogleDriveApp(APIApplication):
             if v is not None
         }
         response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
-        response.raise_for_status()
-        if response.status_code == 204 or not response.content or (not response.text.strip()):
-            return None
-        try:
-            return response.json()
-        except ValueError:
-            return None
+        return self._handle_response(response)
 
     async def get_reply_by_id(
         self,
@@ -3906,13 +3677,7 @@ class GoogleDriveApp(APIApplication):
             if v is not None
         }
         response = await self._aget(url, params=query_params)
-        response.raise_for_status()
-        if response.status_code == 204 or not response.content or (not response.text.strip()):
-            return None
-        try:
-            return response.json()
-        except ValueError:
-            return None
+        return self._handle_response(response)
 
     async def delete_reply(
         self,
@@ -3973,13 +3738,7 @@ class GoogleDriveApp(APIApplication):
             if v is not None
         }
         response = await self._adelete(url, params=query_params)
-        response.raise_for_status()
-        if response.status_code == 204 or not response.content or (not response.text.strip()):
-            return None
-        try:
-            return response.json()
-        except ValueError:
-            return None
+        return self._handle_response(response)
 
     async def update_reply(
         self,
@@ -4070,14 +3829,8 @@ class GoogleDriveApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._patch(url, data=request_body_data, params=query_params)
-        response.raise_for_status()
-        if response.status_code == 204 or not response.content or (not response.text.strip()):
-            return None
-        try:
-            return response.json()
-        except ValueError:
-            return None
+        response = await self._apatch(url, data=request_body_data, params=query_params)
+        return self._handle_response(response)
 
     async def list_file_revisions(
         self,
@@ -4136,13 +3889,7 @@ class GoogleDriveApp(APIApplication):
             if v is not None
         }
         response = await self._aget(url, params=query_params)
-        response.raise_for_status()
-        if response.status_code == 204 or not response.content or (not response.text.strip()):
-            return None
-        try:
-            return response.json()
-        except ValueError:
-            return None
+        return self._handle_response(response)
 
     async def get_revision(
         self,
@@ -4202,13 +3949,7 @@ class GoogleDriveApp(APIApplication):
             if v is not None
         }
         response = await self._aget(url, params=query_params)
-        response.raise_for_status()
-        if response.status_code == 204 or not response.content or (not response.text.strip()):
-            return None
-        try:
-            return response.json()
-        except ValueError:
-            return None
+        return self._handle_response(response)
 
     async def delete_file_revision(
         self,
@@ -4265,13 +4006,7 @@ class GoogleDriveApp(APIApplication):
             if v is not None
         }
         response = await self._adelete(url, params=query_params)
-        response.raise_for_status()
-        if response.status_code == 204 or not response.content or (not response.text.strip()):
-            return None
-        try:
-            return response.json()
-        except ValueError:
-            return None
+        return self._handle_response(response)
 
     async def update_revision(
         self,
@@ -4373,14 +4108,8 @@ class GoogleDriveApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._patch(url, data=request_body_data, params=query_params)
-        response.raise_for_status()
-        if response.status_code == 204 or not response.content or (not response.text.strip()):
-            return None
-        try:
-            return response.json()
-        except ValueError:
-            return None
+        response = await self._apatch(url, data=request_body_data, params=query_params)
+        return self._handle_response(response)
 
     async def create_permission(
         self, fileId: str, emailAddress: str | None = None, role: str | None = None, type: str | None = None
@@ -4409,16 +4138,10 @@ class GoogleDriveApp(APIApplication):
         request_body_data = None
         request_body_data = {"emailAddress": emailAddress, "role": role, "type": type}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/drive/v3/files/{fileId}/permissions"
+        url = f"{self.base_url}/files/{fileId}/permissions"
         query_params = {}
         response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
-        response.raise_for_status()
-        if response.status_code == 204 or not response.content or (not response.text.strip()):
-            return None
-        try:
-            return response.json()
-        except ValueError:
-            return None
+        return self._handle_response(response)
 
     def list_tools(self):
         return [
