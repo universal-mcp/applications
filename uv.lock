@@ -5035,7 +5035,7 @@ wheels = [
 
 [[package]]
 name = "universal-mcp"
-version = "0.1.25rc1"
+version = "0.1.25rc2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "agentevals" },
@@ -5065,9 +5065,9 @@ dependencies = [
     { name = "streamlit" },
     { name = "typer" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/bb/bc/f6a2d5b145448f3f44a97bc732d89d4a94784f45f496fc51d42f0b7f2660/universal_mcp-0.1.25rc1.tar.gz", hash = "sha256:91f4dacad3a4c008c0a08cf91ef70b83df86318437774f02afd051eed6b2dbc2", size = 111210, upload-time = "2025-11-13T14:41:12.342Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/0d/21/3c1eaa3b22f2fd038b7ae13c09d6b922f884a310e59305c1c32c53b2e8c6/universal_mcp-0.1.25rc2.tar.gz", hash = "sha256:2044091d19d92bfa8d026e7da60cf3f8d79b77ccc7604c3e1d682dc8f9e4cff7", size = 111308, upload-time = "2025-12-23T08:21:54.848Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/7f/ee/8d9cfd9318e7d727c7a03bf4ffb8a3c88f88ffc6a05c8e8016ad3f05eb92/universal_mcp-0.1.25rc1-py3-none-any.whl", hash = "sha256:17174a79242198de1e9e18444e23410a863362776e713d03b6e24a7ffa02022d", size = 124317, upload-time = "2025-11-13T14:41:10.78Z" },
+    { url = "https://files.pythonhosted.org/packages/b9/ff/708378f4070cf906fc876b381b7944d59f82e86e8d34354527898a474e44/universal_mcp-0.1.25rc2-py3-none-any.whl", hash = "sha256:a2284dde2db089cdfb55274fb453cf5c49a72856d9e93af6f90d55e576071129", size = 124301, upload-time = "2025-12-23T08:21:53.096Z" },
 ]
 
 [[package]]
@@ -5172,7 +5172,7 @@ requires-dist = [
     { name = "resend", specifier = ">=2.10.0" },
     { name = "ruff", marker = "extra == 'dev'" },
     { name = "twilio", specifier = ">=9.8.0" },
-    { name = "universal-mcp", specifier = ">=0.1.25rc1" },
+    { name = "universal-mcp", specifier = ">=0.1.25rc2" },
     { name = "universal-mcp-agents", specifier = ">=0.1.28" },
     { name = "yfinance", specifier = ">=0.2.66" },
     { name = "youtube-transcript-api", specifier = "==1.2.2" },
