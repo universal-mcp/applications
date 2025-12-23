@@ -9,8 +9,16 @@ class OutlookApp(APIApplication):
         super().__init__(name="outlook", integration=integration, **kwargs)
         self.base_url = "https://graph.microsoft.com/v1.0"
 
+    async def _get_user_id(self) -> str:
+        """Helper to get the userPrincipalName from the profile."""
+        user_info = await self.get_my_profile()
+        user_id = user_info.get("userPrincipalName")
+        if not user_id:
+            raise ValueError("Could not retrieve user ID from get_my_profile response.")
+        return user_id
+
     async def reply_to_email(
-        self, message_id: str, comment: str, user_id: str | None = None, attachments: list[dict[str, Any]] | None = None
+        self, message_id: str, comment: str, attachments: list[dict[str, Any]] | None = None
     ) -> dict[str, Any]:
         """
         Replies to a specific email message.
@@ -18,7 +26,6 @@ class OutlookApp(APIApplication):
         Args:
             message_id (str): The ID of the email message to reply to.
             comment (str): The body of the reply.
-            user_id (str, optional): The ID of the user to send the reply from. Defaults to the authenticated user.
             attachments (list[dict[str, Any]], optional): A list of attachment objects to include in the reply.
                 Each attachment dictionary should conform to the Microsoft Graph API specification.
                 Example:
@@ -36,16 +43,12 @@ class OutlookApp(APIApplication):
 
         Raises:
             HTTPStatusError: If the API request fails.
-            ValueError: If the user_id cannot be retrieved or message_id is missing.
+            ValueError: If message_id is missing.
 
         Tags:
             important
         """
-        if user_id is None:
-            user_info = await self.get_my_profile()
-            user_id = user_info.get("userPrincipalName")
-            if not user_id:
-                raise ValueError("Could not retrieve user ID from get_my_profile response.")
+        user_id = await self._get_user_id()
         if not message_id:
             raise ValueError("Missing required parameter 'message_id'.")
         request_body_data = {"comment": comment}
@@ -60,7 +63,6 @@ class OutlookApp(APIApplication):
         subject: str,
         body: str,
         to_recipients: list[str],
-        user_id: str | None = None,
         cc_recipients: list[str] | None = None,
         bcc_recipients: list[str] | None = None,
         attachments: list[dict[str, Any]] | None = None,
@@ -74,7 +76,6 @@ class OutlookApp(APIApplication):
             subject (str): The subject of the email.
             body (str): The body of the email.
             to_recipients (list[str]): A list of email addresses for the 'To' recipients.
-            user_id (str, optional): The ID of the user to send the email from. Defaults to the authenticated user.
             cc_recipients (list[str], optional): A list of email addresses for the 'Cc' recipients.
             bcc_recipients (list[str], optional): A list of email addresses for the 'Bcc' recipients.
             attachments (list[dict[str, Any]], optional): A list of attachment objects. See `reply_to_email` for an example.
@@ -86,16 +87,11 @@ class OutlookApp(APIApplication):
 
         Raises:
             HTTPStatusError: If the API request fails.
-            ValueError: If the user_id cannot be retrieved.
 
         Tags:
             important
         """
-        if user_id is None:
-            user_info = await self.get_my_profile()
-            user_id = user_info.get("userPrincipalName")
-            if not user_id:
-                raise ValueError("Could not retrieve user ID from get_my_profile response.")
+        user_id = await self._get_user_id()
         message = {
             "subject": subject,
             "body": {"contentType": body_content_type, "content": body},
@@ -115,7 +111,6 @@ class OutlookApp(APIApplication):
     async def get_email_folder(
         self,
         folder_id: str,
-        user_id: str | None = None,
         include_hidden: bool | None = None,
         select: list[str] | None = None,
         expand: list[str] | None = None,
@@ -125,7 +120,6 @@ class OutlookApp(APIApplication):
 
         Args:
             folder_id (str): The unique identifier for the mail folder.
-            user_id (str, optional): The ID of the user who owns the folder. Defaults to the authenticated user.
             include_hidden (bool, optional): If true, includes hidden folders in the results.
             select (list[str], optional): A list of properties to return.
             expand (list[str], optional): A list of related entities to expand.
@@ -135,15 +129,11 @@ class OutlookApp(APIApplication):
 
         Raises:
             HTTPStatusError: If the API request fails.
-            ValueError: If user_id cannot be retrieved or folder_id is missing.
+            ValueError: If folder_id is missing.
         Tags:
             important
         """
-        if user_id is None:
-            user_info = await self.get_my_profile()
-            user_id = user_info.get("userPrincipalName")
-            if not user_id:
-                raise ValueError("Could not retrieve user ID from get_my_profile response.")
+        user_id = await self._get_user_id()
         if not folder_id:
             raise ValueError("Missing required parameter 'folder_id'.")
         url = f"{self.base_url}/users/{user_id}/mailFolders/{folder_id}"
@@ -157,7 +147,6 @@ class OutlookApp(APIApplication):
 
     async def list_emails(
         self,
-        user_id: str | None = None,
         select: list[str] = ["bodyPreview"],
         include_hidden: bool | None = None,
         top: int | None = None,
@@ -172,7 +161,6 @@ class OutlookApp(APIApplication):
         Retrieves a list of emails from a user's mailbox.
 
         Args:
-            user_id (str, optional): The ID of the user. Defaults to the authenticated user.
             select (list[str], optional): A list of properties to return for each email. Defaults to ['bodyPreview'].
             include_hidden (bool, optional): If true, includes hidden messages.
             top (int, optional): The maximum number of emails to return.
@@ -199,11 +187,7 @@ class OutlookApp(APIApplication):
                 raise ValueError("The 'search' parameter cannot be used with 'orderby'.")
             if skip:
                 raise ValueError("The 'search' parameter cannot be used with 'skip'. Use pagination via @odata.nextLink instead.")
-        if user_id is None:
-            user_info = await self.get_my_profile()
-            user_id = user_info.get("userPrincipalName")
-            if not user_id:
-                raise ValueError("Could not retrieve user ID from get_my_profile response.")
+        user_id = await self._get_user_id()
         url = f"{self.base_url}/users/{user_id}/messages"
         select_str = ",".join(select) if select else None
         orderby_str = ",".join(orderby) if orderby else None
@@ -229,7 +213,6 @@ class OutlookApp(APIApplication):
     async def get_email(
         self,
         message_id: str,
-        user_id: str | None = None,
         include_hidden: bool | None = None,
         select: list[str] | None = None,
         expand: list[str] | None = None,
@@ -239,7 +222,6 @@ class OutlookApp(APIApplication):
 
         Args:
             message_id (str): The unique identifier for the email.
-            user_id (str, optional): The ID of the user who owns the email. Defaults to the authenticated user.
             include_hidden (bool, optional): If true, includes hidden messages.
             select (list[str], optional): A list of properties to return.
             expand (list[str], optional): A list of related entities to expand.
@@ -253,11 +235,7 @@ class OutlookApp(APIApplication):
         Tags:
             important
         """
-        if user_id is None:
-            user_info = await self.get_my_profile()
-            user_id = user_info.get("userPrincipalName")
-            if not user_id:
-                raise ValueError("Could not retrieve user ID from get_my_profile response.")
+        user_id = await self._get_user_id()
         if not message_id:
             raise ValueError("Missing required parameter 'message_id'.")
         url = f"{self.base_url}/users/{user_id}/messages/{message_id}"
@@ -269,28 +247,23 @@ class OutlookApp(APIApplication):
         response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
-    async def delete_email(self, message_id: str, user_id: str | None = None) -> dict[str, Any]:
+    async def delete_email(self, message_id: str) -> dict[str, Any]:
         """
         Permanently deletes a specific email by its ID.
 
         Args:
             message_id (str): The unique identifier for the email to be deleted.
-            user_id (str, optional): The ID of the user who owns the email. Defaults to the authenticated user.
 
         Returns:
             dict[str, Any]: A dictionary confirming the deletion.
 
         Raises:
             HTTPStatusError: If the API request fails.
-            ValueError: If user_id cannot be retrieved or message_id is missing.
+            ValueError: If message_id is missing.
         Tags:
             important
         """
-        if user_id is None:
-            user_info = await self.get_my_profile()
-            user_id = user_info.get("userPrincipalName")
-            if not user_id:
-                raise ValueError("Could not retrieve user ID from get_my_profile response.")
+        user_id = await self._get_user_id()
         if not message_id:
             raise ValueError("Missing required parameter 'message_id'.")
         url = f"{self.base_url}/users/{user_id}/messages/{message_id}"
@@ -300,7 +273,6 @@ class OutlookApp(APIApplication):
     async def list_email_attachments(
         self,
         message_id: str,
-        user_id: str | None = None,
         top: int | None = None,
         skip: int | None = None,
         search: str | None = None,
@@ -315,7 +287,6 @@ class OutlookApp(APIApplication):
 
         Args:
             message_id (str): The unique identifier for the email.
-            user_id (str, optional): The ID of the user who owns the email. Defaults to the authenticated user.
             top (int, optional): The maximum number of attachments to return.
             skip (int, optional): The number of attachments to skip. Cannot be used with 'search'.
             search (str, optional): A search query. Cannot be used with 'filter', 'orderby', or 'skip'.
@@ -341,11 +312,7 @@ class OutlookApp(APIApplication):
                 raise ValueError("The 'search' parameter cannot be used with 'orderby'.")
             if skip:
                 raise ValueError("The 'search' parameter cannot be used with 'skip'. Use pagination via @odata.nextLink instead.")
-        if user_id is None:
-            user_info = await self.get_my_profile()
-            user_id = user_info.get("userPrincipalName")
-            if not user_id:
-                raise ValueError("Could not retrieve user ID from get_my_profile response.")
+        user_id = await self._get_user_id()
         if not message_id:
             raise ValueError("Missing required parameter 'message_id'.")
         url = f"{self.base_url}/users/{user_id}/messages/{message_id}/attachments"
@@ -369,14 +336,13 @@ class OutlookApp(APIApplication):
         response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
-    async def get_attachment(self, message_id: str, attachment_id: str, user_id: str | None = None) -> dict[str, Any]:
+    async def get_attachment(self, message_id: str, attachment_id: str) -> dict[str, Any]:
         """
         Retrieves a specific attachment from an email message and formats it as a dictionary.
 
         Args:
             message_id (str): The ID of the email message.
             attachment_id (str): The ID of the attachment.
-            user_id (str, optional): The ID of the user. Defaults to the authenticated user.
 
         Returns:
             dict[str, Any]: A dictionary containing the attachment details:
@@ -387,11 +353,7 @@ class OutlookApp(APIApplication):
         Tags:
             important
         """
-        if user_id is None:
-            user_info = await self.get_my_profile()
-            user_id = user_info.get("userPrincipalName")
-            if not user_id:
-                raise ValueError("Could not retrieve user ID.")
+        user_id = await self._get_user_id()
         if not message_id or not attachment_id:
             raise ValueError("Missing required parameter 'message_id' or 'attachment_id'.")
         url = f"{self.base_url}/users/{user_id}/messages/{message_id}/attachments/{attachment_id}"
@@ -425,7 +387,6 @@ class OutlookApp(APIApplication):
 
     async def list_calendars(
         self,
-        user_id: str | None = None,
         top: int | None = None,
         skip: int | None = None,
         select: list[str] | None = None,
@@ -434,7 +395,6 @@ class OutlookApp(APIApplication):
         Retrieves a list of calendars for the user.
 
         Args:
-            user_id (str, optional): The ID of the user. Defaults to the authenticated user.
             top (int, optional): The maximum number of calendars to return.
             skip (int, optional): The number of calendars to skip.
             select (list[str], optional): A list of properties to return for each calendar.
@@ -445,11 +405,7 @@ class OutlookApp(APIApplication):
         Tags:
             important
         """
-        if user_id is None:
-            user_info = await self.get_my_profile()
-            user_id = user_info.get("userPrincipalName")
-            if not user_id:
-                raise ValueError("Could not retrieve user ID from get_my_profile response.")
+        user_id = await self._get_user_id()
         url = f"{self.base_url}/users/{user_id}/calendars"
         select_str = ",".join(select) if select else None
         query_params = {k: v for k, v in [("$top", top), ("$skip", skip), ("$select", select_str)] if v is not None}
@@ -457,14 +413,13 @@ class OutlookApp(APIApplication):
         return self._handle_response(response)
 
     async def get_calendar(
-        self, calendar_id: str, user_id: str | None = None, select: list[str] | None = None
+        self, calendar_id: str, select: list[str] | None = None
     ) -> dict[str, Any]:
         """
         Retrieves a specific calendar by its ID.
 
         Args:
             calendar_id (str): The unique identifier for the calendar.
-            user_id (str, optional): The ID of the user. Defaults to the authenticated user.
             select (list[str], optional): A list of properties to return.
 
         Returns:
@@ -473,24 +428,19 @@ class OutlookApp(APIApplication):
         Tags:
             important
         """
-        if user_id is None:
-            user_info = await self.get_my_profile()
-            user_id = user_info.get("userPrincipalName")
-            if not user_id:
-                raise ValueError("Could not retrieve user ID from get_my_profile response.")
+        user_id = await self._get_user_id()
         url = f"{self.base_url}/users/{user_id}/calendars/{calendar_id}"
         select_str = ",".join(select) if select else None
         query_params = {"$select": select_str} if select_str else {}
         response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
-    async def create_calendar(self, name: str, user_id: str | None = None) -> dict[str, Any]:
+    async def create_calendar(self, name: str) -> dict[str, Any]:
         """
         Creates a new calendar for the user.
 
         Args:
             name (str): The name of the new calendar.
-            user_id (str, optional): The ID of the user. Defaults to the authenticated user.
 
         Returns:
             dict[str, Any]: A dictionary containing the created calendar's details.
@@ -498,24 +448,19 @@ class OutlookApp(APIApplication):
         Tags:
             important
         """
-        if user_id is None:
-            user_info = await self.get_my_profile()
-            user_id = user_info.get("userPrincipalName")
-            if not user_id:
-                raise ValueError("Could not retrieve user ID from get_my_profile response.")
+        user_id = await self._get_user_id()
         url = f"{self.base_url}/users/{user_id}/calendars"
         request_body = {"name": name}
         response = await self._apost(url, data=request_body, params={}, content_type="application/json")
         return self._handle_response(response)
 
-    async def update_calendar(self, calendar_id: str, name: str, user_id: str | None = None) -> dict[str, Any]:
+    async def update_calendar(self, calendar_id: str, name: str) -> dict[str, Any]:
         """
         Updates an existing calendar's name.
 
         Args:
             calendar_id (str): The unique identifier for the calendar.
             name (str): The new name for the calendar.
-            user_id (str, optional): The ID of the user. Defaults to the authenticated user.
 
         Returns:
             dict[str, Any]: A dictionary containing the updated calendar's details.
@@ -523,23 +468,18 @@ class OutlookApp(APIApplication):
         Tags:
             important
         """
-        if user_id is None:
-            user_info = await self.get_my_profile()
-            user_id = user_info.get("userPrincipalName")
-            if not user_id:
-                raise ValueError("Could not retrieve user ID from get_my_profile response.")
+        user_id = await self._get_user_id()
         url = f"{self.base_url}/users/{user_id}/calendars/{calendar_id}"
         request_body = {"name": name}
         response = await self._apatch(url, data=request_body, params={}, content_type="application/json")
         return self._handle_response(response)
 
-    async def delete_calendar(self, calendar_id: str, user_id: str | None = None) -> dict[str, Any]:
+    async def delete_calendar(self, calendar_id: str) -> dict[str, Any]:
         """
         Deletes a specific calendar.
 
         Args:
             calendar_id (str): The unique identifier for the calendar to delete.
-            user_id (str, optional): The ID of the user. Defaults to the authenticated user.
 
         Returns:
             dict[str, Any]: A dictionary confirming the deletion.
@@ -547,11 +487,7 @@ class OutlookApp(APIApplication):
         Tags:
             important
         """
-        if user_id is None:
-            user_info = await self.get_my_profile()
-            user_id = user_info.get("userPrincipalName")
-            if not user_id:
-                raise ValueError("Could not retrieve user ID from get_my_profile response.")
+        user_id = await self._get_user_id()
         url = f"{self.base_url}/users/{user_id}/calendars/{calendar_id}"
         response = await self._adelete(url, params={})
         return self._handle_response(response)
@@ -559,7 +495,6 @@ class OutlookApp(APIApplication):
     async def list_events(
         self,
         calendar_id: str | None = None,
-        user_id: str | None = None,
         top: int | None = None,
         skip: int | None = None,
         filter: str | None = None,
@@ -571,7 +506,6 @@ class OutlookApp(APIApplication):
 
         Args:
             calendar_id (str, optional): The ID of the calendar. If not provided, the default calendar is used.
-            user_id (str, optional): The ID of the user. Defaults to the authenticated user.
             top (int, optional): The maximum number of events to return.
             skip (int, optional): The number of events to skip.
             filter (str, optional): A filter query (e.g., "start/dateTime ge '2023-01-01T00:00:00Z'").
@@ -584,11 +518,7 @@ class OutlookApp(APIApplication):
         Tags:
             important
         """
-        if user_id is None:
-            user_info = await self.get_my_profile()
-            user_id = user_info.get("userPrincipalName")
-            if not user_id:
-                raise ValueError("Could not retrieve user ID from get_my_profile response.")
+        user_id = await self._get_user_id()
         if calendar_id:
             url = f"{self.base_url}/users/{user_id}/calendars/{calendar_id}/events"
         else:
@@ -604,14 +534,13 @@ class OutlookApp(APIApplication):
         return self._handle_response(response)
 
     async def get_event(
-        self, event_id: str, user_id: str | None = None, select: list[str] | None = None
+        self, event_id: str, select: list[str] | None = None
     ) -> dict[str, Any]:
         """
         Retrieves a specific event by its ID.
 
         Args:
             event_id (str): The unique identifier for the event.
-            user_id (str, optional): The ID of the user. Defaults to the authenticated user.
             select (list[str], optional): A list of properties to return.
 
         Returns:
@@ -620,11 +549,7 @@ class OutlookApp(APIApplication):
         Tags:
             important
         """
-        if user_id is None:
-            user_info = await self.get_my_profile()
-            user_id = user_info.get("userPrincipalName")
-            if not user_id:
-                raise ValueError("Could not retrieve user ID from get_my_profile response.")
+        user_id = await self._get_user_id()
         url = f"{self.base_url}/users/{user_id}/events/{event_id}"
         select_str = ",".join(select) if select else None
         query_params = {"$select": select_str} if select_str else {}
@@ -643,7 +568,6 @@ class OutlookApp(APIApplication):
         location_display_name: str | None = None,
         attendees: list[dict[str, Any]] | None = None,
         calendar_id: str | None = None,
-        user_id: str | None = None,
         **kwargs,
     ) -> dict[str, Any]:
         """
@@ -661,7 +585,6 @@ class OutlookApp(APIApplication):
             attendees (list[dict[str, Any]], optional): A list of attendee objects.
                 Example attendee: {"type": "required", "emailAddress": {"address": "bob@example.com", "name": "Bob"}}
             calendar_id (str, optional): The ID of the calendar. If not provided, the default calendar is used.
-            user_id (str, optional): The ID of the user. Defaults to the authenticated user.
             **kwargs: Additional properties for the event (e.g., isOnlineMeeting, reminderMinutesBeforeStart).
 
         Returns:
@@ -670,11 +593,7 @@ class OutlookApp(APIApplication):
         Tags:
             important
         """
-        if user_id is None:
-            user_info = await self.get_my_profile()
-            user_id = user_info.get("userPrincipalName")
-            if not user_id:
-                raise ValueError("Could not retrieve user ID from get_my_profile response.")
+        user_id = await self._get_user_id()
         if calendar_id:
             url = f"{self.base_url}/users/{user_id}/calendars/{calendar_id}/events"
         else:
@@ -697,7 +616,6 @@ class OutlookApp(APIApplication):
     async def update_event(
         self,
         event_id: str,
-        user_id: str | None = None,
         **kwargs,
     ) -> dict[str, Any]:
         """
@@ -705,7 +623,6 @@ class OutlookApp(APIApplication):
 
         Args:
             event_id (str): The unique identifier for the event.
-            user_id (str, optional): The ID of the user. Defaults to the authenticated user.
             **kwargs: Event properties to update (e.g., subject, start, end, body, attendees).
                 For start/end, use nested dictionaries: start={"dateTime": "...", "timeZone": "..."}.
 
@@ -715,22 +632,17 @@ class OutlookApp(APIApplication):
         Tags:
             important
         """
-        if user_id is None:
-            user_info = await self.get_my_profile()
-            user_id = user_info.get("userPrincipalName")
-            if not user_id:
-                raise ValueError("Could not retrieve user ID from get_my_profile response.")
+        user_id = await self._get_user_id()
         url = f"{self.base_url}/users/{user_id}/events/{event_id}"
         response = await self._apatch(url, data=kwargs, params={}, content_type="application/json")
         return self._handle_response(response)
 
-    async def delete_event(self, event_id: str, user_id: str | None = None) -> dict[str, Any]:
+    async def delete_event(self, event_id: str) -> dict[str, Any]:
         """
         Deletes a specific event.
 
         Args:
             event_id (str): The unique identifier for the event to delete.
-            user_id (str, optional): The ID of the user. Defaults to the authenticated user.
 
         Returns:
             dict[str, Any]: A dictionary confirming the deletion.
@@ -738,11 +650,7 @@ class OutlookApp(APIApplication):
         Tags:
             important
         """
-        if user_id is None:
-            user_info = await self.get_my_profile()
-            user_id = user_info.get("userPrincipalName")
-            if not user_id:
-                raise ValueError("Could not retrieve user ID from get_my_profile response.")
+        user_id = await self._get_user_id()
         url = f"{self.base_url}/users/{user_id}/events/{event_id}"
         response = await self._adelete(url, params={})
         return self._handle_response(response)
@@ -752,7 +660,6 @@ class OutlookApp(APIApplication):
         start_datetime: str,
         end_datetime: str,
         calendar_id: str | None = None,
-        user_id: str | None = None,
         top: int | None = None,
         skip: int | None = None,
         select: list[str] | None = None,
@@ -764,7 +671,6 @@ class OutlookApp(APIApplication):
             start_datetime (str): The start of the time range (ISO 8601, e.g., '2023-12-25T00:00:00Z').
             end_datetime (str): The end of the time range (ISO 8601, e.g., '2023-12-26T00:00:00Z').
             calendar_id (str, optional): The ID of the calendar. If not provided, the default calendar is used.
-            user_id (str, optional): The ID of the user. Defaults to the authenticated user.
             top (int, optional): The maximum number of events to return.
             skip (int, optional): The number of events to skip.
             select (list[str], optional): A list of properties to return for each event.
@@ -775,11 +681,7 @@ class OutlookApp(APIApplication):
         Tags:
             important
         """
-        if user_id is None:
-            user_info = await self.get_my_profile()
-            user_id = user_info.get("userPrincipalName")
-            if not user_id:
-                raise ValueError("Could not retrieve user ID from get_my_profile response.")
+        user_id = await self._get_user_id()
         if calendar_id:
             url = f"{self.base_url}/users/{user_id}/calendars/{calendar_id}/calendarView"
         else:
@@ -804,7 +706,6 @@ class OutlookApp(APIApplication):
         start_datetime: str,
         end_datetime: str,
         availability_view_interval: int = 30,
-        user_id: str | None = None,
     ) -> dict[str, Any]:
         """
         Retrieves free/busy information for a set of users, groups, or resources.
@@ -814,7 +715,6 @@ class OutlookApp(APIApplication):
             start_datetime (str): The start of the time range (ISO 8601 with 'Z', e.g., '2023-12-25T00:00:00Z').
             end_datetime (str): The end of the time range (ISO 8601 with 'Z', e.g., '2023-12-26T00:00:00Z').
             availability_view_interval (int, optional): The duration of each time slot in minutes. Defaults to 30.
-            user_id (str, optional): The ID of the user performing the request. Defaults to the authenticated user.
 
         Returns:
             dict[str, Any]: A dictionary containing schedule information.
@@ -822,11 +722,7 @@ class OutlookApp(APIApplication):
         Tags:
             important
         """
-        if user_id is None:
-            user_info = await self.get_my_profile()
-            user_id = user_info.get("userPrincipalName")
-            if not user_id:
-                raise ValueError("Could not retrieve user ID from get_my_profile response.")
+        user_id = await self._get_user_id()
         url = f"{self.base_url}/users/{user_id}/calendar/getSchedule"
         request_body = {
             "schedules": schedules,
