@@ -5,7 +5,7 @@ Helper functions for Google Sheets table detection and analysis.
 from typing import Any
 
 
-def analyze_sheet_for_tables(
+async def analyze_sheet_for_tables(
     get_values_func,
     spreadsheet_id: str,
     sheet_id: int,
@@ -20,17 +20,17 @@ def analyze_sheet_for_tables(
     try:
         # Get sample data from the sheet (first 100 rows)
         sample_range = f"{sheet_title}!A1:Z100"
-        sample_data = get_values_func(spreadsheetId=spreadsheet_id, range=sample_range)
+        sample_data = await get_values_func(spreadsheetId=spreadsheet_id, range=sample_range)
 
         values = sample_data.get("values", [])
         if not values or len(values) < min_rows:
             return tables
 
         # Find potential table regions
-        table_regions = find_table_regions(values, min_rows, min_columns)
+        table_regions = await find_table_regions(values, min_rows, min_columns)
 
         for i, region in enumerate(table_regions):
-            confidence = calculate_table_confidence(values, region)
+            confidence = await calculate_table_confidence(values, region)
 
             if confidence >= min_confidence:
                 table_info = {
@@ -45,7 +45,7 @@ def analyze_sheet_for_tables(
                     "rows": region["end_row"] - region["start_row"] + 1,
                     "columns": region["end_column"] - region["start_column"] + 1,
                     "confidence": confidence,
-                    "range": f"{sheet_title}!{get_column_letter(region['start_column'])}{region['start_row'] + 1}:{get_column_letter(region['end_column'])}{region['end_row'] + 1}",
+                    "range": f"{sheet_title}!{await get_column_letter(region['start_column'])}{region['start_row'] + 1}:{await get_column_letter(region['end_column'])}{region['end_row'] + 1}",
                 }
                 tables.append(table_info)
 
@@ -56,7 +56,7 @@ def analyze_sheet_for_tables(
     return tables
 
 
-def analyze_table_schema(get_values_func, spreadsheet_id: str, table_info: dict, sample_size: int = 50) -> dict[str, Any]:
+async def analyze_table_schema(get_values_func, spreadsheet_id: str, table_info: dict, sample_size: int = 50) -> dict[str, Any]:
     """
     Analyze table structure and infer column names, types, and constraints.
 
@@ -72,7 +72,7 @@ def analyze_table_schema(get_values_func, spreadsheet_id: str, table_info: dict,
     try:
         # Get sample data from the table
         sample_range = table_info["range"]
-        sample_data = get_values_func(spreadsheetId=spreadsheet_id, range=sample_range)
+        sample_data = await get_values_func(spreadsheetId=spreadsheet_id, range=sample_range)
 
         values = sample_data.get("values", [])
         if not values:
@@ -83,7 +83,7 @@ def analyze_table_schema(get_values_func, spreadsheet_id: str, table_info: dict,
         sample_values = values[:actual_sample_size]
 
         # Analyze column structure
-        columns = analyze_columns(sample_values)
+        columns = await analyze_columns(sample_values)
 
         return {
             "spreadsheet_id": spreadsheet_id,
@@ -101,7 +101,7 @@ def analyze_table_schema(get_values_func, spreadsheet_id: str, table_info: dict,
         raise ValueError(f"Failed to analyze table schema: {str(e)}")
 
 
-def analyze_columns(sample_values: list[list[Any]]) -> list[dict]:
+async def analyze_columns(sample_values: list[list[Any]]) -> list[dict]:
     """Analyze column structure and infer types."""
     if not sample_values:
         return []
@@ -122,7 +122,7 @@ def analyze_columns(sample_values: list[list[Any]]) -> list[dict]:
                 column_values.append(row[col_idx])
 
         # Analyze column type
-        column_type, constraints = infer_column_type(column_values)
+        column_type, constraints = await infer_column_type(column_values)
 
         column_info = {
             "name": column_name,
@@ -139,7 +139,7 @@ def analyze_columns(sample_values: list[list[Any]]) -> list[dict]:
     return columns
 
 
-def infer_column_type(values: list[Any]) -> tuple[str, dict]:
+async def infer_column_type(values: list[Any]) -> tuple[str, dict]:
     """Infer the most likely data type for a column."""
     if not values:
         return "TEXT", {}
@@ -203,7 +203,7 @@ def infer_column_type(values: list[Any]) -> tuple[str, dict]:
         return "TEXT", {}
 
 
-def find_table_regions(values: list[list], min_rows: int, min_columns: int) -> list[dict]:
+async def find_table_regions(values: list[list], min_rows: int, min_columns: int) -> list[dict]:
     """Find potential table regions in the data."""
     regions = []
 
@@ -254,7 +254,7 @@ def find_table_regions(values: list[list], min_rows: int, min_columns: int) -> l
     return regions
 
 
-def calculate_table_confidence(values: list[list], region: dict) -> float:
+async def calculate_table_confidence(values: list[list], region: dict) -> float:
     """Calculate confidence score for a potential table region."""
     if not values:
         return 0.0
@@ -285,8 +285,8 @@ def calculate_table_confidence(values: list[list], region: dict) -> float:
     data_density = non_empty_cells / total_cells
 
     # Additional factors
-    has_headers = has_header_row(region_data)
-    consistent_columns = has_consistent_columns(region_data)
+    has_headers = await has_header_row(region_data)
+    consistent_columns = await has_consistent_columns(region_data)
 
     confidence = data_density * 0.6  # 60% weight to data density
 
@@ -299,7 +299,7 @@ def calculate_table_confidence(values: list[list], region: dict) -> float:
     return min(confidence, 1.0)
 
 
-def has_header_row(data: list[list]) -> bool:
+async def has_header_row(data: list[list]) -> bool:
     """Check if the first row looks like a header."""
     if not data or len(data) < 2:
         return False
@@ -325,7 +325,7 @@ def has_header_row(data: list[list]) -> bool:
     return header_text_count > len(header_row) * 0.5 and data_numeric_count > 0
 
 
-def has_consistent_columns(data: list[list]) -> bool:
+async def has_consistent_columns(data: list[list]) -> bool:
     """Check if columns have consistent data types."""
     if not data or len(data) < 2:
         return False
@@ -348,7 +348,7 @@ def has_consistent_columns(data: list[list]) -> bool:
     return consistent_columns / total_columns >= 0.6 if total_columns > 0 else False
 
 
-def get_column_letter(column_index: int) -> str:
+async def get_column_letter(column_index: int) -> str:
     """Convert column index to A1 notation letter."""
     result = ""
     while column_index >= 0:
