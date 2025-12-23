@@ -1,8 +1,9 @@
-import json
 import os
-from typing import Any, Callable, Literal
-from loguru import logger
+from collections.abc import Callable
+from typing import Any, Literal
 import requests
+
+from loguru import logger
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
@@ -45,7 +46,7 @@ class LinkedinApp(APIApplication):
         self._base_url = base_url
         logger.info(f"UnipileApp: Base URL set to {self._base_url}")
 
-    def _get_headers(self) -> dict[str, str]:
+    async def _get_headers(self) -> dict[str, str]:
         """
         Get the headers for Unipile API requests.
         Overrides the base class method to use X-Api-Key.
@@ -59,6 +60,13 @@ class LinkedinApp(APIApplication):
             return {"Content-Type": "application/json", "Cache-Control": "no-cache"}
         logger.debug("UnipileApp: Using X-Api-Key for authentication.")
         return {"x-api-key": api_key, "Content-Type": "application/json", "Cache-Control": "no-cache"}
+
+    async def _aget_headers(self) -> dict[str, str]:
+        """
+        Get the headers for Unipile API requests asynchronously.
+        Overrides the base class method to use X-Api-Key.
+        """
+        return await self._get_headers()
 
     def _get_search_parameter_id(self, param_type: str, keywords: str) -> str:
         """
@@ -113,8 +121,7 @@ class LinkedinApp(APIApplication):
             raise ValueError("UNIPILE_API_KEY environment variable is not set.")
         headers = {"x-api-key": api_key}
         response = requests.post(url, files=form_payload, headers=headers)
-        response.raise_for_status()
-        return response.json()
+        return self._handle_response(response)
 
     async def list_all_chats(
         self,
@@ -161,7 +168,7 @@ class LinkedinApp(APIApplication):
         if account_type:
             params["account_type"] = account_type
         response = await self._aget(url, params=params)
-        return response.json()
+        return self._handle_response(response)
 
     async def list_chat_messages(
         self,
@@ -205,7 +212,7 @@ class LinkedinApp(APIApplication):
         if sender_id:
             params["sender_id"] = sender_id
         response = await self._aget(url, params=params)
-        return response.json()
+        return self._handle_response(response)
 
     async def send_chat_message(self, chat_id: str, text: str) -> dict[str, Any]:
         """
@@ -228,7 +235,7 @@ class LinkedinApp(APIApplication):
         url = f"{self.base_url}/api/v1/chats/{chat_id}/messages"
         payload: dict[str, Any] = {"text": text}
         response = await self._apost(url, data=payload)
-        return response.json()
+        return self._handle_response(response)
 
     async def retrieve_chat(self, chat_id: str) -> dict[str, Any]:
         """
@@ -251,7 +258,7 @@ class LinkedinApp(APIApplication):
         if self.account_id:
             params["account_id"] = self.account_id
         response = await self._aget(url, params=params)
-        return response.json()
+        return self._handle_response(response)
 
     async def list_all_messages(
         self,
@@ -295,7 +302,7 @@ class LinkedinApp(APIApplication):
         if self.account_id:
             params["account_id"] = self.account_id
         response = await self._aget(url, params=params)
-        return response.json()
+        return self._handle_response(response)
 
     async def list_profile_posts(
         self, identifier: str, cursor: str | None = None, limit: int | None = None, is_company: bool | None = None
@@ -327,7 +334,7 @@ class LinkedinApp(APIApplication):
         if is_company is not None:
             params["is_company"] = is_company
         response = await self._aget(url, params=params)
-        return response.json()
+        return self._handle_response(response)
 
     async def retrieve_own_profile(self) -> dict[str, Any]:
         """
@@ -345,7 +352,7 @@ class LinkedinApp(APIApplication):
         url = f"{self.base_url}/api/v1/users/me"
         params: dict[str, Any] = {"account_id": self.account_id}
         response = await self._aget(url, params=params)
-        return response.json()
+        return self._handle_response(response)
 
     async def retrieve_post(self, post_id: str) -> dict[str, Any]:
         """
@@ -366,7 +373,7 @@ class LinkedinApp(APIApplication):
         url = f"{self.base_url}/api/v1/posts/{post_id}"
         params: dict[str, Any] = {"account_id": self.account_id}
         response = await self._aget(url, params=params)
-        return response.json()
+        return self._handle_response(response)
 
     async def list_post_comments(
         self, post_id: str, comment_id: str | None = None, cursor: str | None = None, limit: int | None = None
@@ -398,7 +405,7 @@ class LinkedinApp(APIApplication):
         if comment_id:
             params["comment_id"] = comment_id
         response = await self._aget(url, params=params)
-        return response.json()
+        return self._handle_response(response)
 
     async def create_post(
         self, text: str, mentions: list[dict[str, Any]] | None = None, external_link: str | None = None
@@ -428,7 +435,7 @@ class LinkedinApp(APIApplication):
         if external_link:
             params["external_link"] = external_link
         response = await self._apost(url, data=params)
-        return response.json()
+        return self._handle_response(response)
 
     async def list_content_reactions(
         self, post_id: str, comment_id: str | None = None, cursor: str | None = None, limit: int | None = None
@@ -460,7 +467,7 @@ class LinkedinApp(APIApplication):
         if comment_id:
             params["comment_id"] = comment_id
         response = await self._aget(url, params=params)
-        return response.json()
+        return self._handle_response(response)
 
     async def create_post_comment(
         self, post_social_id: str, text: str, comment_id: str | None = None, mentions_body: list[dict[str, Any]] | None = None
@@ -491,10 +498,7 @@ class LinkedinApp(APIApplication):
         if mentions_body:
             params = {"mentions": mentions_body}
         response = await self._apost(url, data=params)
-        try:
-            return response.json()
-        except json.JSONDecodeError:
-            return {"status": response.status_code, "message": "Comment action processed."}
+        return self._handle_response(response)
 
     async def create_reaction(
         self,
@@ -524,10 +528,7 @@ class LinkedinApp(APIApplication):
         if comment_id:
             params["comment_id"] = comment_id
         response = await self._apost(url, data=params)
-        try:
-            return response.json()
-        except json.JSONDecodeError:
-            return {"status": response.status_code, "message": "Reaction action processed."}
+        return self._handle_response(response)
 
     async def retrieve_user_profile(self, public_identifier: str) -> dict[str, Any]:
         """
@@ -760,10 +761,7 @@ class LinkedinApp(APIApplication):
                 raise ValueError("Message cannot exceed 300 characters.")
             payload["message"] = message
         response = await self._apost(url, data=payload)
-        try:
-            return response.json()
-        except json.JSONDecodeError:
-            return {"status": response.status_code, "message": "Invitation action processed."}
+        return self._handle_response(response)
 
     async def list_sent_invitations(self, cursor: str | None = None, limit: int | None = None) -> dict[str, Any]:
         """
@@ -789,7 +787,7 @@ class LinkedinApp(APIApplication):
         if limit is not None:
             params["limit"] = limit
         response = await self._aget(url, params=params)
-        return response.json()
+        return self._handle_response(response)
 
     async def list_received_invitations(self, cursor: str | None = None, limit: int | None = None) -> dict[str, Any]:
         """
@@ -815,7 +813,7 @@ class LinkedinApp(APIApplication):
         if limit is not None:
             params["limit"] = limit
         response = await self._aget(url, params=params)
-        return response.json()
+        return self._handle_response(response)
 
     async def handle_received_invitation(
         self, invitation_id: str, action: Literal["accept", "decline"], shared_secret: str
@@ -840,10 +838,7 @@ class LinkedinApp(APIApplication):
         url = f"{self.base_url}/api/v1/users/invite/received/{invitation_id}"
         payload: dict[str, Any] = {"provider": "LINKEDIN", "action": action, "shared_secret": shared_secret, "account_id": self.account_id}
         response = await self._apost(url, data=payload)
-        try:
-            return response.json()
-        except json.JSONDecodeError:
-            return {"status": response.status_code, "message": f"Invitation action '{action}' processed."}
+        return self._handle_response(response)
 
     async def cancel_sent_invitation(self, invitation_id: str) -> dict[str, Any]:
         """
@@ -862,12 +857,9 @@ class LinkedinApp(APIApplication):
             linkedin, user, invite, sent, cancel, delete, api
         """
         url = f"{self.base_url}/api/v1/users/invite/sent/{invitation_id}"
-        params: dict[str, Any] = {"account_id": self.account_id}
+        params = {"account_id": self.account_id}
         response = await self._adelete(url, params=params)
-        try:
-            return response.json()
-        except json.JSONDecodeError:
-            return {"status": response.status_code, "message": "Invitation cancellation processed."}
+        return self._handle_response(response)
 
     async def list_followers(self, cursor: str | None = None, limit: int | None = None) -> dict[str, Any]:
         """
@@ -893,7 +885,7 @@ class LinkedinApp(APIApplication):
         if limit is not None:
             params["limit"] = limit
         response = await self._aget(url, params=params)
-        return response.json()
+        return self._handle_response(response)
 
     async def list_following(self, cursor: str | None = None, limit: int | None = None) -> dict[str, Any]:
         """
@@ -919,7 +911,7 @@ class LinkedinApp(APIApplication):
         if limit is not None:
             params["limit"] = limit
         response = self._get(url, params=params)
-        return response.json()
+        return self._handle_response(response)
 
     def list_tools(self) -> list[Callable]:
         return [
