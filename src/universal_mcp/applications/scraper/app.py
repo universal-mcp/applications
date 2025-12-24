@@ -38,7 +38,7 @@ class ScraperApp(APIApplication):
         self._base_url = base_url
         logger.info(f"UnipileApp: Base URL set to {self._base_url}")
 
-    def _get_headers(self) -> dict[str, str]:
+    async def _get_headers(self) -> dict[str, str]:
         """
         Get the headers for Unipile API requests.
         Overrides the base class method to use X-Api-Key.
@@ -52,6 +52,13 @@ class ScraperApp(APIApplication):
             return {"Content-Type": "application/json", "Cache-Control": "no-cache"}
         logger.debug("UnipileApp: Using X-Api-Key for authentication.")
         return {"x-api-key": api_key, "Content-Type": "application/json", "Cache-Control": "no-cache"}
+
+    async def _aget_headers(self) -> dict[str, str]:
+        """
+        Get the headers for Unipile API requests asynchronously.
+        Overrides the base class method to use X-Api-Key.
+        """
+        return await self._get_headers()
 
     def _get_search_parameter_id(self, param_type: str, keywords: str) -> str:
         """
