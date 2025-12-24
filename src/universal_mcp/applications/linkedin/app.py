@@ -4,7 +4,7 @@ from typing import Any, Literal
 import requests
 
 from loguru import logger
-from universal_mcp.applications.application import APIApplication
+from universal_mcp.applications.application import APIApplication, BaseApplication
 from universal_mcp.integrations import Integration
 
 
@@ -46,7 +46,7 @@ class LinkedinApp(APIApplication):
         self._base_url = base_url
         logger.info(f"UnipileApp: Base URL set to {self._base_url}")
 
-    async def _get_headers(self) -> dict[str, str]:
+    def _get_headers(self) -> dict[str, str]:
         """
         Get the headers for Unipile API requests.
         Overrides the base class method to use X-Api-Key.
@@ -66,11 +66,11 @@ class LinkedinApp(APIApplication):
         Get the headers for Unipile API requests asynchronously.
         Overrides the base class method to use X-Api-Key.
         """
-        return await self._get_headers()
+        return self._get_headers()
 
-    def _get_search_parameter_id(self, param_type: str, keywords: str) -> str:
+    async def _aget_search_parameter_id(self, param_type: str, keywords: str) -> str:
         """
-        Retrieves the ID for a given LinkedIn search parameter by its name.
+        Retrieves the ID for a given LinkedIn search parameter by its name asynchronously.
 
         Args:
             param_type: The type of parameter to search for (e.g., "LOCATION", "COMPANY").
@@ -85,7 +85,7 @@ class LinkedinApp(APIApplication):
         """
         url = f"{self.base_url}/api/v1/linkedin/search/parameters"
         params = {"account_id": self.account_id, "keywords": keywords, "type": param_type}
-        response = self._get(url, params=params)
+        response = await self._aget(url, params=params)
         results = self._handle_response(response)
         items = results.get("items", [])
         if items:
@@ -587,13 +587,13 @@ class LinkedinApp(APIApplication):
         if keywords:
             payload["keywords"] = keywords
         if location:
-            location_id = self._get_search_parameter_id("LOCATION", location)
+            location_id = await self._aget_search_parameter_id("LOCATION", location)
             payload["location"] = [location_id]
         if industry:
-            industry_id = self._get_search_parameter_id("INDUSTRY", industry)
+            industry_id = await self._aget_search_parameter_id("INDUSTRY", industry)
             payload["industry"] = [industry_id]
         if company:
-            company_id = self._get_search_parameter_id("COMPANY", company)
+            company_id = await self._aget_search_parameter_id("COMPANY", company)
             payload["company"] = [company_id]
         response = await self._apost(url, params=params, data=payload)
         return self._handle_response(response)
@@ -632,10 +632,10 @@ class LinkedinApp(APIApplication):
         if keywords:
             payload["keywords"] = keywords
         if location:
-            location_id = self._get_search_parameter_id("LOCATION", location)
+            location_id = await self._aget_search_parameter_id("LOCATION", location)
             payload["location"] = [location_id]
         if industry:
-            industry_id = self._get_search_parameter_id("INDUSTRY", industry)
+            industry_id = await self._aget_search_parameter_id("INDUSTRY", industry)
             payload["industry"] = [industry_id]
         response = await self._apost(url, params=params, data=payload)
         return self._handle_response(response)
@@ -725,10 +725,10 @@ class LinkedinApp(APIApplication):
         if sort_by:
             payload["sort_by"] = sort_by
         if region:
-            location_id = self._get_search_parameter_id("LOCATION", region)
+            location_id = await self._aget_search_parameter_id("LOCATION", region)
             payload["region"] = location_id
         if industry:
-            industry_id = self._get_search_parameter_id("INDUSTRY", industry)
+            industry_id = await self._aget_search_parameter_id("INDUSTRY", industry)
             payload["industry"] = [industry_id]
         response = await self._apost(url, params=params, data=payload)
         return self._handle_response(response)
