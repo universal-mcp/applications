@@ -60,7 +60,7 @@ class ScraperApp(APIApplication):
         """
         return await self._get_headers()
 
-    def _get_search_parameter_id(self, param_type: str, keywords: str) -> str:
+    async def _aget_search_parameter_id(self, param_type: str, keywords: str) -> str:
         """
         Retrieves the ID for a given LinkedIn search parameter by its name.
 
@@ -77,7 +77,7 @@ class ScraperApp(APIApplication):
         """
         url = f"{self.base_url}/api/v1/linkedin/search/parameters"
         params = {"account_id": self.account_id, "keywords": keywords, "type": param_type}
-        response = self._get(url, params=params)
+        response = await self._aget(url, params=params)
         results = self._handle_response(response)
         items = results.get("items", [])
         if items:
@@ -205,13 +205,13 @@ class ScraperApp(APIApplication):
         if keywords:
             payload["keywords"] = keywords
         if location:
-            location_id = self._get_search_parameter_id("LOCATION", location)
+            location_id = await self._aget_search_parameter_id("LOCATION", location)
             payload["location"] = [location_id]
         if industry:
-            industry_id = self._get_search_parameter_id("INDUSTRY", industry)
+            industry_id = await self._aget_search_parameter_id("INDUSTRY", industry)
             payload["industry"] = [industry_id]
         if company:
-            company_id = self._get_search_parameter_id("COMPANY", company)
+            company_id = await self._aget_search_parameter_id("COMPANY", company)
             payload["company"] = [company_id]
         response = await self._apost(url, params=params, data=payload)
         return self._handle_response(response)
@@ -250,10 +250,10 @@ class ScraperApp(APIApplication):
         if keywords:
             payload["keywords"] = keywords
         if location:
-            location_id = self._get_search_parameter_id("LOCATION", location)
+            location_id = await self._aget_search_parameter_id("LOCATION", location)
             payload["location"] = [location_id]
         if industry:
-            industry_id = self._get_search_parameter_id("INDUSTRY", industry)
+            industry_id = await self._aget_search_parameter_id("INDUSTRY", industry)
             payload["industry"] = [industry_id]
         response = await self._apost(url, params=params, data=payload)
         return self._handle_response(response)
@@ -343,10 +343,10 @@ class ScraperApp(APIApplication):
         if sort_by:
             payload["sort_by"] = sort_by
         if region:
-            location_id = self._get_search_parameter_id("LOCATION", region)
+            location_id = await self._aget_search_parameter_id("LOCATION", region)
             payload["region"] = location_id
         if industry:
-            industry_id = self._get_search_parameter_id("INDUSTRY", industry)
+            industry_id = await self._aget_search_parameter_id("INDUSTRY", industry)
             payload["industry"] = [industry_id]
         response = await self._apost(url, params=params, data=payload)
         return self._handle_response(response)
