@@ -305,7 +305,7 @@ class ScraperApp(APIApplication):
         keywords: str | None = None,
         region: str | None = None,
         sort_by: Literal["relevance", "date"] = "relevance",
-        minimum_salary_value: int = 40,
+        minimum_salary_value: Literal[40, 60, 80, 100, 120, 140, 160, 180, 200] = 40,
         industry: str | None = None,
     ) -> dict[str, Any]:
         """
@@ -317,7 +317,7 @@ class ScraperApp(APIApplication):
             keywords: Keywords to search for.
             region: The geographical region to filter jobs by (e.g., "United States").
             sort_by: How to sort the results.(e.g., "relevance" or "date".)
-            minimum_salary_value: The minimum salary to filter for.
+            minimum_salary_value: The minimum salary to filter for. Allowed values are 40, 60, 80, 100, 120, 140, 160, 180, 200.
             industry: The industry to filter jobs by. (e.g., "Software Development".)
 
         Returns:
