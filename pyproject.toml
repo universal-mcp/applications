@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "universal-mcp-applications"
-version = "0.1.39-rc7"
+version = "0.1.39-rc8"
 description = "A Universal MCP Application: universal_mcp_applications"
 readme = "README.md"
 requires-python = ">=3.11"
