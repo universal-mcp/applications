@@ -3,89 +3,7 @@ import os
 
 # List of applications to be converted to async
 APPS = [
-    "ahrefs",
-    "airtable",
-    "apollo",
-    "asana",
-    "aws_s3",
-    "bill",  # not seeded
-    "box",
-    "braze",
-    # "cal_com_v2",   # not seeded
-    "calendly",
-    "canva",
-    "clickup",
-    "coda",
-    "confluence",  # not seeded
-    "contentful",  # not seeded
-    "crustdata",
-    "dialpad",  # not seeded
-    "digitalocean",
-    "domain_checker",
-    "e2b",
-    "elevenlabs",
-    "exa",
-    "falai",
-    "figma",
-    "file_system",
-    "firecrawl",
-    "fireflies",
-    "fpl",
-    "ghost_content",
-    "github",
-    "gong",
-    "google_calendar",
-    "google_docs",
-    "google_drive",
-    "google_gemini",
-    "google_mail",
-    "google_searchconsole",
-    "google_sheet",
-    "hashnode",
-    "heygen",
-    "http_tools",
-    # "hubspot",
-    "jira",
-    "klaviyo",
-    "linkedin",
-    "mailchimp",
-    "markitdown",
-    "miro",
-    "ms_teams",
-    "neon",
-    "notion",
-    "onedrive",
-    "openai",
-    "outlook",
-    "perplexity",
-    "pipedrive",  # not seeded
-    "posthog",
-    "reddit",
-    "resend",
-    "retell",
-    "rocketlane",
-    "scraper",
-    "semanticscholar",
-    "semrush",  # not seeded
-    "sendgrid",
-    "sentry",
-    "serpapi",
-    "sharepoint",
-    "shopify",
-    "shortcut",
-    "slack",
-    "spotify",  # not seeded
-    "supabase",
-    "tavily",
-    "trello",
-    "twilio",
-    # "twitter",
-    "whatsapp",
-    "whatsapp_business",
-    "wrike",  # not seeded
-    "yahoo_finance",
-    "youtube",
-    "zenquotes",
+    "hubspot"
 ]
 
 
@@ -116,7 +34,7 @@ class AsyncHttpConverter(ast.NodeTransformer):
     def visit_Call(self, node):
         if self.current_function and isinstance(node.func, ast.Attribute):
             if isinstance(node.func.value, ast.Name) and node.func.value.id == "self":
-                sync_method_names = {"_get", "_post", "_put", "_delete"}
+                sync_method_names = {"_get", "_post", "_put", "_delete", "_patch"}
                 if node.func.attr in sync_method_names:
                     async_method_name = f"_a{node.func.attr[1:]}"
                     new_func = ast.Attribute(value=node.func.value, attr=async_method_name, ctx=node.func.ctx)
