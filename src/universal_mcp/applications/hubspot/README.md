@@ -12,7 +12,7 @@ This is automatically generated from OpenAPI schema for the HubspotApp API.
 | `add_a_note` | Create a note in HubSpot with the given properties and associations. |
 | `fetch_multiple_lists` | Fetch multiple lists in a single request by ILS list ID. The response will include the definitions of all lists that exist for the listIds provided. |
 | `fetch_list_memberships` | Fetch the memberships of a list in order sorted by the recordId of the records in the list. |
-| `create_list` | Create a new list in HubSpot with the specified object type, processing type, and name.  |
+| `create_list` | Create a new list in HubSpot with the specified object type, processing type, and name. |
 | `get_list_by_id` | Fetch a single list by ILS list ID. |
 | `delete_list_by_id` | Delete a list by ILS list ID. Lists deleted through this endpoint can be restored for up to 90 days. After 90 days, the list is permanently purged and cannot be restored |
 | `add_records_to_list` | Add the records provided to the list. Records that do not exist or that are already members of the list are ignored. |
