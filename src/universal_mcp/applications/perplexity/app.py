@@ -28,7 +28,7 @@ class PerplexityApp(APIApplication):
                 logger.error(f"{self.name.capitalize()} App: Integration not configured.")
                 raise NotAuthorizedError(f"Integration not configured for {self.name.capitalize()} App. Cannot retrieve API key.")
             try:
-                credentials = self.integration.get_credentials()
+                credentials = await self.integration.get_credentials_async_async()
             except NotAuthorizedError as e:
                 logger.error(f"{self.name.capitalize()} App: Authorization error when fetching credentials: {e.message}")
                 raise

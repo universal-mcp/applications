@@ -22,7 +22,7 @@ class AirtableApp(APIApplication):
         """Initializes and returns the pyairtable client after ensuring API key is set."""
         if not self.integration:
             raise ValueError("Integration is not set for AirtableApp.")
-        credentials = self.integration.get_credentials()
+        credentials = await self.integration.get_credentials_async_async()
         api_key = credentials.get("api_key") or credentials.get("apiKey") or credentials.get("API_KEY")
         if not api_key:
             raise ValueError("Airtable API key is not configured in the integration.")

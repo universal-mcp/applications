@@ -35,7 +35,7 @@ class E2bApp(APIApplication):
                 logger.error("E2B App: Integration not configured.")
                 raise NotAuthorizedError("Integration not configured for E2B App. Cannot retrieve API key.")
             try:
-                credentials = self.integration.get_credentials()
+                credentials = await self.integration.get_credentials_async_async()
             except NotAuthorizedError as e:
                 logger.error(f"E2B App: Authorization error when fetching credentials: {e.message}")
                 raise

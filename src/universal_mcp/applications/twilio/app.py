@@ -36,7 +36,7 @@ class TwilioApp(APIApplication):
             if not self.integration:
                 raise NotAuthorizedError("Integration not configured for Twilio App.")
             try:
-                credentials = self.integration.get_credentials()
+                credentials = await self.integration.get_credentials_async_async()
             except Exception as e:
                 raise NotAuthorizedError(f"Failed to get Twilio credentials: {e}")
             sid = credentials.get("account_sid") or credentials.get("ACCOUNT_SID") or credentials.get("TWILIO_ACCOUNT_SID")
@@ -54,7 +54,7 @@ class TwilioApp(APIApplication):
             if not self.integration:
                 raise NotAuthorizedError("Integration not configured for Twilio App.")
             try:
-                credentials = self.integration.get_credentials()
+                credentials = await self.integration.get_credentials_async_async()
             except Exception as e:
                 raise NotAuthorizedError(f"Failed to get Twilio credentials: {e}")
             token = credentials.get("auth_token") or credentials.get("AUTH_TOKEN") or credentials.get("TWILIO_AUTH_TOKEN")

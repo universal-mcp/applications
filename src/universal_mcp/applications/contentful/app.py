@@ -32,7 +32,7 @@ class ContentfulApp(GraphQLApplication):
             self._credentials_loaded = True
             return False
         try:
-            credentials = self.integration.get_credentials()
+            credentials = await self.integration.get_credentials_async_async()
         except NotAuthorizedError as e:
             logger.error(f"Authorization required or credentials unavailable for Contentful: {e.message}")
             self._credentials_loaded = True

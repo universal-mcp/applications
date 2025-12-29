@@ -16,7 +16,7 @@ class SlackApp(APIApplication):
         """
         if not self.integration:
             raise ValueError("Integration not configured for SlackApp")
-        credentials = self.integration.get_credentials()
+        credentials = await self.integration.get_credentials_async_async()
         if not credentials:
             raise ValueError("No credentials found for Slack integration")
         access_token = None

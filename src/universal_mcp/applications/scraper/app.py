@@ -17,7 +17,7 @@ class ScraperApp(APIApplication):
     def __init__(self, integration: Integration, **kwargs: Any) -> None:
         super().__init__(name="scraper", integration=integration, **kwargs)
         if self.integration:
-            credentials = self.integration.get_credentials()
+            credentials = await self.integration.get_credentials_async_async()
             self.account_id = credentials.get("account_id")
         else:
             logger.warning("Integration not found")

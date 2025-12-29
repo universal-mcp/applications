@@ -11,7 +11,7 @@ class NotionApp(APIApplication):
     def _get_headers(self):
         if not self.integration:
             raise ValueError("Integration not configured for NotionApp")
-        credentials = self.integration.get_credentials()
+        credentials = await self.integration.get_credentials_async_async()
         if "headers" in credentials:
             return credentials["headers"]
         return {"Authorization": f"Bearer {credentials['access_token']}", "Accept": "application/json", "Notion-Version": "2022-06-28"}

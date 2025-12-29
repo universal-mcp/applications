@@ -18,7 +18,7 @@ class ResendApp(APIApplication):
         if self._api_key is None:
             if not self.integration:
                 raise NotAuthorizedError("Resend integration not configured.")
-            credentials = self.integration.get_credentials()
+            credentials = await self.integration.get_credentials_async_async()
             api_key = credentials.get("api_key") or credentials.get("API_KEY") or credentials.get("apiKey")
             if not api_key:
                 raise NotAuthorizedError("Resend API key not found in credentials.")

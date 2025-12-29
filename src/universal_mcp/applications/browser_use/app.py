@@ -17,7 +17,7 @@ class BrowserUseApp(APIApplication):
             return self._browser_client
         if not self.integration:
             raise ValueError("Integration is required but not provided")
-        credentials = self.integration.get_credentials()
+        credentials = await self.integration.get_credentials_async_async()
         api_key = credentials.get("api_key") or credentials.get("API_KEY") or credentials.get("apiKey")
         if not api_key:
             raise ValueError("API key not found in integration credentials")

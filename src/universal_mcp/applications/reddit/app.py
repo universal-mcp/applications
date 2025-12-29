@@ -33,7 +33,7 @@ class RedditApp(APIApplication):
     def _get_headers(self):
         if not self.integration:
             raise ValueError("Integration not configured for RedditApp")
-        credentials = self.integration.get_credentials()
+        credentials = await self.integration.get_credentials_async_async()
         if "access_token" not in credentials:
             logger.error("Reddit credentials found but missing 'access_token'.")
             raise ValueError("Invalid Reddit credentials format.")

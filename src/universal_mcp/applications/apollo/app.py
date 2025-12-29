@@ -17,7 +17,7 @@ class ApolloApp(APIApplication):
         if not self.integration:
             logger.warning("ApolloApp: No integration configured, returning empty headers.")
             return {}
-        credentials = self.integration.get_credentials()
+        credentials = await self.integration.get_credentials_async_async()
         api_key = credentials.get("api_key") or credentials.get("API_KEY") or credentials.get("apiKey")
         if not api_key:
             logger.error("ApolloApp: API key not found in integration credentials for Apollo.")

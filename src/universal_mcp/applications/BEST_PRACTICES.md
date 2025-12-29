@@ -40,7 +40,7 @@ class GoogleGeminiApp(APIApplication):
         if self._genai_client is not None:
             return self._genai_client
         
-        credentials = self.integration.get_credentials()
+        credentials = await self.integration.get_credentials_async_async()
         api_key = (
             credentials.get("api_key")
             or credentials.get("API_KEY")

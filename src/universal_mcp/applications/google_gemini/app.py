@@ -20,7 +20,7 @@ class GoogleGeminiApp(APIApplication):
     def genai_client(self) -> genai.Client:
         if self._genai_client is not None:
             return self._genai_client
-        credentials = self.integration.get_credentials()
+        credentials = await self.integration.get_credentials_async_async()
         api_key = credentials.get("api_key") or credentials.get("API_KEY") or credentials.get("apiKey")
         if not api_key:
             raise ValueError("API key not found in integration credentials")

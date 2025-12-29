@@ -10,7 +10,7 @@ class GongApp(APIApplication):
         self.base_url = "https://api.gong.io"
 
     def _get_headers(self) -> dict[str, str]:
-        credentials = self.integration.get_credentials()
+        credentials = await self.integration.get_credentials_async_async()
         api_key = credentials.get("api_key")
         secret = credentials.get("secret")
         api_key_b64 = b64encode(f"{api_key}:{secret}".encode()).decode()

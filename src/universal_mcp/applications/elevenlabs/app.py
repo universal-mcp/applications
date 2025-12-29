@@ -19,7 +19,7 @@ class ElevenlabsApp(APIApplication):
         A property that lazily initializes and returns an authenticated `ElevenLabs` SDK client. On first access, it retrieves the API key from integration credentials and caches the instance, raising a `NotAuthorizedError` if credentials are not found.
         """
         if self._client is None:
-            credentials = self.integration.get_credentials()
+            credentials = await self.integration.get_credentials_async_async()
             if not credentials:
                 raise NotAuthorizedError("No credentials found")
             api_key = credentials.get("api_key") or credentials.get("API_KEY") or credentials.get("apiKey")

@@ -16,7 +16,7 @@ class ShopifyApp(APIApplication):
         This is constructed from the integration's credentials.
         """
         if not self._base_url:
-            credentials = self.integration.get_credentials()
+            credentials = await self.integration.get_credentials_async_async()
             subdomain = credentials.get("subdomain")
             if not subdomain:
                 logger.error("Integration credentials must include 'subdomain'.")

@@ -30,7 +30,7 @@ class FalaiApp(APIApplication):
         A cached property that lazily initializes an `AsyncClient` instance. It retrieves the API key from the configured integration, providing a single, centralized authentication point for all methods that interact with the Fal AI API. Raises `NotAuthorizedError` if credentials are not found.
         """
         if self._fal_client is None:
-            credentials = self.integration.get_credentials()
+            credentials = await self.integration.get_credentials_async_async()
             logger.info(f"Credentials: {credentials}")
             api_key = credentials.get("api_key") or credentials.get("API_KEY") or credentials.get("apiKey")
             if not api_key:

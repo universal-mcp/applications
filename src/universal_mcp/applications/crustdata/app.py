@@ -9,7 +9,7 @@ class CrustdataApp(APIApplication):
         self.base_url = "https://api.crustdata.com"
 
     def _get_headers(self) -> dict[str, Any]:
-        api_key = self.integration.get_credentials().get("api_key")
+        api_key = await self.integration.get_credentials_async_async().get("api_key")
         return {"Authorization": f"Token {api_key}", "Content-Type": "application/json", "Accept": "application/json"}
 
     async def screen_companies(self, metrics, filters, offset, count, sorts) -> dict[str, Any]:

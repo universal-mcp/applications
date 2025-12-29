@@ -33,7 +33,7 @@ class AwsS3App(BaseApplication):
         if not self.integration:
             raise ValueError("Integration not initialized")
         if not self._client:
-            credentials = self.integration.get_credentials()
+            credentials = await self.integration.get_credentials_async_async()
             credentials = {
                 "aws_access_key_id": credentials.get("access_key_id") or credentials.get("username"),
                 "aws_secret_access_key": credentials.get("secret_access_key") or credentials.get("password"),

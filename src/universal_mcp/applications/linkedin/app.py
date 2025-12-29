@@ -20,14 +20,14 @@ class LinkedinApp(APIApplication):
         Args:
             integration: The integration configuration containing credentials and other settings.
                          It is expected that the integration provides the 'x-api-key'
-                         via headers in `integration.get_credentials()`, e.g.,
+                         via headers in `integration.get_credentials_async_async()`, e.g.,
                          `{"headers": {"x-api-key": "YOUR_API_KEY"}}`.
         """
         super().__init__(name="linkedin", integration=integration)
         self._base_url = None
         self.account_id = None
         if self.integration:
-            credentials = self.integration.get_credentials()
+            credentials = await self.integration.get_credentials_async_async()
             if credentials:
                 self.account_id = credentials.get("account_id")
 

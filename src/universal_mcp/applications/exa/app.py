@@ -38,7 +38,7 @@ class ExaApp(APIApplication):
             if not self.integration:
                 raise NotAuthorizedError("Exa App: Integration not configured.")
 
-            credentials = self.integration.get_credentials()
+            credentials = await self.integration.get_credentials_async_async()
             api_key = credentials.get("api_key") or credentials.get("API_KEY") or credentials.get("apiKey")
 
             if not api_key:
