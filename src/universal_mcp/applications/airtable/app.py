@@ -18,11 +18,11 @@ class AirtableApp(APIApplication):
     def __init__(self, integration: Integration | None = None) -> None:
         super().__init__(name="airtable", integration=integration)
 
-    def _get_client(self) -> Api:
+    async def get_client(self) -> Api:
         """Initializes and returns the pyairtable client after ensuring API key is set."""
         if not self.integration:
             raise ValueError("Integration is not set for AirtableApp.")
-        credentials = await self.integration.get_credentials_async_async()
+        credentials = await self.integration.get_credentials_async()
         api_key = credentials.get("api_key") or credentials.get("apiKey") or credentials.get("API_KEY")
         if not api_key:
             raise ValueError("Airtable API key is not configured in the integration.")
@@ -52,7 +52,7 @@ class AirtableApp(APIApplication):
             list, base, important
         """
         try:
-            client = self._get_client()
+            client = await self.get_client()
             return client.bases()
         except Exception as e:
             return f"Error listing bases: {type(e).__name__} - {e}"
@@ -72,7 +72,7 @@ class AirtableApp(APIApplication):
             list, table, important
         """
         try:
-            client = self._get_client()
+            client = await self.get_client()
             base = client.base(base_id)
             return base.tables()
         except Exception as e:
@@ -98,7 +98,7 @@ class AirtableApp(APIApplication):
             get, record, important
         """
         try:
-            client = self._get_client()
+            client = await self.get_client()
             table = client.table(base_id, table_id_or_name)
             pyairtable_params = self._prepare_pyairtable_params(options)
             return table.get(record_id, **pyairtable_params)
@@ -125,7 +125,7 @@ class AirtableApp(APIApplication):
             list, record, important
         """
         try:
-            client = self._get_client()
+            client = await self.get_client()
             table = client.table(base_id, table_id_or_name)
             pyairtable_params = self._prepare_pyairtable_params(options)
             if "formula" in pyairtable_params and isinstance(pyairtable_params["formula"], Formula):
@@ -154,7 +154,7 @@ class AirtableApp(APIApplication):
             create, record, important
         """
         try:
-            client = self._get_client()
+            client = await self.get_client()
             table = client.table(base_id, table_id_or_name)
             prepared_options = self._prepare_pyairtable_params(options)
             prepared_options.get("typecast", False)
@@ -191,7 +191,7 @@ class AirtableApp(APIApplication):
             update, record
         """
         try:
-            client = self._get_client()
+            client = await self.get_client()
             table = client.table(base_id, table_id_or_name)
             prepared_options = self._prepare_pyairtable_params(options)
             call_kwargs = {}
@@ -222,7 +222,7 @@ class AirtableApp(APIApplication):
             delete, record
         """
         try:
-            client = self._get_client()
+            client = await self.get_client()
             table = client.table(base_id, table_id_or_name)
             return table.delete(record_id)
         except Exception as e:
@@ -250,7 +250,7 @@ class AirtableApp(APIApplication):
             create, record, batch
         """
         try:
-            client = self._get_client()
+            client = await self.get_client()
             table = client.table(base_id, table_id_or_name)
             prepared_options = self._prepare_pyairtable_params(options)
             call_kwargs = {}
@@ -284,7 +284,7 @@ class AirtableApp(APIApplication):
             update, record, batch
         """
         try:
-            client = self._get_client()
+            client = await self.get_client()
             table = client.table(base_id, table_id_or_name)
             prepared_options = self._prepare_pyairtable_params(options)
             call_kwargs = {}
@@ -317,7 +317,7 @@ class AirtableApp(APIApplication):
             delete, record, batch
         """
         try:
-            client = self._get_client()
+            client = await self.get_client()
             table = client.table(base_id, table_id_or_name)
             return table.batch_delete(record_ids)
         except Exception as e:
@@ -349,7 +349,7 @@ class AirtableApp(APIApplication):
             create, update, record, batch, upsert
         """
         try:
-            client = self._get_client()
+            client = await self.get_client()
             table = client.table(base_id, table_id_or_name)
             prepared_options = self._prepare_pyairtable_params(options)
             call_kwargs = {}

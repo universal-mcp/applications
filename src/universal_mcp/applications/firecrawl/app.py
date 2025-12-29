@@ -27,8 +27,7 @@ class FirecrawlApp(APIApplication):
         if FirecrawlApiClient is None:
             logger.warning("Firecrawl SDK is not available. Firecrawl tools will not function.")
 
-    @property
-    def firecrawl_api_key(self) -> str:
+    async def get_firecrawl_api_key(self) -> str:
         """
         A property that lazily retrieves and caches the Firecrawl API key from the configured integration. On first access, it fetches credentials and raises a `NotAuthorizedError` if the key is unobtainable, ensuring all subsequent API calls within the application are properly authenticated before execution.
         """
@@ -37,7 +36,7 @@ class FirecrawlApp(APIApplication):
                 logger.error(f"{self.name.capitalize()} App: Integration not configured.")
                 raise NotAuthorizedError(f"Integration not configured for {self.name.capitalize()} App. Cannot retrieve API key.")
             try:
-                credentials = await self.integration.get_credentials_async_async()
+                credentials = await self.integration.get_credentials_async()
             except NotAuthorizedError as e:
                 logger.error(f"{self.name.capitalize()} App: Authorization error when fetching credentials: {e.message}")
                 raise
@@ -65,7 +64,7 @@ class FirecrawlApp(APIApplication):
         assert self._firecrawl_api_key is not None
         return self._firecrawl_api_key
 
-    def _get_client(self) -> AsyncFirecrawl:
+    async def get_firecrawl_client(self) -> AsyncFirecrawl:
         """
         Initializes and returns the Firecrawl client after ensuring API key is set.
         Raises NotAuthorizedError if API key cannot be obtained or SDK is not installed.
@@ -73,7 +72,7 @@ class FirecrawlApp(APIApplication):
         if FirecrawlApiClient is None:
             logger.error("Firecrawl SDK (firecrawl-py) is not available.")
             raise ToolError("Firecrawl SDK (firecrawl-py) is not installed or failed to import.")
-        current_api_key = self.firecrawl_api_key
+        current_api_key = await self.get_firecrawl_api_key()
         return FirecrawlApiClient(api_key=current_api_key)
 
     def _handle_firecrawl_exception(self, e: Exception, operation_desc: str) -> str:
@@ -161,7 +160,7 @@ class FirecrawlApp(APIApplication):
         """
         logger.info(f"Attempting to scrape URL: {url} with schema: {schema is not None}, prompt: {prompt is not None}")
         try:
-            client = self._get_client()
+            client = await self.get_firecrawl_client()
             
             # Construct formats if schema or prompt is provided (V2 structured output)
             if schema or prompt:
@@ -212,7 +211,7 @@ class FirecrawlApp(APIApplication):
         """
         logger.info(f"Attempting Firecrawl search for query: {query}")
         try:
-            client = self._get_client()
+            client = await self.get_firecrawl_client()
             response = await client.search(query=query)
             logger.info(f"Successfully performed Firecrawl search for query: {query}")
             return self._to_serializable(response)
@@ -250,7 +249,7 @@ class FirecrawlApp(APIApplication):
         """
         logger.info(f"Attempting to start Firecrawl crawl for URL: {url} with limit: {limit}")
         try:
-            client = self._get_client()
+            client = await self.get_firecrawl_client()
             response = await client.start_crawl(url=url, limit=limit, scrape_options=scrape_options)
             job_id = response.id
             logger.info(f"Successfully started Firecrawl crawl for URL {url}, Job ID: {job_id}")
@@ -282,7 +281,7 @@ class FirecrawlApp(APIApplication):
         """
         logger.info(f"Attempting to check Firecrawl crawl status for job ID: {job_id}")
         try:
-            client = self._get_client()
+            client = await self.get_firecrawl_client()
             status = await client.get_crawl_status(job_id=job_id)
             logger.info(f"Successfully checked Firecrawl crawl status for job ID: {job_id}")
             return self._to_serializable(status)
@@ -314,7 +313,7 @@ class FirecrawlApp(APIApplication):
         """
         logger.info(f"Attempting to cancel Firecrawl crawl job ID: {job_id}")
         try:
-            client = self._get_client()
+            client = await self.get_firecrawl_client()
             response = await client.cancel_crawl(crawl_id=job_id)
             logger.info(f"Successfully issued cancel command for Firecrawl crawl job ID: {job_id}")
             return self._to_serializable(response)
@@ -345,7 +344,7 @@ class FirecrawlApp(APIApplication):
         """
         logger.info(f"Attempting to start Firecrawl batch scrape for {len(urls)} URLs.")
         try:
-            client = self._get_client()
+            client = await self.get_firecrawl_client()
             response = await client.start_batch_scrape(urls=urls)
             logger.info(f"Successfully started Firecrawl batch scrape for {len(urls)} URLs.")
             return self._to_serializable(response)
@@ -376,7 +375,7 @@ class FirecrawlApp(APIApplication):
         """
         logger.info(f"Attempting to check Firecrawl batch scrape status for job ID: {job_id}")
         try:
-            client = self._get_client()
+            client = await self.get_firecrawl_client()
             status = await client.get_batch_scrape_status(job_id=job_id)
             logger.info(f"Successfully checked Firecrawl batch scrape status for job ID: {job_id}")
             return self._to_serializable(status)
@@ -448,7 +447,7 @@ class FirecrawlApp(APIApplication):
             f"Attempting quick web extraction for {len(urls)} URLs with prompt: {prompt is not None}, schema: {schema is not None}."
         )
         try:
-            client = self._get_client()
+            client = await self.get_firecrawl_client()
             response = await client.extract(
                 urls=urls, prompt=prompt, schema=schema, system_prompt=system_prompt, allow_external_links=allow_external_links
             )
@@ -488,7 +487,7 @@ class FirecrawlApp(APIApplication):
         """
         logger.info(f"Attempting to check Firecrawl extraction status for job ID: {job_id}")
         try:
-            client = self._get_client()
+            client = await self.get_firecrawl_client()
             status = await client.get_extract_status(job_id=job_id)
             logger.info(f"Successfully checked Firecrawl extraction status for job ID: {job_id}")
             return self._to_serializable(status)
@@ -520,7 +519,7 @@ class FirecrawlApp(APIApplication):
         """
         logger.info(f"Attempting to map site: {url} with limit: {limit}")
         try:
-            client = self._get_client()
+            client = await self.get_firecrawl_client()
             # client.map signature (async): (url, search=None, ignoreSitemap=None, includeSubdomains=None, limit=None)
             # We expose url and limit for now, maybe more if needed later.
             response = await client.map(url=url, limit=limit)

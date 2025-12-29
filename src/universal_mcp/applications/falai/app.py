@@ -24,13 +24,12 @@ class FalaiApp(APIApplication):
         super().__init__(name="falai", integration=integration, **kwargs)
         self._fal_client = None
 
-    @property
-    def fal_client(self) -> AsyncClient:
+    async def get_fal_client(self) -> AsyncClient:
         """
         A cached property that lazily initializes an `AsyncClient` instance. It retrieves the API key from the configured integration, providing a single, centralized authentication point for all methods that interact with the Fal AI API. Raises `NotAuthorizedError` if credentials are not found.
         """
         if self._fal_client is None:
-            credentials = await self.integration.get_credentials_async_async()
+            credentials = await self.integration.get_credentials_async()
             logger.info(f"Credentials: {credentials}")
             api_key = credentials.get("api_key") or credentials.get("API_KEY") or credentials.get("apiKey")
             if not api_key:
@@ -62,7 +61,8 @@ class FalaiApp(APIApplication):
             run, execute, ai, synchronous, fal, important
         """
         try:
-            result = await self.fal_client.run(application=application, arguments=arguments, path=path, timeout=timeout, hint=hint)
+            client = await self.get_fal_client()
+            result = await client.run(application=application, arguments=arguments, path=path, timeout=timeout, hint=hint)
             return result
         except Exception as e:
             logger.error(f"Error running Fal application {application}: {e}", exc_info=True)
@@ -98,7 +98,8 @@ class FalaiApp(APIApplication):
             submit, async_job, start, ai, queue
         """
         try:
-            handle: AsyncRequestHandle = await self.fal_client.submit(
+            client = await self.get_fal_client()
+            handle: AsyncRequestHandle = await client.submit(
                 application=application, arguments=arguments, path=path, hint=hint, webhook_url=webhook_url, priority=priority
             )
             request_id = handle.request_id
@@ -126,7 +127,8 @@ class FalaiApp(APIApplication):
             status, check, async_job, monitoring, ai
         """
         try:
-            handle = self.fal_client.get_handle(application=application, request_id=request_id)
+            client = await self.get_fal_client()
+            handle = client.get_handle(application=application, request_id=request_id)
             status = await handle.status(with_logs=with_logs)
             return status
         except Exception as e:
@@ -151,7 +153,8 @@ class FalaiApp(APIApplication):
             result, async-job, status, wait, ai
         """
         try:
-            handle = self.fal_client.get_handle(application=application, request_id=request_id)
+            client = await self.get_fal_client()
+            handle = client.get_handle(application=application, request_id=request_id)
             result = await handle.get()
             return result
         except Exception as e:
@@ -176,7 +179,8 @@ class FalaiApp(APIApplication):
             cancel, async_job, ai, fal, management
         """
         try:
-            handle = self.fal_client.get_handle(application=application, request_id=request_id)
+            client = await self.get_fal_client()
+            handle = client.get_handle(application=application, request_id=request_id)
             await handle.cancel()
             return None
         except Exception as e:
@@ -200,7 +204,8 @@ class FalaiApp(APIApplication):
             upload, file, cdn, storage, async, important
         """
         try:
-            file_url = await self.fal_client.upload_file(Path(path))
+            client = await self.get_fal_client()
+            file_url = await client.upload_file(Path(path))
             return file_url
         except FileNotFoundError as e:
             logger.error(f"File not found for upload: {path}", exc_info=True)
@@ -247,8 +252,9 @@ class FalaiApp(APIApplication):
         if extra_arguments:
             arguments.update(extra_arguments)
             logger.debug(f"Merged extra_arguments. Final arguments: {arguments}")
-        try:
-            result = await self.run(application=application, arguments=arguments, path=path, timeout=timeout, hint=hint)
+        try:    
+            client = await self.get_fal_client()
+            result = await client.run(application=application, arguments=arguments, path=path, timeout=timeout, hint=hint)
             return result
         except Exception:
             raise

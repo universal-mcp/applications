@@ -9,7 +9,7 @@ class RocketlaneApp(APIApplication):
         super().__init__(name="rocketlane", integration=integration, **kwargs)
         self.base_url = "https://api.rocketlane.com/api"
 
-    def _get_headers(self) -> dict[str, str]:
+    async def _aget_headers(self) -> dict[str, str]:
         """
         Get the headers for Rocketlane API requests.
         Overrides the base class method to use 'api-key'.
@@ -17,7 +17,7 @@ class RocketlaneApp(APIApplication):
         if not self.integration:
             logger.warning("RocketlaneApp: No integration configured, returning empty headers.")
             return {}
-        credentials = await self.integration.get_credentials_async_async()
+        credentials = await self.integration.get_credentials_async()
         api_key = credentials.get("api_key") or credentials.get("API_KEY") or credentials.get("apiKey")
         if not api_key:
             logger.error("RocketlaneApp: API key not found in integration credentials.")

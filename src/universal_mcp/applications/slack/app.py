@@ -8,7 +8,7 @@ class SlackApp(APIApplication):
         super().__init__(name="slack", integration=integration, **kwargs)
         self.base_url = "https://slack.com/api"
 
-    def _get_headers(self) -> dict[str, str]:
+    async def _aget_headers(self) -> dict[str, str]:
         """
         Get headers for Slack API requests.
         Prioritizes user-scoped access token from raw.authed_user.access_token
@@ -16,7 +16,7 @@ class SlackApp(APIApplication):
         """
         if not self.integration:
             raise ValueError("Integration not configured for SlackApp")
-        credentials = await self.integration.get_credentials_async_async()
+        credentials = await self.integration.get_credentials_async()
         if not credentials:
             raise ValueError("No credentials found for Slack integration")
         access_token = None

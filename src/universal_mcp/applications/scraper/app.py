@@ -16,12 +16,17 @@ class ScraperApp(APIApplication):
 
     def __init__(self, integration: Integration, **kwargs: Any) -> None:
         super().__init__(name="scraper", integration=integration, **kwargs)
+        self._account_id = None
+
+    async def _get_account_id(self) -> str | None:
+        if self._account_id:
+            return self._account_id
         if self.integration:
-            credentials = await self.integration.get_credentials_async_async()
-            self.account_id = credentials.get("account_id")
+            credentials = await self.integration.get_credentials_async()
+            self._account_id = credentials.get("account_id")
         else:
             logger.warning("Integration not found")
-            self.account_id = None
+        return self._account_id
 
     @property
     def base_url(self) -> str:
@@ -43,9 +48,6 @@ class ScraperApp(APIApplication):
         Get the headers for Unipile API requests.
         Overrides the base class method to use X-Api-Key.
         """
-        if not self.integration:
-            logger.warning("UnipileApp: No integration configured, returning empty headers.")
-            return {}
         api_key = os.getenv("UNIPILE_API_KEY")
         if not api_key:
             logger.error("UnipileApp: API key not found in integration credentials for Unipile.")
@@ -76,7 +78,7 @@ class ScraperApp(APIApplication):
             httpx.HTTPError: If the API request fails.
         """
         url = f"{self.base_url}/api/v1/linkedin/search/parameters"
-        params = {"account_id": self.account_id, "keywords": keywords, "type": param_type}
+        params = {"account_id": await self._get_account_id(), "keywords": keywords, "type": param_type}
         response = await self._aget(url, params=params)
         results = self._handle_response(response)
         items = results.get("items", [])
@@ -106,7 +108,7 @@ class ScraperApp(APIApplication):
             linkedin, post, list, user_posts, company_posts, content, api, important
         """
         url = f"{self.base_url}/api/v1/users/{identifier}/posts"
-        params: dict[str, Any] = {"account_id": self.account_id}
+        params: dict[str, Any] = {"account_id": await self._get_account_id()}
         if cursor:
             params["cursor"] = cursor
         if limit:
@@ -133,7 +135,7 @@ class ScraperApp(APIApplication):
             linkedin, user, profile, retrieve, get, api, important
         """
         url = f"{self.base_url}/api/v1/users/{identifier}"
-        params: dict[str, Any] = {"account_id": self.account_id}
+        params: dict[str, Any] = {"account_id": await self._get_account_id()}
         response = await self._aget(url, params=params)
         return self._handle_response(response)
 
@@ -159,7 +161,7 @@ class ScraperApp(APIApplication):
             linkedin, post, comment, list, content, api, important
         """
         url = f"{self.base_url}/api/v1/posts/{post_id}/comments"
-        params: dict[str, Any] = {"account_id": self.account_id}
+        params: dict[str, Any] = {"account_id": await self._get_account_id()}
         if cursor:
             params["cursor"] = cursor
         if limit is not None:
@@ -196,7 +198,7 @@ class ScraperApp(APIApplication):
             httpx.HTTPError: If the API request fails.
         """
         url = f"{self.base_url}/api/v1/linkedin/search"
-        params: dict[str, Any] = {"account_id": self.account_id}
+        params: dict[str, Any] = {"account_id": await self._get_account_id()}
         if cursor:
             params["cursor"] = cursor
         if limit is not None:
@@ -241,7 +243,7 @@ class ScraperApp(APIApplication):
             httpx.HTTPError: If the API request fails.
         """
         url = f"{self.base_url}/api/v1/linkedin/search"
-        params: dict[str, Any] = {"account_id": self.account_id}
+        params: dict[str, Any] = {"account_id": await self._get_account_id()}
         if cursor:
             params["cursor"] = cursor
         if limit is not None:
@@ -283,7 +285,7 @@ class ScraperApp(APIApplication):
             httpx.HTTPError: If the API request fails.
         """
         url = f"{self.base_url}/api/v1/linkedin/search"
-        params: dict[str, Any] = {"account_id": self.account_id}
+        params: dict[str, Any] = {"account_id": await self._get_account_id()}
         if cursor:
             params["cursor"] = cursor
         if limit is not None:
@@ -328,7 +330,7 @@ class ScraperApp(APIApplication):
             ValueError: If the specified location is not found.
         """
         url = f"{self.base_url}/api/v1/linkedin/search"
-        params: dict[str, Any] = {"account_id": self.account_id}
+        params: dict[str, Any] = {"account_id": await self._get_account_id()}
         if cursor:
             params["cursor"] = cursor
         if limit is not None:

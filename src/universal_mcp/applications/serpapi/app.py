@@ -13,8 +13,7 @@ class SerpapiApp(APIApplication):
         self._serpapi_api_key: str | None = None
         self.base_url = "https://serpapi.com/search"
 
-    @property
-    def serpapi_api_key(self) -> str:
+    async def get_serpapi_api_key(self) -> str:
         """
         A property that lazily retrieves the SerpApi API key from the integration and caches it for future use. It fetches credentials on first access, raising a `NotAuthorizedError` if the key is missing. Subsequent calls efficiently return the cached key.
         """
@@ -23,7 +22,7 @@ class SerpapiApp(APIApplication):
                 logger.error("SerpApi App: Integration not configured.")
                 raise NotAuthorizedError("Integration not configured for SerpApi App. Cannot retrieve API key.")
             try:
-                credentials = await self.integration.get_credentials_async_async()
+                credentials = await self.integration.get_credentials_async()
             except NotAuthorizedError as e:
                 logger.error(f"SerpApi App: Authorization error when fetching credentials: {e.message}")
                 raise
@@ -71,9 +70,9 @@ class SerpapiApp(APIApplication):
         """
         request_params = params or {}
         try:
-            current_api_key = self.serpapi_api_key
+            api_key = await self.get_serpapi_api_key()
             logger.info("Attempting SerpApi search.")
-            serpapi_call_params = {"api_key": current_api_key, "engine": "google_light", **request_params}
+            serpapi_call_params = {"api_key": api_key, "engine": "google_light", **request_params}
             search_client = SerpApiSearch(serpapi_call_params)
             data = search_client.get_dict()
             if "error" in data:
@@ -142,7 +141,8 @@ class SerpapiApp(APIApplication):
             google-maps, search, location, places, important
         """
         query_params = {}
-        query_params = {"engine": "google_maps", "api_key": self.serpapi_api_key}
+        api_key = await self.get_serpapi_api_key()
+        query_params = {"engine": "google_maps", "api_key": api_key}
         if q is not None:
             query_params["q"] = q
         if ll is not None:
@@ -176,7 +176,8 @@ class SerpapiApp(APIApplication):
             google-maps, reviews, ratings, places, important
         """
         query_params = {}
-        query_params = {"engine": "google_maps_reviews", "data_id": data_id, "api_key": self.serpapi_api_key}
+        api_key = await self.get_serpapi_api_key()
+        query_params = {"engine": "google_maps_reviews", "data_id": data_id, "api_key": api_key}
         if hl is not None:
             query_params["hl"] = hl
         else:

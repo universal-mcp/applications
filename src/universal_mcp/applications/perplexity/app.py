@@ -18,8 +18,7 @@ class PerplexityApp(APIApplication):
         if AsyncPerplexity is None:
             logger.warning("Perplexity SDK is not available. Perplexity tools will not function.")
 
-    @property
-    def perplexity_api_key(self) -> str:
+    async def get_perplexity_api_key(self) -> str:
         """
         A property that lazily retrieves and caches the Perplexity API key from the configured integration.
         """
@@ -28,7 +27,7 @@ class PerplexityApp(APIApplication):
                 logger.error(f"{self.name.capitalize()} App: Integration not configured.")
                 raise NotAuthorizedError(f"Integration not configured for {self.name.capitalize()} App. Cannot retrieve API key.")
             try:
-                credentials = await self.integration.get_credentials_async_async()
+                credentials = await self.integration.get_credentials_async()
             except NotAuthorizedError as e:
                 logger.error(f"{self.name.capitalize()} App: Authorization error when fetching credentials: {e.message}")
                 raise
@@ -59,14 +58,14 @@ class PerplexityApp(APIApplication):
         assert self._perplexity_api_key is not None
         return self._perplexity_api_key
 
-    def _get_client(self) -> AsyncPerplexity:
+    async def _get_client(self) -> AsyncPerplexity:
         """
         Initializes and returns the Perplexity client after ensuring API key is set.
         """
         if AsyncPerplexity is None:
             logger.error("Perplexity SDK is not available.")
             raise ToolError("Perplexity SDK is not installed or failed to import.")
-        current_api_key = self.perplexity_api_key
+        current_api_key = await self.get_perplexity_api_key()
         return AsyncPerplexity(api_key=current_api_key)
 
     async def answer_with_search(
@@ -149,7 +148,7 @@ class PerplexityApp(APIApplication):
             messages.append({"role": "system", "content": system_prompt})
         messages.append({"role": "user", "content": query})
 
-        client = self._get_client()
+        client = await self._get_client()
         # client.chat.completions.create supports response_format
         kwargs: dict[str, Any] = {
             "model": model,
@@ -187,7 +186,7 @@ class PerplexityApp(APIApplication):
         Tags:
             search, web, research, citations, current events, important
         """
-        client = self._get_client()
+        client = await self._get_client()
         response = await client.search.create(
             query=query,
             max_results=max_results,

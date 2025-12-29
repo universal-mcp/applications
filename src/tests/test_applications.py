@@ -18,7 +18,7 @@ ALL_APPS = [
     "clickup",
     "coda",
     "confluence",  # not seeded
-    "contentful",  # not seeded
+    # "contentful",  # not seeded
     "crustdata",
     "dialpad",  # not seeded
     "digitalocean",
@@ -32,7 +32,7 @@ ALL_APPS = [
     "firecrawl",
     "fireflies",
     "fpl",
-    "ghost_content",
+    # "ghost_content",
     "github",
     "gong",
     "google_calendar",
@@ -67,7 +67,7 @@ ALL_APPS = [
     "rocketlane",
     "scraper",
     "semanticscholar",
-    "semrush",  # not seeded
+    # "semrush",  # not seeded
     "sendgrid",
     "sentry",
     "serpapi",

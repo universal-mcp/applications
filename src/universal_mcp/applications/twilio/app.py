@@ -27,8 +27,7 @@ class TwilioApp(APIApplication):
         if TwilioClient is None:
             logger.warning("Twilio SDK is not available. Twilio tools will not function.")
 
-    @property
-    def account_sid(self) -> str:
+    async def account_sid(self) -> str:
         """
         Retrieves and caches the Twilio Account SID from the integration credentials.
         """
@@ -36,7 +35,7 @@ class TwilioApp(APIApplication):
             if not self.integration:
                 raise NotAuthorizedError("Integration not configured for Twilio App.")
             try:
-                credentials = await self.integration.get_credentials_async_async()
+                credentials = await self.integration.get_credentials_async()
             except Exception as e:
                 raise NotAuthorizedError(f"Failed to get Twilio credentials: {e}")
             sid = credentials.get("account_sid") or credentials.get("ACCOUNT_SID") or credentials.get("TWILIO_ACCOUNT_SID")
@@ -45,8 +44,7 @@ class TwilioApp(APIApplication):
             self._account_sid = sid
         return self._account_sid
 
-    @property
-    def auth_token(self) -> str:
+    async def auth_token(self) -> str:
         """
         Retrieves and caches the Twilio Auth Token from the integration credentials.
         """
@@ -54,7 +52,7 @@ class TwilioApp(APIApplication):
             if not self.integration:
                 raise NotAuthorizedError("Integration not configured for Twilio App.")
             try:
-                credentials = await self.integration.get_credentials_async_async()
+                credentials = await self.integration.get_credentials_async()
             except Exception as e:
                 raise NotAuthorizedError(f"Failed to get Twilio credentials: {e}")
             token = credentials.get("auth_token") or credentials.get("AUTH_TOKEN") or credentials.get("TWILIO_AUTH_TOKEN")
@@ -63,15 +61,14 @@ class TwilioApp(APIApplication):
             self._auth_token = token
         return self._auth_token
 
-    @property
-    def twilio_client(self) -> Any:
+    async def twilio_client(self) -> Any:
         """
         Returns a cached Twilio Client instance.
         """
         if self._twilio_client is None:
             if TwilioClient is None:
                 raise ToolError("Twilio SDK is not installed.")
-            self._twilio_client = TwilioClient(self.account_sid, self.auth_token)
+            self._twilio_client = TwilioClient(await self.account_sid, await self.auth_token)
         return self._twilio_client
 
     async def create_message(self, from_: str, to: str, body: str) -> dict[str, Any]:
@@ -94,7 +91,8 @@ class TwilioApp(APIApplication):
             create, message, sms, mms, send, twilio, api, important
         """
         try:
-            message = self.twilio_client.messages.create(from_=from_, to=to, body=body)
+            client = await self.twilio_client()
+            message = await client.messages.create(from_=from_, to=to, body=body)
             return {
                 "sid": message.sid,
                 "status": message.status,
@@ -130,7 +128,8 @@ class TwilioApp(APIApplication):
             fetch, message, sms, mms, read, twilio, api, important
         """
         try:
-            message = self.twilio_client.messages(message_sid).fetch()
+            client = await self.twilio_client()
+            message = await client.messages(message_sid).fetch()
             return {
                 "sid": message.sid,
                 "status": message.status,
@@ -175,7 +174,8 @@ class TwilioApp(APIApplication):
                 params["date_sent_before"] = date_sent_before
             if date_sent_after:
                 params["date_sent_after"] = date_sent_after
-            messages = self.twilio_client.messages.list(**params)
+            client = await self.twilio_client()
+            messages = await client.messages.list(**params)
             result = []
             for msg in messages:
                 result.append(
@@ -216,7 +216,8 @@ class TwilioApp(APIApplication):
             delete, message, sms, mms, remove, twilio, api, important
         """
         try:
-            result = self.twilio_client.messages(message_sid).delete()
+            client = await self.twilio_client()
+            result = await client.messages(message_sid).delete()
             return bool(result)
         except Exception as e:
             if "Authenticate" in str(e) or "401" in str(e):

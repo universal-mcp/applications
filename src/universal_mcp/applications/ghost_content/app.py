@@ -21,7 +21,7 @@ class GhostContentApp(APIApplication):
                          and Content API key.
                          It is expected that the integration provides 'url' (e.g.,
                          "https://your-ghost-site.com") and 'key' (the Content API key)
-                         via `integration.get_credentials_async_async()`.
+                         via `integration.get_credentials_async()`.
         """
         super().__init__(name="ghost_content", integration=integration)
         self._base_url = None
@@ -35,7 +35,7 @@ class GhostContentApp(APIApplication):
         This is constructed from the integration's credentials.
         """
         if not self._base_url:
-            credentials = await self.integration.get_credentials_async_async()
+            credentials = await self.integration.get_credentials_async()
             ghost_url = credentials.get("url") or credentials.get("admin_domain")
             if not ghost_url:
                 logger.error("GhostContentApp: Missing 'url' or 'admin_domain' in integration credentials.")
@@ -63,7 +63,7 @@ class GhostContentApp(APIApplication):
         Caches the key after the first retrieval.
         """
         if not self._api_key:
-            credentials = await self.integration.get_credentials_async_async()
+            credentials = await self.integration.get_credentials_async()
             api_key = credentials.get("key") or credentials.get("api_key") or credentials.get("API_KEY")
             if not api_key:
                 logger.error("GhostContentApp: Content API key ('key') not found in integration credentials.")
@@ -78,7 +78,7 @@ class GhostContentApp(APIApplication):
         Caches the version after the first retrieval.
         """
         if not self._version:
-            credentials = await self.integration.get_credentials_async_async()
+            credentials = await self.integration.get_credentials_async()
             version = credentials.get("api_version")
             if not version:
                 logger.warning("GhostContentApp: 'version' not found in integration credentials. Defaulting to 'v5.0'.")

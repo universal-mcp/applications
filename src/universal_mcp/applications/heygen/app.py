@@ -8,8 +8,8 @@ class HeygenApp(APIApplication):
         super().__init__(name="heygen", integration=integration, **kwargs)
         self.base_url = "https://api.heygen.com"
 
-    def _get_headers(self) -> dict[str, Any]:
-        credentials = await self.integration.get_credentials_async_async()
+    async def _aget_headers(self) -> dict[str, Any]:
+        credentials = await self.integration.get_credentials_async()
         api_key = credentials.get("api_key") or credentials.get("API_KEY") or credentials.get("apiKey")
         return {"x-api-key": f"{api_key}", "Content-Type": "application/json", "Accept": "application/json"}
 

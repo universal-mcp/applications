@@ -10,15 +10,14 @@ class ResendApp(APIApplication):
         super().__init__(name="resend", integration=integration, **kwargs)
         self._api_key = None
 
-    @property
-    def api_key(self) -> str:
+    async def get_api_key(self) -> str:
         """
         A property that lazily retrieves, validates, and caches the Resend API key from integration credentials. On first access, it configures the `resend` library, raising an error if authentication fails. This ensures the application is authenticated for all subsequent API calls within the class.
         """
         if self._api_key is None:
             if not self.integration:
                 raise NotAuthorizedError("Resend integration not configured.")
-            credentials = await self.integration.get_credentials_async_async()
+            credentials = await self.integration.get_credentials_async()
             api_key = credentials.get("api_key") or credentials.get("API_KEY") or credentials.get("apiKey")
             if not api_key:
                 raise NotAuthorizedError("Resend API key not found in credentials.")
@@ -45,7 +44,7 @@ class ResendApp(APIApplication):
         Tags:
             send, email, api, communication, important
         """
-        self.api_key
+        api_key = await self.get_api_key()
         params: resend.Emails.SendParams = {"from": from_email, "to": to_emails, "subject": subject, "text": text}
         try:
             email = resend.Emails.send(params)
@@ -69,7 +68,7 @@ class ResendApp(APIApplication):
         Tags:
             batch, send, emails, resend-api
         """
-        self.api_key
+        api_key = await self.get_api_key()
         if not 1 <= len(emails) <= 100:
             raise ToolError("The number of emails in a batch must be between 1 and 100.")
         params: list[resend.Emails.SendParams] = emails
@@ -95,7 +94,7 @@ class ResendApp(APIApplication):
         Tags:
             retrieve, email, management
         """
-        self.api_key
+        api_key = await self.get_api_key()
         try:
             email = resend.Emails.get(email_id=email_id)
             return email
@@ -119,7 +118,7 @@ class ResendApp(APIApplication):
         Tags:
             update, email, async_job, management
         """
-        self.api_key
+        api_key = await self.get_api_key()
         params: resend.Emails.UpdateParams = {"id": email_id, "scheduled_at": scheduled_at}
         try:
             response = resend.Emails.update(params=params)
@@ -143,7 +142,7 @@ class ResendApp(APIApplication):
         Tags:
             cancel, email, management
         """
-        self.api_key
+        api_key = await self.get_api_key()
         try:
             response = resend.Emails.cancel(email_id=email_id)
             return response
@@ -166,7 +165,7 @@ class ResendApp(APIApplication):
         Tags:
             create, domain, management, api, batch, important
         """
-        self.api_key
+        api_key = await self.get_api_key()
         params: resend.Domains.CreateParams = {"name": name}
         try:
             domain = resend.Domains.create(params)
@@ -190,7 +189,7 @@ class ResendApp(APIApplication):
         Tags:
             retrieve, domain, management
         """
-        self.api_key
+        api_key = await self.get_api_key()
         try:
             domain = resend.Domains.get(domain_id=domain_id)
             return domain
@@ -213,7 +212,7 @@ class ResendApp(APIApplication):
         Tags:
             verify, domain
         """
-        self.api_key
+        api_key = await self.get_api_key()
         try:
             response = resend.Domains.verify(domain_id=domain_id)
             return response
@@ -241,7 +240,7 @@ class ResendApp(APIApplication):
         Tags:
             update, domain, management
         """
-        self.api_key
+        api_key = await self.get_api_key()
         params: resend.Domains.UpdateParams = {"id": domain_id}
         if open_tracking is not None:
             params["open_tracking"] = open_tracking
@@ -268,7 +267,7 @@ class ResendApp(APIApplication):
         Tags:
             list, domains, important, management
         """
-        self.api_key
+        api_key = await self.get_api_key()
         try:
             domains = resend.Domains.list()
             return domains
@@ -291,7 +290,7 @@ class ResendApp(APIApplication):
         Tags:
             remove, management, api, domain
         """
-        self.api_key
+        api_key = await self.get_api_key()
         try:
             response = resend.Domains.remove(domain_id=domain_id)
             return response
@@ -314,7 +313,7 @@ class ResendApp(APIApplication):
         Tags:
             create, api-key, authentication
         """
-        self.api_key
+        api_key = await self.get_api_key()
         params: resend.ApiKeys.CreateParams = {"name": name}
         try:
             api_key_obj = resend.ApiKeys.create(params)
@@ -338,7 +337,7 @@ class ResendApp(APIApplication):
         Tags:
             list, api, important
         """
-        self.api_key
+        api_key = await self.get_api_key()
         try:
             keys = resend.ApiKeys.list()
             return keys
@@ -361,7 +360,7 @@ class ResendApp(APIApplication):
         Tags:
             remove, api-key, management
         """
-        self.api_key
+        api_key = await self.get_api_key()
         try:
             response = resend.ApiKeys.remove(api_key_id=api_key_id)
             return response
@@ -387,7 +386,7 @@ class ResendApp(APIApplication):
         Tags:
             broadcast, email, important
         """
-        self.api_key
+        api_key = await self.get_api_key()
         params: resend.Broadcasts.CreateParams = {"audience_id": audience_id, "from": from_email, "subject": subject, "html": html}
         try:
             broadcast = resend.Broadcasts.create(params)
@@ -411,7 +410,7 @@ class ResendApp(APIApplication):
         Tags:
             retrieve, broadcast
         """
-        self.api_key
+        api_key = await self.get_api_key()
         try:
             broadcast = resend.Broadcasts.get(id=broadcast_id)
             return broadcast
@@ -436,7 +435,7 @@ class ResendApp(APIApplication):
         Tags:
             update, management, broadcast, api
         """
-        self.api_key
+        api_key = await self.get_api_key()
         params: resend.Broadcasts.UpdateParams = {"id": broadcast_id}
         if html is not None:
             params["html"] = html
@@ -467,7 +466,7 @@ class ResendApp(APIApplication):
         Tags:
             broadcast, send, api, management
         """
-        self.api_key
+        api_key = await self.get_api_key()
         params: resend.Broadcasts.SendParams = {"broadcast_id": broadcast_id}
         if scheduled_at:
             params["scheduled_at"] = scheduled_at
@@ -493,7 +492,7 @@ class ResendApp(APIApplication):
         Tags:
             remove, broadcast, api-management, draft-status
         """
-        self.api_key
+        api_key = await self.get_api_key()
         try:
             response = resend.Broadcasts.remove(id=broadcast_id)
             return response
@@ -513,7 +512,7 @@ class ResendApp(APIApplication):
         Tags:
             list, broadcast, api, management, important
         """
-        self.api_key
+        api_key = await self.get_api_key()
         try:
             broadcasts = resend.Broadcasts.list()
             return broadcasts
@@ -536,7 +535,7 @@ class ResendApp(APIApplication):
         Tags:
             create, audience, management, important
         """
-        self.api_key
+        api_key = await self.get_api_key()
         params: resend.Audiences.CreateParams = {"name": name}
         try:
             audience = resend.Audiences.create(params)
@@ -560,7 +559,7 @@ class ResendApp(APIApplication):
         Tags:
             fetch, audience, management, api
         """
-        self.api_key
+        api_key = await self.get_api_key()
         try:
             audience = resend.Audiences.get(id=audience_id)
             return audience
@@ -583,7 +582,7 @@ class ResendApp(APIApplication):
         Tags:
             remove, audience, management, api
         """
-        self.api_key
+        api_key = await self.get_api_key()
         try:
             response = resend.Audiences.remove(id=audience_id)
             return response
@@ -603,7 +602,7 @@ class ResendApp(APIApplication):
         Tags:
             list, audiences, management, important
         """
-        self.api_key
+        api_key = await self.get_api_key()
         try:
             audiences = resend.Audiences.list()
             return audiences
@@ -632,7 +631,7 @@ class ResendApp(APIApplication):
         Tags:
             create, contact, management, important
         """
-        self.api_key
+        api_key = await self.get_api_key()
         params: resend.Contacts.CreateParams = {"audience_id": audience_id, "email": email, "unsubscribed": unsubscribed}
         if first_name:
             params["first_name"] = first_name
@@ -662,7 +661,7 @@ class ResendApp(APIApplication):
         Tags:
             retrieve, contact, audience, management, api
         """
-        self.api_key
+        api_key = await self.get_api_key()
         if not (contact_id or email) or (contact_id and email):
             raise ToolError("You must provide exactly one of 'contact_id' or 'email'.")
         params = {"audience_id": audience_id}
@@ -705,7 +704,7 @@ class ResendApp(APIApplication):
         Tags:
             update, contact, management
         """
-        self.api_key
+        api_key = await self.get_api_key()
         if not (contact_id or email) or (contact_id and email):
             raise ToolError("You must provide exactly one of 'contact_id' or 'email' to identify the contact.")
         params: resend.Contacts.UpdateParams = {"audience_id": audience_id}
@@ -745,7 +744,7 @@ class ResendApp(APIApplication):
         Tags:
             remove, contact-management, api-call
         """
-        self.api_key
+        api_key = await self.get_api_key()
         if not (contact_id or email) or (contact_id and email):
             raise ToolError("You must provide exactly one of 'contact_id' or 'email'.")
         params = {"audience_id": audience_id}
@@ -775,7 +774,7 @@ class ResendApp(APIApplication):
         Tags:
             list, contacts, management, important
         """
-        self.api_key
+        api_key = await self.get_api_key()
         try:
             contacts = resend.Contacts.list(audience_id=audience_id)
             return contacts

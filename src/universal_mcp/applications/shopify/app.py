@@ -7,16 +7,15 @@ from universal_mcp.integrations import Integration
 class ShopifyApp(APIApplication):
     def __init__(self, integration: Integration = None, **kwargs) -> None:
         super().__init__(name="shopify", integration=integration, **kwargs)
-        self.base_url = None
+        self._base_url = None
 
-    @property
-    def base_url(self) -> str:
+    async def get_base_url(self) -> str:
         """
         Get the base URL for the Shopify API.
         This is constructed from the integration's credentials.
         """
         if not self._base_url:
-            credentials = await self.integration.get_credentials_async_async()
+            credentials = await self.integration.get_credentials_async()
             subdomain = credentials.get("subdomain")
             if not subdomain:
                 logger.error("Integration credentials must include 'subdomain'.")
@@ -24,8 +23,7 @@ class ShopifyApp(APIApplication):
             self._base_url = f"https://{subdomain}.myshopify.com"
         return self._base_url
 
-    @base_url.setter
-    def base_url(self, base_url: str) -> None:
+    def set_base_url(self, base_url: str) -> None:
         """
         Set the base URL for the Shopify API.
         This is useful for testing or if the base URL changes.
@@ -50,7 +48,7 @@ class ShopifyApp(APIApplication):
         Tags:
             Access, AccessScope
         """
-        url = f"{self.base_url}/admin/oauth/access_scopes.json"
+        url = f"{await self.get_base_url()}/admin/oauth/access_scopes.json"
         query_params = {}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()

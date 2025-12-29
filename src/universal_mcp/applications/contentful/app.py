@@ -16,7 +16,7 @@ class ContentfulApp(GraphQLApplication):
         default_base_url = "https://graphql.contentful.com"
         super().__init__(name="contentful", base_url=default_base_url, integration=integration, **kwargs)
 
-    def _load_credentials_and_construct_url(self) -> bool:
+    async def _load_credentials_and_construct_url(self) -> bool:
         """
         Loads credentials from the integration, constructs the precise API URL,
         and prepares the instance for API calls. Runs only once.
@@ -32,7 +32,7 @@ class ContentfulApp(GraphQLApplication):
             self._credentials_loaded = True
             return False
         try:
-            credentials = await self.integration.get_credentials_async_async()
+            credentials = await self.integration.get_credentials_async()
         except NotAuthorizedError as e:
             logger.error(f"Authorization required or credentials unavailable for Contentful: {e.message}")
             self._credentials_loaded = True
@@ -85,10 +85,10 @@ class ContentfulApp(GraphQLApplication):
             return s[0].upper() + s[1:] if len(s) > 1 else s.upper()
         return "".join((word.capitalize() for word in parts))
 
-    def _ensure_loaded(self) -> bool:
+    async def _ensure_loaded(self) -> bool:
         """Internal helper to trigger lazy loading and check status."""
         if not self._credentials_loaded:
-            return self._load_credentials_and_construct_url()
+            return await self._load_credentials_and_construct_url()
         return bool(self.base_url and self.space_id and self._access_token)
 
     async def get_entry(

@@ -10,10 +10,10 @@ class GithubApp(APIApplication):
         self.base_api_url = "https://api.github.com/repos"
         self.base_url = "https://api.github.com"
 
-    def _get_headers(self):
+    async def _aget_headers(self):
         if not self.integration:
             raise ValueError("Integration not configured")
-        credentials = await self.integration.get_credentials_async_async()
+        credentials = await self.integration.get_credentials_async()
         if "headers" in credentials:
             return credentials["headers"]
         return {"Authorization": f"Bearer {credentials['access_token']}", "Accept": "application/vnd.github.v3+json"}

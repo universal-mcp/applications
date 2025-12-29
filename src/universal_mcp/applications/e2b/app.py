@@ -25,8 +25,7 @@ class E2bApp(APIApplication):
         if Sandbox is None:
             logger.warning("E2B Sandbox SDK is not available. E2B tools will not function.")
 
-    @property
-    def e2b_api_key(self) -> str:
+    async def get_e2b_api_key(self) -> str:
         """
         A property that lazily retrieves and caches the E2B API key from the configured integration. It fetches the key on the first call, handles authentication failures, and raises `NotAuthorizedError` with actionable guidance if the key cannot be obtained.
         """
@@ -35,7 +34,7 @@ class E2bApp(APIApplication):
                 logger.error("E2B App: Integration not configured.")
                 raise NotAuthorizedError("Integration not configured for E2B App. Cannot retrieve API key.")
             try:
-                credentials = await self.integration.get_credentials_async_async()
+                credentials = await self.integration.get_credentials_async()
             except NotAuthorizedError as e:
                 logger.error(f"E2B App: Authorization error when fetching credentials: {e.message}")
                 raise
@@ -111,7 +110,7 @@ class E2bApp(APIApplication):
             raise ValueError("Provided code must be a non-empty string.")
         try:
             logger.info("Attempting to execute Python code in E2B Sandbox.")
-            os.environ["E2B_API_KEY"] = self.e2b_api_key
+            os.environ["E2B_API_KEY"] = await self.get_e2b_api_key()
             with Sandbox.create() as sandbox:
                 logger.info("E2B Sandbox initialized. Running code.")
                 execution = sandbox.run_code(code)

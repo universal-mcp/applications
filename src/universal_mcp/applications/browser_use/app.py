@@ -11,13 +11,12 @@ class BrowserUseApp(APIApplication):
         super().__init__(name="browser_use", integration=integration, **kwargs)
         self._browser_client = None
 
-    @property
-    def browser_client(self) -> AsyncBrowserUse:
+    async def get_client(self) -> AsyncBrowserUse:
         if self._browser_client is not None:
             return self._browser_client
         if not self.integration:
             raise ValueError("Integration is required but not provided")
-        credentials = await self.integration.get_credentials_async_async()
+        credentials = await self.integration.get_credentials_async()
         api_key = credentials.get("api_key") or credentials.get("API_KEY") or credentials.get("apiKey")
         if not api_key:
             raise ValueError("API key not found in integration credentials")
@@ -61,7 +60,8 @@ class BrowserUseApp(APIApplication):
         Tags:
             browser, automation, background, task, web, research, create, important
         """
-        created_task = await self.browser_client.tasks.create_task(
+        client = await self.get_client()
+        created_task = await client.tasks.create_task(
             llm=llm, task=task, max_steps=max_steps, session_id=session_id
         )
 
@@ -83,7 +83,8 @@ class BrowserUseApp(APIApplication):
         Tags:
             status, poll, browser, task, monitoring, output, important
         """
-        task = await self.browser_client.tasks.get_task(task_id)
+        client = await self.get_client()
+        task = await client.tasks.get_task(task_id)
         return task.model_dump()
 
     async def list_tasks(
@@ -102,7 +103,8 @@ class BrowserUseApp(APIApplication):
         Tags:
             list, history, browser, tasks, audit
         """
-        tasks = await self.browser_client.tasks.list_tasks(page_size=page_size)
+        client = await self.get_client()
+        tasks = await client.tasks.list_tasks(page_size=page_size)
         return tasks.model_dump()
 
     async def stop_task(
@@ -121,7 +123,8 @@ class BrowserUseApp(APIApplication):
         Tags:
             stop, cancel, browser, task, control
         """
-        updated_task = await self.browser_client.tasks.update_task(task_id, action="stop")
+        client = await self.get_client()
+        updated_task = await client.tasks.update_task(task_id, action="stop")
         return updated_task.model_dump()
 
     def list_tools(self):

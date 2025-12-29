@@ -16,7 +16,7 @@ class SemrushApp(APIApplication):
     def _get_headers(self):
         if not self.integration:
             raise ValueError("Integration not found")
-        credentials = await self.integration.get_credentials_async_async()
+        credentials = await self.integration.get_credentials_async()
         if "api_key" in credentials:
             self.api_key = credentials["api_key"]
         return {}

@@ -26,8 +26,7 @@ class ExaApp(APIApplication):
         super().__init__(name="exa", integration=integration, **kwargs)
         self._exa_client: AsyncExa | None = None
 
-    @property
-    def exa_client(self) -> AsyncExa:
+    async def get_exa_client(self) -> AsyncExa:
         """
         Lazily initializes and returns the Exa client.
         """
@@ -38,7 +37,7 @@ class ExaApp(APIApplication):
             if not self.integration:
                 raise NotAuthorizedError("Exa App: Integration not configured.")
 
-            credentials = await self.integration.get_credentials_async_async()
+            credentials = await self.integration.get_credentials_async()
             api_key = credentials.get("api_key") or credentials.get("API_KEY") or credentials.get("apiKey")
 
             if not api_key:
@@ -140,7 +139,8 @@ class ExaApp(APIApplication):
         if context:
             contents["context"] = context
 
-        response = await self.exa_client.search(
+        client = await self.get_exa_client()
+        response = await client.search(
             query=query,
             num_results=num_results,
             include_domains=include_domains,
@@ -218,7 +218,8 @@ class ExaApp(APIApplication):
         if summary:
             contents["summary"] = summary
 
-        response = await self.exa_client.find_similar(
+        client = await self.get_exa_client()
+        response = await client.find_similar(
             url=url,
             num_results=num_results,
             include_domains=include_domains,
@@ -276,7 +277,8 @@ class ExaApp(APIApplication):
             content, fetch, crawl, subpages, extract
         """
         logger.info(f"Exa get_contents for {len(urls)} URLs.")
-        response = await self.exa_client.get_contents(
+        client = await self.get_exa_client()
+        response = await client.get_contents(
             urls=urls,
             text=text,
             summary=summary,
@@ -320,7 +322,8 @@ class ExaApp(APIApplication):
             answer, synthesis, knowledge, citations, research, important
         """
         logger.info(f"Exa answer for query: {query}")
-        response = await self.exa_client.answer(
+        client = await self.get_exa_client()
+        response = await client.answer(
             query=query,
             text=text,
             system_prompt=system_prompt,
@@ -356,7 +359,8 @@ class ExaApp(APIApplication):
             research, task, async, create
         """
         logger.info(f"Exa create_research_task: {instructions}")
-        response = await self.exa_client.research.create(
+        client = await self.get_exa_client()
+        response = await client.research.create(
             instructions=instructions,
             output_schema=output_schema,
             model=model,
@@ -378,7 +382,8 @@ class ExaApp(APIApplication):
             research, status, task, check
         """
         logger.info(f"Exa get_research_task: {task_id}")
-        response = await self.exa_client.research.get(research_id=task_id, events=events)
+        client = await self.get_exa_client()
+        response = await client.research.get(research_id=task_id, events=events)
         return self._to_serializable(response)
 
     async def poll_research_task(
@@ -405,7 +410,8 @@ class ExaApp(APIApplication):
             research, poll, wait, task, terminal
         """
         logger.info(f"Exa poll_research_task: {task_id}")
-        response = await self.exa_client.research.poll_until_finished(
+        client = await self.get_exa_client()
+        response = await client.research.poll_until_finished(
             research_id=task_id,
             poll_interval=poll_interval_ms,
             timeout_ms=timeout_ms,
@@ -432,7 +438,8 @@ class ExaApp(APIApplication):
             research, list, tasks, history
         """
         logger.info(f"Exa list_research_tasks (limit: {limit})")
-        response = await self.exa_client.research.list(cursor=cursor, limit=limit)
+        client = await self.get_exa_client()
+        response = await client.research.list(cursor=cursor, limit=limit)
         return self._to_serializable(response)
 
     def list_tools(self):

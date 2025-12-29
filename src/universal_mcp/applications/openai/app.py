@@ -28,7 +28,7 @@ class OpenaiApp(APIApplication):
         """Initializes and returns the AsyncOpenAI client."""
         if not self.integration:
             raise ValueError("Integration not provided for OpenaiApp.")
-        creds = await self.integration.get_credentials_async_async()
+        creds = await self.integration.get_credentials_async()
         api_key = creds.get("api_key")
         organization = creds.get("organization")
         project = creds.get("project")

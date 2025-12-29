@@ -9,7 +9,7 @@ class ApolloApp(APIApplication):
         super().__init__(name="apollo", integration=integration, **kwargs)
         self.base_url = "https://api.apollo.io/api/v1"
 
-    def _get_headers(self) -> dict[str, str]:
+    async def _aget_headers(self) -> dict[str, str]:
         """
         Get the headers for Apollo API requests.
         Overrides the base class method to use X-Api-Key.
@@ -17,7 +17,7 @@ class ApolloApp(APIApplication):
         if not self.integration:
             logger.warning("ApolloApp: No integration configured, returning empty headers.")
             return {}
-        credentials = await self.integration.get_credentials_async_async()
+        credentials = await self.integration.get_credentials_async()
         api_key = credentials.get("api_key") or credentials.get("API_KEY") or credentials.get("apiKey")
         if not api_key:
             logger.error("ApolloApp: API key not found in integration credentials for Apollo.")

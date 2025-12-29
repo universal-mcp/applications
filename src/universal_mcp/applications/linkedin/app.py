@@ -20,16 +20,22 @@ class LinkedinApp(APIApplication):
         Args:
             integration: The integration configuration containing credentials and other settings.
                          It is expected that the integration provides the 'x-api-key'
-                         via headers in `integration.get_credentials_async_async()`, e.g.,
+                         via headers in `integration.get_credentials_async()`, e.g.,
                          `{"headers": {"x-api-key": "YOUR_API_KEY"}}`.
         """
         super().__init__(name="linkedin", integration=integration)
         self._base_url = None
-        self.account_id = None
+        self._account_id = None
+
+    async def _get_account_id(self) -> str | None:
+        if self._account_id:
+            return self._account_id
         if self.integration:
-            credentials = await self.integration.get_credentials_async_async()
-            if credentials:
-                self.account_id = credentials.get("account_id")
+            credentials = await self.integration.get_credentials_async()
+            self._account_id = credentials.get("account_id")
+        else:
+            logger.warning("Integration not found")
+        return self._account_id
 
     @property
     def base_url(self) -> str:
@@ -84,7 +90,7 @@ class LinkedinApp(APIApplication):
             httpx.HTTPError: If the API request fails.
         """
         url = f"{self.base_url}/api/v1/linkedin/search/parameters"
-        params = {"account_id": self.account_id, "keywords": keywords, "type": param_type}
+        params = {"account_id": await self._get_account_id(), "keywords": keywords, "type": param_type}
         response = await self._aget(url, params=params)
         results = self._handle_response(response)
         items = results.get("items", [])
@@ -115,7 +121,7 @@ class LinkedinApp(APIApplication):
             linkedin, chat, create, start, new, messaging, api, important
         """
         url = f"{self.base_url}/api/v1/chats"
-        form_payload = {"account_id": (None, self.account_id), "text": (None, text), "attendees_ids": (None, provider_id)}
+        form_payload = {"account_id": (None, await self._get_account_id()), "text": (None, text), "attendees_ids": (None, provider_id)}
         api_key = os.getenv("UNIPILE_API_KEY")
         if not api_key:
             raise ValueError("UNIPILE_API_KEY environment variable is not set.")
@@ -154,7 +160,7 @@ class LinkedinApp(APIApplication):
         """
         url = f"{self.base_url}/api/v1/chats"
         params: dict[str, Any] = {}
-        params["account_id"] = self.account_id
+        params["account_id"] = await self._get_account_id()
         if unread is not None:
             params["unread"] = unread
         if cursor:
@@ -255,8 +261,8 @@ class LinkedinApp(APIApplication):
         """
         url = f"{self.base_url}/api/v1/chats/{chat_id}"
         params: dict[str, Any] = {}
-        if self.account_id:
-            params["account_id"] = self.account_id
+        if await self._get_account_id():
+            params["account_id"] = await self._get_account_id()
         response = await self._aget(url, params=params)
         return self._handle_response(response)
 
@@ -299,8 +305,8 @@ class LinkedinApp(APIApplication):
             params["limit"] = limit
         if sender_id:
             params["sender_id"] = sender_id
-        if self.account_id:
-            params["account_id"] = self.account_id
+        if await self._get_account_id():
+            params["account_id"] = await self._get_account_id()
         response = await self._aget(url, params=params)
         return self._handle_response(response)
 
@@ -326,7 +332,7 @@ class LinkedinApp(APIApplication):
             linkedin, post, list, user_posts, company_posts, content, api, important
         """
         url = f"{self.base_url}/api/v1/users/{identifier}/posts"
-        params: dict[str, Any] = {"account_id": self.account_id}
+        params: dict[str, Any] = {"account_id": await self._get_account_id()}
         if cursor:
             params["cursor"] = cursor
         if limit:
@@ -350,7 +356,7 @@ class LinkedinApp(APIApplication):
             linkedin, user, profile, me, retrieve, get, api
         """
         url = f"{self.base_url}/api/v1/users/me"
-        params: dict[str, Any] = {"account_id": self.account_id}
+        params: dict[str, Any] = {"account_id": await self._get_account_id()}
         response = await self._aget(url, params=params)
         return self._handle_response(response)
 
@@ -371,7 +377,7 @@ class LinkedinApp(APIApplication):
             linkedin, post, retrieve, get, content, api, important
         """
         url = f"{self.base_url}/api/v1/posts/{post_id}"
-        params: dict[str, Any] = {"account_id": self.account_id}
+        params: dict[str, Any] = {"account_id": await self._get_account_id()}
         response = await self._aget(url, params=params)
         return self._handle_response(response)
 
@@ -397,7 +403,7 @@ class LinkedinApp(APIApplication):
             linkedin, post, comment, list, content, api, important
         """
         url = f"{self.base_url}/api/v1/posts/{post_id}/comments"
-        params: dict[str, Any] = {"account_id": self.account_id}
+        params: dict[str, Any] = {"account_id": await self._get_account_id()}
         if cursor:
             params["cursor"] = cursor
         if limit is not None:
@@ -429,7 +435,7 @@ class LinkedinApp(APIApplication):
             linkedin, post, create, share, content, api, important
         """
         url = f"{self.base_url}/api/v1/posts"
-        params: dict[str, str] = {"account_id": self.account_id, "text": text}
+        params: dict[str, str] = {"account_id": await self._get_account_id(), "text": text}
         if mentions:
             params["mentions"] = mentions
         if external_link:
@@ -459,7 +465,7 @@ class LinkedinApp(APIApplication):
             linkedin, post, reaction, list, like, content, api
         """
         url = f"{self.base_url}/api/v1/posts/{post_id}/reactions"
-        params: dict[str, Any] = {"account_id": self.account_id}
+        params: dict[str, Any] = {"account_id": await self._get_account_id()}
         if cursor:
             params["cursor"] = cursor
         if limit:
@@ -492,7 +498,7 @@ class LinkedinApp(APIApplication):
             linkedin, post, comment, create, content, api, important
         """
         url = f"{self.base_url}/api/v1/posts/{post_social_id}/comments"
-        params: dict[str, Any] = {"account_id": self.account_id, "text": text}
+        params: dict[str, Any] = {"account_id": await self._get_account_id(), "text": text}
         if comment_id:
             params["comment_id"] = comment_id
         if mentions_body:
@@ -524,7 +530,7 @@ class LinkedinApp(APIApplication):
             linkedin, post, reaction, create, like, content, api, important
         """
         url = f"{self.base_url}/api/v1/posts/reaction"
-        params: dict[str, str] = {"account_id": self.account_id, "post_id": post_social_id, "reaction_type": reaction_type}
+        params: dict[str, str] = {"account_id": await self._get_account_id(), "post_id": post_social_id, "reaction_type": reaction_type}
         if comment_id:
             params["comment_id"] = comment_id
         response = await self._apost(url, data=params)
@@ -547,7 +553,7 @@ class LinkedinApp(APIApplication):
             linkedin, user, profile, retrieve, get, api, important
         """
         url = f"{self.base_url}/api/v1/users/{public_identifier}"
-        params: dict[str, Any] = {"account_id": self.account_id}
+        params: dict[str, Any] = {"account_id": await self._get_account_id()}
         response = await self._aget(url, params=params)
         return self._handle_response(response)
 
@@ -578,7 +584,7 @@ class LinkedinApp(APIApplication):
             httpx.HTTPError: If the API request fails.
         """
         url = f"{self.base_url}/api/v1/linkedin/search"
-        params: dict[str, Any] = {"account_id": self.account_id}
+        params: dict[str, Any] = {"account_id": await self._get_account_id()}
         if cursor:
             params["cursor"] = cursor
         if limit is not None:
@@ -623,7 +629,7 @@ class LinkedinApp(APIApplication):
             httpx.HTTPError: If the API request fails.
         """
         url = f"{self.base_url}/api/v1/linkedin/search"
-        params: dict[str, Any] = {"account_id": self.account_id}
+        params: dict[str, Any] = {"account_id": await self._get_account_id()}
         if cursor:
             params["cursor"] = cursor
         if limit is not None:
@@ -665,7 +671,7 @@ class LinkedinApp(APIApplication):
             httpx.HTTPError: If the API request fails.
         """
         url = f"{self.base_url}/api/v1/linkedin/search"
-        params: dict[str, Any] = {"account_id": self.account_id}
+        params: dict[str, Any] = {"account_id": await self._get_account_id()}
         if cursor:
             params["cursor"] = cursor
         if limit is not None:
@@ -710,7 +716,7 @@ class LinkedinApp(APIApplication):
             ValueError: If the specified location is not found.
         """
         url = f"{self.base_url}/api/v1/linkedin/search"
-        params: dict[str, Any] = {"account_id": self.account_id}
+        params: dict[str, Any] = {"account_id": await self._get_account_id()}
         if cursor:
             params["cursor"] = cursor
         if limit is not None:
@@ -753,7 +759,7 @@ class LinkedinApp(APIApplication):
             linkedin, user, invite, connect, contact, api, important
         """
         url = f"{self.base_url}/api/v1/users/invite"
-        payload: dict[str, Any] = {"account_id": self.account_id, "provider_id": provider_id}
+        payload: dict[str, Any] = {"account_id": await self._get_account_id(), "provider_id": provider_id}
         if user_email:
             payload["user_email"] = user_email
         if message:
@@ -781,7 +787,7 @@ class LinkedinApp(APIApplication):
             linkedin, user, invite, sent, list, contacts, api
         """
         url = f"{self.base_url}/api/v1/users/invite/sent"
-        params: dict[str, Any] = {"account_id": self.account_id}
+        params: dict[str, Any] = {"account_id": await self._get_account_id()}
         if cursor:
             params["cursor"] = cursor
         if limit is not None:
@@ -807,7 +813,7 @@ class LinkedinApp(APIApplication):
             linkedin, user, invite, received, list, contacts, api
         """
         url = f"{self.base_url}/api/v1/users/invite/received"
-        params: dict[str, Any] = {"account_id": self.account_id}
+        params: dict[str, Any] = {"account_id": await self._get_account_id()}
         if cursor:
             params["cursor"] = cursor
         if limit is not None:
@@ -836,7 +842,7 @@ class LinkedinApp(APIApplication):
             linkedin, user, invite, received, handle, accept, decline, api
         """
         url = f"{self.base_url}/api/v1/users/invite/received/{invitation_id}"
-        payload: dict[str, Any] = {"provider": "LINKEDIN", "action": action, "shared_secret": shared_secret, "account_id": self.account_id}
+        payload: dict[str, Any] = {"provider": "LINKEDIN", "action": action, "shared_secret": shared_secret, "account_id": await self._get_account_id()}
         response = await self._apost(url, data=payload)
         return self._handle_response(response)
 
@@ -857,7 +863,7 @@ class LinkedinApp(APIApplication):
             linkedin, user, invite, sent, cancel, delete, api
         """
         url = f"{self.base_url}/api/v1/users/invite/sent/{invitation_id}"
-        params = {"account_id": self.account_id}
+        params = {"account_id": await self._get_account_id()}
         response = await self._adelete(url, params=params)
         return self._handle_response(response)
 
@@ -879,7 +885,7 @@ class LinkedinApp(APIApplication):
             linkedin, user, followers, list, contacts, api
         """
         url = f"{self.base_url}/api/v1/users/followers"
-        params: dict[str, Any] = {"account_id": self.account_id}
+        params: dict[str, Any] = {"account_id": await self._get_account_id()}
         if cursor:
             params["cursor"] = cursor
         if limit is not None:
@@ -905,7 +911,7 @@ class LinkedinApp(APIApplication):
             linkedin, user, following, list, contacts, api
         """
         url = f"{self.base_url}/api/v1/users/following"
-        params: dict[str, Any] = {"account_id": self.account_id}
+        params: dict[str, Any] = {"account_id": await self._get_account_id()}
         if cursor:
             params["cursor"] = cursor
         if limit is not None:

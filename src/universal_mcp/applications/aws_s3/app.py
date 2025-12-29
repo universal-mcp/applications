@@ -25,15 +25,14 @@ class AwsS3App(BaseApplication):
         self._client = client
         self.integration = integration
 
-    @property
-    def client(self):
+    async def get_client(self):
         """
         Lazily initializes and returns a cached Boto3 S3 client instance. It retrieves authentication credentials from the associated `integration` object. This property is the core mechanism used by all other methods in the class to interact with AWS S3, raising an error if the integration is not set.
         """
         if not self.integration:
             raise ValueError("Integration not initialized")
         if not self._client:
-            credentials = await self.integration.get_credentials_async_async()
+            credentials = await self.integration.get_credentials_async()
             credentials = {
                 "aws_access_key_id": credentials.get("access_key_id") or credentials.get("username"),
                 "aws_secret_access_key": credentials.get("secret_access_key") or credentials.get("password"),
@@ -42,14 +41,15 @@ class AwsS3App(BaseApplication):
             self._client = boto3.client("s3", **credentials)
         return self._client
 
-    def list_buckets(self) -> list[str]:
+    async def list_buckets(self) -> list[str]:
         """
         Retrieves all S3 buckets accessible by the configured AWS credentials. It calls the S3 API's list_buckets operation and processes the response to return a simple list containing just the names of the buckets.
 
         Returns:
             List[str]: A list of bucket names.
         """
-        response = self.client.list_buckets()
+        client = await self.get_client()
+        response = await client.list_buckets()
         return [bucket["Name"] for bucket in response["Buckets"]]
 
     async def create_bucket(self, bucket_name: str, region: str | None = None) -> bool:
@@ -66,10 +66,11 @@ class AwsS3App(BaseApplication):
             important
         """
         try:
+            client = await self.get_client()
             if region:
-                self.client.create_bucket(Bucket=bucket_name, CreateBucketConfiguration={"LocationConstraint": region})
+                await client.create_bucket(Bucket=bucket_name, CreateBucketConfiguration={"LocationConstraint": region})
             else:
-                self.client.create_bucket(Bucket=bucket_name)
+                await client.create_bucket(Bucket=bucket_name)
             return True
         except ClientError:
             return False
@@ -87,7 +88,8 @@ class AwsS3App(BaseApplication):
             important
         """
         try:
-            self.client.delete_bucket(Bucket=bucket_name)
+            client = await self.get_client()
+            await client.delete_bucket(Bucket=bucket_name)
             return True
         except ClientError:
             return False
@@ -105,7 +107,8 @@ class AwsS3App(BaseApplication):
             important
         """
         try:
-            response = self.client.get_bucket_policy(Bucket=bucket_name)
+            client = await self.get_client()
+            response = await client.get_bucket_policy(Bucket=bucket_name)
             return json.loads(response["Policy"])
         except ClientError as e:
             return {"error": str(e)}
@@ -124,7 +127,8 @@ class AwsS3App(BaseApplication):
             important
         """
         try:
-            self.client.put_bucket_policy(Bucket=bucket_name, Policy=json.dumps(policy))
+            client = await self.get_client()
+            await client.put_bucket_policy(Bucket=bucket_name, Policy=json.dumps(policy))
             return True
         except ClientError:
             return False
@@ -142,7 +146,7 @@ class AwsS3App(BaseApplication):
         Tags:
             important
         """
-        paginator = self.client.get_paginator("list_objects_v2")
+        paginator = (await self.get_client()).get_paginator("list_objects_v2")
         operation_parameters = {"Bucket": bucket_name}
         if prefix:
             operation_parameters["Prefix"] = prefix
@@ -173,7 +177,7 @@ class AwsS3App(BaseApplication):
             key = f"{parent_prefix.rstrip('/')}/{prefix_name}/"
         else:
             key = f"{prefix_name}/"
-        self.client.put_object(Bucket=bucket_name, Key=key)
+        await (await self.get_client()).put_object(Bucket=bucket_name, Key=key)
         return True
 
     async def list_objects(self, bucket_name: str, prefix: str) -> list[dict[str, Any]]:
@@ -189,7 +193,8 @@ class AwsS3App(BaseApplication):
         Tags:
             important
         """
-        paginator = self.client.get_paginator("list_objects_v2")
+        client = await self.get_client()
+        paginator = client.get_paginator("list_objects_v2")
         operation_parameters = {"Bucket": bucket_name, "Prefix": prefix}
         objects = []
         for page in paginator.paginate(**operation_parameters):
@@ -223,7 +228,8 @@ class AwsS3App(BaseApplication):
             important
         """
         key = f"{prefix.rstrip('/')}/{object_name}" if prefix else object_name
-        self.client.put_object(Bucket=bucket_name, Key=key, Body=content.encode("utf-8"))
+        client = await self.get_client()
+        await client.put_object(Bucket=bucket_name, Key=key, Body=content.encode("utf-8"))
         return True
 
     async def put_object_from_base64(self, bucket_name: str, prefix: str, object_name: str, base64_content: str) -> bool:
@@ -244,7 +250,8 @@ class AwsS3App(BaseApplication):
         try:
             key = f"{prefix.rstrip('/')}/{object_name}" if prefix else object_name
             content = base64.b64decode(base64_content)
-            self.client.put_object(Bucket=bucket_name, Key=key, Body=content)
+            client = await self.get_client()
+            await client.put_object(Bucket=bucket_name, Key=key, Body=content)
             return True
         except Exception:
             return False
@@ -263,7 +270,8 @@ class AwsS3App(BaseApplication):
             important
         """
         try:
-            obj = self.client.get_object(Bucket=bucket_name, Key=key)
+            client = await self.get_client()
+            obj = await client.get_object(Bucket=bucket_name, Key=key)
             content = obj["Body"].read()
             is_text_file = key.lower().endswith((".txt", ".csv", ".json", ".xml", ".html", ".md", ".js", ".css", ".py"))
             content_dict = (
@@ -287,7 +295,8 @@ class AwsS3App(BaseApplication):
             important
         """
         try:
-            response = self.client.head_object(Bucket=bucket_name, Key=key)
+            client = await self.get_client()
+            response = await client.head_object(Bucket=bucket_name, Key=key)
             return {
                 "key": key,
                 "name": key.split("/")[-1],
@@ -375,7 +384,8 @@ class AwsS3App(BaseApplication):
         """
         try:
             delete_dict = {"Objects": [{"Key": key} for key in keys]}
-            response = self.client.delete_objects(Bucket=bucket_name, Delete=delete_dict)
+            client = await self.get_client()
+            response = await client.delete_objects(Bucket=bucket_name, Delete=delete_dict)
             return {
                 "deleted": [obj.get("Key") for obj in response.get("Deleted", [])],
                 "errors": [obj for obj in response.get("Errors", [])],
@@ -400,7 +410,8 @@ class AwsS3App(BaseApplication):
         """
         try:
             method_map = {"GET": "get_object", "PUT": "put_object", "DELETE": "delete_object"}
-            response = self.client.generate_presigned_url(
+            client = await self.get_client()
+            response = await client.generate_presigned_url(
                 method_map.get(http_method.upper(), "get_object"), Params={"Bucket": bucket_name, "Key": key}, ExpiresIn=expiration
             )
             return response

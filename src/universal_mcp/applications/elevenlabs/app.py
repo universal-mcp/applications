@@ -13,13 +13,12 @@ class ElevenlabsApp(APIApplication):
         super().__init__(name="elevenlabs", integration=integration, **kwargs)
         self.base_url = "https://api.elevenlabs.io"
 
-    @property
-    def client(self) -> ElevenLabs:
+    async def get_client(self) -> ElevenLabs:
         """
         A property that lazily initializes and returns an authenticated `ElevenLabs` SDK client. On first access, it retrieves the API key from integration credentials and caches the instance, raising a `NotAuthorizedError` if credentials are not found.
         """
         if self._client is None:
-            credentials = await self.integration.get_credentials_async_async()
+            credentials = await self.integration.get_credentials_async()
             if not credentials:
                 raise NotAuthorizedError("No credentials found")
             api_key = credentials.get("api_key") or credentials.get("API_KEY") or credentials.get("apiKey")
@@ -47,7 +46,8 @@ class ElevenlabsApp(APIApplication):
         Tags:
             important
         """
-        audio_generator = self.client.text_to_speech.convert(text=text, voice_id=voice_id, model_id=model_id, output_format="mp3_44100_128")
+        client = await self.get_client()
+        audio_generator = client.text_to_speech.convert(text=text, voice_id=voice_id, model_id=model_id, output_format="mp3_44100_128")
         audio_data = b""
         for chunk in audio_generator:
             audio_data += chunk
@@ -67,7 +67,8 @@ class ElevenlabsApp(APIApplication):
         Tags:
             important
         """
-        transcription = self.client.speech_to_text.convert(
+        client = await self.get_client()
+        transcription = client.speech_to_text.convert(
             file=audio_file_path, model_id="scribe_v1", tag_audio_events=True, language_code=language_code, diarize=diarize
         )
         return transcription
@@ -91,7 +92,8 @@ class ElevenlabsApp(APIApplication):
         """
         response = requests.get(audio_url)
         audio_data = BytesIO(response.content)
-        response = self.client.speech_to_speech.convert(
+        client = await self.get_client()
+        response = client.speech_to_speech.convert(
             voice_id=voice_id, audio=audio_data, model_id=model_id, output_format="mp3_44100_128"
         )
         return response.content

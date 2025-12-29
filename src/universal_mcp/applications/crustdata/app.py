@@ -8,8 +8,8 @@ class CrustdataApp(APIApplication):
         super().__init__(name="crustdata", integration=integration, **kwargs)
         self.base_url = "https://api.crustdata.com"
 
-    def _get_headers(self) -> dict[str, Any]:
-        api_key = await self.integration.get_credentials_async_async().get("api_key")
+    async def _aget_headers(self) -> dict[str, Any]:
+        api_key = await self.integration.get_credentials_async().get("api_key")
         return {"Authorization": f"Token {api_key}", "Content-Type": "application/json", "Accept": "application/json"}
 
     async def screen_companies(self, metrics, filters, offset, count, sorts) -> dict[str, Any]:

@@ -12,9 +12,9 @@ class RedditApp(APIApplication):
         self.base_api_url = "https://oauth.reddit.com"
         self.base_url = "https://oauth.reddit.com"
 
-    def _post(self, url, data):
+    async def _apost(self, url, data):
         try:
-            headers = self._get_headers()
+            headers = await self._aget_headers()
             response = httpx.post(url, headers=headers, data=data)
             response.raise_for_status()
             return response
@@ -30,10 +30,10 @@ class RedditApp(APIApplication):
             logger.error(f"Error posting {url}: {e}")
             raise e
 
-    def _get_headers(self):
+    async def _aget_headers(self):
         if not self.integration:
             raise ValueError("Integration not configured for RedditApp")
-        credentials = await self.integration.get_credentials_async_async()
+        credentials = await self.integration.get_credentials_async()
         if "access_token" not in credentials:
             logger.error("Reddit credentials found but missing 'access_token'.")
             raise ValueError("Invalid Reddit credentials format.")

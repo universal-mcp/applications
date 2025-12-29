@@ -8,10 +8,10 @@ class KlaviyoApp(APIApplication):
         super().__init__(name="klaviyo", integration=integration, **kwargs)
         self.base_url = "https://a.klaviyo.com"
 
-    def _get_headers(self):
+    async def _aget_headers(self):
         if not self.integration:
             raise ValueError("Integration not configured for KlaviyoApp")
-        credentials = await self.integration.get_credentials_async_async()
+        credentials = await self.integration.get_credentials_async()
         if "headers" in credentials:
             return credentials["headers"]
         if "access_token" not in credentials:

@@ -16,11 +16,10 @@ class GoogleGeminiApp(APIApplication):
         super().__init__(name="google_gemini", integration=integration, **kwargs)
         self._genai_client = None
 
-    @property
-    def genai_client(self) -> genai.Client:
+    async def get_genai_client(self) -> genai.Client:
         if self._genai_client is not None:
             return self._genai_client
-        credentials = await self.integration.get_credentials_async_async()
+        credentials = await self.integration.get_credentials_async()
         api_key = credentials.get("api_key") or credentials.get("API_KEY") or credentials.get("apiKey")
         if not api_key:
             raise ValueError("API key not found in integration credentials")
@@ -54,7 +53,8 @@ class GoogleGeminiApp(APIApplication):
         Tags:
             text, generate, llm, important
         """
-        response = self.genai_client.models.generate_content(contents=prompt, model=model)
+        client = await self.get_genai_client()
+        response = client.models.generate_content(contents=prompt, model=model)
         return response.text
 
     async def generate_image(
@@ -92,6 +92,7 @@ class GoogleGeminiApp(APIApplication):
         Tags:
             image, generate, vision, important
         """
+        client = await self.get_genai_client()
         contents = [prompt]
         if images:
             for image in images:
@@ -104,7 +105,7 @@ class GoogleGeminiApp(APIApplication):
                 else:
                     image = Image.open(image)
                 contents.append(image)
-        response = self.genai_client.models.generate_content(model=model, contents=contents)
+        response = client.models.generate_content(model=model, contents=contents)
         candidate = response.candidates[0]
         text = ""
         for part in candidate.content.parts:
@@ -145,6 +146,7 @@ class GoogleGeminiApp(APIApplication):
         Tags:
             audio, generate, tts, speech, important
         """
+        client = await self.get_genai_client()
 
         def wave_file(filename, pcm, channels=1, rate=24000, sample_width=2):
             with wave.open(filename, "wb") as wf:
@@ -153,7 +155,7 @@ class GoogleGeminiApp(APIApplication):
                 wf.setframerate(rate)
                 wf.writeframes(pcm)
 
-        response = self.genai_client.models.generate_content(
+        response = client.models.generate_content(
             model=model,
             contents=prompt,
             config=types.GenerateContentConfig(
