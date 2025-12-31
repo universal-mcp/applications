@@ -61,10 +61,7 @@ class GoogleGeminiApp(APIApplication):
         self,
         prompt: Annotated[str, "The prompt to generate image from"],
         images: Annotated[list[str], "The reference image URLs"] | None = None,
-        model: Literal[
-            "gemini-3-pro-image-preview",
-            "gemini-2.5-flash-image"
-        ] = "gemini-2.5-flash-image",
+        model: Literal["gemini-3-pro-image-preview", "gemini-2.5-flash-image"] = "gemini-2.5-flash-image",
     ) -> dict:
         """
         Generates an image based on a text prompt and an optional reference image using the Google Gemini model.
@@ -74,7 +71,7 @@ class GoogleGeminiApp(APIApplication):
         Args:
             prompt (str): The descriptive text prompt to guide the image generation. For example: "A futuristic city at sunset with flying cars."
             images (list[str], optional): An optional list of URLs to reference images. These images will be used as a basis for the generation.
-            model (str, optional): The Gemini model to use for image generation. Defaults to "gemini-2.5-flash-image". 
+            model (str, optional): The Gemini model to use for image generation. Defaults to "gemini-2.5-flash-image".
 
         Returns:
             dict: A dictionary containing:
@@ -120,11 +117,8 @@ class GoogleGeminiApp(APIApplication):
     async def generate_audio(
         self,
         prompt: Annotated[str, "The prompt to generate audio from"],
-        model: Literal[
-            "gemini-2.5-flash-preview-tts",
-            "gemini-2.5-pro-preview-tts"
-        ] = "gemini-2.5-flash-preview-tts",
-    ) -> str:  
+        model: Literal["gemini-2.5-flash-preview-tts", "gemini-2.5-pro-preview-tts"] = "gemini-2.5-flash-preview-tts",
+    ) -> str:
         """Generates audio from a given text prompt using the Google Gemini model's Text-to-Speech (TTS) capabilities.
         This tool is useful for converting text into spoken audio, which can be used for voiceovers, accessibility features, or interactive applications.
         It returns a dictionary containing the generated audio data (base64 encoded), its MIME type, and a suggested file name.
@@ -176,8 +170,56 @@ class GoogleGeminiApp(APIApplication):
         audio_base64 = base64.b64encode(data).decode("utf-8")
         return {"type": "audio", "data": audio_base64, "mime_type": "audio/wav", "file_name": file_name}
 
+    async def analyze_image(
+        self,
+        images: Annotated[list[str], "The reference image URLs"],
+        prompt: Annotated[str, "The prompt to describe or ask about the image"] = "Describe this image",
+        model: Literal["gemini-2.5-flash", "gemini-2.5-pro"] = "gemini-2.5-flash",
+    ) -> str:
+        """
+        Analyzes one or more images based on a text prompt using the Google Gemini model.
+        This tool is capable of describing images, answering questions about them, or performing visual reasoning.
+        It accepts image URLs and a text prompt, returning a natural language response.
+
+        Args:
+            images (list[str]): A list of URLs for the images to be analyzed.
+            prompt (str, optional): The text prompt or question about the images. Defaults to "Describe this image".
+            model (str, optional): The Gemini model to use for analysis. Defaults to "gemini-2.5-flash".
+
+        Returns:
+            str: The generated text response containing the analysis or description of the images.
+
+        Raises:
+            requests.exceptions.RequestException: If there's an issue fetching a remote image.
+            FileNotFoundError: If a local image path is invalid.
+            Exception: If the underlying Gemini API call fails.
+
+        Tags:
+            image, analyze, vision, describe, question, important
+        """
+        client = await self.get_genai_client()
+        contents = [prompt]
+        if images:
+            for image in images:
+                if image.startswith(("http://", "https://")):
+                    import requests
+
+                    response = requests.get(image)
+                    response.raise_for_status()
+                    image = Image.open(io.BytesIO(response.content))
+                else:
+                    image = Image.open(image)
+                contents.append(image)
+        response = client.models.generate_content(model=model, contents=contents)
+        return response.text
+
     def list_tools(self):
-        return [self.generate_text, self.generate_image, self.generate_audio]
+        return [
+            self.generate_text,
+            self.generate_image,
+            self.analyze_image,
+            self.generate_audio,
+        ]
 
 
 async def test_google_gemini():
