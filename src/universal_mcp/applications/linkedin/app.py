@@ -311,16 +311,16 @@ class LinkedinApp(APIApplication):
         return self._handle_response(response)
 
     async def list_profile_posts(
-        self, identifier: str, cursor: str | None = None, limit: int | None = None, is_company: bool | None = None
+        self, provider_id: str, cursor: str | None = None, limit: int | None = None, is_company: bool | None = None
     ) -> dict[str, Any]:
         """
         Retrieves a paginated list of posts from a specific user or company profile using their provider ID. An authorizing `account_id` is required, and the `is_company` flag must specify the entity type, distinguishing this from `retrieve_post` which fetches a single post by its own ID.
 
         Args:
-            identifier: The entity's provider internal ID (LinkedIn ID).
+            provider_id: The entity's provider internal ID (LinkedIn ID).
             cursor: Pagination cursor.
-            limit: Number of items to return (1-100, as per Unipile example, though spec allows up to 250).
-            is_company: Boolean indicating if the identifier is for a company.
+            limit: Number of items to return (1-100).
+            is_company: Boolean indicating if the provider_id is for a company.
 
         Returns:
             A dictionary containing a list of post objects and pagination details.
@@ -331,7 +331,7 @@ class LinkedinApp(APIApplication):
         Tags:
             linkedin, post, list, user_posts, company_posts, content, api, important
         """
-        url = f"{self.base_url}/api/v1/users/{identifier}/posts"
+        url = f"{self.base_url}/api/v1/users/{provider_id}/posts"
         params: dict[str, Any] = {"account_id": await self._get_account_id()}
         if cursor:
             params["cursor"] = cursor
@@ -339,6 +339,33 @@ class LinkedinApp(APIApplication):
             params["limit"] = limit
         if is_company is not None:
             params["is_company"] = is_company
+        response = await self._aget(url, params=params)
+        return self._handle_response(response)
+
+    async def list_profile_comments(self, provider_id: str, limit: int | None = None, cursor: str | None = None) -> dict[str, Any]:
+        """
+        Retrieves a list of comments made by a specific user using their provider ID.
+
+        Args:
+            provider_id: The entity's provider internal ID (LinkedIn ID).
+            limit: Number of items to return (1-100).
+            cursor: Pagination cursor.
+
+        Returns:
+            A dictionary containing the list of comments.
+
+        Raises:
+            httpx.HTTPError: If the API request fails.
+
+        Tags:
+            linkedin, user, comments, list, content, api
+        """
+        url = f"{self.base_url}/api/v1/users/{provider_id}/comments"
+        params: dict[str, Any] = {"account_id": await self._get_account_id()}
+        if cursor:
+            params["cursor"] = cursor
+        if limit:
+            params["limit"] = limit
         response = await self._aget(url, params=params)
         return self._handle_response(response)
 
@@ -453,7 +480,7 @@ class LinkedinApp(APIApplication):
             post_id: The social ID of the post.
             comment_id: If provided, retrieves reactions for this comment ID.
             cursor: Pagination cursor.
-            limit: Number of reactions to return (1-100, spec max 250).
+            limit: Number of reactions to return (1-100).
 
         Returns:
             A dictionary containing a list of reaction objects and pagination details.
@@ -928,6 +955,7 @@ class LinkedinApp(APIApplication):
             self.retrieve_chat,
             self.list_all_messages,
             self.list_profile_posts,
+            self.list_profile_comments,
             self.retrieve_own_profile,
             self.retrieve_user_profile,
             self.retrieve_post,
