@@ -299,21 +299,23 @@ class MsTeamsApp(APIApplication):
         self,
         chat_id: str,
         top: int | None = None,
-        orderby: list[str] | None = None,
+        orderby: list[Literal["lastModifiedDateTime desc", "createdDateTime desc"]] | None = None,
         filter: str | None = None,
     ) -> dict[str, Any]:
         """
         Retrieves messages from a specific chat using its ID.
-        Supported OData parameters:
-        - $top: Page size.
-        - $orderby: Order by specific fields (e.g. 'createdDateTime desc').
-        - $filter: Filter by range (e.g. 'lastModifiedDateTime gt 2024-01-01T00:00:00Z').
+        
+        Supported OData parameters with strict limitations:
+        - $top: Controls the number of items per response. Maximum allowed value is 50.
+        - $orderby: Currently supports 'lastModifiedDateTime desc' (default) and 'createdDateTime desc'. Ascending order is NOT supported.
+        - $filter: Sets the date range filter for 'lastModifiedDateTime' (supports gt/lt) and 'createdDateTime' (supports lt). 
+          Note: You can only filter results if 'orderby' is configured for the same property!
 
         Args:
             chat_id (string): The unique identifier of the chat.
-            top (integer): Show only the first n items Example: '50'.
-            orderby (array): Order items by property values.
-            filter (string): Filter items by property values.
+            top (integer): Show only the first n items. Max 50.
+            orderby (array): Order items by property values. Restrict to supported descending sorts.
+            filter (string): Filter items by property values. Must match orderby property.
 
         Returns:
             dict[str, Any]: Retrieved collection of messages.
