@@ -304,7 +304,7 @@ class MsTeamsApp(APIApplication):
             HTTPStatusError: If the API request fails due to invalid ID, permissions, etc.
 
         Tags:
-            chats.chatMessage, create, send
+            chats.chatMessage, create, send, important
         """
         if chat_id is None:
             raise ValueError("Missing required parameter 'chat-id'.")
