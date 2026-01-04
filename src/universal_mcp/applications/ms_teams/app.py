@@ -51,6 +51,165 @@ class MsTeamsApp(APIApplication):
         response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
+    async def create_chat(
+        self,
+        chatType: Literal["oneOnOne", "group"] | str,
+        members: list[dict[str, Any]],
+        topic: str | None = None,
+    ) -> dict[str, Any]:
+        """
+        Creates a new one-on-one or group chat in Microsoft Teams. This function provisions a new conversation using required parameters like chatType and members.
+
+        Args:
+            chatType (string): The type of chat. Possible values are: oneOnOne, group.
+            members (array): A collection of member dictionaries. For oneOnOne chats, typically 2 users. For group chats, multiple users. Each member should specify roles and user binding (e.g. `{'@odata.type': '#microsoft.graph.aadUserConversationMember', 'roles': ['owner'], 'user@odata.bind': 'https://graph.microsoft.com/v1.0/users(\\'<user-id>\\')'}`).
+            topic (string): (Optional) Subject or topic for the chat. Only available for group chats.
+
+        Returns:
+            dict[str, Any]: The newly created chat entity.
+
+        Raises:
+            HTTPStatusError: Raised when the API request fails with detailed error information including status code and response body.
+
+        Tags:
+            chats.chat, create
+        """
+        request_body_data = {
+            "chatType": chatType,
+            "members": members,
+            "topic": topic,
+        }
+        # Filter explicitly None values, though for required ones they should be validated by type hints/caller
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
+        
+        url = f"{self.base_url}/chats"
+        response = await self._apost(url, data=request_body_data, content_type="application/json")
+        return self._handle_response(response)
+
+    async def get_chat_details(
+        self,
+        chat_id: str,
+    ) -> Any:
+        """
+        Retrieves the properties and relationships of a specific chat conversation by its unique ID.
+
+        Args:
+            chat_id (string): The unique identifier of the chat.
+
+        Returns:
+            Any: Retrieved entity
+
+        Raises:
+            HTTPStatusError: Raised when the API request fails with detailed error information including status code and response body.
+
+        Tags:
+            chats.chat, read
+        """
+        if chat_id is None:
+            raise ValueError("Missing required parameter 'chat-id'.")
+        url = f"{self.base_url}/chats/{chat_id}"
+        response = await self._aget(url)
+        return self._handle_response(response)
+
+    async def update_chat_details(
+        self,
+        chat_id: str,
+        topic: str | None = None,
+    ) -> Any:
+        """
+        Updates properties of a specific chat, such as its topic, using its unique ID. This function performs a partial update (PATCH). Currently, only the 'topic' property can be updated for group chats.
+
+        Args:
+            chat_id (string): The unique identifier of the chat.
+            topic (string): (Optional) The new subject or topic for the chat. Only applicable for group chats.
+
+        Returns:
+            Any: Variable response depending on the API, typically the updated entity or status.
+
+        Raises:
+            HTTPStatusError: Raised when the API request fails with detailed error information including status code and response body.
+
+        Tags:
+            chats.chat, update
+        """
+        if chat_id is None:
+            raise ValueError("Missing required parameter 'chat-id'.")
+        
+        request_body_data = {"topic": topic}
+        # Filter explicitly None values
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
+        
+        if not request_body_data:
+             raise ValueError("No updateable parameters provided.")
+
+        url = f"{self.base_url}/chats/{chat_id}"
+        response = await self._apatch(url, data=request_body_data, content_type="application/json")
+        return self._handle_response(response)
+
+    async def list_chat_members(
+        self,
+        chat_id: str,
+    ) -> list[dict[str, Any]]:
+        """
+        Retrieves a collection of all members in a specific chat using its ID.
+        Note: The Microsoft Graph API for getting chat members does NOT support OData query parameters like $top, $filter, etc.
+
+        Args:
+            chat_id (string): The unique identifier of the chat.
+
+        Returns:
+            list[dict[str, Any]]: A list of conversationMember objects.
+
+        Raises:
+            HTTPStatusError: Raised when the API request fails with detailed error information including status code and response body.
+
+        Tags:
+            chats.conversationMember, list, read
+        """
+        if chat_id is None:
+            raise ValueError("Missing required parameter 'chat-id'.")
+        url = f"{self.base_url}/chats/{chat_id}/members"
+        
+        # This endpoint generally does not support OData params, so we send none.
+        response = await self._aget(url)
+        data = self._handle_response(response)
+        return data.get("value", [])
+
+    async def get_chat_member(
+        self, chat_id: str, conversationMember_id: str, select: list[str] | None = None, expand: list[str] | None = None
+    ) -> Any:
+        """
+        Retrieves detailed information for a specific member within a chat using their unique ID. This function targets a single individual, distinguishing it from `list_chat_members` which returns all members. The response can be customized by selecting specific properties or expanding related entities.
+
+        Args:
+            chat_id (string): chat-id
+            conversationMember_id (string): conversationMember-id
+            select (array): Select properties to be returned
+            expand (array): Expand related entities
+
+        Returns:
+            Any: Retrieved navigation property
+
+        Raises:
+            HTTPStatusError: Raised when the API request fails with detailed error information including status code and response body.
+
+        Tags:
+            chats.conversationMember
+        """
+        if chat_id is None:
+            raise ValueError("Missing required parameter 'chat-id'.")
+        if conversationMember_id is None:
+            raise ValueError("Missing required parameter 'conversationMember-id'.")
+        url = f"{self.base_url}/chats/{chat_id}/members/{conversationMember_id}"
+        # Helper to format list params
+        def fmt(val):
+            return ",".join(val) if isinstance(val, list) else val
+
+        query_params = {k: fmt(v) for k, v in [("$select", select), ("$expand", expand)] if v is not None}
+        response = await self._aget(url, params=query_params)
+        return self._handle_response(response)
+
+
     async def get_joined_teams(self) -> list[dict[str, Any]]:
         """
         Fetches all Microsoft Teams the authenticated user belongs to by querying the `/me/joinedTeams` Graph API endpoint. It returns a list of dictionaries, where each dictionary represents a single team's details, unlike functions that list channels or chats for a specific team.
@@ -68,65 +227,6 @@ class MsTeamsApp(APIApplication):
         response = await self._aget(url)
         data = self._handle_response(response)
         return data.get("value", [])
-
-    # async def list_channels_for_team(
-    #     self,
-    #     team_id: str,
-    #     top: int | None = None,
-    #     skip: int | None = None,
-    #     search: str | None = None,
-    #     filter: str | None = None,
-    #     count: bool | None = None,
-    #     orderby: list[str] | None = None,
-    #     select: list[str] | None = None,
-    #     expand: list[str] | None = None,
-    # ) -> dict[str, Any]:
-    #     """
-    #     Retrieves the collection of channels for a specified Microsoft Teams team by its ID. It supports advanced OData query parameters for filtering, sorting, and pagination, distinguishing it from functions that fetch single channels like `get_channel_details`.
-
-    #     Args:
-    #         team_id (string): team-id
-    #         top (integer): Show only the first n items Example: '50'.
-    #         skip (integer): Skip the first n items
-    #         search (string): Search items by search phrases
-    #         filter (string): Filter items by property values
-    #         count (boolean): Include count of items
-    #         orderby (array): Order items by property values
-    #         select (array): Select properties to be returned
-    #         expand (array): Expand related entities
-
-    #     Returns:
-    #         dict[str, Any]: Retrieved collection
-
-    #     Raises:
-    #         HTTPStatusError: Raised when the API request fails with detailed error information including status code and response body.
-
-    #     Tags:
-    #         teams.channel, important
-    #     """
-    #     if team_id is None:
-    #         raise ValueError("Missing required parameter 'team-id'.")
-    #     url = f"{self.base_url}/teams/{team_id}/channels"
-    #     # Helper to format list params
-    #     def fmt(val):
-    #         return ",".join(val) if isinstance(val, list) else val
-
-    #     query_params = {
-    #         k: fmt(v)
-    #         for k, v in [
-    #             ("$top", top),
-    #             ("$skip", skip),
-    #             ("$search", search),
-    #             ("$filter", filter),
-    #             ("$count", count),
-    #             ("$orderby", orderby),
-    #             ("$select", select),
-    #             ("$expand", expand),
-    #         ]
-    #         if v is not None
-    #     }
-    #     response = await self._aget(url, params=query_params)
-    #     return self._handle_response(response)
 
     async def send_chat_message(self, chat_id: str, content: str) -> dict[str, Any]:
         """
@@ -195,286 +295,6 @@ class MsTeamsApp(APIApplication):
         url = f"{self.base_url}/teams/{team_id}/channels/{channel_id}/messages/{message_id}/replies"
         payload = {"body": {"content": content}}
         response = await self._apost(url, data=payload)
-        return self._handle_response(response)
-
-    async def create_chat(
-        self,
-        id: str | None = None,
-        chatType: str | None = None,
-        createdDateTime: str | None = None,
-        isHiddenForAllMembers: bool | None = None,
-        lastUpdatedDateTime: str | None = None,
-        onlineMeetingInfo: dict[str, dict[str, Any]] | None = None,
-        tenantId: str | None = None,
-        topic: str | None = None,
-        viewpoint: dict[str, dict[str, Any]] | None = None,
-        webUrl: str | None = None,
-        installedApps: list[Any] | None = None,
-        lastMessagePreview: Any | None = None,
-        members: list[Any] | None = None,
-        messages: list[Any] | None = None,
-        permissionGrants: list[Any] | None = None,
-        pinnedMessages: list[Any] | None = None,
-        tabs: list[Any] | None = None,
-    ) -> Any:
-        """
-        Creates a new one-on-one or group chat in Microsoft Teams. This function provisions a new conversation using optional parameters like chatType and members, distinguishing it from functions that create teams (`create_team`) or send messages to existing chats (`send_chat_message`).
-
-        Args:
-            id (string): The unique identifier for an entity. Read-only.
-            chatType (string): chatType
-            createdDateTime (string): Date and time at which the chat was created. Read-only.
-            isHiddenForAllMembers (boolean): Indicates whether the chat is hidden for all its members. Read-only.
-            lastUpdatedDateTime (string): Date and time at which the chat was renamed or the list of members was last changed. Read-only.
-            onlineMeetingInfo (object): onlineMeetingInfo
-            tenantId (string): The identifier of the tenant in which the chat was created. Read-only.
-            topic (string): (Optional) Subject or topic for the chat. Only available for group chats.
-            viewpoint (object): viewpoint
-            webUrl (string): The URL for the chat in Microsoft Teams. The URL should be treated as an opaque blob, and not parsed. Read-only.
-            installedApps (array): A collection of all the apps in the chat. Nullable.
-            lastMessagePreview (string): lastMessagePreview
-            members (array): A collection of all the members in the chat. Nullable.
-            messages (array): A collection of all the messages in the chat. Nullable.
-            permissionGrants (array): A collection of permissions granted to apps for the chat.
-            pinnedMessages (array): A collection of all the pinned messages in the chat. Nullable.
-            tabs (array): A collection of all the tabs in the chat. Nullable.
-
-        Returns:
-            Any: Created entity
-
-        Raises:
-            HTTPStatusError: Raised when the API request fails with detailed error information including status code and response body.
-
-        Tags:
-            chats.chat
-        """
-        request_body_data = None
-        request_body_data = {
-            "id": id,
-            "chatType": chatType,
-            "createdDateTime": createdDateTime,
-            "isHiddenForAllMembers": isHiddenForAllMembers,
-            "lastUpdatedDateTime": lastUpdatedDateTime,
-            "onlineMeetingInfo": onlineMeetingInfo,
-            "tenantId": tenantId,
-            "topic": topic,
-            "viewpoint": viewpoint,
-            "webUrl": webUrl,
-            "installedApps": installedApps,
-            "lastMessagePreview": lastMessagePreview,
-            "members": members,
-            "messages": messages,
-            "permissionGrants": permissionGrants,
-            "pinnedMessages": pinnedMessages,
-            "tabs": tabs,
-        }
-        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/chats"
-        query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
-        return self._handle_response(response)
-
-    async def get_chat_details(self, chat_id: str, select: list[str] | None = None, expand: list[str] | None = None) -> Any:
-        """
-        Retrieves the properties and relationships of a specific chat conversation by its unique ID. Unlike `get_user_chats` which lists all chats, this targets one chat. Optional parameters can select specific fields or expand related entities like members or apps to customize the returned data.
-
-        Args:
-            chat_id (string): chat-id
-            select (array): Select properties to be returned
-            expand (array): Expand related entities
-
-        Returns:
-            Any: Retrieved entity
-
-        Raises:
-            HTTPStatusError: Raised when the API request fails with detailed error information including status code and response body.
-
-        Tags:
-            chats.chat
-        """
-        if chat_id is None:
-            raise ValueError("Missing required parameter 'chat-id'.")
-        url = f"{self.base_url}/chats/{chat_id}"
-        # Helper to format list params
-        def fmt(val):
-            return ",".join(val) if isinstance(val, list) else val
-
-        query_params = {k: fmt(v) for k, v in [("$select", select), ("$expand", expand)] if v is not None}
-        response = await self._aget(url, params=query_params)
-        return self._handle_response(response)
-
-    async def update_chat_details(
-        self,
-        chat_id: str,
-        id: str | None = None,
-        chatType: str | None = None,
-        createdDateTime: str | None = None,
-        isHiddenForAllMembers: bool | None = None,
-        lastUpdatedDateTime: str | None = None,
-        onlineMeetingInfo: dict[str, dict[str, Any]] | None = None,
-        tenantId: str | None = None,
-        topic: str | None = None,
-        viewpoint: dict[str, dict[str, Any]] | None = None,
-        webUrl: str | None = None,
-        installedApps: list[Any] | None = None,
-        lastMessagePreview: Any | None = None,
-        members: list[Any] | None = None,
-        messages: list[Any] | None = None,
-        permissionGrants: list[Any] | None = None,
-        pinnedMessages: list[Any] | None = None,
-        tabs: list[Any] | None = None,
-    ) -> Any:
-        """
-        Updates properties of a specific chat, such as its topic, using its unique ID. This function performs a partial update (PATCH), distinguishing it from `get_chat_details` which only retrieves data, and `create_chat` which creates an entirely new chat conversation.
-
-        Args:
-            chat_id (string): chat-id
-            id (string): The unique identifier for an entity. Read-only.
-            chatType (string): chatType
-            createdDateTime (string): Date and time at which the chat was created. Read-only.
-            isHiddenForAllMembers (boolean): Indicates whether the chat is hidden for all its members. Read-only.
-            lastUpdatedDateTime (string): Date and time at which the chat was renamed or the list of members was last changed. Read-only.
-            onlineMeetingInfo (object): onlineMeetingInfo
-            tenantId (string): The identifier of the tenant in which the chat was created. Read-only.
-            topic (string): (Optional) Subject or topic for the chat. Only available for group chats.
-            viewpoint (object): viewpoint
-            webUrl (string): The URL for the chat in Microsoft Teams. The URL should be treated as an opaque blob, and not parsed. Read-only.
-            installedApps (array): A collection of all the apps in the chat. Nullable.
-            lastMessagePreview (string): lastMessagePreview
-            members (array): A collection of all the members in the chat. Nullable.
-            messages (array): A collection of all the messages in the chat. Nullable.
-            permissionGrants (array): A collection of permissions granted to apps for the chat.
-            pinnedMessages (array): A collection of all the pinned messages in the chat. Nullable.
-            tabs (array): A collection of all the tabs in the chat. Nullable.
-
-        Returns:
-            Any: Success
-
-        Raises:
-            HTTPStatusError: Raised when the API request fails with detailed error information including status code and response body.
-
-        Tags:
-            chats.chat
-        """
-        if chat_id is None:
-            raise ValueError("Missing required parameter 'chat-id'.")
-        request_body_data = None
-        request_body_data = {
-            "id": id,
-            "chatType": chatType,
-            "createdDateTime": createdDateTime,
-            "isHiddenForAllMembers": isHiddenForAllMembers,
-            "lastUpdatedDateTime": lastUpdatedDateTime,
-            "onlineMeetingInfo": onlineMeetingInfo,
-            "tenantId": tenantId,
-            "topic": topic,
-            "viewpoint": viewpoint,
-            "webUrl": webUrl,
-            "installedApps": installedApps,
-            "lastMessagePreview": lastMessagePreview,
-            "members": members,
-            "messages": messages,
-            "permissionGrants": permissionGrants,
-            "pinnedMessages": pinnedMessages,
-            "tabs": tabs,
-        }
-        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/chats/{chat_id}"
-        query_params = {}
-        response = self._patch(url, data=request_body_data, params=query_params)
-        return self._handle_response(response)
-
-    async def list_chat_members(
-        self,
-        chat_id: str,
-        top: int | None = None,
-        skip: int | None = None,
-        search: str | None = None,
-        filter: str | None = None,
-        count: bool | None = None,
-        orderby: list[str] | None = None,
-        select: list[str] | None = None,
-        expand: list[str] | None = None,
-    ) -> dict[str, Any]:
-        """
-        Retrieves a collection of all members in a specific chat using its ID. It supports OData query parameters for pagination, filtering, and sorting. Unlike `get_chat_member`, which fetches a single individual, this function returns the entire collection of members for the specified chat.
-
-        Args:
-            chat_id (string): chat-id
-            top (integer): Show only the first n items Example: '50'.
-            skip (integer): Skip the first n items
-            search (string): Search items by search phrases
-            filter (string): Filter items by property values
-            count (boolean): Include count of items
-            orderby (array): Order items by property values
-            select (array): Select properties to be returned
-            expand (array): Expand related entities
-
-        Returns:
-            dict[str, Any]: Retrieved collection
-
-        Raises:
-            HTTPStatusError: Raised when the API request fails with detailed error information including status code and response body.
-
-        Tags:
-            chats.conversationMember
-        """
-        if chat_id is None:
-            raise ValueError("Missing required parameter 'chat-id'.")
-        url = f"{self.base_url}/chats/{chat_id}/members"
-        # Helper to format list params
-        def fmt(val):
-            return ",".join(val) if isinstance(val, list) else val
-
-        query_params = {
-            k: fmt(v)
-            for k, v in [
-                ("$top", top),
-                ("$skip", skip),
-                ("$search", search),
-                ("$filter", filter),
-                ("$count", count),
-                ("$orderby", orderby),
-                ("$select", select),
-                ("$expand", expand),
-            ]
-            if v is not None
-        }
-        response = await self._aget(url, params=query_params)
-        return self._handle_response(response)
-
-    async def get_chat_member(
-        self, chat_id: str, conversationMember_id: str, select: list[str] | None = None, expand: list[str] | None = None
-    ) -> Any:
-        """
-        Retrieves detailed information for a specific member within a chat using their unique ID. This function targets a single individual, distinguishing it from `list_chat_members` which returns all members. The response can be customized by selecting specific properties or expanding related entities.
-
-        Args:
-            chat_id (string): chat-id
-            conversationMember_id (string): conversationMember-id
-            select (array): Select properties to be returned
-            expand (array): Expand related entities
-
-        Returns:
-            Any: Retrieved navigation property
-
-        Raises:
-            HTTPStatusError: Raised when the API request fails with detailed error information including status code and response body.
-
-        Tags:
-            chats.conversationMember
-        """
-        if chat_id is None:
-            raise ValueError("Missing required parameter 'chat-id'.")
-        if conversationMember_id is None:
-            raise ValueError("Missing required parameter 'conversationMember-id'.")
-        url = f"{self.base_url}/chats/{chat_id}/members/{conversationMember_id}"
-        # Helper to format list params
-        def fmt(val):
-            return ",".join(val) if isinstance(val, list) else val
-
-        query_params = {k: fmt(v) for k, v in [("$select", select), ("$expand", expand)] if v is not None}
-        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def list_chat_messages(
