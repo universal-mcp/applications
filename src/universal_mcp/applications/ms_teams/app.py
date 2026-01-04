@@ -617,6 +617,41 @@ class MsTeamsApp(APIApplication):
         response = await self._apost(url, data=payload)
         return self._handle_response(response)
 
+    async def unpin_chat_message(
+        self,
+        chat_id: str,
+        pinned_chat_message_id: str,
+    ) -> dict[str, Any]:
+        """
+        Unpin a message from a chat.
+
+        Args:
+            chat_id (string): The unique identifier of the chat.
+            pinned_chat_message_id (string): The unique identifier of the pinned message (not the message ID itself).
+
+        Returns:
+            dict[str, Any]: A dictionary containing the API response (usually empty for 204).
+
+        Raises:
+            HTTPStatusError: If the API request fails.
+
+        Tags:
+            teams.chat, pinned_message, delete, unpin
+        """
+        if chat_id is None:
+            raise ValueError("Missing required parameter 'chat-id'.")
+        if pinned_chat_message_id is None:
+            raise ValueError("Missing required parameter 'pinned-chat-message-id'.")
+
+        url = f"{self.base_url}/chats/{chat_id}/pinnedMessages/{pinned_chat_message_id}"
+        
+        response = await self._adelete(url)
+        # DELETE 204 returns no content, handle gracefully
+        if response.status_code == 204:
+            return {"status": "success", "message": "Message unpinned successfully."}
+        return self._handle_response(response)
+
+
     def list_tools(self):
         return [
             self.get_user_chats,
@@ -635,4 +670,5 @@ class MsTeamsApp(APIApplication):
             self.reply_to_channel_message,
             self.list_pinned_chat_messages,
             self.pin_chat_message,
+            self.unpin_chat_message,
         ]
