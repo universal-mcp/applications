@@ -500,6 +500,123 @@ class MsTeamsApp(APIApplication):
         response = await self._apost(url, data=payload)
         return self._handle_response(response)
 
+    async def reply_to_channel_message(
+        self,
+        team_id: str,
+        channel_id: str,
+        message_id: str,
+        content: str,
+    ) -> dict[str, Any]:
+        """
+        Sends a reply to an existing message in a channel.
+
+        Args:
+            team_id (string): The unique identifier of the team.
+            channel_id (string): The unique identifier of the channel.
+            message_id (string): The unique identifier of the message to reply to.
+            content (string): The reply content to send (plain text or HTML).
+
+        Returns:
+            dict[str, Any]: A dictionary containing the API response for the created reply.
+
+        Raises:
+            HTTPStatusError: If the API request fails.
+
+        Tags:
+            teams.channel, channel.message, reply, create, send
+        """
+        if team_id is None:
+            raise ValueError("Missing required parameter 'team-id'.")
+        if channel_id is None:
+            raise ValueError("Missing required parameter 'channel-id'.")
+        if message_id is None:
+            raise ValueError("Missing required parameter 'message-id'.")
+
+        url = f"{self.base_url}/teams/{team_id}/channels/{channel_id}/messages/{message_id}/replies"
+        payload = {"body": {"content": content}}
+
+        response = await self._apost(url, data=payload)
+        return self._handle_response(response)
+
+    async def list_pinned_chat_messages(
+        self,
+        chat_id: str,
+        expand: list[str] | None = None,
+    ) -> dict[str, Any]:
+        """
+        Get a list of pinned messages in a chat.
+        Supported OData parameters:
+        - $expand: Expand related entities (e.g., 'message').
+
+        Args:
+            chat_id (string): The unique identifier of the chat.
+            expand (array): Expand related entities.
+
+        Returns:
+            dict[str, Any]: Retrieved collection of pinned messages.
+
+        Raises:
+            HTTPStatusError: If the API request fails.
+
+        Tags:
+            teams.chat, pinned_message, list, read
+        """
+        if chat_id is None:
+            raise ValueError("Missing required parameter 'chat-id'.")
+
+        url = f"{self.base_url}/chats/{chat_id}/pinnedMessages"
+
+        # Helper to format list params
+        def fmt(val):
+            return ",".join(val) if isinstance(val, list) else val
+
+        query_params = {
+            k: fmt(v)
+            for k, v in [
+                ("$expand", expand),
+            ]
+            if v is not None
+        }
+
+        response = await self._aget(url, params=query_params)
+        return self._handle_response(response)
+
+    async def pin_chat_message(
+        self,
+        chat_id: str,
+        message_id: str,
+    ) -> dict[str, Any]:
+        """
+        Pin a message in a chat.
+
+        Args:
+            chat_id (string): The unique identifier of the chat.
+            message_id (string): The unique identifier of the message to pin.
+
+        Returns:
+            dict[str, Any]: A dictionary containing the API response for the pinned message.
+
+        Raises:
+            HTTPStatusError: If the API request fails.
+
+        Tags:
+            teams.chat, pinned_message, create, pin
+        """
+        if chat_id is None:
+            raise ValueError("Missing required parameter 'chat-id'.")
+        if message_id is None:
+            raise ValueError("Missing required parameter 'message-id'.")
+
+        url = f"{self.base_url}/chats/{chat_id}/pinnedMessages"
+        
+        # The API requires a specific OData bind format for the message
+        payload = {
+            "message@odata.bind": f"https://graph.microsoft.com/v1.0/chats/{chat_id}/messages/{message_id}"
+        }
+
+        response = await self._apost(url, data=payload)
+        return self._handle_response(response)
+
     def list_tools(self):
         return [
             self.get_user_chats,
@@ -515,4 +632,7 @@ class MsTeamsApp(APIApplication):
             self.get_channel,
             self.get_primary_channel,
             self.send_channel_message,
+            self.reply_to_channel_message,
+            self.list_pinned_chat_messages,
+            self.pin_chat_message,
         ]
