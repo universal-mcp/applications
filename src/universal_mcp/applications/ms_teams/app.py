@@ -315,6 +315,8 @@ class MsTeamsApp(APIApplication):
         response = await self._apost(url, data=payload)
         return self._handle_response(response)
 
+# Channels
+
     async def list_all_channels(
         self,
         team_id: str,
@@ -417,6 +419,53 @@ class MsTeamsApp(APIApplication):
         response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
+    async def get_primary_channel(
+        self,
+        team_id: str,
+        select: list[str] | None = None,
+        expand: list[str] | None = None,
+    ) -> dict[str, Any]:
+        """
+        Retrieve the default General channel of a team.
+        Supported OData parameters:
+        - $select: Select specific properties to return.
+        - $expand: Expand related entities.
+
+        Args:
+            team_id (string): The unique identifier of the team.
+            select (array): Select properties to be returned.
+            expand (array): Expand related entities.
+
+        Returns:
+            dict[str, Any]: Retrieved channel entity.
+
+        Raises:
+            HTTPStatusError: If the API request fails.
+
+        Tags:
+            teams.channel, read
+        """
+        if team_id is None:
+            raise ValueError("Missing required parameter 'team-id'.")
+
+        url = f"{self.base_url}/teams/{team_id}/primaryChannel"
+
+        # Helper to format list params
+        def fmt(val):
+            return ",".join(val) if isinstance(val, list) else val
+
+        query_params = {
+            k: fmt(v)
+            for k, v in [
+                ("$select", select),
+                ("$expand", expand),
+            ]
+            if v is not None
+        }
+
+        response = await self._aget(url, params=query_params)
+        return self._handle_response(response)
+
     def list_tools(self):
         return [
             self.get_user_chats,
@@ -430,4 +479,5 @@ class MsTeamsApp(APIApplication):
             self.send_chat_message,
             self.list_all_channels,
             self.get_channel,
+            self.get_primary_channel,
         ]
