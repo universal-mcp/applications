@@ -207,8 +207,7 @@ class MsTeamsApp(APIApplication):
         response = await self._aget(url)
         return self._handle_response(response)
 
-
-# Messages
+# Chat Messages
 
     async def list_chat_messages(
         self,
