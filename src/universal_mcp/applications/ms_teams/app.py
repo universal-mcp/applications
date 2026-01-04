@@ -651,6 +651,102 @@ class MsTeamsApp(APIApplication):
             return {"status": "success", "message": "Message unpinned successfully."}
         return self._handle_response(response)
 
+# Teams 
+
+    async def create_team(
+        self,
+        display_name: str,
+        description: str,
+    ) -> dict[str, Any]:
+        """
+        Create a new team.
+        Uses the 'standard' template by default.
+
+        Args:
+            display_name (string): The name of the team.
+            description (string): The description of the team.
+
+        Returns:
+            dict[str, Any]: A dictionary containing the API response (e.g., location header for the async operation).
+
+        Raises:
+            HTTPStatusError: If the API request fails.
+
+        Tags:
+            teams.team, create, provision
+        """
+        if display_name is None:
+            raise ValueError("Missing required parameter 'display-name'.")
+        if description is None:
+            raise ValueError("Missing required parameter 'description'.")
+
+        url = f"{self.base_url}/teams"
+        
+        payload = {
+            "template@odata.bind": "https://graph.microsoft.com/v1.0/teamsTemplates('standard')",
+            "displayName": display_name,
+            "description": description
+        }
+
+        response = await self._apost(url, data=payload)
+        
+        # 202 Accepted means it's an async operation. 
+        # The Location header contains the URL to check status.
+        if response.status_code == 202:
+            return {
+                "status": "accepted", 
+                "operation_location": response.headers.get("Location"),
+                "message": "Team creation initiated. Check operation_location for status."
+            }
+            
+        return self._handle_response(response)
+
+    async def get_team(
+        self,
+        team_id: str,
+        select: list[str] | None = None,
+        expand: list[str] | None = None,
+    ) -> dict[str, Any]:
+        """
+        Retrieve a specific team's details.
+        Supported OData parameters:
+        - $select: Select specific properties.
+        - $expand: Expand related entities.
+
+        Args:
+            team_id (string): The unique identifier of the team.
+            select (array): Select specific properties.
+            expand (array): Expand related entities.
+
+        Returns:
+            dict[str, Any]: The team resource.
+
+        Raises:
+            HTTPStatusError: If the API request fails.
+
+        Tags:
+            teams.team, read, get
+        """
+        if team_id is None:
+            raise ValueError("Missing required parameter 'team-id'.")
+
+        url = f"{self.base_url}/teams/{team_id}"
+
+        # Helper to format list params
+        def fmt(val):
+            return ",".join(val) if isinstance(val, list) else val
+
+        query_params = {
+            k: fmt(v)
+            for k, v in [
+                ("$select", select),
+                ("$expand", expand),
+            ]
+            if v is not None
+        }
+
+        response = await self._aget(url, params=query_params)
+        return self._handle_response(response)
 
     def list_tools(self):
         return [
@@ -671,4 +767,6 @@ class MsTeamsApp(APIApplication):
             self.list_pinned_chat_messages,
             self.pin_chat_message,
             self.unpin_chat_message,
+            self.create_team,
+            self.get_team,
         ]
