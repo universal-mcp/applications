@@ -466,6 +466,40 @@ class MsTeamsApp(APIApplication):
         response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
+    async def send_channel_message(
+        self,
+        team_id: str,
+        channel_id: str,
+        content: str,
+    ) -> dict[str, Any]:
+        """
+        Posts a new message to a specific channel in a team.
+
+        Args:
+            team_id (string): The unique identifier of the team.
+            channel_id (string): The unique identifier of the channel.
+            content (string): The message content to send (plain text or HTML).
+
+        Returns:
+            dict[str, Any]: A dictionary containing the API response for the sent message, including its ID.
+
+        Raises:
+            HTTPStatusError: If the API request fails.
+
+        Tags:
+            teams.channel, channel.message, create, send
+        """
+        if team_id is None:
+            raise ValueError("Missing required parameter 'team-id'.")
+        if channel_id is None:
+            raise ValueError("Missing required parameter 'channel-id'.")
+
+        url = f"{self.base_url}/teams/{team_id}/channels/{channel_id}/messages"
+        payload = {"body": {"content": content}}
+
+        response = await self._apost(url, data=payload)
+        return self._handle_response(response)
+
     def list_tools(self):
         return [
             self.get_user_chats,
@@ -480,4 +514,5 @@ class MsTeamsApp(APIApplication):
             self.list_all_channels,
             self.get_channel,
             self.get_primary_channel,
+            self.send_channel_message,
         ]
