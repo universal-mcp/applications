@@ -315,6 +315,108 @@ class MsTeamsApp(APIApplication):
         response = await self._apost(url, data=payload)
         return self._handle_response(response)
 
+    async def list_all_channels(
+        self,
+        team_id: str,
+        filter: str | None = None,
+        select: list[str] | None = None,
+        expand: list[str] | None = None,
+    ) -> dict[str, Any]:
+        """
+        Retrieves the list of channels either in this team or shared with this team (incoming channels).
+        Supported OData parameters:
+        - $filter: Filter by property values.
+        - $select: Select specific properties to return (recommended for performance).
+        - $expand: Expand related entities.
+
+        Args:
+            team_id (string): The unique identifier of the team.
+            filter (string): Filter items by property values.
+            select (array): Select properties to be returned.
+            expand (array): Expand related entities.
+
+        Returns:
+            dict[str, Any]: Retrieved collection of channels.
+
+        Raises:
+            HTTPStatusError: If the API request fails.
+
+        Tags:
+            teams.channel, list, read
+        """
+        if team_id is None:
+            raise ValueError("Missing required parameter 'team-id'.")
+
+        url = f"{self.base_url}/teams/{team_id}/allChannels"
+
+        # Helper to format list params
+        def fmt(val):
+            return ",".join(val) if isinstance(val, list) else val
+
+        query_params = {
+            k: fmt(v)
+            for k, v in [
+                ("$filter", filter),
+                ("$select", select),
+                ("$expand", expand),
+            ]
+            if v is not None
+        }
+
+        response = await self._aget(url, params=query_params)
+        return self._handle_response(response)
+
+    async def get_channel(
+        self,
+        team_id: str,
+        channel_id: str,
+        select: list[str] | None = None,
+        expand: list[str] | None = None,
+    ) -> dict[str, Any]:
+        """
+        Retrieve the properties and relationships of a channel.
+        Supported OData parameters:
+        - $select: Select specific properties to return (recommended for performance).
+        - $expand: Expand related entities.
+
+        Args:
+            team_id (string): The unique identifier of the team.
+            channel_id (string): The unique identifier of the channel.
+            select (array): Select properties to be returned.
+            expand (array): Expand related entities.
+
+        Returns:
+            dict[str, Any]: Retrieved channel entity.
+
+        Raises:
+            HTTPStatusError: If the API request fails.
+
+        Tags:
+            teams.channel, read
+        """
+        if team_id is None:
+            raise ValueError("Missing required parameter 'team-id'.")
+        if channel_id is None:
+            raise ValueError("Missing required parameter 'channel-id'.")
+
+        url = f"{self.base_url}/teams/{team_id}/channels/{channel_id}"
+
+        # Helper to format list params
+        def fmt(val):
+            return ",".join(val) if isinstance(val, list) else val
+
+        query_params = {
+            k: fmt(v)
+            for k, v in [
+                ("$select", select),
+                ("$expand", expand),
+            ]
+            if v is not None
+        }
+
+        response = await self._aget(url, params=query_params)
+        return self._handle_response(response)
+
     def list_tools(self):
         return [
             self.get_user_chats,
@@ -326,4 +428,6 @@ class MsTeamsApp(APIApplication):
             self.list_chat_messages,
             self.get_chat_message,
             self.send_chat_message,
+            self.list_all_channels,
+            self.get_channel,
         ]
