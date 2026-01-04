@@ -208,92 +208,7 @@ class MsTeamsApp(APIApplication):
         return self._handle_response(response)
 
 
-    async def get_joined_teams(self) -> list[dict[str, Any]]:
-        """
-        Fetches all Microsoft Teams the authenticated user belongs to by querying the `/me/joinedTeams` Graph API endpoint. It returns a list of dictionaries, where each dictionary represents a single team's details, unlike functions that list channels or chats for a specific team.
-
-        Returns:
-            A list of dictionaries, where each dictionary represents a team.
-
-        Raises:
-            httpx.HTTPStatusError: If the API request fails due to authentication or other issues.
-
-        Tags:
-            read, list, teams, microsoft-teams, api, important
-        """
-        url = f"{self.base_url}/me/joinedTeams"
-        response = await self._aget(url)
-        data = self._handle_response(response)
-        return data.get("value", [])
-
-    async def send_chat_message(self, chat_id: str, content: str) -> dict[str, Any]:
-        """
-        Posts a new message to a specific Microsoft Teams chat using its unique ID. This function targets direct or group chats, distinguishing it from `send_channel_message`, which posts to public team channels, and `reply_to_chat_message`, which responds to existing messages.
-
-        Args:
-            chat_id: The unique identifier of the chat.
-            content: The message content to send (can be plain text or HTML).
-
-        Returns:
-            A dictionary containing the API response for the sent message, including its ID.
-
-        Raises:
-            httpx.HTTPStatusError: If the API request fails due to invalid ID, permissions, etc.
-
-        Tags:
-            create, send, message, chat, microsoft-teams, api, important
-        """
-        url = f"{self.base_url}/chats/{chat_id}/messages"
-        payload = {"body": {"content": content}}
-        response = await self._apost(url, data=payload)
-        return self._handle_response(response)
-
-    async def send_channel_message(self, team_id: str, channel_id: str, content: str) -> dict[str, Any]:
-        """
-        Posts a new message to a specified team channel, initiating a new conversation thread. Unlike `reply_to_channel_message`, which replies to a message, this function starts a new topic. It's distinct from `send_chat_message`, which is for private or group chats, not team channels.
-
-        Args:
-            team_id: The unique identifier of the team.
-            channel_id: The unique identifier of the channel within the team.
-            content: The message content to send (can be plain text or HTML).
-
-        Returns:
-            A dictionary containing the API response for the sent message, including its ID.
-
-        Raises:
-            httpx.HTTPStatusError: If the API request fails due to invalid IDs, permissions, etc.
-
-        Tags:
-            create, send, message, channel, microsoft-teams, api, important
-        """
-        url = f"{self.base_url}/teams/{team_id}/channels/{channel_id}/messages"
-        payload = {"body": {"content": content}}
-        response = await self._apost(url, data=payload)
-        return self._handle_response(response)
-
-    async def reply_to_channel_message(self, team_id: str, channel_id: str, message_id: str, content: str) -> dict[str, Any]:
-        """
-        Posts a reply to a specific message within a Microsoft Teams channel. It uses the team, channel, and original message IDs to target an existing conversation thread, distinguishing it from `send_channel_message` which starts a new one.
-
-        Args:
-            team_id: The unique identifier of the team.
-            channel_id: The unique identifier of the channel.
-            message_id: The unique identifier of the message to reply to.
-            content: The reply message content (can be plain text or HTML).
-
-        Returns:
-            A dictionary containing the API response for the sent reply, including its ID.
-
-        Raises:
-            httpx.HTTPStatusError: If the API request fails due to invalid IDs, permissions, etc.
-
-        Tags:
-            create, send, reply, message, channel, microsoft-teams, api, important
-        """
-        url = f"{self.base_url}/teams/{team_id}/channels/{channel_id}/messages/{message_id}/replies"
-        payload = {"body": {"content": content}}
-        response = await self._apost(url, data=payload)
-        return self._handle_response(response)
+# Messages
 
     async def list_chat_messages(
         self,
@@ -346,160 +261,36 @@ class MsTeamsApp(APIApplication):
         return self._handle_response(response)
 
     async def get_chat_message(
-        self, chat_id: str, chatMessage_id: str, select: list[str] | None = None, expand: list[str] | None = None
+        self, chat_id: str, chatMessage_id: str
     ) -> Any:
         """
-        Retrieves the full details of a single message from a specific chat using both chat and message IDs. This function targets an individual message, differentiating it from `list_chat_messages`, which retrieves a collection. Optional parameters can customize the response by selecting specific properties or expanding entities.
+        Retrieves the full details of a single message from a specific chat using both chat and message IDs.
+        Note: The Microsoft Graph API for this endpoint does NOT support OData query parameters like $select or $expand.
 
         Args:
-            chat_id (string): chat-id
-            chatMessage_id (string): chatMessage-id
-            select (array): Select properties to be returned
-            expand (array): Expand related entities
+            chat_id (string): The unique identifier of the chat.
+            chatMessage_id (string): The unique identifier of the message.
 
         Returns:
-            Any: Retrieved navigation property
+            Any: Retrieved chatMessage entity.
 
         Raises:
             HTTPStatusError: Raised when the API request fails with detailed error information including status code and response body.
 
         Tags:
-            chats.chatMessage
+            chats.chatMessage, read
         """
         if chat_id is None:
             raise ValueError("Missing required parameter 'chat-id'.")
         if chatMessage_id is None:
             raise ValueError("Missing required parameter 'chatMessage-id'.")
         url = f"{self.base_url}/chats/{chat_id}/messages/{chatMessage_id}"
-        # Helper to format list params
-        def fmt(val):
-            return ",".join(val) if isinstance(val, list) else val
-
-        query_params = {k: fmt(v) for k, v in [("$select", select), ("$expand", expand)] if v is not None}
-        response = await self._aget(url, params=query_params)
-        return self._handle_response(response)
-
-    async def get_channel_details(
-        self, team_id: str, channel_id: str, select: list[str] | None = None, expand: list[str] | None = None
-    ) -> Any:
-        """
-        Retrieves detailed information for a specific channel within a Microsoft Teams team, identified by both team and channel IDs. Optional parameters can select specific properties or expand related entities in the response, distinguishing it from list_channels_for_team, which retrieves a collection of channels.
-
-        Args:
-            team_id (string): team-id
-            channel_id (string): channel-id
-            select (array): Select properties to be returned
-            expand (array): Expand related entities
-
-        Returns:
-            Any: Retrieved navigation property
-
-        Raises:
-            HTTPStatusError: Raised when the API request fails with detailed error information including status code and response body.
-
-        Tags:
-            teams.channel
-        """
-        if team_id is None:
-            raise ValueError("Missing required parameter 'team-id'.")
-        if channel_id is None:
-            raise ValueError("Missing required parameter 'channel-id'.")
-        url = f"{self.base_url}/teams/{team_id}/channels/{channel_id}"
-        # Helper to format list params
-        def fmt(val):
-            return ",".join(val) if isinstance(val, list) else val
-
-        query_params = {k: fmt(v) for k, v in [("$select", select), ("$expand", expand)] if v is not None}
-        response = await self._aget(url, params=query_params)
-        return self._handle_response(response)
-
-    async def create_channel_tab(
-        self,
-        team_id: str,
-        channel_id: str,
-        id: str | None = None,
-        configuration: dict[str, dict[str, Any]] | None = None,
-        displayName: str | None = None,
-        webUrl: str | None = None,
-        teamsApp: Any | None = None,
-    ) -> Any:
-        """
-        Creates a new tab in a specified Microsoft Teams channel using team and channel IDs. This function configures the tab's initial properties, such as display name and application, distinguishing it from functions that list (`list_channel_tabs`) or modify (`update_channel_tab`) existing tabs.
-
-        Args:
-            team_id (string): team-id
-            channel_id (string): channel-id
-            id (string): The unique identifier for an entity. Read-only.
-            configuration (object): configuration
-            displayName (string): Name of the tab.
-            webUrl (string): Deep link URL of the tab instance. Read only.
-            teamsApp (string): teamsApp
-
-        Returns:
-            Any: Created navigation property.
-
-        Raises:
-            HTTPStatusError: Raised when the API request fails with detailed error information including status code and response body.
-
-        Tags:
-            teams.channel
-        """
-        if team_id is None:
-            raise ValueError("Missing required parameter 'team-id'.")
-        if channel_id is None:
-            raise ValueError("Missing required parameter 'channel-id'.")
-        request_body_data = None
-        request_body_data = {"id": id, "configuration": configuration, "displayName": displayName, "webUrl": webUrl, "teamsApp": teamsApp}
-        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/teams/{team_id}/channels/{channel_id}/tabs"
-        query_params = {}
-        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
-        return self._handle_response(response)
-
-    async def get_primary_team_channel(self, team_id: str, select: list[str] | None = None, expand: list[str] | None = None) -> Any:
-        """
-        Retrieves the primary channel (usually 'General') for a specified team using its ID. Unlike `get_channel_details`, this function directly accesses the team's default channel without requiring a specific channel ID. Optional parameters can select or expand properties in the returned data.
-
-        Args:
-            team_id (string): team-id
-            select (array): Select properties to be returned
-            expand (array): Expand related entities
-
-        Returns:
-            Any: Retrieved navigation property
-
-        Raises:
-            HTTPStatusError: Raised when the API request fails with detailed error information including status code and response body.
-
-        Tags:
-            teams.channel
-        """
-        if team_id is None:
-            raise ValueError("Missing required parameter 'team-id'.")
-        url = f"{self.base_url}/teams/{team_id}/primaryChannel"
-        # Helper to format list params
-        def fmt(val):
-            return ",".join(val) if isinstance(val, list) else val
-
-        query_params = {k: fmt(v) for k, v in [("$select", select), ("$expand", expand)] if v is not None}
-        response = await self._aget(url, params=query_params)
+        
+        # This endpoint explicitly does not support OData params
+        response = await self._aget(url)
         return self._handle_response(response)
 
     def list_tools(self):
         return [
-            self.get_user_chats,
-            self.get_joined_teams,
-            self.list_channels_for_team,
-            self.send_chat_message,
-            self.send_channel_message,
-            self.reply_to_channel_message,
-            self.create_chat,
-            self.get_chat_details,
-            self.update_chat_details,
-            self.list_chat_members,
-            self.get_chat_member,
-            self.list_chat_messages,
-            self.get_chat_message,
-            self.get_channel_details,
-            self.get_primary_team_channel,
+
         ]
