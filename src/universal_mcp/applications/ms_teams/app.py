@@ -8,6 +8,8 @@ class MsTeamsApp(APIApplication):
         super().__init__(name="ms_teams", integration=integration, **kwargs)
         self.base_url = "https://graph.microsoft.com/v1.0"
 
+# Chat Management
+
     async def get_user_chats(
         self,
         top: int | None = None,
@@ -176,37 +178,33 @@ class MsTeamsApp(APIApplication):
         return data.get("value", [])
 
     async def get_chat_member(
-        self, chat_id: str, conversationMember_id: str, select: list[str] | None = None, expand: list[str] | None = None
+        self, chat_id: str, conversationMember_id: str
     ) -> Any:
         """
-        Retrieves detailed information for a specific member within a chat using their unique ID. This function targets a single individual, distinguishing it from `list_chat_members` which returns all members. The response can be customized by selecting specific properties or expanding related entities.
+        Retrieves detailed information for a specific member within a chat using their unique ID.
+        Note: The Microsoft Graph API for this endpoint does NOT support OData query parameters.
 
         Args:
-            chat_id (string): chat-id
-            conversationMember_id (string): conversationMember-id
-            select (array): Select properties to be returned
-            expand (array): Expand related entities
+            chat_id (string): The unique identifier of the chat.
+            conversationMember_id (string): The unique identifier of the member.
 
         Returns:
-            Any: Retrieved navigation property
+            Any: Retrieved conversationMember entity.
 
         Raises:
             HTTPStatusError: Raised when the API request fails with detailed error information including status code and response body.
 
         Tags:
-            chats.conversationMember
+            chats.conversationMember, read
         """
         if chat_id is None:
             raise ValueError("Missing required parameter 'chat-id'.")
         if conversationMember_id is None:
             raise ValueError("Missing required parameter 'conversationMember-id'.")
         url = f"{self.base_url}/chats/{chat_id}/members/{conversationMember_id}"
-        # Helper to format list params
-        def fmt(val):
-            return ",".join(val) if isinstance(val, list) else val
-
-        query_params = {k: fmt(v) for k, v in [("$select", select), ("$expand", expand)] if v is not None}
-        response = await self._aget(url, params=query_params)
+        
+        # This endpoint generally does not support OData params
+        response = await self._aget(url)
         return self._handle_response(response)
 
 
