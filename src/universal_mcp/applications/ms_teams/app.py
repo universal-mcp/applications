@@ -290,7 +290,41 @@ class MsTeamsApp(APIApplication):
         response = await self._aget(url)
         return self._handle_response(response)
 
+    async def send_chat_message(self, chat_id: str, content: str) -> dict[str, Any]:
+        """
+        Posts a new message to a specific Microsoft Teams chat using its unique ID.
+        
+        Args:
+            chat_id (string): The unique identifier of the chat.
+            content (string): The message content to send (plain text or HTML).
+
+        Returns:
+            dict[str, Any]: A dictionary containing the API response for the sent message, including its ID.
+
+        Raises:
+            HTTPStatusError: If the API request fails due to invalid ID, permissions, etc.
+
+        Tags:
+            chats.chatMessage, create, send
+        """
+        if chat_id is None:
+            raise ValueError("Missing required parameter 'chat-id'.")
+        
+        url = f"{self.base_url}/chats/{chat_id}/messages"
+        payload = {"body": {"content": content}}
+        
+        response = await self._apost(url, data=payload)
+        return self._handle_response(response)
+
     def list_tools(self):
         return [
-
+            self.get_user_chats,
+            self.create_chat,
+            self.get_chat_details,
+            self.update_chat_details,
+            self.list_chat_members,
+            self.get_chat_member,
+            self.list_chat_messages,
+            self.get_chat_message,
+            self.send_chat_message,
         ]
