@@ -299,36 +299,30 @@ class MsTeamsApp(APIApplication):
         self,
         chat_id: str,
         top: int | None = None,
-        skip: int | None = None,
-        search: str | None = None,
-        filter: str | None = None,
-        count: bool | None = None,
         orderby: list[str] | None = None,
-        select: list[str] | None = None,
-        expand: list[str] | None = None,
+        filter: str | None = None,
     ) -> dict[str, Any]:
         """
-        Retrieves messages from a specific chat using its ID. Unlike `get_chat_message`, which fetches a single message, this function returns a collection and supports advanced querying for filtering, sorting, and pagination to refine the results.
+        Retrieves messages from a specific chat using its ID.
+        Supported OData parameters:
+        - $top: Page size.
+        - $orderby: Order by specific fields (e.g. 'createdDateTime desc').
+        - $filter: Filter by range (e.g. 'lastModifiedDateTime gt 2024-01-01T00:00:00Z').
 
         Args:
-            chat_id (string): chat-id
+            chat_id (string): The unique identifier of the chat.
             top (integer): Show only the first n items Example: '50'.
-            skip (integer): Skip the first n items
-            search (string): Search items by search phrases
-            filter (string): Filter items by property values
-            count (boolean): Include count of items
-            orderby (array): Order items by property values
-            select (array): Select properties to be returned
-            expand (array): Expand related entities
+            orderby (array): Order items by property values.
+            filter (string): Filter items by property values.
 
         Returns:
-            dict[str, Any]: Retrieved collection
+            dict[str, Any]: Retrieved collection of messages.
 
         Raises:
             HTTPStatusError: Raised when the API request fails with detailed error information including status code and response body.
 
         Tags:
-            chats.chatMessage
+            chats.chatMessage, list, read
         """
         if chat_id is None:
             raise ValueError("Missing required parameter 'chat-id'.")
@@ -341,13 +335,8 @@ class MsTeamsApp(APIApplication):
             k: fmt(v)
             for k, v in [
                 ("$top", top),
-                ("$skip", skip),
-                ("$search", search),
-                ("$filter", filter),
-                ("$count", count),
                 ("$orderby", orderby),
-                ("$select", select),
-                ("$expand", expand),
+                ("$filter", filter),
             ]
             if v is not None
         }
