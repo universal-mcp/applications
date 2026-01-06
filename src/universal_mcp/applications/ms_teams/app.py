@@ -8,6 +8,46 @@ class MsTeamsApp(APIApplication):
         super().__init__(name="ms_teams", integration=integration, **kwargs)
         self.base_url = "https://graph.microsoft.com/v1.0"
 
+    async def get_me(
+        self,
+        select: list[str] | None = None,
+        expand: list[str] | None = None,
+    ) -> dict[str, Any]:
+        """
+        Get the currently signed-in user.
+
+        Args:
+            select (array): Select specific properties to return.
+            expand (array): Expand related entities.
+
+        Returns:
+            dict[str, Any]: The user resource.
+
+        Raises:
+            HTTPStatusError: If the API request fails.
+
+        Tags:
+            user, me, read, profile
+        """
+        url = f"{self.base_url}/me"
+
+        # Helper to format list params
+        def fmt(val):
+            return ",".join(val) if isinstance(val, list) else val
+
+        query_params = {
+            k: fmt(v)
+            for k, v in [
+                ("$select", select),
+                ("$expand", expand),
+            ]
+            if v is not None
+        }
+
+        response = await self._aget(url, params=query_params)
+        return self._handle_response(response)
+
+
 # Chat Management
 
     async def get_user_chats(
@@ -748,8 +788,31 @@ class MsTeamsApp(APIApplication):
         response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
+    async def list_joined_teams(
+        self,
+    ) -> dict[str, Any]:
+        """
+        List the teams that the user is a direct member of.
+        Note: This endpoint does not support OData query parameters.
+        It returns a subset of properties (id, displayName, description, isArchived, tenantId) by default.
+
+        Returns:
+            dict[str, Any]: A dictionary containing the list of teams.
+
+        Raises:
+            HTTPStatusError: If the API request fails.
+            
+        Tags:
+            teams.team, list, read, joined
+        """
+        url = f"{self.base_url}/me/joinedTeams"
+
+        response = await self._aget(url)
+        return self._handle_response(response)
+
     def list_tools(self):
         return [
+            self.get_me,
             self.get_user_chats,
             self.create_chat,
             self.get_chat_details,
@@ -769,4 +832,5 @@ class MsTeamsApp(APIApplication):
             self.unpin_chat_message,
             self.create_team,
             self.get_team,
+            self.list_joined_teams,
         ]
