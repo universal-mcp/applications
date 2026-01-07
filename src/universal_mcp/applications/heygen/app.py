@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Literal, Optional, Dict, Union
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
@@ -9,85 +9,17 @@ class HeygenApp(APIApplication):
         self.base_url = "https://api.heygen.com"
 
     async def _aget_headers(self) -> dict[str, Any]:
-        credentials = await self.integration.get_credentials_async()
-        api_key = credentials.get("api_key") or credentials.get("API_KEY") or credentials.get("apiKey")
+        # credentials = await self.integration.get_credentials_async()
+        api_key = "sk_V2_hgu_kDFhhfTyiu2_7Fhxk5cwM4bwjNZjFH6xKwwguEW5jdkj"     # credentials.get("api_key") or credentials.get("API_KEY") or credentials.get("apiKey")
         return {"x-api-key": f"{api_key}", "Content-Type": "application/json", "Accept": "application/json"}
 
-    async def get_v1_voice_list(self) -> Any:
-        """
-        Retrieves the list of available voices from the v1 voice API endpoint.
-
-        Args:
-            None: This function takes no arguments
-
-        Returns:
-            dict: A dictionary containing the JSON response with details about the available voices.
-
-        Raises:
-            HTTPError: If the HTTP request to the voice API endpoint results in an unsuccessful status code.
-
-        Tags:
-            get, list, voice, api
-        """
-        url = f"{self.base_url}/v1/voice.list"
-        query_params = {}
-        response = await self._aget(url, params=query_params)
-        response.raise_for_status()
-        return response.json()
-
-    async def get_v1_avatar_list(self) -> Any:
-        """
-        Retrieves a list of available avatars from the v1 API endpoint.
-
-        Args:
-            None: This function takes no arguments
-
-        Returns:
-            A JSON-decoded object containing the list of avatars returned by the API.
-
-        Raises:
-            requests.exceptions.HTTPError: If the HTTP request to the avatar list endpoint fails, such as due to a non-2xx response.
-
-        Tags:
-            get, list, avatar, api, important
-        """
-        url = f"{self.base_url}/v1/avatar.list"
-        query_params = {}
-        response = await self._aget(url, params=query_params)
-        response.raise_for_status()
-        return response.json()
-
-    async def get_v2_voices(self) -> Any:
-        """
-        Retrieves the list of available v2 voices from the API endpoint.
-
-        Args:
-            None: This function takes no arguments
-
-        Returns:
-            A JSON-decoded object containing information about available v2 voices.
-
-        Raises:
-            requests.HTTPError: If the HTTP request to the voices endpoint returns an unsuccessful status code.
-
-        Tags:
-            get, list, voices, api, important
-        """
-        url = f"{self.base_url}/v2/voices"
-        query_params = {}
-        response = await self._aget(url, params=query_params)
-        response.raise_for_status()
-        return response.json()
 
     async def get_v2_avatars(self) -> Any:
         """
         Retrieves a list of avatar objects from the /v2/avatars API endpoint.
 
-        Args:
-            None: This function takes no arguments
-
         Returns:
-            A JSON-decoded object containing the list of avatars as returned by the API.
+            A JSON-decoded object containing the paginated list of avatars.
 
         Raises:
             requests.exceptions.HTTPError: If the HTTP request to the /v2/avatars endpoint returns an unsuccessful status code.
@@ -96,788 +28,461 @@ class HeygenApp(APIApplication):
             get, list, avatars, api
         """
         url = f"{self.base_url}/v2/avatars"
-        query_params = {}
-        response = await self._aget(url, params=query_params)
-        response.raise_for_status()
-        return response.json()
+        response = await self._aget(url=url)
+        return self._handle_response(response)
 
-    async def get_v1_video_list(self) -> Any:
+    async def list_avatar_groups(self, include_public: bool = False) -> Any:
         """
-        Retrieves a list of videos from the v1 API endpoint.
+        Retrieves a list of avatar groups from the /v2/avatar_group.list API endpoint.
 
         Args:
-            None: This function takes no arguments
+            include_public: Whether to include public avatar groups in the response. Defaults to False.
 
         Returns:
-            A JSON-decoded object containing the list of videos as returned by the API.
+            A JSON-decoded object containing the list of avatar groups.
 
         Raises:
-            requests.HTTPError: If the HTTP request to the API endpoint fails or returns an unsuccessful status code.
+            requests.exceptions.HTTPError: If the HTTP request returns an unsuccessful status code.
 
         Tags:
-            get, list, video, api
+            list, avatar_groups, api
         """
-        url = f"{self.base_url}/v1/video.list"
-        query_params = {}
-        response = await self._aget(url, params=query_params)
-        response.raise_for_status()
-        return response.json()
+        url = f"{self.base_url}/v2/avatar_group.list"
+        params = {"include_public": str(include_public).lower()}    
+        response = await self._aget(url=url, params=params)
+        return self._handle_response(response)
 
-    async def post_v2_video_generate(self, video_inputs, title=None, test=None, callback_id=None, dimension=None, aspect_ratio=None) -> Any:
+    async def list_avatars_in_group(self, group_id: str) -> Any:
         """
-        Submits a request to generate a video using specified input parameters via the v2 video generate API endpoint.
+        Retrieves a list of avatars from a specific avatar group.
 
         Args:
-            video_inputs: A required object or list containing the video inputs used for generation. Must not be None.
-            title: Optional; a string specifying the title of the generated video.
-            test: Optional; a flag or parameter used for testing purposes. Its type and effect depend on the API implementation.
-            callback_id: Optional; a string or identifier for callback tracking after video generation.
-            dimension: Optional; defines the desired dimensions for the generated video.
-            aspect_ratio: Optional; defines the desired aspect ratio for the generated video.
+            group_id: The unique identifier of the avatar group.
 
         Returns:
-            A dictionary containing the API response parsed from JSON, typically including information about the video generation job.
+            A JSON-decoded object containing the list of avatars in the group.
 
         Raises:
-            ValueError: Raised if 'video_inputs' is None.
-            requests.HTTPError: Raised if the HTTP request to the video generation endpoint fails (e.g., non-2xx response).
+            requests.exceptions.HTTPError: If the HTTP request returns an unsuccessful status code.
 
         Tags:
-            create, video, generate, api, async-job
+            list, avatars, avatar_group, api
         """
-        if video_inputs is None:
-            raise ValueError("Missing required parameter 'video_inputs'")
-        request_body = {
-            "title": title,
-            "video_inputs": video_inputs,
-            "test": test,
-            "callback_id": callback_id,
-            "dimension": dimension,
-            "aspect_ratio": aspect_ratio,
-        }
-        request_body = {k: v for k, v in request_body.items() if v is not None}
+        url = f"{self.base_url}/v2/avatar_group/{group_id}/avatars"
+        response = await self._aget(url=url)
+        return self._handle_response(response)
+
+    async def get_avatar_details(self, avatar_id: str) -> Any:
+        """
+        Retrieves detailed information about a specific avatar by its ID.
+
+        Args:
+            avatar_id: The unique identifier of the avatar.
+
+        Returns:
+            A JSON-decoded object containing the avatar details.
+
+        Raises:
+            requests.exceptions.HTTPError: If the HTTP request returns an unsuccessful status code.
+
+        Tags:
+            get, avatar, details, api
+        """
+        url = f"{self.base_url}/v2/avatar/{avatar_id}/details"
+        response = await self._aget(url=url)
+        return self._handle_response(response)
+
+
+    async def create_avatar_video(
+        self,
+        # --- Character ---
+        avatar_id: str = None,
+        talking_photo_id: str = None,
+        avatar_style: str = "normal",
+        talking_style: str = "stable",
+        talking_photo_style: str = "circle",
+        
+        # --- Voice ---
+        input_text: str = None,
+        voice_id: str = None,
+        voice_type: Literal["text", "audio", "silence"] = "text",
+        silence_duration: float = 1, 
+        voice_speed: float = 1.0, 
+        voice_pitch: int = 0,    
+        voice_emotion: Optional[Literal["Excited", "Friendly", "Serious", "Soothing", "Broadcaster"]] = None,
+        audio_asset_id: str = None,
+        audio_url: str = None,
+        
+        # --- Background ---
+        background_type: Literal["color", "image", "video"] = "color",
+        background_value: str = "#008000", 
+        background_play_style: Literal["freeze", "loop", "fit_to_scene", "once"] = "freeze",
+        background_fit: Literal["crop", "cover", "contain", "none"] = "cover",
+        background_url: str = None,
+        background_image_asset_id: str = None,
+        background_video_asset_id: str = None,
+        
+        # --- Text Overlay ---
+        overlay_text: str = None,
+        overlay_font_size: float = None,
+        overlay_font_weight: Optional[Literal["bold"]] = None,
+        overlay_color: str = None, 
+        overlay_position: Dict[str, Any] = None, 
+        overlay_text_align: Optional[Literal["left", "center", "right"]] = None,
+        line_height: float = 1.0, 
+        
+        # --- Top Level ---
+        title: str = None,
+        caption: bool = False,
+        callback_id: str = None,
+        width: int = 1280,
+        height: int = 720,
+        folder_id: str = None,
+        callback_url: str = None,
+    ) -> Any:
+        """
+        Creates a new avatar video using the /v2/video/generate API endpoint.
+
+        Args:
+            avatar_id: The unique identifier of the avatar to use.
+            talking_photo_id: The unique identifier of the talking photo to use.
+            avatar_style: Style of the avatar (e.g., "normal", "casual"). Defaults to "normal".
+            talking_style: Speaking style for talking photo (e.g., "stable"). Defaults to "stable".
+            talking_photo_style: Visual style for talking photo (e.g., "circle", "square"). Defaults to "circle".
+            input_text: The text script for the avatar/voice to speak.
+            voice_id: Unique identifier for the voice.
+            voice_type: Type of voice input ("text", "audio", "silence"). Defaults to "text".
+            silence_duration: Duration of silence in seconds (if voice_type is "silence").
+            voice_speed: Speed of the voice (0.5 to 2.0). Defaults to 1.0.
+            voice_pitch: Pitch of the voice (-20 to 20). Defaults to 0.
+            voice_emotion: Emotion of the voice (e.g., "Excited", "Friendly").
+            audio_asset_id: ID of an uploaded audio asset (if voice_type is "audio").
+            audio_url: URL of an audio file (if voice_type is "audio").
+            background_type: Type of background ("color", "image", "video"). Defaults to "color".
+            background_value: Hex color code (if background_type is "color"). Defaults to "#008000".
+            background_play_style: Play style for image/video backgrounds ("freeze", "loop", etc.). Defaults to "freeze".
+            background_fit: How the background fits ("cover", "contain", etc.). Defaults to "cover".
+            background_url: URL for background image/video.
+            background_image_asset_id: Asset ID for background image.
+            background_video_asset_id: Asset ID for background video.
+            overlay_text: Text to display on the video.
+            overlay_font_size: Font size for overlay text.
+            overlay_font_weight: Font weight (e.g., "bold").
+            overlay_color: Hex color for overlay text.
+            overlay_position: Dictionary for position (e.g., {"x": 10, "y": 10}).
+            overlay_text_align: Text alignment ("left", "center", "right").
+            line_height: Line height for overlay text. Defaults to 1.0.
+            title: Title of the video.
+            caption: Whether to include captions. Defaults to False.
+            callback_id: Custom ID for callback tracking.
+            width: Video width. Defaults to 1280.
+            height: Video height. Defaults to 720.
+            folder_id: ID of the folder to save the video in.
+            callback_url: Webhook URL for status updates.
+
+        Returns:
+            A JSON-decoded object containing the generated video details (e.g., video_id).
+
+        Raises:
+            requests.exceptions.HTTPError: If the HTTP request returns an unsuccessful status code.
+
+        Tags:
+            create, video, avatar, api, important
+        """
         url = f"{self.base_url}/v2/video/generate"
-        query_params = {}
-        response = await self._apost(url, data=request_body, params=query_params)
-        response.raise_for_status()
-        return response.json()
 
-    async def delete_v1_video(self, video_id=None) -> Any:
-        """
-        Deletes a video using the v1 API endpoint with the specified video ID.
+        # 1. Character construction
+        character = {}
+        if avatar_id:
+            character["type"] = "avatar"
+            character["avatar_id"] = avatar_id
+            character["avatar_style"] = avatar_style
+        elif talking_photo_id:
+            character["type"] = "talking_photo"
+            character["talking_photo_id"] = talking_photo_id
+            character["talking_style"] = talking_style
+            if talking_photo_style:
+                character["talking_photo_style"] = talking_photo_style
 
-        Args:
-            video_id: Optional; The unique identifier of the video to delete. If None, no video is specified in the request.
+        # 2. Voice construction
+        voice = {"type": voice_type}
+        
+        if voice_type == "text":
+            if input_text: voice["input_text"] = input_text
+            if voice_id: voice["voice_id"] = voice_id
+            
+            # Optional attributes for text voice
+            if voice_speed != 1.0: voice["speed"] = voice_speed
+            if voice_pitch != 0: voice["pitch"] = voice_pitch
+            if voice_emotion: voice["emotion"] = voice_emotion
+            
+        elif voice_type == "silence":
+            if silence_duration:
+                # Docs specify this must be a string
+                voice["duration"] = str(silence_duration)
+                
+        elif voice_type == "audio":
+            if audio_asset_id: voice["audio_asset_id"] = audio_asset_id
+            if audio_url: voice["audio_url"] = audio_url
 
-        Returns:
-            Parsed JSON response from the API indicating the result of the delete operation.
+        # 3. Background construction
+        background = {"type": background_type}
+        if background_type == "color":
+            background["value"] = background_value
+        elif background_type in ["image", "video"]:
+            background["play_style"] = background_play_style
+            background["fit"] = background_fit
+            if background_url:
+                background["url"] = background_url
+            if background_image_asset_id:
+                background["image_asset_id"] = background_image_asset_id
+            if background_video_asset_id:
+                background["video_asset_id"] = background_video_asset_id
 
-        Raises:
-            requests.HTTPError: If the HTTP request fails or the server returns an error response.
-
-        Tags:
-            delete, video, api, v1, management
-        """
-        url = f"{self.base_url}/v1/video.delete"
-        query_params = {k: v for k, v in [("video_id", video_id)] if v is not None}
-        response = await self._adelete(url, params=query_params)
-        response.raise_for_status()
-        return response.json()
-
-    async def get_v2_templates(self) -> Any:
-        """
-        Retrieves the list of v2 templates from the API endpoint.
-
-        Args:
-            None: This function takes no arguments
-
-        Returns:
-            Parsed JSON data from the API response containing the v2 templates.
-
-        Raises:
-            HTTPError: If the HTTP request to the API endpoint fails or returns an error status.
-
-        Tags:
-            get, templates, api, http
-        """
-        url = f"{self.base_url}/v2/templates"
-        query_params = {}
-        response = await self._aget(url, params=query_params)
-        response.raise_for_status()
-        return response.json()
-
-    async def get_v2_template_by_id(self, id) -> Any:
-        """
-        Retrieves a v2 template resource by its unique identifier.
-
-        Args:
-            id: The unique identifier of the v2 template to retrieve.
-
-        Returns:
-            The parsed JSON response containing the template data.
-
-        Raises:
-            ValueError: Raised if the 'id' parameter is None.
-            requests.HTTPError: Raised if the HTTP request to retrieve the template fails.
-
-        Tags:
-            get, template, id-lookup, api
-        """
-        if id is None:
-            raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/v2/template/{id}"
-        query_params = {}
-        response = await self._aget(url, params=query_params)
-        response.raise_for_status()
-        return response.json()
-
-    async def post_v2_template_generate_by_id(self, id, title, variables, test=None, caption=None, dimension=None) -> Any:
-        """
-        Generates content from a template specified by ID using the provided title and variables, and returns the generation result.
-
-        Args:
-            id: str. The unique identifier of the template to use for content generation. Required.
-            title: str. The title associated with the generated content. Required.
-            variables: dict. The variables to substitute into the template. Required.
-            test: bool, optional. If set, indicates whether to perform a test generation without committing changes.
-            caption: str, optional. Caption to include with the generated content.
-            dimension: str or dict, optional. Specifies dimensions or formatting options for generation.
-
-        Returns:
-            dict. The JSON response containing the generated content and metadata from the API.
-
-        Raises:
-            ValueError: If 'id', 'title', or 'variables' are not provided.
-            requests.HTTPError: If the API response contains an HTTP error status.
-
-        Tags:
-            generate, template, post, ai
-        """
-        if id is None:
-            raise ValueError("Missing required parameter 'id'")
-        if title is None:
-            raise ValueError("Missing required parameter 'title'")
-        if variables is None:
-            raise ValueError("Missing required parameter 'variables'")
-        request_body = {"title": title, "variables": variables, "test": test, "caption": caption, "dimension": dimension}
-        request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v2/template/{id}/generate"
-        query_params = {}
-        response = await self._apost(url, data=request_body, params=query_params)
-        response.raise_for_status()
-        return response.json()
-
-    async def get_v2_video_translate_target_languages(self) -> Any:
-        """
-        Retrieves the list of supported target languages for video translation via the v2 API.
-
-        Args:
-            None: This function takes no arguments
-
-        Returns:
-            dict: A JSON-decoded dictionary containing the available target languages for video translation.
-
-        Raises:
-            requests.HTTPError: If the HTTP response indicates an unsuccessful status code.
-
-        Tags:
-            get, list, api, video-translation, languages
-        """
-        url = f"{self.base_url}/v2/video_translate/target_languages"
-        query_params = {}
-        response = await self._aget(url, params=query_params)
-        response.raise_for_status()
-        return response.json()
-
-    async def post_v2_video_translate(self, video_url, output_language, title=None, translate_audio_only=None, speaker_num=None) -> Any:
-        """
-        Submits a video translation request and returns the API response as JSON.
-
-        Args:
-            video_url: str. The URL of the source video to translate. Must not be None.
-            output_language: str. The target language code for translation output. Must not be None.
-            title: Optional[str]. The title to assign to the translated video. Defaults to None.
-            translate_audio_only: Optional[bool]. If True, only translates audio (not on-screen text). Defaults to None.
-            speaker_num: Optional[int]. Number of speakers in the video, if known. Defaults to None.
-
-        Returns:
-            dict. The JSON response from the translation API containing the translation job details or result.
-
-        Raises:
-            ValueError: If 'video_url' or 'output_language' is not provided.
-            requests.HTTPError: If the HTTP request to the translation API fails (non-success status code).
-
-        Tags:
-            video, translate, ai, async-job, post
-        """
-        if video_url is None:
-            raise ValueError("Missing required parameter 'video_url'")
-        if output_language is None:
-            raise ValueError("Missing required parameter 'output_language'")
-        request_body = {
-            "title": title,
-            "video_url": video_url,
-            "output_language": output_language,
-            "translate_audio_only": translate_audio_only,
-            "speaker_num": speaker_num,
+        # 4. Video Input Assembly
+        video_input = {
+            "character": character,
+            "voice": voice,
+            "background": background,
+            "dimension": {
+                "width": width,
+                "height": height
+            }
         }
-        request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v2/video_translate"
-        query_params = {}
-        response = await self._apost(url, data=request_body, params=query_params)
-        response.raise_for_status()
-        return response.json()
 
-    async def get_v2_video_translate_status_by_id(self, id) -> Any:
+        # 5. Text Overlay construction (Optional)
+        if overlay_text:
+            text_obj = {
+                "type": "text", # Allowed: text (hardcoded as it is the only option)
+                "text": overlay_text,
+                "line_height": line_height
+            }
+            if overlay_font_size: text_obj["font_size"] = overlay_font_size
+            if overlay_font_weight: text_obj["font_weight"] = overlay_font_weight
+            if overlay_color: text_obj["color"] = overlay_color
+            if overlay_position: text_obj["position"] = overlay_position
+            if overlay_text_align: text_obj["text_align"] = overlay_text_align
+            
+            video_input["text"] = text_obj
+
+        # 6. Final Payload
+        payload = {
+            "video_inputs": [video_input],
+            "caption": caption
+        }
+
+        if title: payload["title"] = title
+        if callback_id: payload["callback_id"] = callback_id
+        if folder_id: payload["folder_id"] = folder_id
+        if callback_url: payload["callback_url"] = callback_url
+
+        response = await self._apost(url=url, data=payload)
+        return self._handle_response(response)
+
+    async def get_video_status(
+        self,
+        video_id: str
+    ) -> Any:
         """
-        Retrieves the status of a video translation job by its unique identifier.
+        Retrieves the status and details of a specific video by ID using the /v1/video_status.get endpoint.
 
         Args:
-            id: The unique identifier of the video translation job to check.
+            video_id: The unique identifier of the video.
 
         Returns:
-            A dictionary representing the status and details of the video translation job.
+            A JSON-decoded object containing the video status and details (e.g., status, video_url).
 
         Raises:
-            ValueError: Raised if the 'id' parameter is None.
-            HTTPError: Raised if the HTTP request to retrieve the job status fails.
-
-        Tags:
-            get, video-translate, status, ai
-        """
-        if id is None:
-            raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/v2/video_translate/{id}"
-        query_params = {}
-        response = await self._aget(url, params=query_params)
-        response.raise_for_status()
-        return response.json()
-
-    async def post_streaming_new(self, quality=None) -> Any:
-        """
-        Initiates a new streaming session with optional quality parameter and returns the server's JSON response.
-
-        Args:
-            quality: Optional quality setting for the streaming session (type: Any). If None, the default server quality will be used.
-
-        Returns:
-            A JSON-decoded response (type: Any) from the server containing information about the newly created streaming session.
-
-        Raises:
-            requests.HTTPError: If the HTTP request to start the streaming session fails or returns a non-success status code.
-
-        Tags:
-            post, streaming, async-job, start, api
-        """
-        request_body = {"quality": quality}
-        request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v1/streaming.new"
-        query_params = {}
-        response = await self._apost(url, data=request_body, params=query_params)
-        response.raise_for_status()
-        return response.json()
-
-    async def get_streaming_list(self) -> Any:
-        """
-        Retrieves the list of available streaming resources from the remote API.
-
-        Args:
-            None: This function takes no arguments
-
-        Returns:
-            The parsed JSON response containing the list of streaming resources.
-
-        Raises:
-            requests.HTTPError: If the HTTP request to the streaming list endpoint fails or returns an error status code.
-
-        Tags:
-            get, list, streaming, api
-        """
-        url = f"{self.base_url}/v1/streaming.list"
-        query_params = {}
-        response = await self._aget(url, params=query_params)
-        response.raise_for_status()
-        return response.json()
-
-    async def post_streaming_ice(self, session_id, candidate) -> Any:
-        """
-        Sends an ICE candidate for a streaming session to the server and returns the JSON response.
-
-        Args:
-            session_id: Unique identifier for the streaming session. Must not be None.
-            candidate: ICE candidate information to be sent to the server. Must not be None.
-
-        Returns:
-            Parsed JSON response from the server as a Python object.
-
-        Raises:
-            ValueError: Raised if 'session_id' or 'candidate' is None.
-            requests.HTTPError: Raised if the HTTP request to the server fails.
-
-        Tags:
-            post, streaming, ice, async-job, ai
-        """
-        if session_id is None:
-            raise ValueError("Missing required parameter 'session_id'")
-        if candidate is None:
-            raise ValueError("Missing required parameter 'candidate'")
-        request_body = {"session_id": session_id, "candidate": candidate}
-        request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v1/streaming.ice"
-        query_params = {}
-        response = await self._apost(url, data=request_body, params=query_params)
-        response.raise_for_status()
-        return response.json()
-
-    async def post_streaming_task(self, session_id, text) -> Any:
-        """
-        Submits a streaming task for the specified session and text input, returning the response from the remote API.
-
-        Args:
-            session_id: The unique identifier for the streaming session. Must not be None.
-            text: The text content to be processed in the streaming task. Must not be None.
-
-        Returns:
-            The parsed JSON response from the streaming task API call.
-
-        Raises:
-            ValueError: If either 'session_id' or 'text' is None.
-            requests.HTTPError: If the API request fails or returns an unsuccessful status code.
-
-        Tags:
-            post, streaming-task, api, start
-        """
-        if session_id is None:
-            raise ValueError("Missing required parameter 'session_id'")
-        if text is None:
-            raise ValueError("Missing required parameter 'text'")
-        request_body = {"session_id": session_id, "text": text}
-        request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v1/streaming.task"
-        query_params = {}
-        response = await self._apost(url, data=request_body, params=query_params)
-        response.raise_for_status()
-        return response.json()
-
-    async def post_streaming_stop(self, session_id) -> Any:
-        """
-        Stops an ongoing streaming session by sending a stop request for the specified session ID.
-
-        Args:
-            session_id: The unique identifier of the streaming session to be stopped.
-
-        Returns:
-            The parsed JSON response from the stop request, typically containing the status or result of the streaming stop operation.
-
-        Raises:
-            ValueError: If 'session_id' is None.
-            requests.HTTPError: If the HTTP request to stop the streaming session fails or returns an error response.
-
-        Tags:
-            stop, streaming, management, async-job
-        """
-        if session_id is None:
-            raise ValueError("Missing required parameter 'session_id'")
-        request_body = {"session_id": session_id}
-        request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v1/streaming.stop"
-        query_params = {}
-        response = await self._apost(url, data=request_body, params=query_params)
-        response.raise_for_status()
-        return response.json()
-
-    async def post_streaming_interrupt(self, session_id) -> Any:
-        """
-        Sends a request to interrupt an active streaming session identified by the given session ID.
-
-        Args:
-            session_id: The unique identifier of the streaming session to be interrupted.
-
-        Returns:
-            A dictionary containing the server's response to the interrupt request.
-
-        Raises:
-            ValueError: Raised if 'session_id' is None.
-            requests.HTTPError: Raised if the HTTP request to interrupt the session fails.
-
-        Tags:
-            interrupt, streaming, management
-        """
-        if session_id is None:
-            raise ValueError("Missing required parameter 'session_id'")
-        request_body = {"session_id": session_id}
-        request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v1/streaming.interrupt"
-        query_params = {}
-        response = await self._apost(url, data=request_body, params=query_params)
-        response.raise_for_status()
-        return response.json()
-
-    async def post_streaming_create_token(self, expiry=None) -> Any:
-        """
-        Creates a new streaming token with an optional expiry time by sending a POST request to the streaming token API endpoint.
-
-        Args:
-            expiry: Optional expiry time for the token in seconds. If None, the token will not have an explicit expiration.
-
-        Returns:
-            dict: The JSON response from the API containing the new streaming token and related metadata.
-
-        Raises:
-            requests.exceptions.HTTPError: If the HTTP request returned an unsuccessful status code.
-
-        Tags:
-            create, streaming, token, api
-        """
-        request_body = {"expiry": expiry}
-        request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v1/streaming.create_token"
-        query_params = {}
-        response = await self._apost(url, data=request_body, params=query_params)
-        response.raise_for_status()
-        return response.json()
-
-    async def get_streaming_avatar_list(self) -> Any:
-        """
-        Retrieves a list of available streaming avatars from the API endpoint.
-
-        Args:
-            None: This function takes no arguments
-
-        Returns:
-            A JSON-decoded object representing the list of streaming avatars.
-
-        Raises:
-            requests.exceptions.HTTPError: If the HTTP request to the streaming avatar endpoint returns an unsuccessful status code.
-
-        Tags:
-            list, streaming, avatar, api
-        """
-        url = f"{self.base_url}/v1/streaming/avatar.list"
-        query_params = {}
-        response = await self._aget(url, params=query_params)
-        response.raise_for_status()
-        return response.json()
-
-    async def get_v1_webhook_list(self) -> Any:
-        """
-        Retrieves a list of all registered webhooks via the v1 API endpoint.
-
-        Args:
-            None: This function takes no arguments
-
-        Returns:
-            The parsed JSON response containing webhook list data.
-
-        Raises:
-            requests.HTTPError: If the HTTP request fails or an error response is returned from the server.
-
-        Tags:
-            list, webhook, api, management
-        """
-        url = f"{self.base_url}/v1/webhook/webhook.list"
-        query_params = {}
-        response = await self._aget(url, params=query_params)
-        response.raise_for_status()
-        return response.json()
-
-    async def post_v1_webhook_endpoint_add(self, url, events) -> Any:
-        """
-        Registers a new webhook endpoint with the specified URL and events.
-
-        Args:
-            url: str. The callback URL where webhook notifications will be sent. Must not be None.
-            events: list. A list of event types to subscribe the webhook to. Must not be None.
-
-        Returns:
-            dict. The JSON response from the API containing details about the created webhook endpoint.
-
-        Raises:
-            ValueError: Raised if the 'url' or 'events' parameter is None.
-            requests.HTTPError: Raised if the HTTP request to the endpoint fails.
-
-        Tags:
-            add, webhook, endpoint, api
-        """
-        if url is None:
-            raise ValueError("Missing required parameter 'url'")
-        if events is None:
-            raise ValueError("Missing required parameter 'events'")
-        request_body = {"url": url, "events": events}
-        request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v1/webhook/endpoint.add"
-        query_params = {}
-        response = await self._apost(url, data=request_body, params=query_params)
-        response.raise_for_status()
-        return response.json()
-
-    async def delete_v1_webhook_endpoint_by_id(self, endpoint_id) -> Any:
-        """
-        Deletes a webhook endpoint identified by its ID via a DELETE request to the v1 API.
-
-        Args:
-            endpoint_id: The unique identifier of the webhook endpoint to delete. Must not be None.
-
-        Returns:
-            The response payload parsed as JSON from the DELETE request.
-
-        Raises:
-            ValueError: If the 'endpoint_id' parameter is None.
-            requests.HTTPError: If the DELETE request returns an unsuccessful HTTP status code.
-
-        Tags:
-            delete, webhook, endpoint, api
-        """
-        if endpoint_id is None:
-            raise ValueError("Missing required parameter 'endpoint_id'")
-        url = f"{self.base_url}/v1/webhook/endpoint.delete/{endpoint_id}"
-        query_params = {}
-        response = await self._adelete(url, params=query_params)
-        response.raise_for_status()
-        return response.json()
-
-    async def get_v1_webhook_endpoint_list(self) -> Any:
-        """
-        Retrieves a list of webhook endpoints from the v1 API.
-
-        Args:
-            None: This function takes no arguments
-
-        Returns:
-            A JSON-compatible object containing the list of webhook endpoints.
-
-        Raises:
-            requests.HTTPError: If the HTTP request to the webhook endpoint API fails or returns an unsuccessful status code.
-
-        Tags:
-            get, list, webhook, endpoint, api
-        """
-        url = f"{self.base_url}/v1/webhook/endpoint.list"
-        query_params = {}
-        response = await self._aget(url, params=query_params)
-        response.raise_for_status()
-        return response.json()
-
-    async def get_v1_talking_photo_list(self) -> Any:
-        """
-        Retrieves the list of talking photos from the v1 API endpoint.
-
-        Args:
-            None: This function takes no arguments
-
-        Returns:
-            The JSON-decoded response containing the list of talking photos.
-
-        Raises:
-            requests.HTTPError: If the HTTP request to the API endpoint returns an unsuccessful status code.
-
-        Tags:
-            get, list, api, talking-photo
-        """
-        url = f"{self.base_url}/v1/talking_photo.list"
-        query_params = {}
-        response = await self._aget(url, params=query_params)
-        response.raise_for_status()
-        return response.json()
-
-    async def delete_v2_talking_photo_by_id(self, id) -> Any:
-        """
-        Deletes a v2 talking photo resource identified by its unique ID.
-
-        Args:
-            id: The unique identifier of the v2 talking photo to be deleted.
-
-        Returns:
-            The response data as a JSON object if the deletion is successful.
-
-        Raises:
-            ValueError: Raised if the 'id' parameter is None.
-            HTTPError: Raised if the HTTP request fails with an error status code.
-
-        Tags:
-            delete, talking-photo, v2, api, management
-        """
-        if id is None:
-            raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/v2/talking_photo/{id}"
-        query_params = {}
-        response = await self._adelete(url, params=query_params)
-        response.raise_for_status()
-        return response.json()
-
-    async def post_personalized_video_add_contact(self, project_id, variables_list) -> Any:
-        """
-        Adds a new contact to a personalized video project by sending the contact variables to the server.
-
-        Args:
-            project_id: The unique identifier for the personalized video project. Must not be None.
-            variables_list: A list containing variables for the new contact. Must not be None.
-
-        Returns:
-            A dictionary representing the JSON response from the server, usually containing details or status of the added contact.
-
-        Raises:
-            ValueError: Raised if either 'project_id' or 'variables_list' is None.
-            requests.HTTPError: Raised if the HTTP request fails or returns an error status code.
-
-        Tags:
-            add, contact, personalized-video, api, async_job
-        """
-        if project_id is None:
-            raise ValueError("Missing required parameter 'project_id'")
-        if variables_list is None:
-            raise ValueError("Missing required parameter 'variables_list'")
-        request_body = {"project_id": project_id, "variables_list": variables_list}
-        request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v1/personalized_video/add_contact"
-        query_params = {}
-        response = await self._apost(url, data=request_body, params=query_params)
-        response.raise_for_status()
-        return response.json()
-
-    async def get_personalized_video_audience_detail(self, id=None) -> Any:
-        """
-        Retrieves detailed information about a personalized video audience by ID.
-
-        Args:
-            id: Optional; The unique identifier of the personalized video audience to retrieve details for. If None, details for all audiences may be returned depending on API behavior.
-
-        Returns:
-            A JSON-decoded Python object containing the audience detail information provided by the API.
-
-        Raises:
-            requests.HTTPError: If the HTTP request returned an unsuccessful status code.
-
-        Tags:
-            get, detail, audience, video, api
-        """
-        url = f"{self.base_url}/v1/personalized_video/audience/detail"
-        query_params = {k: v for k, v in [("id", id)] if v is not None}
-        response = await self._aget(url, params=query_params)
-        response.raise_for_status()
-        return response.json()
-
-    async def get_personalized_video_project_detail(self, id=None) -> Any:
-        """
-        Retrieves the details of a personalized video project by its unique identifier.
-
-        Args:
-            id: Optional; The unique identifier of the personalized video project to retrieve. If None, no project ID is passed as a parameter.
-
-        Returns:
-            A JSON-decoded Python object containing the details of the personalized video project.
-
-        Raises:
-            requests.HTTPError: If the HTTP request fails or returns a non-success status code, an HTTPError is raised.
-
-        Tags:
-            get, personalized-video, project-detail, api
-        """
-        url = f"{self.base_url}/v1/personalized_video/project/detail"
-        query_params = {k: v for k, v in [("id", id)] if v is not None}
-        response = await self._aget(url, params=query_params)
-        response.raise_for_status()
-        return response.json()
-
-    async def get_v2_user_remaining_quota(self) -> Any:
-        """
-        Retrieves the current remaining quota information for the user from the v2 API endpoint.
-
-        Args:
-            None: This function takes no arguments
-
-        Returns:
-            dict: A dictionary containing remaining quota details for the user as returned by the API.
-
-        Raises:
-            requests.HTTPError: If the HTTP request to the quota endpoint fails or returns a non-success status code.
-
-        Tags:
-            get, quota, user-management, api
-        """
-        url = f"{self.base_url}/v2/user/remaining_quota"
-        query_params = {}
-        response = await self._aget(url, params=query_params)
-        response.raise_for_status()
-        return response.json()
-
-    async def post_v1_asset_upload(self, request_body=None) -> Any:
-        """
-        Uploads an asset to the server using a POST request to the '/v1/asset' endpoint.
-
-        Args:
-            request_body: Optional. The data to include in the POST request body, typically representing the asset to upload.
-
-        Returns:
-            The parsed JSON response from the server, containing information about the uploaded asset.
-
-        Raises:
-            requests.HTTPError: If the HTTP request returned an unsuccessful status code.
-
-        Tags:
-            upload, asset, post, api
-        """
-        url = f"{self.base_url}/v1/asset"
-        query_params = {}
-        response = await self._apost(url, data=request_body, params=query_params)
-        response.raise_for_status()
-        return response.json()
-
-    async def get_v1_video_status(self, video_id=None) -> Any:
-        """
-        Retrieves the status of a video by making a GET request to the v1 video_status endpoint.
-
-        Args:
-            video_id: Optional; The unique identifier of the video whose status is to be retrieved. If not provided, the request may fail or return an error depending on the API.
-
-        Returns:
-            A JSON-decoded object containing the status information of the requested video.
-
-        Raises:
-            requests.HTTPError: Raised if the HTTP request fails or the server returns an unsuccessful status code.
+            requests.exceptions.HTTPError: If the HTTP request returns an unsuccessful status code.
 
         Tags:
             get, video, status, api
         """
         url = f"{self.base_url}/v1/video_status.get"
-        query_params = {k: v for k, v in [("video_id", video_id)] if v is not None}
-        response = await self._aget(url, params=query_params)
-        response.raise_for_status()
-        return response.json()
+        
+        params = {
+            "video_id": video_id
+        }
+        
+        response = await self._aget(url=url, params=params)
+        return self._handle_response(response)
+
+    async def create_folder(
+        self,
+        name: str,
+        # Allowed values from screenshot: video_translate, instant_avatar, video, asset, brand_kit, mixed
+        project_type: Literal[
+            "video_translate", 
+            "instant_avatar", 
+            "video", 
+            "asset", 
+            "brand_kit", 
+            "mixed"
+        ] = "mixed",
+        parent_id: Optional[str] = None
+    ) -> Any:
+        """
+        Creates a new folder under your account using the /v1/folders/create endpoint.
+
+        Args:
+            name: The name of the folder.
+            project_type: The type of projects the folder will contain. Defaults to "mixed".
+                          Allowed values: "video_translate", "instant_avatar", "video", "asset", "brand_kit", "mixed".
+            parent_id: Optional ID of the parent folder.
+
+        Returns:
+            A JSON-decoded object containing the created folder details.
+
+        Raises:
+            requests.exceptions.HTTPError: If the HTTP request returns an unsuccessful status code.
+
+        Tags:
+            create, folder, api
+        """
+        url = f"{self.base_url}/v1/folders/create"
+        
+        payload = {
+            "name": name,
+            "project_type": project_type
+        }
+        
+        if parent_id:
+            payload["parent_id"] = parent_id
+            
+        response = await self._apost(url=url, data=payload)
+        return self._handle_response(response)
+
+    async def list_folders(
+        self,
+        limit: Optional[int] = None, # Accepts values from 0 to 100
+        parent_id: Optional[str] = None,
+        name_filter: Optional[str] = None,
+        is_trash: bool = False,
+        token: Optional[str] = None
+    ) -> Any:
+        """
+        Retrieves a paginated list of folders created under your account using the /v1/folders endpoint.
+
+        Args:
+            limit: The maximum number of folders to return (0 to 100).
+            parent_id: Optional ID of the parent folder to list children of.
+            name_filter: Optional string to filter folders by name.
+            is_trash: Whether to list folders in the trash. Defaults to False.
+            token: Pagination token for retrieving the next page of results.
+
+        Returns:
+            A JSON-decoded object containing the list of folders and pagination info.
+
+        Raises:
+            requests.exceptions.HTTPError: If the HTTP request returns an unsuccessful status code.
+
+        Tags:
+            list, folders, api
+        """
+        url = f"{self.base_url}/v1/folders"
+        
+        params = {}
+        
+        if limit is not None:
+            params["limit"] = limit
+        if parent_id:
+            params["parent_id"] = parent_id
+        if name_filter:
+            params["name_filter"] = name_filter
+        if is_trash:
+            params["is_trash"] = "true"
+        if token:
+            params["token"] = token
+            
+        response = await self._aget(url=url, params=params)
+        return self._handle_response(response)
+
+    async def update_folder(
+        self,
+        folder_id: str,
+        name: str
+    ) -> Any:
+        """
+        Updates the name of an existing folder using the /v1/folders/{folder_id} endpoint.
+
+        Args:
+            folder_id: The unique identifier of the folder to update.
+            name: The new name for the folder.
+
+        Returns:
+            A JSON-decoded object containing the updated folder details.
+
+        Raises:
+            requests.exceptions.HTTPError: If the HTTP request returns an unsuccessful status code.
+
+        Tags:
+            update, folder, api
+        """
+        url = f"{self.base_url}/v1/folders/{folder_id}"
+        payload = {
+            "name": name
+        }
+        
+        response = await self._apost(url=url, data=payload)
+        return self._handle_response(response)
+
+    async def trash_folder(
+        self,
+        folder_id: str
+    ) -> Any:
+        """
+        Deletes (trashes) a specific folder by its unique folder ID using the /v1/folders/{folder_id}/trash endpoint.
+
+        Args:
+            folder_id: The unique identifier of the folder to move to trash.
+
+        Returns:
+            A JSON-decoded object confirming the action.
+
+        Raises:
+            requests.exceptions.HTTPError: If the HTTP request returns an unsuccessful status code.
+
+        Tags:
+            delete, trash, folder, api
+        """
+        url = f"{self.base_url}/v1/folders/{folder_id}/trash"
+        response = await self._apost(url=url)
+        return self._handle_response(response)
+
+    async def restore_folder(
+        self,
+        folder_id: str
+    ) -> Any:
+        """
+        Restores a previously deleted folder using the /v1/folders/{folder_id}/restore endpoint.
+
+        Args:
+            folder_id: The unique identifier of the folder to restore.
+
+        Returns:
+            A JSON-decoded object confirming the action.
+
+        Raises:
+            requests.exceptions.HTTPError: If the HTTP request returns an unsuccessful status code.
+
+        Tags:
+            restore, folder, api
+        """
+        url = f"{self.base_url}/v1/folders/{folder_id}/restore"        
+        response = await self._apost(url=url)
+        return self._handle_response(response)
 
     def list_tools(self):
         return [
-            self.get_v1_voice_list,
-            self.get_v1_avatar_list,
-            self.get_v2_voices,
             self.get_v2_avatars,
-            self.get_v1_video_list,
-            self.post_v2_video_generate,
-            self.delete_v1_video,
-            self.get_v2_templates,
-            self.get_v2_template_by_id,
-            self.post_v2_template_generate_by_id,
-            self.get_v2_video_translate_target_languages,
-            self.post_v2_video_translate,
-            self.get_v2_video_translate_status_by_id,
-            self.post_streaming_new,
-            self.get_streaming_list,
-            self.post_streaming_ice,
-            self.post_streaming_task,
-            self.post_streaming_stop,
-            self.post_streaming_interrupt,
-            self.post_streaming_create_token,
-            self.get_streaming_avatar_list,
-            self.get_v1_webhook_list,
-            self.post_v1_webhook_endpoint_add,
-            self.delete_v1_webhook_endpoint_by_id,
-            self.get_v1_webhook_endpoint_list,
-            self.get_v1_talking_photo_list,
-            self.delete_v2_talking_photo_by_id,
-            self.post_personalized_video_add_contact,
-            self.get_personalized_video_audience_detail,
-            self.get_personalized_video_project_detail,
-            self.get_v2_user_remaining_quota,
-            self.post_v1_asset_upload,
-            self.get_v1_video_status,
+            self.list_avatar_groups,
+            self.list_avatars_in_group,
+            self.get_avatar_details,
+            self.create_avatar_video,
+            self.get_video_status,
+            self.create_folder,
+            self.list_folders,
+            self.update_folder,
+            self.trash_folder,
+            self.restore_folder,
         ]
