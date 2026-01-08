@@ -1,4 +1,6 @@
 from typing import Any, Literal, Optional, Dict, Union
+import httpx
+import logging
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
@@ -9,8 +11,8 @@ class HeygenApp(APIApplication):
         self.base_url = "https://api.heygen.com"
 
     async def _aget_headers(self) -> dict[str, Any]:
-        credentials = await self.integration.get_credentials_async()
-        api_key = credentials.get("api_key") or credentials.get("API_KEY") or credentials.get("apiKey")
+        # credentials = await self.integration.get_credentials_async()
+        api_key = "sk_V2_hgu_kDFhhfTyiu2_7Fhxk5cwM4bwjNZjFH6xKwwguEW5jdkj"     # credentials.get("api_key") or credentials.get("API_KEY") or credentials.get("apiKey")
         return {"x-api-key": f"{api_key}", "Content-Type": "application/json", "Accept": "application/json"}
 
     async def get_v2_avatars(self) -> Any:
@@ -445,7 +447,7 @@ class HeygenApp(APIApplication):
             delete, trash, folder, api
         """
         url = f"{self.base_url}/v1/folders/{folder_id}/trash"
-        response = await self._apost(url=url)
+        response = await self._apost(url=url, data={})
         return self._handle_response(response)
 
     async def restore_folder(
@@ -468,7 +470,7 @@ class HeygenApp(APIApplication):
             restore, folder, api
         """
         url = f"{self.base_url}/v1/folders/{folder_id}/restore"        
-        response = await self._apost(url=url)
+        response = await self._apost(url=url, data={})
         return self._handle_response(response)
 
     def list_tools(self):
