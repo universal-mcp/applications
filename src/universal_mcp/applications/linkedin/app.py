@@ -946,6 +946,336 @@ class LinkedinApp(APIApplication):
         response = self._get(url, params=params)
         return self._handle_response(response)
 
+    async def list_job_postings(
+        self,
+        category: Literal["active", "draft", "closed"] = "active",
+        limit: int | None = None,
+        cursor: str | None = None,
+    ) -> dict[str, Any]:
+        """
+        Retrieve the job offers you have posted on LinkedIn whether they are open, closed, or still drafts.
+
+        Args:
+            category: The state of the requested job postings. Default is active.
+            limit: A limit for the number of items returned in the response. The value can be set between 1 and 250.
+            cursor: A cursor for pagination purposes.
+
+        Returns:
+            A dictionary containing a list of job postings and pagination details.
+
+        Raises:
+            httpx.HTTPError: If the API request fails.
+
+        Tags:
+            linkedin, jobs, list, postings, api
+        """
+        url = f"{self.base_url}/api/v1/linkedin/jobs"
+        params: dict[str, Any] = {"account_id": await self._get_account_id()}
+        if category:
+            params["category"] = category
+        if limit:
+            params["limit"] = limit
+        if cursor:
+            params["cursor"] = cursor
+        response = await self._aget(url, params=params)
+        return self._handle_response(response)
+
+    async def create_job_posting(
+        self,
+        job_title: dict[str, str],
+        company: dict[str, str],
+        workplace: Literal["ON_SITE", "HYBRID", "REMOTE"],
+        location: str,
+        description: str,
+        employment_status: Literal[
+            "FULL_TIME", "PART_TIME", "CONTRACT", "TEMPORARY", "OTHER", "VOLUNTEER", "INTERNSHIP"
+        ] = "FULL_TIME",
+        auto_rejection_template: str | None = None,
+        screening_questions: list[dict[str, Any]] | None = None,
+        recruiter: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """
+        Create a new job offer draft.
+
+        Args:
+            job_title: Required. A dictionary containing either {"id": "..."} or {"text": "..."}.
+            company: Required. A dictionary containing either {"id": "..."} or {"text": "..."}.
+            workplace: Required. One of "ON_SITE", "HYBRID", "REMOTE".
+            location: Required. The ID of the location parameter. Use type LOCATION on the List search parameters route.
+            description: Required. HTML description of the job.
+            employment_status: Optional. One of "FULL_TIME", "PART_TIME", "CONTRACT", "TEMPORARY", "OTHER", "VOLUNTEER", "INTERNSHIP".
+            auto_rejection_template: Optional. A rejection message template.
+            screening_questions: Optional. A list of screening questions.
+            recruiter: Optional. Recruiter object containing:
+                - project: Required. {"id": "..."} or {"name": "..."}.
+                - functions: Required. List of strings (job function IDs).
+                - industries: Required. List of strings (industry IDs).
+                - seniority: Required. Enum (e.g. "INTERNSHIP", "ENTRY_LEVEL", "ASSOCIATE", "MID_SENIOR_LEVEL", "DIRECTOR", "EXECUTIVE", "NOT_APPLICABLE").
+                - apply_method: Required. {"apply_within_linkedin": ...} or {"apply_through_external_website": ...}.
+                - include_poster_info: Optional boolean.
+                - tracking_pixel_url: Optional string.
+                - company_job_id: Optional string.
+                - auto_archive_applicants: Optional object.
+                - send_rejection_notification: Optional boolean.
+
+        Returns:
+            A dictionary containing the response from the API.
+
+        Raises:
+            httpx.HTTPError: If the API request fails.
+        """
+        url = f"{self.base_url}/api/v1/linkedin/jobs"
+        payload: dict[str, Any] = {
+            "account_id": await self._get_account_id(),
+            "job_title": job_title,
+            "company": company,
+            "workplace": workplace,
+            "location": location,
+            "description": description,
+            "employment_status": employment_status,
+        }
+        if auto_rejection_template:
+            payload["auto_rejection_template"] = auto_rejection_template
+        if screening_questions:
+            payload["screening_questions"] = screening_questions
+        if recruiter:
+            payload["recruiter"] = recruiter
+
+        response = await self._apost(url, data=payload)
+        return self._handle_response(response)
+
+    async def close_job_posting(
+        self,
+        job_id: str,
+        service: Literal["CLASSIC", "RECRUITER"] | None = None,
+    ) -> dict[str, Any]:
+        """
+        Close a job offer you have posted.
+
+        Args:
+            job_id: Required. The ID of the job offer.
+            service: Optional. The Linkedin service the job posting depends on.
+
+        Returns:
+            A dictionary containing the response from the API.
+
+        Raises:
+            httpx.HTTPError: If the API request fails.
+        """
+        url = f"{self.base_url}/api/v1/linkedin/jobs/{job_id}/close"
+        params: dict[str, Any] = {"account_id": await self._get_account_id()}
+        if service:
+            params["service"] = service
+        response = await self._apost(url, params=params, data={})
+        return self._handle_response(response)
+
+    async def retrieve_job_posting(
+        self,
+        job_id: str,
+        service: Literal["CLASSIC", "RECRUITER"] = "CLASSIC",
+    ) -> dict[str, Any]:
+        """
+        Retrieve a job offer.
+
+        Args:
+            job_id: Required. The ID of the job offer.
+            service: Required. The Linkedin service the job posting depends on. Default is CLASSIC.
+
+        Returns:
+            A dictionary containing the job offer details.
+
+        Raises:
+            httpx.HTTPError: If the API request fails.
+        """
+        url = f"{self.base_url}/api/v1/linkedin/jobs/{job_id}"
+        params: dict[str, Any] = {"account_id": await self._get_account_id(), "service": service}
+        response = await self._aget(url, params=params)
+        return self._handle_response(response)
+
+    async def publish_job_posting(
+        self,
+        draft_id: str,
+        mode: Literal["FREE"] = "FREE",
+        service: Literal["CLASSIC", "RECRUITER"] = "CLASSIC",
+        hiring_photo_frame: bool | None = None,
+        bypass_email_verification: bool | None = None,
+    ) -> dict[str, Any]:
+        """
+        Publish the job posting draft you have been working on.
+
+        Args:
+            draft_id: Required. The id of the draft to publish.
+            mode: Required. "FREE".
+            service: Optional. The Linkedin service the job posting depends on. Default is CLASSIC.
+            hiring_photo_frame: Optional. Whether or not to add the hiring photo frame to you profile picture.
+            bypass_email_verification: Optional. Whether or not to verify if you're allowed to post a job on behalf on the current company.
+
+        Returns:
+            A dictionary containing the response from the API.
+
+        Raises:
+            httpx.HTTPError: If the API request fails.
+        """
+        url = f"{self.base_url}/api/v1/linkedin/jobs/{draft_id}/publish"
+        payload: dict[str, Any] = {
+            "account_id": await self._get_account_id(),
+            "mode": mode,
+            "service": service,
+        }
+        if hiring_photo_frame is not None:
+            payload["hiring_photo_frame"] = hiring_photo_frame
+        if bypass_email_verification is not None:
+            payload["bypass_email_verification"] = bypass_email_verification
+        
+        response = await self._apost(url, data=payload)
+        return self._handle_response(response)
+
+    async def solve_job_publishing_checkpoint(
+        self,
+        draft_id: str,
+        input: str,
+    ) -> dict[str, Any]:
+        """
+        Solve a checkpoint to verify your member privileges.
+
+        Args:
+            draft_id: Required. The id of the draft to solve the checkpoint from.
+            input: Required. The code or input to solve the checkpoint.
+
+        Returns:
+            A dictionary containing the response from the API.
+
+        Raises:
+            httpx.HTTPError: If the API request fails.
+        """
+        url = f"{self.base_url}/api/v1/linkedin/jobs/{draft_id}/checkpoint"
+        payload: dict[str, Any] = {
+            "account_id": await self._get_account_id(),
+            "input": input,
+        }
+        response = await self._apost(url, data=payload)
+        return self._handle_response(response)
+
+    async def list_job_applicants(
+        self,
+        job_id: str,
+        limit: int = 100,
+        cursor: str | None = None,
+        service: Literal["CLASSIC", "RECRUITER"] = "CLASSIC",
+        sort_by: Literal[
+            "relevance", "alphabetical", "newest_first", "screening_requirements"
+        ]
+        | None = None,
+        keywords: str | None = None,
+        ratings: str | None = None,
+        min_years_in_company: float | None = None,
+        max_years_in_company: float | None = None,
+        min_years_in_position: float | None = None,
+        max_years_in_position: float | None = None,
+        min_years_of_experience: float | None = None,
+        max_years_of_experience: float | None = None,
+    ) -> dict[str, Any]:
+        """
+        Retrieve all the users that have applied to a given offer.
+
+        Args:
+            job_id: Required. The ID of the job offer.
+            limit: Optional. The number of results to return. Default 100.
+            cursor: Optional. The cursor to retrieve the next page.
+            service: Optional. The Linkedin service the job posting depends on. Default is CLASSIC.
+            sort_by: Optional. The sorting rule for applicants. Recruiter only.
+            keywords: Optional. Filter results with keywords.
+            ratings: Optional. One or more ratings (UNRATED, GOOD_FIT, MAYBE, NOT_A_FIT) separated by commas.
+            min_years_in_company: Optional. Linkedin Recruiter native filter.
+            max_years_in_company: Optional. Linkedin Recruiter native filter.
+            min_years_in_position: Optional. Linkedin Recruiter native filter.
+            max_years_in_position: Optional. Linkedin Recruiter native filter.
+            min_years_of_experience: Optional. Linkedin Recruiter native filter.
+            max_years_of_experience: Optional. Linkedin Recruiter native filter.
+
+        Returns:
+            A dictionary containing the list of applicants.
+
+        Raises:
+            httpx.HTTPError: If the API request fails.
+        """
+        url = f"{self.base_url}/api/v1/linkedin/jobs/{job_id}/applicants"
+        params: dict[str, Any] = {
+            "account_id": await self._get_account_id(),
+            "limit": limit,
+            "service": service,
+        }
+        if cursor:
+            params["cursor"] = cursor
+        if sort_by:
+            params["sort_by"] = sort_by
+        if keywords:
+            params["keywords"] = keywords
+        if ratings:
+            params["ratings"] = ratings
+        if min_years_in_company is not None:
+            params["min_years_in_company"] = min_years_in_company
+        if max_years_in_company is not None:
+            params["max_years_in_company"] = max_years_in_company
+        if min_years_in_position is not None:
+            params["min_years_in_position"] = min_years_in_position
+        if max_years_in_position is not None:
+            params["max_years_in_position"] = max_years_in_position
+        if min_years_of_experience is not None:
+            params["min_years_of_experience"] = min_years_of_experience
+        if max_years_of_experience is not None:
+            params["max_years_of_experience"] = max_years_of_experience
+
+        response = await self._aget(url, params=params)
+        return self._handle_response(response)
+
+    async def retrieve_job_applicant(
+        self,
+        applicant_id: str,
+    ) -> dict[str, Any]:
+        """
+        Retrieve the details of a user that has applied to a given offer. Applies to Classic job posting only.
+
+        Args:
+            applicant_id: Required. The ID of the applicant.
+
+        Returns:
+            A dictionary containing the applicant details.
+
+        Raises:
+            httpx.HTTPError: If the API request fails.
+        """
+        url = f"{self.base_url}/api/v1/linkedin/jobs/applicants/{applicant_id}"
+        params: dict[str, Any] = {"account_id": await self._get_account_id()}
+        response = await self._aget(url, params=params)
+        return self._handle_response(response)
+
+    async def download_job_applicant_resume(
+        self,
+        applicant_id: str,
+        service: Literal["CLASSIC", "RECRUITER"] = "CLASSIC",
+    ) -> dict[str, Any]:
+        """
+        Download the resume of a job applicant.
+
+        Args:
+            applicant_id: Required. The ID of the job applicant.
+            service: Optional. The Linkedin service the applicant depends on. Default is classic.
+
+        Returns:
+            A dictionary containing the resume details (likely a download URL or binary content, depending on API response).
+
+        Raises:
+            httpx.HTTPError: If the API request fails.
+        """
+        url = f"{self.base_url}/api/v1/linkedin/jobs/applicants/{applicant_id}/resume"
+        params: dict[str, Any] = {
+            "account_id": await self._get_account_id(),
+            "service": service,
+        }
+        response = await self._aget(url, params=params)
+        return self._handle_response(response)
+
     def list_tools(self) -> list[Callable]:
         return [
             self.start_new_chat,
@@ -975,4 +1305,13 @@ class LinkedinApp(APIApplication):
             self.handle_received_invitation,
             self.list_followers,
             # self.list_following       this endpoint is not yet implemented by unipile
+            self.list_job_postings,
+            self.create_job_posting,
+            self.close_job_posting,
+            self.retrieve_job_posting,
+            self.publish_job_posting,
+            self.solve_job_publishing_checkpoint,
+            self.list_job_applicants,
+            self.retrieve_job_applicant,
+            self.download_job_applicant_resume,
         ]
