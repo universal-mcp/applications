@@ -33,7 +33,7 @@ class GoogleDocsApp(APIApplication):
         payload["Note"] = "You must load and call other google docs content functions (like google_docs__insert_text)"
         return payload
 
-    def get_document(self, document_id: str) -> dict[str, Any]:
+    async def get_document(self, document_id: str) -> dict[str, Any]:
         """
         Retrieves the complete, raw JSON object for a Google Document by its ID. This function returns the full, unprocessed API response with all metadata and structural elements, distinguishing it from `get_document_content`, which parses this data to extract only the title and plain text.
 
@@ -51,7 +51,7 @@ class GoogleDocsApp(APIApplication):
             retrieve, read, api, document, google-docs, important
         """
         url = f"{self.base_api_url}/{document_id}"
-        response = self._get(url)
+        response = await self._aget(url)
         return response.json()
 
     async def get_document_content(self, document_id: str) -> dict[str, Any]:
@@ -85,7 +85,7 @@ class GoogleDocsApp(APIApplication):
         """
         import re
 
-        response = self.get_document(document_id)
+        response = await self.get_document(document_id)
         title = response.get("title", "")
         body_content = response.get("body", {}).get("content", [])
         inline_objects = response.get("inlineObjects", {})
@@ -714,9 +714,11 @@ class GoogleDocsApp(APIApplication):
     def list_tools(self):
         return [
             self.create_document,
+            self.get_document,
             self.get_document_content,
             self.insert_text,
             self.apply_text_style,
+            self.update_paragraph_style,
             self.delete_content_range,
             self.insert_table,
             self.create_footer,
@@ -726,5 +728,4 @@ class GoogleDocsApp(APIApplication):
             self.delete_header,
             self.apply_list_style,
             self.delete_paragraph_bullets,
-            self.update_paragraph_style,
         ]

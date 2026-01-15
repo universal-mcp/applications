@@ -1,13 +1,9 @@
-from pathlib import Path
 from typing import Any, Literal
 from fal_client import AsyncClient, AsyncRequestHandle, Status
 from loguru import logger
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.exceptions import NotAuthorizedError, ToolError
 from universal_mcp.integrations import Integration
-
-Priority = Literal["normal", "low"]
-
 
 class FalaiApp(APIApplication):
     """
@@ -38,226 +34,225 @@ class FalaiApp(APIApplication):
             self._fal_client = AsyncClient(key=api_key)
         return self._fal_client
 
-    async def run(
-        self, arguments: Any, application: str = "fal-ai/flux/dev", path: str = "", timeout: float | None = None, hint: str | None = None
-    ) -> Any:
-        """
-        Executes a Fal AI application synchronously, waiting for completion and returning the result directly. This method is suited for short-running tasks, unlike `submit` which queues a job for asynchronous processing and returns a request ID instead of the final output.
-
-        Args:
-            arguments: A dictionary of arguments for the application
-            application: The name or ID of the Fal application (defaults to 'fal-ai/flux/dev')
-            path: Optional subpath for the application endpoint
-            timeout: Optional timeout in seconds for the request
-            hint: Optional hint for runner selection
-
-        Returns:
-            The result of the application execution as a Python object (converted from JSON response)
-
-        Raises:
-            ToolError: Raised when the Fal API request fails, wrapping the original exception
-
-        Tags:
-            run, execute, ai, synchronous, fal, important
-        """
-        try:
-            client = await self.get_fal_client()
-            result = await client.run(application=application, arguments=arguments, path=path, timeout=timeout, hint=hint)
-            return result
-        except Exception as e:
-            logger.error(f"Error running Fal application {application}: {e}", exc_info=True)
-            raise ToolError(f"Failed to run Fal application {application}: {e}") from e
-
-    async def submit(
-        self,
-        arguments: Any,
-        application: str = "fal-ai/flux/dev",
-        path: str = "",
-        hint: str | None = None,
-        webhook_url: str | None = None,
-        priority: Priority | None = None,
-    ) -> str:
-        """
-        Submits a job to the Fal AI queue for asynchronous processing, immediately returning a request ID. This contrasts with the `run` method, which waits for completion. The returned ID is used by `check_status`, `get_result`, and `cancel` to manage the job's lifecycle.
-
-        Args:
-            arguments: A dictionary of arguments for the application
-            application: The name or ID of the Fal application, defaulting to 'fal-ai/flux/dev'
-            path: Optional subpath for the application endpoint
-            hint: Optional hint for runner selection
-            webhook_url: Optional URL to receive a webhook when the request completes
-            priority: Optional queue priority ('normal' or 'low')
-
-        Returns:
-            The request ID (str) of the submitted asynchronous job
-
-        Raises:
-            ToolError: Raised when the Fal API request fails, wrapping the original exception
-
-        Tags:
-            submit, async_job, start, ai, queue
-        """
-        try:
-            client = await self.get_fal_client()
-            handle: AsyncRequestHandle = await client.submit(
-                application=application, arguments=arguments, path=path, hint=hint, webhook_url=webhook_url, priority=priority
-            )
-            request_id = handle.request_id
-            return request_id
-        except Exception as e:
-            logger.error(f"Error submitting Fal application {application}: {e}", exc_info=True)
-            raise ToolError(f"Failed to submit Fal application {application}: {e}") from e
-
-    async def check_status(self, request_id: str, application: str = "fal-ai/flux/dev", with_logs: bool = False) -> Status:
-        """
-        Checks the execution state (e.g., Queued, InProgress) of an asynchronous Fal AI job using its request ID. It provides a non-blocking way to monitor jobs initiated via `submit` without fetching the final `result`, and can optionally include logs.
-
-        Args:
-            request_id: The unique identifier of the submitted request, obtained from a previous submit operation
-            application: The name or ID of the Fal application (defaults to 'fal-ai/flux/dev')
-            with_logs: Boolean flag to include execution logs in the status response (defaults to False)
-
-        Returns:
-            A Status object containing the current state of the request (Queued, InProgress, or Completed)
-
-        Raises:
-            ToolError: Raised when the Fal API request fails or when the provided request ID is invalid
-
-        Tags:
-            status, check, async_job, monitoring, ai
-        """
-        try:
-            client = await self.get_fal_client()
-            handle = client.get_handle(application=application, request_id=request_id)
-            status = await handle.status(with_logs=with_logs)
-            return status
-        except Exception as e:
-            logger.error(f"Error getting status for Fal request_id {request_id}: {e}", exc_info=True)
-            raise ToolError(f"Failed to get status for Fal request_id {request_id}: {e}") from e
-
-    async def get_result(self, request_id: str, application: str = "fal-ai/flux/dev") -> Any:
-        """
-        Retrieves the final result of an asynchronous job, identified by its `request_id`. This function waits for the job, initiated via `submit`, to complete. Unlike the non-blocking `check_status`, this method blocks execution to fetch and return the job's actual output upon completion.
-
-        Args:
-            request_id: The unique identifier of the submitted request
-            application: The name or ID of the Fal application (defaults to 'fal-ai/flux/dev')
-
-        Returns:
-            The result of the application execution, converted from JSON response to Python data structures (dict/list)
-
-        Raises:
-            ToolError: When the Fal API request fails or the request does not complete successfully
-
-        Tags:
-            result, async-job, status, wait, ai
-        """
-        try:
-            client = await self.get_fal_client()
-            handle = client.get_handle(application=application, request_id=request_id)
-            result = await handle.get()
-            return result
-        except Exception as e:
-            logger.error(f"Error getting result for Fal request_id {request_id}: {e}", exc_info=True)
-            raise ToolError(f"Failed to get result for Fal request_id {request_id}: {e}") from e
-
-    async def cancel(self, request_id: str, application: str = "fal-ai/flux/dev") -> None:
-        """
-        Asynchronously cancels a running or queued Fal AI job using its `request_id`. This function complements the `submit` method, providing a way to terminate asynchronous tasks before completion. It raises a `ToolError` if the cancellation request fails.
-
-        Args:
-            request_id: The unique identifier of the submitted Fal AI request to cancel
-            application: The name or ID of the Fal application (defaults to 'fal-ai/flux/dev')
-
-        Returns:
-            None. The function doesn't return any value.
-
-        Raises:
-            ToolError: Raised when the cancellation request fails due to API errors or if the request cannot be cancelled
-
-        Tags:
-            cancel, async_job, ai, fal, management
-        """
-        try:
-            client = await self.get_fal_client()
-            handle = client.get_handle(application=application, request_id=request_id)
-            await handle.cancel()
-            return None
-        except Exception as e:
-            logger.error(f"Error cancelling Fal request_id {request_id}: {e}", exc_info=True)
-            raise ToolError(f"Failed to cancel Fal request_id {request_id}: {e}") from e
-
-    async def upload_file(self, path: str) -> str:
-        """
-        Asynchronously uploads a local file to the Fal Content Delivery Network (CDN), returning a public URL. This URL makes the file accessible for use as input in other Fal AI job execution methods like `run` or `submit`. A `ToolError` is raised if the upload fails.
-
-        Args:
-            path: The absolute or relative path to the local file
-
-        Returns:
-            A string containing the public URL of the uploaded file on the CDN
-
-        Raises:
-            ToolError: If the file is not found or if the upload operation fails
-
-        Tags:
-            upload, file, cdn, storage, async, important
-        """
-        try:
-            client = await self.get_fal_client()
-            file_url = await client.upload_file(Path(path))
-            return file_url
-        except FileNotFoundError as e:
-            logger.error(f"File not found for upload: {path}", exc_info=True)
-            raise ToolError(f"File not found: {path}") from e
-        except Exception as e:
-            logger.error(f"Error uploading file {path} to Fal CDN: {e}", exc_info=True)
-            raise ToolError(f"Failed to upload file {path}: {e}") from e
-
-    async def run_image_generation(
+    async def generate_image(
         self,
         prompt: str,
-        seed: int | None = 6252023,
-        image_size: str | None = "landscape_4_3",
+        model: Literal[
+            "fal-ai/flux/dev", "fal-ai/recraft-v3", "fal-ai/stable-diffusion-v35-large"
+        ] = "fal-ai/flux/dev",
+        image_size: Literal[
+            "square_hd", "square", "portrait_4_3", "portrait_16_9", "landscape_4_3", "landscape_16_9"
+        ]
+        | None = "landscape_4_3",
         num_images: int | None = 1,
+        seed: int | None = None,
+        safety_tolerance: str | None = None,
         extra_arguments: dict[str, Any] | None = None,
-        path: str = "",
-        timeout: float | None = None,
-        hint: str | None = None,
     ) -> Any:
         """
-        A specialized wrapper for the `run` method that synchronously generates images using the 'fal-ai/flux/dev' model. It simplifies image creation with common parameters like `prompt` and `seed`, waits for the task to complete, and directly returns the result containing image URLs and metadata.
+        Generates an image from a text prompt using specified Fal AI models.
+        This tool supports state-of-the-art models like Flux, Recraft V3, and Stable Diffusion 3.5.
 
         Args:
-            prompt: The text prompt used to guide the image generation
-            seed: Random seed for reproducible image generation (default: 6252023)
-            image_size: Dimensions of the generated image (default: 'landscape_4_3')
-            num_images: Number of images to generate in one request (default: 1)
-            extra_arguments: Additional arguments dictionary to pass to the application, can override defaults
-            path: Subpath for the application endpoint (rarely used)
-            timeout: Maximum time in seconds to wait for the request to complete
-            hint: Hint string for runner selection
+            prompt: The text description of the image to generate.
+            model: The model to use for generation. Options:
+                   - 'fal-ai/flux/dev': High-quality, 12B param flow transformer.
+                   - 'fal-ai/recraft-v3': SOTA model, great for text, vector art, and brand styles.
+                   - 'fal-ai/stable-diffusion-v35-large': MMDiT model, excellent typography and complex prompts.
+                   Defaults to 'fal-ai/flux/dev'.
+            image_size: The size/aspect ratio of the generated image. Common values: 'landscape_4_3', 'square_hd'.
+            num_images: Number of images to generate (default: 1).
+            seed: Optional random seed for reproducibility.
+            safety_tolerance: Optional safety filter level (if supported by model).
+            extra_arguments: Additional model-specific parameters to pass in the request.
 
         Returns:
-            A dictionary containing the generated image URLs and related metadata
-
-        Raises:
-            ToolError: When the image generation request fails or encounters an error
+            A dictionary containing the generated image URLs and metadata.
 
         Tags:
-            generate, image, ai, async, important, flux, customizable, default
+            generate, image, text-to-image, ai, flux, recraft, stable-diffusion, important
         """
-        application = "fal-ai/flux/dev"
-        arguments = {"prompt": prompt, "seed": seed, "image_size": image_size, "num_images": num_images}
+        arguments = {"prompt": prompt}
+
+        # Common arguments that most models support
+        if image_size:
+            arguments["image_size"] = image_size
+        if num_images:
+            arguments["num_images"] = num_images
+        if seed is not None:
+            arguments["seed"] = seed
+        if safety_tolerance:
+            arguments["safety_tolerance"] = safety_tolerance
+
         if extra_arguments:
             arguments.update(extra_arguments)
             logger.debug(f"Merged extra_arguments. Final arguments: {arguments}")
-        try:    
+
+        try:
             client = await self.get_fal_client()
-            result = await client.run(application=application, arguments=arguments, path=path, timeout=timeout, hint=hint)
+            # The run method is equivalent to subscribe() in the JS SDK - it submits and waits for the result.
+            result = await client.run(application=model, arguments=arguments)
             return result
-        except Exception:
-            raise
+        except Exception as e:
+            logger.error(f"Error generating image with model {model}: {e}", exc_info=True)
+            raise ToolError(f"Failed to generate image with {model}: {e}") from e
+
+    async def submit_video_generation(
+        self,
+        image_url: str,
+        prompt: str = "",
+        model: Literal[
+            "fal-ai/minimax-video/image-to-video",
+            "fal-ai/luma-dream-machine/image-to-video",
+            "fal-ai/kling-video/v1/standard/image-to-video",
+        ] = "fal-ai/minimax-video/image-to-video",
+        duration: Literal["5", "10"] | None = None,
+        aspect_ratio: Literal["16:9", "9:16", "1:1"] | None = None,
+        extra_arguments: dict[str, Any] | None = None,
+    ) -> str:
+        """
+        Submits a video generation task using Fal AI models and returns a request ID.
+        This is an asynchronous operation. Use `get_generation_status` and `get_generation_result` with the returned ID.
+
+        Args:
+            image_url: URL of the input image.
+            prompt: Text prompt to guide the video generation.
+            model: The video generation model to use.
+            duration: Duration of the video in seconds (supported by some models like Kling).
+            aspect_ratio: Aspect ratio of the generated video (supported by some models like Kling).
+            extra_arguments: Additional model-specific parameters.
+
+        Returns:
+            The request ID (str) for the submitted task.
+
+        Tags:
+            submit, video, async, ai, minimax, luma, kling, important
+        """
+        arguments = {"image_url": image_url}
+        if prompt:
+            arguments["prompt"] = prompt
+        
+        if duration:
+            arguments["duration"] = duration
+        if aspect_ratio:
+            arguments["aspect_ratio"] = aspect_ratio
+            
+        if extra_arguments:
+            arguments.update(extra_arguments)
+            logger.debug(f"Merged extra_arguments for video generation. Final arguments: {arguments}")
+            
+        try:
+            client = await self.get_fal_client()
+            handle = await client.submit(application=model, arguments=arguments)
+            return handle.request_id
+        except Exception as e:
+            logger.error(f"Error submitting video generation with model {model}: {e}", exc_info=True)
+            raise ToolError(f"Failed to submit video generation with {model}: {e}") from e
+
+    async def get_generation_status(
+        self,
+        request_id: str,
+        model: Literal[
+            "fal-ai/minimax-video/image-to-video",
+            "fal-ai/luma-dream-machine/image-to-video",
+            "fal-ai/kling-video/v1/standard/image-to-video",
+        ] = "fal-ai/minimax-video/image-to-video",
+        with_logs: bool = False,
+    ) -> Status:
+        """
+        Checks the status of a video generation task.
+
+        Args:
+            request_id: The ID of the request to check.
+            model: The model used for the request (must match the submission).
+            with_logs: Whether to include logs in the status.
+
+        Returns:
+            A Status object (Queued, InProgress, Completed, or Failed).
+        
+        Tags:
+            check, status, video, async, important
+        """
+        try:
+            client = await self.get_fal_client()
+            handle = client.get_handle(application=model, request_id=request_id)
+            return await handle.status(with_logs=with_logs)
+        except Exception as e:
+            logger.error(f"Error getting status for request {request_id}: {e}", exc_info=True)
+            raise ToolError(f"Failed to get status for {request_id}: {e}") from e
+
+    async def get_generation_result(
+        self,
+        request_id: str,
+        model: Literal[
+            "fal-ai/minimax-video/image-to-video",
+            "fal-ai/luma-dream-machine/image-to-video",
+            "fal-ai/kling-video/v1/standard/image-to-video",
+        ] = "fal-ai/minimax-video/image-to-video",
+    ) -> Any:
+        """
+        Retrieves the result of a completed video generation task.
+        This method will block until the task is complete if it is not already.
+
+        Args:
+            request_id: The ID of the request.
+            model: The model used for the request.
+
+        Returns:
+            The final result of the generation (video URL and metadata).
+
+        Tags:
+            result, get, video, async, important
+        """
+        try:
+            client = await self.get_fal_client()
+            handle = client.get_handle(application=model, request_id=request_id)
+            return await handle.get()
+        except Exception as e:
+            logger.error(f"Error getting result for request {request_id}: {e}", exc_info=True)
+            raise ToolError(f"Failed to get result for {request_id}: {e}") from e
+
+    async def transcribe_audio(
+        self,
+        audio_url: str,
+        model: Literal["fal-ai/whisper"] = "fal-ai/whisper",
+        extra_arguments: dict[str, Any] | None = None,
+    ) -> Any:
+        """
+        Converts speech to text from an audio file URL using Fal AI models.
+
+        Args:
+            audio_url: URL of the audio file to transcribe.
+            model: The speech-to-text model to use. Options:
+                   - 'fal-ai/whisper': Standard Whisper model.
+                   Defaults to 'fal-ai/whisper'.
+            extra_arguments: Additional model-specific parameters.
+
+        Returns:
+            A dictionary containing the transcription text and metadata.
+
+        Tags:
+            transcribe, audio, speech-to-text, ai, whisper  
+        """
+        arguments = {"audio_url": audio_url}
+
+        if extra_arguments:
+            arguments.update(extra_arguments)
+            logger.debug(f"Merged extra_arguments for transcription. Final arguments: {arguments}")
+
+        try:
+            client = await self.get_fal_client()
+            result = await client.run(application=model, arguments=arguments)
+            return result
+        except Exception as e:
+            logger.error(f"Error transcribing audio with model {model}: {e}", exc_info=True)
+            raise ToolError(f"Failed to transcribe audio with {model}: {e}") from e
 
     def list_tools(self):
-        return [self.run, self.submit, self.check_status, self.get_result, self.cancel, self.upload_file, self.run_image_generation]
+        return [
+            self.generate_image,
+            self.submit_video_generation,
+            self.get_generation_status,
+            self.get_generation_result,
+            self.transcribe_audio
+        ]
