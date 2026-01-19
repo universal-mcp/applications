@@ -1455,6 +1455,60 @@ class GoogleSheetApp(APIApplication):
         response = await self._apost(url, data=request_body)
         return self._handle_response(response)
 
+    async def batch_update_values(
+        self,
+        spreadsheetId: str,
+        data: list[dict],
+        value_input_option: str = "USER_ENTERED",
+        include_values_in_response: bool = False,
+        response_value_render_option: str | None = None,
+        response_date_time_render_option: str | None = None,
+    ) -> dict[str, Any]:
+        """
+        Updates multiple ranges of values in a spreadsheet in a single batch request. This method allows you to update several disjoint ranges or multiple sheets simultaneously, which is more efficient than making separate calls for each range.
+
+        Args:
+            spreadsheetId: The unique identifier of the Google Spreadsheet to update. Example: "1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms"
+            data: A list of dictionaries, where each dictionary represents a range to update. Each dictionary must contain:
+                - range: The A1 notation of the range to update (e.g., "Sheet1!A1:B2").
+                - values: A 2D list of values to write into that range.
+                Example: [{"range": "Sheet1!A1", "values": [["Header"]]}, {"range": "Sheet2!B2", "values": [[100]]}]
+            value_input_option: How the input data should be interpreted. Options: "RAW" (as-is) or "USER_ENTERED" (parsed as if typed by user). Defaults to "USER_ENTERED".
+            include_values_in_response: If True, the response will include the values of the cells that were updated. Defaults to False.
+            response_value_render_option: Determines how values in the response should be rendered. Options: "FORMATTED_VALUE", "UNFORMATTED_VALUE", "FORMULA".
+            response_date_time_render_option: Determines how dates/times in the response should be rendered. Options: "SERIAL_NUMBER", "FORMATTED_STRING".
+
+        Returns:
+            A dictionary containing the Google Sheets API response with details of the batch update.
+
+        Raises:
+            HTTPError: When the API request fails due to invalid parameters or insufficient permissions
+            ValueError: When spreadsheetId is empty or data is empty
+
+        Tags:
+            batch, update, values, spreadsheet, write, important
+        """
+        if not spreadsheetId:
+            raise ValueError("spreadsheetId cannot be empty")
+        if not data:
+            raise ValueError("data cannot be empty")
+
+        url = f"{self.base_url}/{spreadsheetId}/values:batchUpdate"
+
+        request_body = {
+            "valueInputOption": value_input_option,
+            "data": data,
+            "includeValuesInResponse": include_values_in_response,
+        }
+
+        if response_value_render_option:
+            request_body["responseValueRenderOption"] = response_value_render_option
+        if response_date_time_render_option:
+            request_body["responseDateTimeRenderOption"] = response_date_time_render_option
+
+        response = await self._apost(url, data=request_body)
+        return self._handle_response(response)
+
     def list_tools(self):
         """Returns a list of methods exposed as tools."""
         return [
@@ -1483,4 +1537,5 @@ class GoogleSheetApp(APIApplication):
             self.analyze_table_schema,
             self.set_basic_filter,
             self.format_cells,
+            self.batch_update_values,
         ]
