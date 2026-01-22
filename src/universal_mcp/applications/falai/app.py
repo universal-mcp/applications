@@ -188,6 +188,7 @@ class FalaiApp(APIApplication):
             "fal-ai/minimax-video/image-to-video",
             "fal-ai/luma-dream-machine/image-to-video",
             "fal-ai/kling-video/v1/standard/image-to-video",
+            "fal-ai/kling-video/v2.6/pro/image-to-video",
         ] = "fal-ai/minimax-video/image-to-video",
     ) -> Any:
         """
@@ -248,10 +249,57 @@ class FalaiApp(APIApplication):
             logger.error(f"Error transcribing audio with model {model}: {e}", exc_info=True)
             raise ToolError(f"Failed to transcribe audio with {model}: {e}") from e
 
+    async def submit_start_end_video_generation(
+        self,
+        start_image_url: str,
+        end_image_url: str,
+        model: Literal[
+            "fal-ai/kling-video/v2.6/pro/image-to-video",
+        ] = "fal-ai/kling-video/v2.6/pro/image-to-video",
+        duration: Literal["5", "10"] | None = None,
+        extra_arguments: dict[str, Any] | None = None,
+    ) -> str:
+        """
+        Submits a video generation task using start and end images.
+
+        Args:
+            start_image_url: URL of the starting image.
+            end_image_url: URL of the ending image.
+            model: The video generation model to use. Defaults to 'fal-ai/kling-video/v2.6/pro/image-to-video'.
+            extra_arguments: Additional model-specific parameters.
+
+        Returns:
+            The request ID (str) for the submitted task.
+
+        Tags:
+            submit, video, async, ai, minimax, luma, kling, important
+        """
+        arguments = {
+            "start_image_url": start_image_url,
+            "end_image_url": end_image_url,
+            "generate_audio": False,
+        }
+
+        if duration:
+            arguments["duration"] = duration
+
+        if extra_arguments:
+            arguments.update(extra_arguments)
+            arguments["generate_audio"] = False
+
+        try:
+            client = await self.get_fal_client()
+            handle = await client.submit(application=model, arguments=arguments)
+            return handle.request_id
+        except Exception as e:
+            logger.error(f"Error submitting video generation with model {model}: {e}", exc_info=True)
+            raise ToolError(f"Failed to submit video generation with {model}: {e}") from e
+
     def list_tools(self):
         return [
             self.generate_image,
             self.submit_video_generation,
+            self.submit_start_end_video_generation,
             self.get_generation_status,
             self.get_generation_result,
             self.transcribe_audio
