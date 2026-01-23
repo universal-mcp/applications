@@ -12,15 +12,28 @@ from universal_mcp.integrations import Integration
 
 class AirtableApp(APIApplication):
     """
-    Application for interacting with the Airtable API to manage bases, tables,
-    and records. Requires an Airtable API key configured via integration.
+    A comprehensive interface for interacting with the Airtable API.
+    This application allows for the management of bases, tables, records, and fields,
+    enabling automation of data entry, retrieval, and schema modifications.
+    It requires a configured Airtable integration with a valid API key.
     """
 
     def __init__(self, integration: Integration | None = None) -> None:
         super().__init__(name="airtable", integration=integration)
 
     async def get_client(self) -> Api:
-        """Initializes and returns the pyairtable client after ensuring API key is set."""
+        """
+        Retrieves an authenticated pyairtable client instance.
+
+        This method validates the integration configuration and extracts the API key
+        to initialize the connection to Airtable.
+
+        Returns:
+            Api: An initialized pyairtable API client ready for API requests.
+
+        Raises:
+            ValueError: If the integration is missing or the API key is not configured.
+        """
         if not self.integration:
             raise ValueError("Integration is not set for AirtableApp.")
         credentials = await self.integration.get_credentials_async()
@@ -31,10 +44,16 @@ class AirtableApp(APIApplication):
 
     def _prepare_pyairtable_params(self, collected_options: dict[str, Any]) -> dict[str, Any]:
         """
-        Extracts the actual parameters for pyairtable from the collected options.
-        If `collected_options` contains a key "options" whose value is a dictionary
-        (as might come from a JSON tool call), that nested dictionary is used.
-        Otherwise, `collected_options` itself is assumed to contain the direct parameters.
+        Parses and extracts parameters for pyairtable method calls.
+
+        Handles nested 'options' dictionaries commonly received from tool calls,
+        flattening the structure to be compatible with pyairtable arguments.
+
+        Args:
+            collected_options: The raw dictionary of options passed to the method.
+
+        Returns:
+            dict[str, Any]: A dictionary of cleaned arguments ready for pyairtable.
         """
         nested_options = collected_options.get("options")
         if isinstance(nested_options, dict):
@@ -43,11 +62,13 @@ class AirtableApp(APIApplication):
 
     async def list_bases(self) -> list[Base] | str:
         """
-        Lists all bases accessible with the current API key.
+        Retrieves a list of all Airtable bases accessible to the authenticated user.
+
+        This is useful for discovering available workspaces and bases to interact with.
 
         Returns:
-            A list of pyairtable.api.base.Base objects on success,
-            or a string containing an error message on failure.
+            list[Base] | str: A list of Base objects containing metadata about each base,
+            or an error message string if the request fails.
 
         Tags:
             list, base, important
@@ -60,14 +81,14 @@ class AirtableApp(APIApplication):
 
     async def list_tables(self, base_id: str) -> list[Table] | str:
         """
-        Lists all tables within a specified base.
+        Retrieves the schema and metadata for all tables in a specific base.
 
         Args:
-            base_id: The ID of the base.
+            base_id: The unique identifier of the Airtable base (e.g., 'appAbc123').
 
         Returns:
-            A list of pyairtable.api.table.Table objects on success,
-            or a string containing an error message on failure.
+            list[Table] | str: A list of Table objects representing the tables in the base,
+            or an error message string if the request fails.
 
         Tags:
             list, table, important
@@ -81,19 +102,18 @@ class AirtableApp(APIApplication):
 
     async def get_record(self, base_id: str, table_id_or_name: str, record_id: RecordId, **options: Any) -> RecordDict | str:
         """
-        Retrieves a single record by its ID from a specified table within a base.
+        Fetches a specific record's data from a given table and base.
 
         Args:
-            base_id: The ID of the base.
-            table_id_or_name: The ID or name of the table.
-            record_id: The ID of the record to retrieve.
-            **options: Additional options for retrieving the record (e.g., cell_format, user_locale).
-                       If these are passed within a nested "options" dict from a tool call,
-                       they will be extracted.
+            base_id: The unique identifier of the Airtable base.
+            table_id_or_name: The name or ID of the table containing the record.
+            record_id: The unique identifier of the record to retrieve (e.g., 'recAbc123').
+            **options: Optional parameters to customize the response, such as 'cell_format' or 'user_locale'.
+                       Can be passed directly or within a nested 'options' dictionary.
 
         Returns:
-            A dictionary representing the record on success,
-            or a string containing an error message on failure.
+            RecordDict | str: A dictionary containing the record's fields and metadata,
+            or an error message string if the retrieval fails.
 
         Tags:
             get, record, important
@@ -108,19 +128,23 @@ class AirtableApp(APIApplication):
 
     async def list_records(self, base_id: str, table_id_or_name: str, **options: Any) -> list[RecordDict] | str:
         """
-        Lists records from a specified table within a base.
+        Retrieves a list of records from a table, optionally filtered or sorted.
+
+        Supports advanced querying features like filtering by formula, sorting, and limiting results.
 
         Args:
-            base_id: The ID of the base.
-            table_id_or_name: The ID or name of the table.
-            **options: Additional options for listing records (e.g., view, max_records, formula, sort).
-                       Formula can be a string or a pyairtable.formulas.Formula object.
-                       If these are passed within a nested "options" dict from a tool call,
-                       they will be extracted.
+            base_id: The unique identifier of the Airtable base.
+            table_id_or_name: The name or ID of the table to query.
+            **options: Query parameters including:
+                - view (str): The name or ID of a specific view to fetch records from.
+                - max_records (int): The maximum number of records to return.
+                - formula (str): An Airtable formula string to filter records.
+                - sort (list): A list of fields to sort by.
+                - fields (list): A list of specific field names to retrieve.
 
         Returns:
-            A list of dictionaries, where each dictionary represents a record, on success,
-            or a string containing an error message on failure.
+            list[RecordDict] | str: A list of dictionaries representing the records found,
+            or an error message string if the request fails.
 
         Tags:
             list, record, important
@@ -137,19 +161,19 @@ class AirtableApp(APIApplication):
 
     async def create_record(self, base_id: str, table_id_or_name: str, fields: WritableFields, **options: Any) -> RecordDict | str:
         """
-        Creates a new record in a specified table within a base.
+        Adds a new record to a table with the specified field values.
 
         Args:
-            base_id: The ID of the base.
-            table_id_or_name: The ID or name of the table.
-            fields: A dictionary where keys are field names/IDs and values are the field data.
-            **options: Additional options for creating the record (e.g., typecast, use_field_ids).
-                       If these are passed within a nested "options" dict from a tool call,
-                       they will be extracted.
+            base_id: The unique identifier of the Airtable base.
+            table_id_or_name: The name or ID of the table.
+            fields: A dictionary mapping field names (or IDs) to their values.
+            **options: Optional creation parameters:
+                - typecast (bool): If True, attempts to convert string values to the appropriate cell type (default: False).
+                - use_field_ids (bool): If True, expects 'fields' keys to be field IDs instead of names (default: False).
 
         Returns:
-            A dictionary representing the newly created record on success,
-            or a string containing an error message on failure.
+            RecordDict | str: A dictionary representing the newly created record, including its ID,
+            or an error message string if the creation fails.
 
         Tags:
             create, record, important
@@ -173,20 +197,24 @@ class AirtableApp(APIApplication):
         self, base_id: str, table_id_or_name: str, record_id: RecordId, fields: WritableFields, **options: Any
     ) -> RecordDict | str:
         """
-        Updates an existing record in a specified table within a base.
+        Modifies specific fields of an existing record.
+
+        This method performs a partial update (PATCH) by default, only changing the fields provided.
+        To perform a destructive update (clearing unspecified fields), use the 'replace' option.
 
         Args:
-            base_id: The ID of the base.
-            table_id_or_name: The ID or name of the table.
-            record_id: The ID of the record to update.
-            fields: A dictionary where keys are field names/IDs and values are the field data to update.
-            **options: Additional options for updating the record (e.g., replace, typecast, use_field_ids).
-                       If these are passed within a nested "options" dict from a tool call,
-                       they will be extracted.
+            base_id: The unique identifier of the Airtable base.
+            table_id_or_name: The name or ID of the table.
+            record_id: The unique identifier of the record to update.
+            fields: A dictionary of field names (or IDs) and their new values.
+            **options: Optional update parameters:
+                - replace (bool): If True, performs a destructive update (PUT), clearing fields not included in 'fields'.
+                - typecast (bool): If True, performs automatic data conversion.
+                - use_field_ids (bool): If True, expects field IDs as keys.
 
         Returns:
-            A dictionary representing the updated record on success,
-            or a string containing an error message on failure.
+            RecordDict | str: A dictionary representing the updated record,
+            or an error message string if the update fails.
 
         Tags:
             update, record
@@ -208,16 +236,16 @@ class AirtableApp(APIApplication):
 
     async def delete_record(self, base_id: str, table_id_or_name: str, record_id: RecordId) -> RecordDeletedDict | str:
         """
-        Deletes a record from a specified table within a base.
+        Permanently removes a record from a table.
 
         Args:
-            base_id: The ID of the base.
-            table_id_or_name: The ID or name of the table.
-            record_id: The ID of the record to delete.
+            base_id: The unique identifier of the Airtable base.
+            table_id_or_name: The name or ID of the table.
+            record_id: The unique identifier of the record to delete.
 
         Returns:
-            A dictionary confirming the deletion on success,
-            or a string containing an error message on failure.
+            RecordDeletedDict | str: A dictionary confirming the deletion (e.g., {"deleted": True, "id": "rec..."}),
+            or an error message string if the deletion fails.
 
         Tags:
             delete, record
@@ -233,19 +261,19 @@ class AirtableApp(APIApplication):
         self, base_id: str, table_id_or_name: str, records: Iterable[WritableFields], **options: Any
     ) -> list[RecordDict] | str:
         """
-        Creates multiple records in batches in a specified table.
+        Creates multiple records efficiently in a single batch operation.
 
         Args:
-            base_id: The ID of the base.
-            table_id_or_name: The ID or name of the table.
-            records: An iterable of dictionaries, where each dictionary contains the fields for a new record.
-            **options: Additional options for creating records (e.g., typecast, use_field_ids).
-                       If these are passed within a nested "options" dict from a tool call,
-                       they will be extracted.
+            base_id: The unique identifier of the Airtable base.
+            table_id_or_name: The name or ID of the table.
+            records: An iterable of dictionaries, where each dictionary represents the fields for a new record.
+            **options: Optional parameters:
+                - typecast (bool): Enable automatic data conversion.
+                - use_field_ids (bool): Use field IDs instead of names for keys.
 
         Returns:
-            A list of dictionaries representing the newly created records on success,
-            or a string containing an error message on failure.
+            list[RecordDict] | str: A list of the created record objects,
+            or an error message string if the operation fails.
 
         Tags:
             create, record, batch
@@ -267,19 +295,20 @@ class AirtableApp(APIApplication):
         self, base_id: str, table_id_or_name: str, records: Iterable[UpdateRecordDict], **options: Any
     ) -> list[RecordDict] | str:
         """
-        Updates multiple records in batches in a specified table.
+        Updates multiple records efficiently in a single batch operation.
 
         Args:
-            base_id: The ID of the base.
-            table_id_or_name: The ID or name of the table.
-            records: An iterable of dictionaries, where each dictionary must contain 'id' and 'fields' for the record to update.
-            **options: Additional options for updating records (e.g., replace, typecast, use_field_ids).
-                       If these are passed within a nested "options" dict from a tool call,
-                       they will be extracted.
+            base_id: The unique identifier of the Airtable base.
+            table_id_or_name: The name or ID of the table.
+            records: A list of dictionaries. Each must contain an 'id' key (record ID) and a 'fields' key (dict of updates).
+            **options: Optional parameters:
+                - replace (bool): If True, performs destructive updates for each record.
+                - typecast (bool): Enable automatic data conversion.
+                - use_field_ids (bool): Use field IDs as keys.
 
         Returns:
-            A list of dictionaries representing the updated records on success,
-            or a string containing an error message on failure.
+            list[RecordDict] | str: A list of the updated record objects,
+            or an error message string if the operation fails.
 
         Tags:
             update, record, batch
@@ -303,16 +332,16 @@ class AirtableApp(APIApplication):
         self, base_id: str, table_id_or_name: str, record_ids: Iterable[RecordId]
     ) -> list[RecordDeletedDict] | str:
         """
-        Deletes multiple records in batches from a specified table.
+        Permanently removes multiple records in a single batch operation.
 
         Args:
-            base_id: The ID of the base.
-            table_id_or_name: The ID or name of the table.
-            record_ids: An iterable of record IDs to delete.
+            base_id: The unique identifier of the Airtable base.
+            table_id_or_name: The name or ID of the table.
+            record_ids: A list of record IDs to be deleted.
 
         Returns:
-            A list of dictionaries confirming the deletion status for each record on success,
-            or a string containing an error message on failure.
+            list[RecordDeletedDict] | str: A list of dictionaries confirming the deletion of each record,
+            or an error message string if the operation fails.
 
         Tags:
             delete, record, batch
@@ -328,23 +357,24 @@ class AirtableApp(APIApplication):
         self, base_id: str, table_id_or_name: str, records: Iterable[dict[str, Any]], key_fields: list[str], **options: Any
     ) -> UpsertResultDict | str:
         """
-        Updates or creates records in batches in a specified table.
+        Performs a batch upsert (update or insert) operation.
 
-        Records are matched by 'id' if provided, or by 'key_fields'.
+        This method attempts to update existing records or create new ones based on matching criteria.
+        Records are matched by their 'id' (if provided) or by a set of specified 'key_fields'.
 
         Args:
-            base_id: The ID of the base.
-            table_id_or_name: The ID or name of the table.
-            records: An iterable of dictionaries, where each dictionary contains either
-                     'id' and 'fields' for existing records, or just 'fields' for new records.
-            key_fields: A list of field names/IDs used to match records if 'id' is not provided.
-            **options: Additional options for upserting records (e.g., replace, typecast, use_field_ids).
-                       If these are passed within a nested "options" dict from a tool call,
-                       they will be extracted.
+            base_id: The unique identifier of the Airtable base.
+            table_id_or_name: The name or ID of the table.
+            records: A list of dictionaries representing records.
+            key_fields: A list of field names (or IDs) used to identify unique records for matching.
+            **options: Optional parameters:
+                - replace (bool): If True, performs destructive updates.
+                - typecast (bool): Enable automatic data conversion.
+                - use_field_ids (bool): Use field IDs as keys.
 
         Returns:
-            A dictionary containing lists of created/updated record IDs and the affected records on success,
-            or a string containing an error message on failure.
+            UpsertResultDict | str: A result object containing lists of created and updated record IDs and the modified records,
+            or an error message string if the operation fails.
 
         Tags:
             create, update, record, batch, upsert
@@ -368,17 +398,18 @@ class AirtableApp(APIApplication):
         self, base_id: str, name: str, fields: list[dict[str, Any]], description: str | None = None
     ) -> TableSchema | str:
         """
-        Creates a new table in the specified base.
+        Adds a new table to an existing base with a defined schema.
 
         Args:
-            base_id: The ID of the base.
-            name: The name of the new table.
-            fields: A list of field definitions (dictionaries). Each dict must have a 'name' and 'type'.
-            description: An optional description for the table.
+            base_id: The unique identifier of the Airtable base.
+            name: The display name for the new table.
+            fields: A list of field definitions. Each field is a dictionary with 'name' and 'type' keys,
+                    and optionally 'options' or 'description'.
+            description: An optional text description for the table.
 
         Returns:
-            A TableSchema object representing the created table on success,
-            or a string containing an error message on failure.
+            TableSchema | str: Such as schema object for the newly created table,
+            or an error message string if the creation fails.
 
         Tags:
             create, table
@@ -394,17 +425,17 @@ class AirtableApp(APIApplication):
         self, base_id: str, table_id_or_name: str, name: str | None = None, description: str | None = None
     ) -> TableSchema | str:
         """
-        Updates an existing table's name and/or description.
+        Modifies metadata (name or description) of an existing table.
 
         Args:
-            base_id: The ID of the base.
-            table_id_or_name: The ID or name of the table to update.
+            base_id: The unique identifier of the Airtable base.
+            table_id_or_name: The name or ID of the table to update.
             name: The new name for the table (optional).
             description: The new description for the table (optional).
 
         Returns:
-            A TableSchema object representing the updated table on success,
-            or a string containing an error message on failure.
+            TableSchema | str: The updated table schema object,
+            or an error message string if the update fails.
 
         Tags:
             update, table
@@ -459,19 +490,19 @@ class AirtableApp(APIApplication):
         description: str | None = None,
     ) -> FieldSchema | str:
         """
-        Creates a new field in the specified table.
+        Adds a new field (column) to a table.
 
         Args:
-            base_id: The ID of the base.
-            table_id_or_name: The ID or name of the table.
+            base_id: The unique identifier of the Airtable base.
+            table_id_or_name: The name or ID of the table.
             name: The name of the new field.
-            field_type: The type of the field. allowed values: "singleLineText", "number", "date", "dateTime", "singleSelect", "multipleSelects", "currency", "url", "checkbox".
-            options: Specific options for the field type (optional).
-            description: A description for the field (optional).
+            field_type: The data type of the field (e.g., 'singleLineText', 'number', 'singleSelect').
+            options: A dictionary of configuration options specific to the chosen field_type (e.g., choices for valid selects).
+            description: An optional text description for the field.
 
         Returns:
-            A FieldSchema object representing the created field on success,
-            or a string containing an error message on failure.
+            FieldSchema | str: The schema definition of the created field,
+            or an error message string if the creation fails.
 
         Tags:
             create, field
@@ -505,20 +536,22 @@ class AirtableApp(APIApplication):
         options: dict[str, Any] | None = None,
     ) -> FieldSchema | str:
         """
-        Updates an existing field's name, description, and/or options.
+        Modifies the properties of an existing field.
+
+        Allows changing the field's name, description, type, or specific options.
 
         Args:
-            base_id: The ID of the base.
-            table_id_or_name: The ID or name of the table.
-            field_id: The ID of the field to update.
-            name: The new name for the field (optional).
-            field_type: The new type for the field. allowed values: "singleLineText", "number", "date", "dateTime", "singleSelect", "multipleSelects", "currency", "url", "checkbox".
-            description: The new description for the field (optional).
-            options: The new options for the field (optional).
+            base_id: The unique identifier of the Airtable base.
+            table_id_or_name: The name or ID of the table.
+            field_id: The unique identifier of the field to update.
+            name: The new name for the field.
+            field_type: The new data type for the field.
+            description: The new description for the field.
+            options: The new configuration options for the field.
 
         Returns:
-            A FieldSchema object representing the updated field on success,
-            or a string containing an error message on failure.
+            FieldSchema | str: The updated field schema object,
+            or an error message string if the update fails.
 
         Tags:
             update, field

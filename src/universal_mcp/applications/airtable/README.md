@@ -9,14 +9,18 @@ This is automatically generated from OpenAPI schema for the AirtableApp API.
 
 | Tool | Description |
 |------|-------------|
-| `list_bases` | Lists all bases accessible with the current API key. |
-| `list_tables` | Lists all tables within a specified base. |
-| `get_record` | Retrieves a single record by its ID from a specified table within a base. |
-| `list_records` | Lists records from a specified table within a base. |
-| `create_record` | Creates a new record in a specified table within a base. |
-| `update_record` | Updates an existing record in a specified table within a base. |
-| `delete_record` | Deletes a record from a specified table within a base. |
-| `batch_create_records` | Creates multiple records in batches in a specified table. |
-| `batch_update_records` | Updates multiple records in batches in a specified table. |
-| `batch_delete_records` | Deletes multiple records in batches from a specified table. |
-| `batch_upsert_records` | Updates or creates records in batches in a specified table. |
+| `list_bases` | Retrieves a list of all Airtable bases accessible to the authenticated user. |
+| `list_tables` | Retrieves the schema and metadata for all tables in a specific base. |
+| `get_record` | Fetches a specific record's data from a given table and base. |
+| `list_records` | Retrieves a list of records from a table, optionally filtered or sorted. |
+| `create_record` | Adds a new record to a table with the specified field values. |
+| `update_record` | Modifies specific fields of an existing record. |
+| `delete_record` | Permanently removes a record from a table. |
+| `batch_create_records` | Creates multiple records efficiently in a single batch operation. |
+| `batch_update_records` | Updates multiple records efficiently in a single batch operation. |
+| `batch_delete_records` | Permanently removes multiple records in a single batch operation. |
+| `batch_upsert_records` | Performs a batch upsert (update or insert) operation. |
+| `create_table` | Adds a new table to an existing base with a defined schema. |
+| `update_table` | Modifies metadata (name or description) of an existing table. |
+| `create_field` | Adds a new field (column) to a table. |
+| `update_field` | Modifies the properties of an existing field. |
