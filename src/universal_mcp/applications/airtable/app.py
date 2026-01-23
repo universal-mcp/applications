@@ -1,9 +1,10 @@
 from collections.abc import Iterable
-from typing import Any
+from typing import Any, Literal
 from pyairtable import Api
 from pyairtable.api.base import Base
 from pyairtable.api.table import Table
 from pyairtable.api.types import RecordDeletedDict, RecordDict, RecordId, UpdateRecordDict, UpsertResultDict, WritableFields
+from pyairtable.models.schema import FieldSchema, TableSchema
 from pyairtable.formulas import Formula, to_formula_str
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
@@ -363,6 +364,258 @@ class AirtableApp(APIApplication):
         except Exception as e:
             return f"Error batch upserting records in '{table_id_or_name}' in '{base_id}': {type(e).__name__} - {e}"
 
+    async def create_table(
+        self, base_id: str, name: str, fields: list[dict[str, Any]], description: str | None = None
+    ) -> TableSchema | str:
+        """
+        Creates a new table in the specified base.
+
+        Args:
+            base_id: The ID of the base.
+            name: The name of the new table.
+            fields: A list of field definitions (dictionaries). Each dict must have a 'name' and 'type'.
+            description: An optional description for the table.
+
+        Returns:
+            A TableSchema object representing the created table on success,
+            or a string containing an error message on failure.
+
+        Tags:
+            create, table
+        """
+        try:
+            client = await self.get_client()
+            base = client.base(base_id)
+            return base.create_table(name, fields, description)
+        except Exception as e:
+            return f"Error creating table '{name}' in base '{base_id}': {type(e).__name__} - {e}"
+
+    async def update_table(
+        self, base_id: str, table_id_or_name: str, name: str | None = None, description: str | None = None
+    ) -> TableSchema | str:
+        """
+        Updates an existing table's name and/or description.
+
+        Args:
+            base_id: The ID of the base.
+            table_id_or_name: The ID or name of the table to update.
+            name: The new name for the table (optional).
+            description: The new description for the table (optional).
+
+        Returns:
+            A TableSchema object representing the updated table on success,
+            or a string containing an error message on failure.
+
+        Tags:
+            update, table
+        """
+        try:
+            client = await self.get_client()
+            # We need the table ID for the meta API call
+            base = client.base(base_id)
+            table_obj = base.table(table_id_or_name)
+            table_id = table_obj.id
+
+            url = base.urls.tables / table_id
+            payload = {}
+            if name:
+                payload["name"] = name
+            if description:
+                payload["description"] = description
+            
+            if not payload:
+                 return "Error: No update parameters (name or description) provided."
+
+            response = client.request("PATCH", url, json=payload)
+            # Fetch the updated schema to return a TableSchema object
+            # Ideally we'd parse the response directly if it matches, but getting a fresh schema is safer
+            # The response from PATCH /meta/bases/{baseId}/tables/{tableId} returns the table schema
+            # We can try to parse it using TableSchema.from_api but we need the context.
+            # Simpler approach for now is to just re-fetch or construct it if we had a helper.
+            # Let's inspect what create_table returns - it returns a Table object which has .schema().
+            # Let's try to return the schema from the response.
+            from pyairtable.models.schema import TableSchema
+            return TableSchema.parse_obj(response)
+        except Exception as e:
+            return f"Error updating table '{table_id_or_name}' in base '{base_id}': {type(e).__name__} - {e}"
+
+    async def create_field(
+        self,
+        base_id: str,
+        table_id_or_name: str,
+        name: str,
+        field_type: Literal[
+            "singleLineText",
+            "number",
+            "date",
+            "dateTime",
+            "singleSelect",
+            "multipleSelects",
+            "currency",
+            "url",
+            "checkbox",
+        ],
+        options: dict[str, Any] | None = None,
+        description: str | None = None,
+    ) -> FieldSchema | str:
+        """
+        Creates a new field in the specified table.
+
+        Args:
+            base_id: The ID of the base.
+            table_id_or_name: The ID or name of the table.
+            name: The name of the new field.
+            field_type: The type of the field. allowed values: "singleLineText", "number", "date", "dateTime", "singleSelect", "multipleSelects", "currency", "url", "checkbox".
+            options: Specific options for the field type (optional).
+            description: A description for the field (optional).
+
+        Returns:
+            A FieldSchema object representing the created field on success,
+            or a string containing an error message on failure.
+
+        Tags:
+            create, field
+        """
+        try:
+            client = await self.get_client()
+            table = client.table(base_id, table_id_or_name)
+            return table.create_field(name, field_type, description, options)
+        except Exception as e:
+            return f"Error creating field '{name}' in table '{table_id_or_name}': {type(e).__name__} - {e}"
+
+    async def update_field(
+        self,
+        base_id: str,
+        table_id_or_name: str,
+        field_id: str,
+        name: str | None = None,
+        field_type: Literal[
+            "singleLineText",
+            "number",
+            "date",
+            "dateTime",
+            "singleSelect",
+            "multipleSelects",
+            "currency",
+            "url",
+            "checkbox",
+        ]
+        | None = None,
+        description: str | None = None,
+        options: dict[str, Any] | None = None,
+    ) -> FieldSchema | str:
+        """
+        Updates an existing field's name, description, and/or options.
+
+        Args:
+            base_id: The ID of the base.
+            table_id_or_name: The ID or name of the table.
+            field_id: The ID of the field to update.
+            name: The new name for the field (optional).
+            field_type: The new type for the field. allowed values: "singleLineText", "number", "date", "dateTime", "singleSelect", "multipleSelects", "currency", "url", "checkbox".
+            description: The new description for the field (optional).
+            options: The new options for the field (optional).
+
+        Returns:
+            A FieldSchema object representing the updated field on success,
+            or a string containing an error message on failure.
+
+        Tags:
+            update, field
+        """
+        try:
+            client = await self.get_client()
+            base = client.base(base_id)
+            # We need the table ID for the URL construction if table_id_or_name is a name
+            table_obj = base.table(table_id_or_name)
+            table_id = table_obj.id
+
+            # Construct URL: https://api.airtable.com/v0/meta/bases/{baseId}/tables/{tableId}/fields/{fieldId}
+            # We can use base.urls.tables which gives .../tables
+            url = base.urls.tables / table_id / "fields" / field_id
+
+            payload = {}
+            if name:
+                payload["name"] = name
+            if field_type:
+                payload["type"] = field_type
+            if description:
+                payload["description"] = description
+            if options:
+                payload["options"] = options
+
+            if not payload:
+                return "Error: No update parameters (name, field_type, description, or options) provided."
+
+            response = client.request("PATCH", url, json=payload)
+            from pyairtable.models.schema import FieldSchema
+
+            return FieldSchema.parse_obj(response)
+
+        except Exception as e:
+            return f"Error updating field '{field_id}' in table '{table_id_or_name}': {type(e).__name__} - {e}"
+
+    async def delete_table(self, base_id: str, table_id_or_name: str) -> str:
+        """
+        Deletes a table from the specified base.
+
+        Args:
+            base_id: The ID of the base.
+            table_id_or_name: The ID or name of the table to delete.
+
+        Returns:
+            A string confirming the deletion on success,
+            or a string containing an error message on failure.
+
+        Tags:
+            delete, table
+        """
+        try:
+            client = await self.get_client()
+            base = client.base(base_id)
+            table_obj = base.table(table_id_or_name)
+            table_id = table_obj.id
+
+            # URL: /meta/bases/{baseId}/tables/{tableId}
+            url = base.urls.tables / table_id
+            
+            client.request("DELETE", url)
+            return f"Table '{table_id_or_name}' (ID: {table_id}) deleted successfully."
+        except Exception as e:
+            return f"Error deleting table '{table_id_or_name}' in base '{base_id}': {type(e).__name__} - {e}"
+
+    async def delete_field(
+        self, base_id: str, table_id_or_name: str, field_id: str
+    ) -> str:
+        """
+        Deletes a field from the specified table.
+
+        Args:
+            base_id: The ID of the base.
+            table_id_or_name: The ID or name of the table.
+            field_id: The ID of the field to delete.
+
+        Returns:
+            A string confirming the deletion on success,
+            or a string containing an error message on failure.
+
+        Tags:
+            delete, field
+        """
+        try:
+            client = await self.get_client()
+            base = client.base(base_id)
+            table_obj = base.table(table_id_or_name)
+            table_id = table_obj.id
+
+            # URL: /meta/bases/{baseId}/tables/{tableId}/fields/{fieldId}
+            url = base.urls.tables / table_id / "fields" / field_id
+            
+            client.request("DELETE", url)
+            return f"Field '{field_id}' deleted successfully from table '{table_id_or_name}'."
+        except Exception as e:
+            return f"Error deleting field '{field_id}' in table '{table_id_or_name}': {type(e).__name__} - {e}"
+
     def list_tools(self):
         """Returns a list of methods exposed as tools."""
         return [
@@ -377,4 +630,10 @@ class AirtableApp(APIApplication):
             self.batch_update_records,
             self.batch_delete_records,
             self.batch_upsert_records,
+            self.create_table,
+            self.update_table,
+            self.create_field,
+            self.update_field,
+            self.delete_table,
+            self.delete_field,
         ]
