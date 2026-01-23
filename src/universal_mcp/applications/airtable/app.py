@@ -4,7 +4,7 @@ from pyairtable import Api
 from pyairtable.api.base import Base
 from pyairtable.api.table import Table
 from pyairtable.api.types import RecordDeletedDict, RecordDict, RecordId, UpdateRecordDict, UpsertResultDict, WritableFields
-from pyairtable.models.schema import FieldSchema, TableSchema
+from pyairtable.models.schema import FieldSchema, TableSchema, parse_field_schema
 from pyairtable.formulas import Formula, to_formula_str
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
@@ -548,73 +548,12 @@ class AirtableApp(APIApplication):
                 return "Error: No update parameters (name, field_type, description, or options) provided."
 
             response = client.request("PATCH", url, json=payload)
-            from pyairtable.models.schema import FieldSchema
-
-            return FieldSchema.parse_obj(response)
+            return parse_field_schema(response)
 
         except Exception as e:
             return f"Error updating field '{field_id}' in table '{table_id_or_name}': {type(e).__name__} - {e}"
 
-    async def delete_table(self, base_id: str, table_id_or_name: str) -> str:
-        """
-        Deletes a table from the specified base.
 
-        Args:
-            base_id: The ID of the base.
-            table_id_or_name: The ID or name of the table to delete.
-
-        Returns:
-            A string confirming the deletion on success,
-            or a string containing an error message on failure.
-
-        Tags:
-            delete, table
-        """
-        try:
-            client = await self.get_client()
-            base = client.base(base_id)
-            table_obj = base.table(table_id_or_name)
-            table_id = table_obj.id
-
-            # URL: /meta/bases/{baseId}/tables/{tableId}
-            url = base.urls.tables / table_id
-            
-            client.request("DELETE", url)
-            return f"Table '{table_id_or_name}' (ID: {table_id}) deleted successfully."
-        except Exception as e:
-            return f"Error deleting table '{table_id_or_name}' in base '{base_id}': {type(e).__name__} - {e}"
-
-    async def delete_field(
-        self, base_id: str, table_id_or_name: str, field_id: str
-    ) -> str:
-        """
-        Deletes a field from the specified table.
-
-        Args:
-            base_id: The ID of the base.
-            table_id_or_name: The ID or name of the table.
-            field_id: The ID of the field to delete.
-
-        Returns:
-            A string confirming the deletion on success,
-            or a string containing an error message on failure.
-
-        Tags:
-            delete, field
-        """
-        try:
-            client = await self.get_client()
-            base = client.base(base_id)
-            table_obj = base.table(table_id_or_name)
-            table_id = table_obj.id
-
-            # URL: /meta/bases/{baseId}/tables/{tableId}/fields/{fieldId}
-            url = base.urls.tables / table_id / "fields" / field_id
-            
-            client.request("DELETE", url)
-            return f"Field '{field_id}' deleted successfully from table '{table_id_or_name}'."
-        except Exception as e:
-            return f"Error deleting field '{field_id}' in table '{table_id_or_name}': {type(e).__name__} - {e}"
 
     def list_tools(self):
         """Returns a list of methods exposed as tools."""
@@ -634,6 +573,4 @@ class AirtableApp(APIApplication):
             self.update_table,
             self.create_field,
             self.update_field,
-            self.delete_table,
-            self.delete_field,
         ]
