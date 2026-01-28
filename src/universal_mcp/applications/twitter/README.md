@@ -1,103 +1,63 @@
-# TwitterApp MCP Server
+# Twitter MCP Application
 
-An MCP Server for the TwitterApp API.
+A streamlined Twitter API integration with essential day-to-day functions for interacting with Twitter/X.
 
-## 🛠️ Tool List
+## Features
 
-This is automatically generated from OpenAPI schema for the TwitterApp API.
+This application provides a focused set of the most commonly used Twitter API functions, organized by category:
 
+### Tweet Operations
+- **create_tweet** - Post tweets with text, media, polls, or as replies/quotes
+- **delete_tweet** - Permanently delete a tweet
+- **get_tweet** - Retrieve detailed tweet information
+- **search_recent_tweets** - Search tweets from the past 7 days
 
-| Tool | Description |
-|------|-------------|
-| `list_batch_compliance_jobs` | Retrieves a list of compliance jobs, requiring a job `type` ('tweets' or 'users') and allowing optional filtering by `status`. This function fetches multiple jobs, distinguishing it from `get_batch_compliance_job` which retrieves a single job by its unique ID. |
-| `create_batch_compliance_job` | Creates a new batch compliance job for a specified type ('tweets' or 'users'). A custom name can be provided, and resumable uploads can be enabled. This initiates the job creation process, differing from functions that list or retrieve existing jobs. |
-| `get_compliance_job` | Retrieves a single batch compliance job by its unique ID. Unlike `list_batch_compliance_jobs`, which fetches a list, this function returns details for one specific job. Optional parameters can customize which data fields are returned in the response. |
-| `create_dm_conversation` | Creates a new group Direct Message conversation with specified participants and sends an initial message. This function specifically handles the creation of new multi-participant conversations, distinct from other methods in this class that add messages to existing one-to-one or group DMs. |
-| `get_dm_events_by_participant_id` | Retrieves direct message events from a conversation identified by a specific participant's ID. Supports pagination and filtering by event type. This method is distinct from `get_dm_conversations_id_dm_events`, which uses a direct conversation ID for retrieval instead of a participant's ID. |
-| `send_dm_by_participant_id` | Sends a direct message to a user specified by their participant ID. It creates a new one-on-one conversation or appends the message to an existing one. Unlike other functions, this method identifies the conversation using the participant's ID rather than a pre-existing conversation ID. |
-| `add_message_to_dm_conversation` | Sends a new message with optional text and attachments to an existing Direct Message conversation. The target conversation is specified by its `dm_conversation_id`, distinguishing it from functions that create new conversations or send one-to-one messages using a participant ID. |
-| `get_dm_events_by_conversation_id` | Retrieves direct message events for a specific conversation using its unique ID. This function, distinct from fetching by participant ID, supports pagination, event type filtering, and data field expansion for detailed results. |
-| `get_dm_events` | Retrieves a list of direct message events, unlike `get_dm_events_by_id` which fetches a single event. Supports pagination, filtering by event type, and specifying which data fields to return for various objects to customize the API response. |
-| `delete_dm_event` | Deletes a specific Direct Message (DM) event identified by its unique ID. This function issues an authenticated HTTP DELETE request to the API to permanently remove the specified event, returning a confirmation of the deletion. |
-| `get_dm_event_by_id` | Fetches a specific Direct Message event using its unique ID. Optional parameters allow customizing the response by selecting specific fields for the event, media, users, and tweets, and by including expanded object details. This differs from `get_dm_events`, which retrieves a list of events. |
-| `get_likes_compliance_stream` | Streams compliance-related data for 'like' events, such as un-likes, with optional time and backfill filters. This endpoint is for compliance monitoring, differing from the firehose and sample streams which provide real-time like creation events. |
-| `get_likes_firehose_stream` | Streams a comprehensive, real-time 'firehose' of all like events from a specified data partition. This function allows time-based filtering and customization of returned fields, providing a complete data flow distinct from the compliance or sampled stream methods. |
-| `likes_sample10_stream` | Streams a 10% sample of real-time like events, a low-volume alternative to the full firehose stream. It allows filtering by partition and time range, and supports data enrichment by specifying tweet, user, and expansion fields to customize the response. |
-| `create_list` | Creates a new list on X (formerly Twitter) with an optional name, description, and privacy setting. It sends a POST request to the `/2/lists` endpoint and returns the JSON data of the newly created list upon success. |
-| `delete_list` | Permanently deletes a specific Twitter List identified by its unique ID. This function sends an authorized DELETE request to the API's `/2/lists/{id}` endpoint, returning a confirmation response upon successful removal. It is distinct from `list_remove_member`, which only removes a user from a list. |
-| `get_list_by_id` | Retrieves detailed information for a specific list by its ID. This function allows for response customization by specifying which list and user fields to return and supports expansions to include related objects like the owner's user data. |
-| `update_list` | Modifies an existing Twitter list identified by its unique ID. This function updates the list's name, description, or privacy status by sending a PUT request to the API and returns the updated list data upon success. |
-| `get_list_followers` | Retrieves the users who follow a specific list, identified by its ID. Supports pagination and allows for the customization of returned user, tweet, and expansion fields to tailor the response data, differentiating it from fetching list members. |
-| `list_get_members` | Retrieves users who are members of a specific Twitter list, identified by its ID. Unlike `list_get_followers`, this returns users explicitly added to the list, not subscribers. Supports pagination and customization of the returned user data fields to include expanded objects and specific details. |
-| `list_add_member` | Adds a user to a specified Twitter list via a POST request to the `/2/lists/{id}/members` endpoint, requiring list and user IDs. This function modifies a list's membership, distinguishing it from `list_get_members` (retrieves) and its counterpart `list_remove_member` (deletes). |
-| `delete_list_member` | Removes a specific user from a Twitter list. This function sends a DELETE request to the `/2/lists/{id}/members/{user_id}` API endpoint, requiring both the list ID and the user ID to perform the action and confirm the member's removal. |
-| `get_list_tweets` | Retrieves tweets from a specified Twitter List using its ID. Supports pagination and allows extensive customization of returned fields for tweets, users, media, and other entities. This function uniquely fetches the list's tweet timeline, distinguishing it from functions that retrieve list members or followers. |
-| `get_open_api_spec` | Args: |
-| `find_spaces_by_ids` | Retrieves detailed information for a batch of spaces, specified by a list of their unique IDs. Optional parameters allow for customizing the response by including specific fields and expansions. This method is distinct from `find_space_by_id`, which fetches only a single space per call. |
-| `find_spaces_by_creator_ids` | Fetches a list of spaces created by specified users, identified by their user IDs. This function is distinct from `find_spaces_by_ids`, which retrieves spaces by their own unique IDs. Optional parameters allow for customizing the fields returned for spaces, users, and topics. |
-| `search_spaces` | Performs a keyword-based search for Twitter Spaces, allowing filters by state (e.g., 'live', 'scheduled'). The function supports customizing the response data by specifying fields for spaces, users, and topics, distinguishing it from methods that find spaces by specific IDs. |
-| `get_space_by_id` | Retrieves detailed information for a single space using its unique ID. Optional parameters allow customizing the response by specifying fields and expansions. Unlike `find_spaces_by_ids`, which fetches multiple spaces, this function targets only one specific space. |
-| `list_space_buyers` | Retrieves a list of users who have purchased tickets for a specific ticketed Space, identified by its ID. This function supports pagination and allows for the customization of user and tweet fields in the API response. |
-| `list_tweets_from_space` | Fetches tweets from a specific Space using its ID. Allows extensive customization of returned data fields (e.g., media, user) and limits results. Unlike `space_buyers`, which retrieves users who purchased tickets, this function returns the actual tweets shared within the Space. |
-| `get_trends_by_woeid` | Fetches trending topics for a specific location identified by its Where On Earth ID (WOEID). It builds and executes an authenticated API request, optionally allowing users to specify which trend-related fields (e.g., 'tweet_count') to include in the returned JSON response. |
-| `find_tweets_by_id` | Fetches detailed information for multiple tweets, specified by a list of their IDs. Optional parameters allow response customization by including specific fields (e.g., media, user, polls) and expansions. This function handles batch lookups, distinguishing it from `find_tweet_by_id` which retrieves a single tweet. |
-| `create_tweet` | Posts a new tweet for an authenticated user, supporting optional parameters like text, media, polls, replies, and quote tweets. This function constructs a POST request to the `/2/tweets` endpoint, enabling the creation of diverse tweet formats with specific visibility and reply settings. |
-| `get_tweets_compliance_stream` | Streams real-time compliance events for tweets, such as deletions and user updates, from a specified partition. Unlike other stream functions that return tweet content, this provides metadata about content and user status changes, supporting optional time-based filtering and backfilling. |
-| `tweet_counts_full_archive_search` | Calculates the number of tweets from the entire historical archive that match a given search query. Results can be aggregated by minute, hour, or day over a specific time range to analyze historical tweet volume trends. |
-| `tweet_counts_recent_search` | Retrieves the total count of tweets from the last seven days matching a specified query. Results can be aggregated by minute, hour, or day and filtered by time range or tweet ID. This function contrasts with `tweet_counts_full_archive_search`, which queries the entire tweet history. |
-| `get_tweets_firehose_stream` | Streams all public tweets in real-time from the Firehose API for a specified partition. This unfiltered feed can be customized with optional parameters to backfill data, define a time window, and specify desired tweet, user, and media fields. |
-| `stream_english_tweets_firehose` | Streams real-time public tweets from the Firehose API, specifically filtered for the English language. Requires a partition number and supports optional parameters to customize the data payload. It is distinct from other language-specific (`_ja`, `_ko`, `_pt`) or the unfiltered `get_tweets_firehose_stream` functions. |
-| `get_tweets_firehose_stream_lang_ja` | Streams real-time tweets specifically in Japanese from the Twitter Firehose API, requiring a partition number. It supports optional parameters for time ranges, backfill, and customizable fields. This method is distinct from other `get_tweets_firehose_stream` variants, which target different languages or the entire stream. |
-| `stream_korean_firehose_tweets` | Streams real-time tweets filtered for the Korean language from the Firehose API. This function allows customization via parameters for partitions, time range, backfill, and specific data fields for tweets, users, and media, distinguishing it from other language-specific stream functions. |
-| `get_tweets_firehose_stream_lang_pt` | Streams real-time tweets in Portuguese from the Firehose API, requiring a partition number. It allows data customization via optional parameters for time ranges and fields, specifically targeting the Portuguese language stream, unlike other general or language-specific firehose functions. |
-| `stream_labeled_tweets` | Streams real-time Tweet objects labeled for compliance reasons, such as withheld content. Unlike `get_tweets_compliance_stream`, which provides events, this returns the actual tweets. Supports filtering by a time window and backfilling missed data upon reconnection. |
-| `sample_stream` | Streams a real-time, random sample of public tweets from the API. It allows data customization through optional field and expansion parameters. This function targets the standard (~1%) sample stream, distinct from `get_tweets_sample_stream` which accesses the partitioned 10% stream. |
-| `get_tweets_sample10_stream` | Streams a 10% random sample of real-time tweets from a specified partition, offering a larger volume than `sample_stream`. It supports optional time-based filtering and customization of returned data for tweets, media, users, and places using field selectors and expansions. |
-| `tweets_fullarchive_search` | Searches the entire historical archive of public Tweets using a specific query. It supports filtering by time range and pagination, allowing customization of returned fields. This differs from `tweets_recent_search`, which only covers the last seven days, and `tweet_counts_full_archive_search`, which returns counts instead of tweet data. |
-| `tweets_recent_search` | Searches for tweets from the past seven days matching a specific query. Allows advanced filtering, pagination, and data expansions to customize results. Unlike `tweet_counts_recent_search`, it returns full tweet objects instead of just a count. |
-| `get_filtered_stream` | Streams real-time tweets matching a user's pre-configured filtering rules from the Twitter API. Unlike `sample_stream` or `get_tweets_firehose_stream`, this provides a targeted feed. Optional parameters can customize returned data fields and specify a time window. |
-| `get_filtered_stream_rules` | Retrieves the active filtering rules for a Twitter API v2 filtered stream. It can fetch all rules or a subset specified by rule IDs, with support for pagination to manage large rule sets, complementing the `add_or_delete_rules` and `search_stream` functions. |
-| `update_stream_rules` | Adds or removes filtering rules for a tweet stream. Supports a dry-run mode to validate rule syntax without application and an option to delete all existing rules. This function directly modifies the active rule set used by the `search_stream` function. |
-| `get_stream_rule_usage` | Retrieves the number of active filtered stream rules for the user's project and app. This helps manage usage against API limits by providing metadata about rule counts, not the number of tweets matching those rules. |
-| `delete_tweet_by_id` | Deletes a specific Tweet, identified by its unique ID, on behalf of the authenticated user. This function permanently removes the targeted Tweet by sending a DELETE request to the API's corresponding endpoint. |
-| `get_tweet_by_id` | Retrieves detailed information for a single Tweet by its unique ID. It supports optional parameters to customize the response by specifying fields for the tweet, user, and media. Unlike `find_tweets_by_id`, which retrieves a batch of tweets, this function fetches exactly one. |
-| `get_tweet_liking_users` | Retrieves a list of users who have liked a specific tweet, identified by its ID. Supports pagination and allows for customization of the returned data fields for users and tweets, including expansions for related objects. |
-| `get_quote_tweets_by_id` | Retrieves a list of tweets that have quoted a specified tweet ID. Supports pagination and allows for response customization by specifying additional data fields for tweets, media, users, polls, and places through various expansion parameters. |
-| `get_retweeting_users_by_tweet_id` | Retrieves a list of users who retweeted a specific tweet, identified by its ID. Supports pagination and allows customizing the response with optional fields. This function returns user objects, unlike `find_tweets_that_retweet_atweet` which returns the actual retweet objects. |
-| `get_retweets_by_id` | Retrieves Tweet objects that are retweets of a specified tweet ID, supporting pagination and data customization. This function returns the actual retweets, distinguishing it from `tweets_id_retweeting_users` which returns the users who retweeted. |
-| `set_reply_visibility` | Updates the visibility of a specific reply tweet. This function sends a PUT request to hide or unhide a reply, identified by its `tweet_id`, based on the provided boolean `hidden` parameter, thus managing its state within a conversation. |
-| `get_usage_tweets` | Fetches Tweet usage data from the `/2/usage/tweets` API endpoint. It allows users to specify the number of days for the report and select specific usage fields to return, providing customized metrics on project consumption. |
-| `get_users_by_ids` | Retrieves detailed information for multiple users in a single API request, specified by a list of their unique IDs. Unlike `find_user_by_id`, which fetches a single user, this function performs a bulk lookup and allows for response customization with optional fields and expansions. |
-| `get_users_by_usernames` | Fetches public data for a batch of users specified by their usernames. This function supports retrieving multiple users in a single request, unlike `find_user_by_username`. It allows for data customization through optional fields and expansions. |
-| `find_user_by_username` | Retrieves detailed information for a single user specified by their username, with options to include additional user, tweet, and expansion fields. This differs from `find_users_by_username`, which fetches data for multiple users in a single request. |
-| `get_users_compliance_stream` | Streams real-time user compliance events, such as account deletions or suspensions, from a specified data partition. Allows for backfilling missed data after a disconnection and filtering the event stream by a specific time range for targeted data retrieval. |
-| `get_authenticated_user` | Retrieves detailed information about the authenticated user making the request. Optional parameters allow for customizing the returned user and tweet data fields and including expanded objects. This differs from other 'find' functions as it requires no ID or username. |
-| `search_users_by_query` | Searches for users matching a specific query string. Supports pagination and allows customizing the response by specifying which user, tweet, and expansion fields to include in the results, providing a flexible way to discover users. |
-| `find_user_by_id` | Retrieves detailed information for a single user specified by their unique ID. This function allows for response customization using optional fields and expansions. It differs from `find_users_by_id`, which fetches data for multiple users in a single request. |
-| `list_blocked_users` | Retrieves a paginated list of users blocked by a specified user ID. The response can be customized by specifying additional fields for users, tweets, and expansions to tailor the returned data objects. |
-| `list_user_bookmarks` | Retrieves a paginated list of tweets bookmarked by a specified user. Allows extensive customization of the response data by specifying tweet, media, user, and place fields, as well as object expansions. |
-| `bookmark_tweet` | Bookmarks a specific tweet for a user. This action adds the tweet, identified by `tweet_id`, to the bookmarks of the user specified by their unique `id`, making a POST request to the bookmarks endpoint. |
-| `remove_bookmark` | Deletes a bookmarked tweet for a specified user. This action requires both the user's ID and the tweet's ID to target the correct bookmark for removal via an API DELETE request. It is the inverse of `post_users_id_bookmarks`. |
-| `get_user_followed_lists` | Retrieves a paginated list of Twitter Lists that a specified user follows. Identified by user ID, this function allows response customization with optional parameters for pagination, expansions, and specific list or user fields to include in the results. |
-| `follow_list` | Causes a specified user to follow a particular Twitter List. It sends a POST request to the `/users/{id}/followed_lists` endpoint with the list's ID. This contrasts with `user_followed_lists`, which retrieves the lists a user already follows, and `list_user_unfollow`, which removes a list. |
-| `unfollow_list` | Causes a user, specified by their ID, to unfollow a particular Twitter List, identified by its list ID. This action sends a DELETE request to the API, removing the follow relationship between the user and the list. |
-| `get_user_followers` | Fetches a paginated list of users who follow a specified user ID. The response can be customized with optional parameters to control the number of results, expand related objects, and specify which user or tweet fields to return. |
-| `get_following_by_user_id` | Retrieves a paginated list of users followed by a specific user ID. The response can be customized by requesting additional user fields, tweet fields, and data expansions to include more detailed information about the followed accounts. |
-| `follow_user` | Causes a source user, specified by `id`, to follow a target user (`target_user_id`). It sends a POST request to the `/2/users/{id}/following` endpoint to create the follow relationship, distinct from `users_id_following` which retrieves a list of followed users. |
-| `get_liked_tweets_by_user` | Fetches a list of tweets liked by a specified user ID. This function supports pagination and allows for extensive customization of the returned data, including expansions and specific fields for tweets, media, users, polls, and places. |
-| `like_tweet` | Causes a user, specified by `id`, to like a tweet, specified by `tweet_id`. This function sends a POST request to add a like, contrasting with `users_id_unlike` which removes a like and `users_id_liked_tweets` which retrieves a list of liked tweets. |
-| `unlike_tweet` | Removes a like from a tweet on behalf of an authenticated user. This function identifies the specific like to be deleted using the user's ID and the tweet's ID, then sends a corresponding DELETE request to the Twitter API. |
-| `get_user_list_memberships` | Retrieves all Twitter Lists of which a specific user is a member. Supports pagination and allows for response customization by specifying which list fields, user fields, and expansions to return, differentiating it from functions that get followed, owned, or pinned lists. |
-| `get_user_mentions` | Retrieves a timeline of tweets mentioning a specified user, identified by their ID. Allows for pagination and filtering by time or tweet ID, with options to customize the returned data fields for tweets, users, media, and other entities. |
-| `get_muted_users` | Retrieves a list of users muted by a specific user, identified by ID. Supports pagination and allows for customizing the returned data, including user fields, expansions, and tweet fields, to tailor the response. |
-| `mute_user` | Mutes a target user on behalf of an authenticated user. This action requires the authenticated user's ID and the target user's ID. It differs from `users_id_unmute` (which unmutes) and `users_id_muting` (which lists muted users) by performing the actual mute operation via POST request. |
-| `get_user_owned_lists` | Retrieves all Twitter Lists owned by a specified user ID. Supports pagination and custom data fields for detailed results. This function fetches lists created by the user, distinguishing it from methods that retrieve lists the user follows (`user_followed_lists`) or has pinned (`list_user_pinned_lists`). |
-| `get_user_pinned_lists` | Retrieves the collection of lists pinned by a specific user, identified by their ID. Optional parameters allow for customizing the returned list and user data fields, and including expansions. This is distinct from fetching lists a user follows or owns. |
-| `pin_list` | Pins a specified list to a user's profile via a POST request, using the user and list IDs. This creates a new pin, differing from `list_user_unpin` which removes a pin and `list_user_pinned_lists` which retrieves all of a user's currently pinned lists. |
-| `unpin_list` | Unpins a specific list from a user's profile, identified by their user ID and the list's ID. This action sends a DELETE request to the API, removing the specified list from the user's collection of pinned lists. |
-| `create_retweet` | Causes a user, identified by `id`, to retweet a specific tweet. This action sends a POST request to the `/2/users/{id}/retweets` endpoint, requiring the `tweet_id` of the tweet to be retweeted. It is the opposite of the `users_id_unretweets` function, which deletes a retweet. |
-| `delete_retweet` | Removes a retweet for a specified user by sending a DELETE request to the Twitter API. It requires the user's ID and the ID of the original tweet that was retweeted to successfully undo the action. |
-| `get_user_tweet_timeline` | Retrieves tweets from a user's timeline in reverse chronological order. Supports filtering by time or tweet ID, pagination, and excluding replies or retweets. Optional parameters allow for expanding returned data with additional tweet, user, and media fields. |
-| `get_tweets_by_user_id` | Retrieves tweets authored by a specific user, identified by their ID. Supports pagination and filtering by time range, allowing response customization to exclude replies or retweets. This fetches tweets composed by the user, unlike the more general `users_id_timeline` function which includes retweets. |
-| `unfollow_user` | Causes a specified user (`source_user_id`) to unfollow another user (`target_user_id`). This function sends a DELETE API request to remove the follow relationship, requiring both user IDs to successfully complete the action. |
-| `unmute_user` | Allows an authenticated user (source) to unmute another user (target). This action removes the specified target user from the source user's mute list, reversing a previous mute action. |
+### User Operations
+- **get_authenticated_user** - Get the authenticated user's profile
+- **get_user_by_username** - Look up user by username/handle
+- **get_user_by_id** - Look up user by ID
+- **search_users** - Search for users by query
+
+### Timeline Operations
+- **get_user_tweets** - Get tweets from a user's timeline
+- **get_user_mentions** - Get tweets mentioning a user
+
+### Social Interactions
+- **like_tweet** / **unlike_tweet** - Like/unlike tweets
+- **retweet** / **unretweet** - Retweet/unretweet tweets
+- **get_liked_tweets** - Get tweets liked by a user
+- **get_liking_users** - Get users who liked a tweet
+- **get_retweeters** - Get users who retweeted a tweet
+
+### Follow Operations
+- **follow_user** / **unfollow_user** - Follow/unfollow users
+- **get_followers** - Get a user's followers
+- **get_following** - Get users a user is following
+
+### Direct Messages
+- **send_dm** - Send a direct message
+- **get_dm_events** - Get DM conversations
+
+### Bookmarks
+- **bookmark_tweet** / **remove_bookmark** - Bookmark/unbookmark tweets
+- **get_bookmarks** - Get bookmarked tweets
+
+### Lists
+- **create_list** - Create a new list
+- **get_list** - Get list details
+- **get_list_tweets** - Get tweets from a list
+
+## Authentication
+
+Requires Twitter API credentials configured through the integration system.
+
+## Design Philosophy
+
+This application focuses on the most common day-to-day Twitter operations, excluding:
+- Streaming endpoints (firehose, compliance streams)
+- Advanced analytics and metrics
+- Spaces operations
+- Trend tracking
+- Compliance and batch operations
+
+The goal is to provide a clean, focused API for typical Twitter interactions without the complexity of the full API surface.
