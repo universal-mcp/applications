@@ -23,7 +23,7 @@ class TwitterApp(APIApplication):
 
     # ==================== Tweet Operations ====================
 
-    def create_tweet(
+    async def create_tweet(
         self,
         text: str = None,
         reply: dict = None,
@@ -63,11 +63,11 @@ class TwitterApp(APIApplication):
         }
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/2/tweets"
-        response = self._post(url, data=request_body_data, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, content_type="application/json")
         response.raise_for_status()
         return response.json()
 
-    def delete_tweet(self, tweet_id: str) -> dict[str, Any]:
+    async def delete_tweet(self, tweet_id: str) -> dict[str, Any]:
         """
         Permanently deletes a specific tweet by its unique ID on behalf of the authenticated user.
         This action cannot be undone and removes the tweet from all timelines.
@@ -88,11 +88,11 @@ class TwitterApp(APIApplication):
         if tweet_id is None:
             raise ValueError("Missing required parameter 'tweet_id'.")
         url = f"{self.base_url}/2/tweets/{tweet_id}"
-        response = self._delete(url)
+        response = await self._adelete(url)
         response.raise_for_status()
         return response.json()
 
-    def get_tweet(
+    async def get_tweet(
         self,
         tweet_id: str,
         tweet_fields: list = None,
@@ -134,13 +134,12 @@ class TwitterApp(APIApplication):
             ]
             if v is not None
         }
-        query_params = self._prepare_params(query_params)
         query_params = self._prepare_params(query_params) if query_params else {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def search_recent_tweets(
+    async def search_recent_tweets(
         self,
         query: str,
         max_results: int = None,
@@ -185,15 +184,14 @@ class TwitterApp(APIApplication):
             ]
             if v is not None
         }
-        query_params = self._prepare_params(query_params)
         query_params = self._prepare_params(query_params) if query_params else {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
     # ==================== User Operations ====================
 
-    def get_authenticated_user(
+    async def get_authenticated_user(
         self,
         user_fields: list = None,
         expansions: list = None,
@@ -228,13 +226,12 @@ class TwitterApp(APIApplication):
             ]
             if v is not None
         }
-        query_params = self._prepare_params(query_params)
         query_params = self._prepare_params(query_params) if query_params else {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_user_by_username(
+    async def get_user_by_username(
         self,
         username: str,
         user_fields: list = None,
@@ -274,11 +271,11 @@ class TwitterApp(APIApplication):
             if v is not None
         }
         query_params = self._prepare_params(query_params) if query_params else {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_user_by_id(
+    async def get_user_by_id(
         self,
         user_id: str,
         user_fields: list = None,
@@ -318,11 +315,11 @@ class TwitterApp(APIApplication):
             if v is not None
         }
         query_params = self._prepare_params(query_params) if query_params else {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def search_users(
+    async def search_users(
         self,
         query: str,
         max_results: int = None,
@@ -362,13 +359,13 @@ class TwitterApp(APIApplication):
             if v is not None
         }
         query_params = self._prepare_params(query_params) if query_params else {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
     # ==================== Timeline Operations ====================
 
-    def get_user_tweets(
+    async def get_user_tweets(
         self,
         user_id: str,
         max_results: int = None,
@@ -417,11 +414,11 @@ class TwitterApp(APIApplication):
             if v is not None
         }
         query_params = self._prepare_params(query_params) if query_params else {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_user_mentions(
+    async def get_user_mentions(
         self,
         user_id: str,
         max_results: int = None,
@@ -467,13 +464,13 @@ class TwitterApp(APIApplication):
             if v is not None
         }
         query_params = self._prepare_params(query_params) if query_params else {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
     # ==================== Social Interactions ====================
 
-    def like_tweet(self, user_id: str, tweet_id: str) -> dict[str, Any]:
+    async def like_tweet(self, tweet_id: str) -> dict[str, Any]:
         """
         Causes the authenticated user to like a specific tweet by its ID.
         Adds the tweet to the user's liked tweets and notifies the tweet author.
@@ -492,16 +489,17 @@ class TwitterApp(APIApplication):
         Tags:
             like, favorite, engagement, important
         """
-        if user_id is None:
-            raise ValueError("Missing required parameter 'user_id'.")
+        
+        user = await self.get_authenticated_user()
+        user_id = user.get("data", {}).get("id")
         request_body_data = {"tweet_id": tweet_id}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/2/users/{user_id}/likes"
-        response = self._post(url, data=request_body_data, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, content_type="application/json")
         response.raise_for_status()
         return response.json()
 
-    def unlike_tweet(self, user_id: str, tweet_id: str) -> dict[str, Any]:
+    async def unlike_tweet(self, tweet_id: str) -> dict[str, Any]:
         """
         Removes a like from a tweet on behalf of the authenticated user.
         Reverses a previous like action and removes the tweet from liked tweets.
@@ -520,18 +518,15 @@ class TwitterApp(APIApplication):
         Tags:
             unlike, unfavorite, engagement, important
         """
-        if user_id is None:
-            raise ValueError("Missing required parameter 'user_id'.")
-        if tweet_id is None:
-            raise ValueError("Missing required parameter 'tweet_id'.")
+        user = await self.get_authenticated_user()
+        user_id = user.get("data", {}).get("id")
         url = f"{self.base_url}/2/users/{user_id}/likes/{tweet_id}"
-        response = self._delete(url)
+        response = await self._adelete(url)
         response.raise_for_status()
         return response.json()
 
-    def get_liked_tweets(
+    async def get_liked_tweets(
         self,
-        user_id: str,
         max_results: int = None,
         tweet_fields: list = None,
         user_fields: list = None,
@@ -541,7 +536,6 @@ class TwitterApp(APIApplication):
         Shows the user's like history with customizable field selections.
 
         Args:
-            user_id: The unique ID of the user. Example: '2244994945'
             max_results: Maximum number of results (5-100). Default: 10
             tweet_fields: Tweet fields to include. Example: ['created_at', 'public_metrics', 'author_id']
             user_fields: User fields to include. Example: ['username', 'name']
@@ -556,8 +550,8 @@ class TwitterApp(APIApplication):
         Tags:
             likes, favorites, user, important
         """
-        if user_id is None:
-            raise ValueError("Missing required parameter 'user_id'.")
+        user = await self.get_authenticated_user()
+        user_id = user.get("data", {}).get("id")
         url = f"{self.base_url}/2/users/{user_id}/liked_tweets"
         query_params = {
             k: v
@@ -569,11 +563,11 @@ class TwitterApp(APIApplication):
             if v is not None
         }
         query_params = self._prepare_params(query_params) if query_params else {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def retweet(self, user_id: str, tweet_id: str) -> dict[str, Any]:
+    async def retweet(self, tweet_id: str) -> dict[str, Any]:
         """
         Causes the authenticated user to retweet a specific tweet by its ID.
         Shares the tweet to the user's followers and appears on their timeline.
@@ -592,16 +586,16 @@ class TwitterApp(APIApplication):
         Tags:
             retweet, share, engagement, important
         """
-        if user_id is None:
-            raise ValueError("Missing required parameter 'user_id'.")
+        user = await self.get_authenticated_user()
+        user_id = user.get("data", {}).get("id")
         request_body_data = {"tweet_id": tweet_id}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/2/users/{user_id}/retweets"
-        response = self._post(url, data=request_body_data, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, content_type="application/json")
         response.raise_for_status()
         return response.json()
 
-    def unretweet(self, user_id: str, tweet_id: str) -> dict[str, Any]:
+    async def unretweet(self, tweet_id: str) -> dict[str, Any]:
         """
         Removes a retweet from the authenticated user's timeline.
         Reverses a previous retweet action and removes it from the user's profile.
@@ -620,16 +614,14 @@ class TwitterApp(APIApplication):
         Tags:
             unretweet, undo, engagement, important
         """
-        if user_id is None:
-            raise ValueError("Missing required parameter 'user_id'.")
-        if tweet_id is None:
-            raise ValueError("Missing required parameter 'tweet_id'.")
+        user = await self.get_authenticated_user()
+        user_id = user.get("data", {}).get("id")
         url = f"{self.base_url}/2/users/{user_id}/retweets/{tweet_id}"
-        response = self._delete(url)
+        response = await self._adelete(url)
         response.raise_for_status()
         return response.json()
 
-    def get_retweeters(
+    async def get_retweeters(
         self,
         tweet_id: str,
         max_results: int = None,
@@ -666,11 +658,11 @@ class TwitterApp(APIApplication):
             if v is not None
         }
         query_params = self._prepare_params(query_params) if query_params else {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_liking_users(
+    async def get_liking_users(
         self,
         tweet_id: str,
         max_results: int = None,
@@ -707,13 +699,13 @@ class TwitterApp(APIApplication):
             if v is not None
         }
         query_params = self._prepare_params(query_params) if query_params else {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
     # ==================== Follow Operations ====================
 
-    def follow_user(self, user_id: str, target_user_id: str) -> dict[str, Any]:
+    async def follow_user(self, user_id: str, target_user_id: str) -> dict[str, Any]:
         """
         Causes the authenticated user to follow another user by their user ID.
         Creates a following relationship and adds the target to the user's following list.
@@ -737,11 +729,11 @@ class TwitterApp(APIApplication):
         request_body_data = {"target_user_id": target_user_id}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/2/users/{user_id}/following"
-        response = self._post(url, data=request_body_data, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, content_type="application/json")
         response.raise_for_status()
         return response.json()
 
-    def unfollow_user(self, user_id: str, target_user_id: str) -> dict[str, Any]:
+    async def unfollow_user(self, user_id: str, target_user_id: str) -> dict[str, Any]:
         """
         Causes the authenticated user to unfollow another user by their user ID.
         Removes the following relationship and stops seeing their tweets in the timeline.
@@ -765,11 +757,11 @@ class TwitterApp(APIApplication):
         if target_user_id is None:
             raise ValueError("Missing required parameter 'target_user_id'.")
         url = f"{self.base_url}/2/users/{user_id}/following/{target_user_id}"
-        response = self._delete(url)
+        response = await self._adelete(url)
         response.raise_for_status()
         return response.json()
 
-    def get_followers(
+    async def get_followers(
         self,
         user_id: str,
         max_results: int = None,
@@ -807,11 +799,11 @@ class TwitterApp(APIApplication):
             if v is not None
         }
         query_params = self._prepare_params(query_params) if query_params else {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_following(
+    async def get_following(
         self,
         user_id: str,
         max_results: int = None,
@@ -828,7 +820,7 @@ class TwitterApp(APIApplication):
             user_fields: User fields to include. Example: ['username', 'description', 'public_metrics']
 
         Returns:
-            dict[str, Any]: List of followed users with pagination tokens.
+            dict[str, Any]: List of following users with pagination tokens.
 
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
@@ -849,13 +841,13 @@ class TwitterApp(APIApplication):
             if v is not None
         }
         query_params = self._prepare_params(query_params) if query_params else {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
     # ==================== Direct Messages ====================
 
-    def send_dm(
+    async def send_dm(
         self,
         participant_id: str,
         text: str = None,
@@ -885,11 +877,11 @@ class TwitterApp(APIApplication):
         request_body_data = {"attachments": attachments, "text": text}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/2/dm_conversations/with/{participant_id}/messages"
-        response = self._post(url, data=request_body_data, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, content_type="application/json")
         response.raise_for_status()
         return response.json()
 
-    def get_dm_events(
+    async def get_dm_events(
         self,
         max_results: int = None,
         event_types: list = None,
@@ -928,13 +920,13 @@ class TwitterApp(APIApplication):
             if v is not None
         }
         query_params = self._prepare_params(query_params) if query_params else {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
     # ==================== Bookmarks ====================
 
-    def bookmark_tweet(self, user_id: str, tweet_id: str) -> dict[str, Any]:
+    async def bookmark_tweet(self, user_id: str, tweet_id: str) -> dict[str, Any]:
         """
         Bookmarks a specific tweet for the authenticated user for later reference.
         Saves the tweet to the user's private bookmarks collection.
@@ -958,11 +950,11 @@ class TwitterApp(APIApplication):
         request_body_data = {"tweet_id": tweet_id}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/2/users/{user_id}/bookmarks"
-        response = self._post(url, data=request_body_data, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, content_type="application/json")
         response.raise_for_status()
         return response.json()
 
-    def remove_bookmark(self, user_id: str, tweet_id: str) -> dict[str, Any]:
+    async def remove_bookmark(self, user_id: str, tweet_id: str) -> dict[str, Any]:
         """
         Removes a bookmarked tweet from the authenticated user's bookmarks collection.
         Reverses a previous bookmark action and removes the saved tweet.
@@ -986,11 +978,11 @@ class TwitterApp(APIApplication):
         if tweet_id is None:
             raise ValueError("Missing required parameter 'tweet_id'.")
         url = f"{self.base_url}/2/users/{user_id}/bookmarks/{tweet_id}"
-        response = self._delete(url)
+        response = await self._adelete(url)
         response.raise_for_status()
         return response.json()
 
-    def get_bookmarks(
+    async def get_bookmarks(
         self,
         user_id: str,
         max_results: int = None,
@@ -1030,13 +1022,13 @@ class TwitterApp(APIApplication):
             if v is not None
         }
         query_params = self._prepare_params(query_params) if query_params else {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
     # ==================== Lists ====================
 
-    def create_list(
+    async def create_list(
         self,
         name: str = None,
         description: str = None,
@@ -1064,11 +1056,11 @@ class TwitterApp(APIApplication):
         request_body_data = {"name": name, "description": description, "private": private}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/2/lists"
-        response = self._post(url, data=request_body_data, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, content_type="application/json")
         response.raise_for_status()
         return response.json()
 
-    def get_list(
+    async def get_list(
         self,
         list_id: str,
         list_fields: list = None,
@@ -1105,11 +1097,11 @@ class TwitterApp(APIApplication):
             if v is not None
         }
         query_params = self._prepare_params(query_params) if query_params else {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_list_tweets(
+    async def get_list_tweets(
         self,
         list_id: str,
         max_results: int = None,
@@ -1149,7 +1141,7 @@ class TwitterApp(APIApplication):
             if v is not None
         }
         query_params = self._prepare_params(query_params) if query_params else {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
