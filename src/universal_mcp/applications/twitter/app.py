@@ -705,13 +705,12 @@ class TwitterApp(APIApplication):
 
     # ==================== Follow Operations ====================
 
-    async def follow_user(self, user_id: str, target_user_id: str) -> dict[str, Any]:
+    async def follow_user(self, target_user_id: str) -> dict[str, Any]:
         """
         Causes the authenticated user to follow another user by their user ID.
         Creates a following relationship and adds the target to the user's following list.
 
         Args:
-            user_id: The unique ID of the user performing the follow. Example: '2244994945'
             target_user_id: The unique ID of the user to follow. Example: '6253282'
 
         Returns:
@@ -724,8 +723,8 @@ class TwitterApp(APIApplication):
         Tags:
             follow, user, relationship, important
         """
-        if user_id is None:
-            raise ValueError("Missing required parameter 'user_id'.")
+        user = await self.get_authenticated_user()
+        user_id = user.get("data", {}).get("id")
         request_body_data = {"target_user_id": target_user_id}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/2/users/{user_id}/following"
@@ -733,13 +732,13 @@ class TwitterApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    async def unfollow_user(self, user_id: str, target_user_id: str) -> dict[str, Any]:
+    async def unfollow_user(self, target_user_id: str) -> dict[str, Any]:
         """
         Causes the authenticated user to unfollow another user by their user ID.
         Removes the following relationship and stops seeing their tweets in the timeline.
 
         Args:
-            user_id: The unique ID of the user performing the unfollow. Example: '2244994945'
+            user_id: The u``nique ID of the user performing the unfollow. Example: '2244994945'
             target_user_id: The unique ID of the user to unfollow. Example: '6253282'
 
         Returns:
@@ -752,8 +751,8 @@ class TwitterApp(APIApplication):
         Tags:
             unfollow, user, relationship, important
         """
-        if user_id is None:
-            raise ValueError("Missing required parameter 'user_id'.")
+        user = await self.get_authenticated_user()
+        user_id = user.get("data", {}).get("id")
         if target_user_id is None:
             raise ValueError("Missing required parameter 'target_user_id'.")
         url = f"{self.base_url}/2/users/{user_id}/following/{target_user_id}"
@@ -926,13 +925,12 @@ class TwitterApp(APIApplication):
 
     # ==================== Bookmarks ====================
 
-    async def bookmark_tweet(self, user_id: str, tweet_id: str) -> dict[str, Any]:
+    async def bookmark_tweet(self, tweet_id: str) -> dict[str, Any]:
         """
         Bookmarks a specific tweet for the authenticated user for later reference.
         Saves the tweet to the user's private bookmarks collection.
 
         Args:
-            user_id: The unique ID of the user creating the bookmark. Example: '2244994945'
             tweet_id: The unique ID of the tweet to bookmark. Example: '1346889436626259968'
 
         Returns:
@@ -945,8 +943,8 @@ class TwitterApp(APIApplication):
         Tags:
             bookmark, save, important
         """
-        if user_id is None:
-            raise ValueError("Missing required parameter 'user_id'.")
+        user = await self.get_authenticated_user()
+        user_id = user.get("data", {}).get("id")
         request_body_data = {"tweet_id": tweet_id}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/2/users/{user_id}/bookmarks"
@@ -954,13 +952,12 @@ class TwitterApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    async def remove_bookmark(self, user_id: str, tweet_id: str) -> dict[str, Any]:
+    async def remove_bookmark(self, tweet_id: str) -> dict[str, Any]:
         """
         Removes a bookmarked tweet from the authenticated user's bookmarks collection.
         Reverses a previous bookmark action and removes the saved tweet.
 
         Args:
-            user_id: The unique ID of the user removing the bookmark. Example: '2244994945'
             tweet_id: The unique ID of the bookmarked tweet to remove. Example: '1346889436626259968'
 
         Returns:
@@ -973,8 +970,8 @@ class TwitterApp(APIApplication):
         Tags:
             bookmark, remove, delete, important
         """
-        if user_id is None:
-            raise ValueError("Missing required parameter 'user_id'.")
+        user = await self.get_authenticated_user()
+        user_id = user.get("data", {}).get("id")
         if tweet_id is None:
             raise ValueError("Missing required parameter 'tweet_id'.")
         url = f"{self.base_url}/2/users/{user_id}/bookmarks/{tweet_id}"
@@ -984,7 +981,6 @@ class TwitterApp(APIApplication):
 
     async def get_bookmarks(
         self,
-        user_id: str,
         max_results: int = None,
         tweet_fields: list = None,
         user_fields: list = None,
@@ -994,7 +990,6 @@ class TwitterApp(APIApplication):
         Shows the user's saved tweets with customizable field selections.
 
         Args:
-            user_id: The unique ID of the user. Example: '2244994945'
             max_results: Maximum number of results (1-100). Default: 100
             tweet_fields: Tweet fields to include. Example: ['created_at', 'public_metrics', 'author_id']
             user_fields: User fields to include. Example: ['username', 'name']
@@ -1009,8 +1004,8 @@ class TwitterApp(APIApplication):
         Tags:
             bookmarks, saved, list, important
         """
-        if user_id is None:
-            raise ValueError("Missing required parameter 'user_id'.")
+        user = await self.get_authenticated_user()
+        user_id = user.get("data", {}).get("id")
         url = f"{self.base_url}/2/users/{user_id}/bookmarks"
         query_params = {
             k: v
@@ -1150,16 +1145,20 @@ class TwitterApp(APIApplication):
 
         Note: Some methods requiring elevated API access are not included here but
         remain available programmatically:
-        - search_recent_tweets (requires elevated access)
         - search_users (requires elevated access)
         - get_followers (requires elevated access)
         - get_following (requires elevated access)
+        - send_dm (requires  elevated access)
+        - get_dm_events (requires elevated access)
+        - like_tweet (requires elevated access)
+        - unlike_tweet (requires elevated access)
         """
         return [
             # Tweet Operations
             self.create_tweet,
             self.delete_tweet,
             self.get_tweet,
+            self.search_recent_tweets,
             # User Operations
             self.get_authenticated_user,
             self.get_user_by_username,
@@ -1168,8 +1167,6 @@ class TwitterApp(APIApplication):
             self.get_user_tweets,
             self.get_user_mentions,
             # Social Interactions
-            self.like_tweet,
-            self.unlike_tweet,
             self.get_liked_tweets,
             self.retweet,
             self.unretweet,
@@ -1178,9 +1175,6 @@ class TwitterApp(APIApplication):
             # Follow Operations
             self.follow_user,
             self.unfollow_user,
-            # Direct Messages
-            self.send_dm,
-            self.get_dm_events,
             # Bookmarks
             self.bookmark_tweet,
             self.remove_bookmark,
