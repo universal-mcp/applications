@@ -251,6 +251,7 @@ class FalaiApp(APIApplication):
 
     async def submit_start_end_video_generation(
         self,
+        prompt: str,
         start_image_url: str,
         end_image_url: str,
         model: Literal[
@@ -263,9 +264,11 @@ class FalaiApp(APIApplication):
         Submits a video generation task using start and end images.
 
         Args:
+            prompt: Text prompt to guide the video generation.
             start_image_url: URL of the starting image.
             end_image_url: URL of the ending image.
             model: The video generation model to use. Defaults to 'fal-ai/kling-video/v2.6/pro/image-to-video'.
+            duration: Duration of the video in seconds.
             extra_arguments: Additional model-specific parameters.
 
         Returns:
@@ -275,6 +278,7 @@ class FalaiApp(APIApplication):
             submit, video, async, ai, minimax, luma, kling, important
         """
         arguments = {
+            "prompt": prompt,
             "start_image_url": start_image_url,
             "end_image_url": end_image_url,
             "generate_audio": False,
