@@ -10,6 +10,17 @@ class TwitterApp(APIApplication):
         super().__init__(name="twitter", integration=integration, **kwargs)
         self.base_url = "https://api.twitter.com"
 
+    @staticmethod
+    def _prepare_params(params: dict) -> dict:
+        """Convert list values to comma-separated strings for Twitter API."""
+        prepared = {}
+        for key, value in params.items():
+            if isinstance(value, list):
+                prepared[key] = ','.join(str(v) for v in value)
+            else:
+                prepared[key] = value
+        return prepared
+
     # ==================== Tweet Operations ====================
 
     def create_tweet(
@@ -123,6 +134,8 @@ class TwitterApp(APIApplication):
             ]
             if v is not None
         }
+        query_params = self._prepare_params(query_params)
+        query_params = self._prepare_params(query_params) if query_params else {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -139,6 +152,7 @@ class TwitterApp(APIApplication):
         """
         Searches for tweets from the past seven days matching a specific query with filtering and pagination.
         Supports advanced Twitter search operators for precise results.
+        NOTE: This endpoint requires elevated Twitter API access (Pro/Enterprise tier).
 
         Args:
             query: Search query string. Example: 'from:TwitterDev has:media -is:retweet'
@@ -156,7 +170,7 @@ class TwitterApp(APIApplication):
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
 
         Tags:
-            tweet, search, query, important
+            tweet, search, query, important, elevated_access_required
         """
         url = f"{self.base_url}/2/tweets/search/recent"
         query_params = {
@@ -171,6 +185,8 @@ class TwitterApp(APIApplication):
             ]
             if v is not None
         }
+        query_params = self._prepare_params(query_params)
+        query_params = self._prepare_params(query_params) if query_params else {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -212,6 +228,8 @@ class TwitterApp(APIApplication):
             ]
             if v is not None
         }
+        query_params = self._prepare_params(query_params)
+        query_params = self._prepare_params(query_params) if query_params else {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -255,6 +273,7 @@ class TwitterApp(APIApplication):
             ]
             if v is not None
         }
+        query_params = self._prepare_params(query_params) if query_params else {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -298,6 +317,7 @@ class TwitterApp(APIApplication):
             ]
             if v is not None
         }
+        query_params = self._prepare_params(query_params) if query_params else {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -312,6 +332,7 @@ class TwitterApp(APIApplication):
         """
         Searches for Twitter users matching a specific query string with pagination support.
         Finds users by username, display name, or bio keywords.
+        NOTE: This endpoint requires elevated Twitter API access (Pro/Enterprise tier).
 
         Args:
             query: Search query to find users. Example: 'developer python'
@@ -327,7 +348,7 @@ class TwitterApp(APIApplication):
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
 
         Tags:
-            user, search, find, important
+            user, search, find, important, elevated_access_required
         """
         url = f"{self.base_url}/2/users/search"
         query_params = {
@@ -340,6 +361,7 @@ class TwitterApp(APIApplication):
             ]
             if v is not None
         }
+        query_params = self._prepare_params(query_params) if query_params else {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -394,6 +416,7 @@ class TwitterApp(APIApplication):
             ]
             if v is not None
         }
+        query_params = self._prepare_params(query_params) if query_params else {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -443,6 +466,7 @@ class TwitterApp(APIApplication):
             ]
             if v is not None
         }
+        query_params = self._prepare_params(query_params) if query_params else {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -544,6 +568,7 @@ class TwitterApp(APIApplication):
             ]
             if v is not None
         }
+        query_params = self._prepare_params(query_params) if query_params else {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -640,6 +665,7 @@ class TwitterApp(APIApplication):
             ]
             if v is not None
         }
+        query_params = self._prepare_params(query_params) if query_params else {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -680,6 +706,7 @@ class TwitterApp(APIApplication):
             ]
             if v is not None
         }
+        query_params = self._prepare_params(query_params) if query_params else {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -751,6 +778,7 @@ class TwitterApp(APIApplication):
         """
         Retrieves a paginated list of users who follow a specific user.
         Shows the user's follower base with customizable user field selections.
+        NOTE: This endpoint requires elevated Twitter API access (Pro/Enterprise tier).
 
         Args:
             user_id: The unique ID of the user. Example: '2244994945'
@@ -765,7 +793,7 @@ class TwitterApp(APIApplication):
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
 
         Tags:
-            followers, users, relationship, important
+            followers, users, relationship, important, elevated_access_required
         """
         if user_id is None:
             raise ValueError("Missing required parameter 'user_id'.")
@@ -778,6 +806,7 @@ class TwitterApp(APIApplication):
             ]
             if v is not None
         }
+        query_params = self._prepare_params(query_params) if query_params else {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -791,6 +820,7 @@ class TwitterApp(APIApplication):
         """
         Retrieves a paginated list of users that a specific user is following.
         Shows who the user follows with customizable user field selections.
+        NOTE: This endpoint requires elevated Twitter API access (Pro/Enterprise tier).
 
         Args:
             user_id: The unique ID of the user. Example: '2244994945'
@@ -805,7 +835,7 @@ class TwitterApp(APIApplication):
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
 
         Tags:
-            following, users, relationship, important
+            following, users, relationship, important, elevated_access_required
         """
         if user_id is None:
             raise ValueError("Missing required parameter 'user_id'.")
@@ -818,6 +848,7 @@ class TwitterApp(APIApplication):
             ]
             if v is not None
         }
+        query_params = self._prepare_params(query_params) if query_params else {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -896,6 +927,7 @@ class TwitterApp(APIApplication):
             ]
             if v is not None
         }
+        query_params = self._prepare_params(query_params) if query_params else {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -997,6 +1029,7 @@ class TwitterApp(APIApplication):
             ]
             if v is not None
         }
+        query_params = self._prepare_params(query_params) if query_params else {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -1071,6 +1104,7 @@ class TwitterApp(APIApplication):
             ]
             if v is not None
         }
+        query_params = self._prepare_params(query_params) if query_params else {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -1114,23 +1148,30 @@ class TwitterApp(APIApplication):
             ]
             if v is not None
         }
+        query_params = self._prepare_params(query_params) if query_params else {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
     def list_tools(self):
-        """Returns list of all available Twitter API tools."""
+        """Returns list of available Twitter API tools for standard access level.
+
+        Note: Some methods requiring elevated API access are not included here but
+        remain available programmatically:
+        - search_recent_tweets (requires elevated access)
+        - search_users (requires elevated access)
+        - get_followers (requires elevated access)
+        - get_following (requires elevated access)
+        """
         return [
             # Tweet Operations
             self.create_tweet,
             self.delete_tweet,
             self.get_tweet,
-            self.search_recent_tweets,
             # User Operations
             self.get_authenticated_user,
             self.get_user_by_username,
             self.get_user_by_id,
-            self.search_users,
             # Timeline Operations
             self.get_user_tweets,
             self.get_user_mentions,
@@ -1145,8 +1186,6 @@ class TwitterApp(APIApplication):
             # Follow Operations
             self.follow_user,
             self.unfollow_user,
-            self.get_followers,
-            self.get_following,
             # Direct Messages
             self.send_dm,
             self.get_dm_events,
