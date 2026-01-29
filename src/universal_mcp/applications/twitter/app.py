@@ -142,7 +142,7 @@ class TwitterApp(APIApplication):
     async def search_recent_tweets(
         self,
         query: str,
-        max_results: int = None,
+        max_results: int = 10,
         start_time: str = None,
         end_time: str = None,
         tweet_fields: list = None,
@@ -322,7 +322,7 @@ class TwitterApp(APIApplication):
     async def search_users(
         self,
         query: str,
-        max_results: int = None,
+        max_results: int = 10,
         user_fields: list = None,
         expansions: list = None,
     ) -> dict[str, Any]:
@@ -368,7 +368,7 @@ class TwitterApp(APIApplication):
     async def get_user_tweets(
         self,
         user_id: str,
-        max_results: int = None,
+        max_results: int = 10,
         exclude: list = None,
         start_time: str = None,
         end_time: str = None,
@@ -421,7 +421,7 @@ class TwitterApp(APIApplication):
     async def get_user_mentions(
         self,
         user_id: str,
-        max_results: int = None,
+        max_results: int = 10,
         start_time: str = None,
         end_time: str = None,
         tweet_fields: list = None,
@@ -527,7 +527,7 @@ class TwitterApp(APIApplication):
 
     async def get_liked_tweets(
         self,
-        max_results: int = None,
+        max_results: int = 10,
         tweet_fields: list = None,
         user_fields: list = None,
     ) -> dict[str, Any]:
@@ -624,7 +624,7 @@ class TwitterApp(APIApplication):
     async def get_retweeters(
         self,
         tweet_id: str,
-        max_results: int = None,
+        max_results: int = 10,
         user_fields: list = None,
     ) -> dict[str, Any]:
         """
@@ -665,7 +665,7 @@ class TwitterApp(APIApplication):
     async def get_liking_users(
         self,
         tweet_id: str,
-        max_results: int = None,
+        max_results: int = 10,
         user_fields: list = None,
     ) -> dict[str, Any]:
         """
@@ -763,7 +763,7 @@ class TwitterApp(APIApplication):
     async def get_followers(
         self,
         user_id: str,
-        max_results: int = None,
+        max_results: int = 10,
         user_fields: list = None,
     ) -> dict[str, Any]:
         """
@@ -805,7 +805,7 @@ class TwitterApp(APIApplication):
     async def get_following(
         self,
         user_id: str,
-        max_results: int = None,
+        max_results: int = 10,
         user_fields: list = None,
     ) -> dict[str, Any]:
         """
@@ -882,7 +882,7 @@ class TwitterApp(APIApplication):
 
     async def get_dm_events(
         self,
-        max_results: int = None,
+        max_results: int = 10,
         event_types: list = None,
         dm_event_fields: list = None,
         user_fields: list = None,
@@ -981,7 +981,7 @@ class TwitterApp(APIApplication):
 
     async def get_bookmarks(
         self,
-        max_results: int = None,
+        max_results: int = 10,
         tweet_fields: list = None,
         user_fields: list = None,
     ) -> dict[str, Any]:
@@ -1099,7 +1099,7 @@ class TwitterApp(APIApplication):
     async def get_list_tweets(
         self,
         list_id: str,
-        max_results: int = None,
+        max_results: int = 10,
         tweet_fields: list = None,
         user_fields: list = None,
     ) -> dict[str, Any]:
