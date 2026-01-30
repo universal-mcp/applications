@@ -46,6 +46,7 @@ ALL_APPS = [
     "heygen",
     "http_tools",
     "hubspot",
+    "instagram",
     "jira",
     "klaviyo",
     "linkedin",
