@@ -557,7 +557,7 @@ class InstagramApp(APIApplication):
         response = await self._aget(url, params=params)
         return self._handle_response(response)
 
-    def list_tools(self) -> list[Callable]:
+    def list_tools(self):
         return [
             self.start_new_chat,
             self.list_all_chats,
