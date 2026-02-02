@@ -1,22 +1,22 @@
-# NocodbApp MCP Server
+# NocodbV3App MCP Server
 
-An MCP Server for the NocodbApp API.
+An MCP Server for the NocodbV3App API.
 
 ## 🛠️ Tool List
 
-This is automatically generated from OpenAPI schema for the NocodbApp API.
+This is automatically generated from OpenAPI schema for the NocodbV3App API.
 
 
 | Tool | Description |
 |------|-------------|
-| `list_workspaces` | Lists all workspaces accessible to the user. |
-| `get_workspace` | Retrieves details of a specific workspace. |
-| `list_bases` | Lists all bases within a specific workspace. |
-| `get_base` | Retrieves metadata for a specific base. |
-| `create_base` | Creates a new base in a workspace. |
-| `list_tables` | Lists tables in a base. |
-| `get_table` | Retrieves metadata for a specific table (Schema), including its columns/fields. |
-| `create_table` | Creates a new table in a base. |
-| `list_fields` | Lists all fields (columns) for a specific table. |
-| `get_field` | Retrieves metadata for a specific field (column). |
-| `create_field` | Creates a new field (column) in a table. |
+| `list_tables` | List all tables in the fixed base. |
+| `create_table` | Create a new table in the fixed base with optional initial columns. |
+| `delete_table` | Delete a table by its ID from the fixed base. |
+| `create_column` | Create a new column (field) in an existing table. |
+| `delete_column` | Delete a column (field) by its ID. |
+| `list_records` | List records from a table with pagination and filtering. |
+| `create_records` | Create one or more records in a table. |
+| `get_record` | Retrieve a single record by ID. |
+| `update_records` | Update one or more records. |
+| `delete_records` | Delete one or more records. |
+| `get_record_count` | Get the count of records in a table (or view). |

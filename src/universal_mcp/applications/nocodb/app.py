@@ -1,388 +1,430 @@
-from typing import Any
+
+from typing import Any, List, Literal
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
+NocoDBFieldType = Literal[
+    "SingleLineText", "LongText", "Number", "Checkbox", "MultiSelect", "SingleSelect", 
+    "Date", "DateTime", "Year", "Time", "PhoneNumber", "Email", "URL", "Decimal", 
+    "Currency", "Percent", "Duration", "Rating", "Formula", "Rollup", "Lookup", 
+    "Attachment", "JSON", "Geometry", "CreatedTime", "LastModifiedTime", "CreatedBy", "LastModifiedBy"
+]
 
-class NocodbApp(APIApplication):
+FIXED_BASE_ID = "prx1mkflfxn86fg" 
+TOKEN = "9wEYlDWJc4W8bgAY28PnV_k5fPTsIovHCxlHQtd8" 
+
+class NocodbV3App(APIApplication):
     """
-    Integrates with NocoDB Meta API v3 to manage Workspaces, Bases, Tables, and Fields.
+    NocoDB Application using ONLY V3 API endpoints for all operations.
+    Includes 6 Data operations and 4 Meta operations.
     """
 
     def __init__(self, integration: Integration = None, base_url: str = None, **kwargs) -> None:
-        """
-        Initialize the NocoDB application.
-
-        Args:
-            integration: Authentication integration (provides xc-token).
-            base_url: Optional override for self-hosted instances.
-                      Defaults to NocoDB Cloud V3: 'https://app.nocodb.com/api/v3/meta'
-        """
-        super().__init__(name="nocodb", integration=integration, **kwargs)
-        # Default to cloud V3 URL
-        self.base_url = base_url or "https://app.nocodb.com/api/v3/meta"
+        super().__init__(name="nocodb_v3", integration=integration, **kwargs)
+        self.base_url = base_url or "https://nocodb.agentr.dev"
 
     async def _aget_headers(self) -> dict:
-        """Get authentication headers (xc-token)."""
-        creds = await self.integration.get_credentials()
-        # Fallback to 'api_key' or 'token' key from credentials
-        token = creds.get("api_key") or creds.get("token") or creds.get("xc-token")
-        if not token:
-             # If user pasted the whole object, it might be in 'data'
-             token = creds.get("data", {}).get("token")
-        
-        if not token:
-            raise ValueError("Missing 'xc-token'. Please provide it in integration credentials.")
-            
         return {
-            "xc-token": token,
+            "xc-token": TOKEN,
             "Content-Type": "application/json"
         }
 
-    # ==================== Workspace Operations ====================
-
-    async def list_workspaces(self, base_url: str = None) -> dict[str, Any]:
-        """
-        Lists all workspaces accessible to the user.
-
-        Args:
-            base_url: Optional override for the NocoDB API base URL.
-
-        Returns:
-            dict[str, Any]: List of workspaces.
-
-        Tags:
-            workspace, list, important
-        """
-        url = f"{base_url or self.base_url}/workspaces"
-        response = await self._aget(url)
-        response.raise_for_status()
-        return response.json()
-
-    async def get_workspace(self, workspace_id: str, base_url: str = None) -> dict[str, Any]:
-        """
-        Retrieves details of a specific workspace.
-
-        Args:
-            workspace_id: The ID of the workspace.
-            base_url: Optional override for the NocoDB API base URL.
-
-        Returns:
-            dict[str, Any]: Workspace metadata.
-
-        Tags:
-            workspace, get, read
-        """
-        if not workspace_id:
-             raise ValueError("Missing 'workspace_id'.")
-        
-        url = f"{base_url or self.base_url}/workspaces/{workspace_id}"
-        response = await self._aget(url)
-        response.raise_for_status()
-        return response.json()
-
-    # ==================== Base Operations ====================
-
-    async def list_bases(self, workspace_id: str, base_url: str = None) -> dict[str, Any]:
-        """
-        Lists all bases within a specific workspace.
-
-        Args:
-            workspace_id: The ID of the workspace.
-            base_url: Optional override for the NocoDB API base URL.
-
-        Returns:
-            dict[str, Any]: List of bases.
-
-        Tags:
-            base, list, important
-        """
-        if not workspace_id:
-            raise ValueError("Missing required parameter 'workspace_id'.")
-        
-        url = f"{base_url or self.base_url}/workspaces/{workspace_id}/bases"
-        response = await self._aget(url)
-        # response.raise_for_status() # Let the caller handle? No, we should raise.
-        if response.status_code == 404:
-             return {"list": []} # Handle graceful empty if workspace not found? Better to raise for debugging.
-        response.raise_for_status()
-        return response.json()
-
-    async def get_base(self, base_id: str, base_url: str = None) -> dict[str, Any]:
-        """
-        Retrieves metadata for a specific base.
-
-        Args:
-            base_id: The unique ID of the base.
-            base_url: Optional override for the NocoDB API base URL.
-
-        Returns:
-            dict[str, Any]: Base metadata.
-
-        Tags:
-            base, get, read
-        """
-        if not base_id:
-             raise ValueError("Missing required parameter 'base_id'.")
-
-        url = f"{base_url or self.base_url}/bases/{base_id}"
-        response = await self._aget(url)
-        response.raise_for_status()
-        return response.json()
-
-    async def create_base(
-        self,
-        workspace_id: str,
-        title: str,
-        description: str = None,
-        color: str = None,
-        type: str = "database",
-        base_url: str = None,
-    ) -> dict[str, Any]:
-        """
-        Creates a new base in a workspace.
-
-        Args:
-            workspace_id: The ID of the target workspace.
-            title: The title of the new base.
-            description: Optional description.
-            color: Optional color hex code.
-            type: Base type (default: 'database').
-            base_url: Optional override for the NocoDB API base URL.
-
-        Returns:
-            dict[str, Any]: The created base object.
-
-        Tags:
-            base, create, important
-        """
-        if not workspace_id:
-            raise ValueError("Missing 'workspace_id'.")
-        if not title:
-            raise ValueError("Missing 'title'.")
-
-        url = f"{base_url or self.base_url}/workspaces/{workspace_id}/bases"
-        data = {
-            "title": title,
-            "description": description,
-            "color": color,
-            "type": type,
-            "sources": [{"type": "native"}]
-        }
-        data = {k: v for k, v in data.items() if v is not None}
-
-        response = await self._apost(url, data=data)
-        response.raise_for_status()
-        return response.json()
-
-    # ==================== Table Operations ====================
+    # ==================== Meta Operations (V3) ====================
 
     async def list_tables(
         self,
-        base_id: str,
-        page: int = 1,
-        page_size: int = 25,
-        base_url: str = None
+        limit: int = 50,
+        offset: int = 0
     ) -> dict[str, Any]:
         """
-        Lists tables in a base.
+        List all tables in the fixed base.
 
         Args:
-            base_id: The ID of the base.
-            page: Page number (default: 1).
-            page_size: Number of tables per page (default: 25).
-            base_url: Optional override for the NocoDB API base URL.
+            limit: Number of tables to return (default: 50).
+            offset: Number of tables to skip (default: 0).
 
         Returns:
-            dict[str, Any]: Paginated list of tables.
+            dict: Dictionary with 'list' (array of tables) and 'pageInfo'.
 
         Tags:
-            table, list, important
+            read, list, table, meta, important
         """
-        if not base_id:
-            raise ValueError("Missing 'base_id'.")
-
-        url = f"{base_url or self.base_url}/bases/{base_id}/tables"
-        params = {"page": page, "limit": page_size}
-        
+        url = f"{self.base_url}/api/v3/meta/bases/{FIXED_BASE_ID}/tables"
+        params = {"limit": limit, "offset": offset}
         response = await self._aget(url, params=params)
-        response.raise_for_status()
-        return response.json()
-
-    async def get_table(self, base_id: str, table_id: str, base_url: str = None) -> dict[str, Any]:
-        """
-        Retrieves metadata for a specific table (Schema), including its columns/fields.
-        
-        Args:
-            base_id: The ID of the base containing the table.
-            table_id: The unique ID of the table.
-            base_url: Optional override for the NocoDB API base URL.
-
-        Returns:
-            dict[str, Any]: Table metadata including 'columns' or 'fields'.
-
-        Tags:
-            table, get, read
-        """
-        if not base_id:
-            raise ValueError("Missing 'base_id'.")
-        if not table_id:
-            raise ValueError("Missing 'table_id'.")
-
-        url = f"{base_url or self.base_url}/bases/{base_id}/tables/{table_id}"
-        response = await self._aget(url)
         response.raise_for_status()
         return response.json()
 
     async def create_table(
         self,
-        base_id: str,
         title: str,
         table_name: str = None,
-        columns: list = None,
-        base_url: str = None
+        columns: List[dict[str, Any]] = None,
+        **kwargs
     ) -> dict[str, Any]:
         """
-        Creates a new table in a base.
+        Create a new table in the fixed base with optional initial columns.
 
         Args:
-            base_id: The ID of the base.
-            title: Human-readable title of the table.
-            table_name: Database table name (optional).
-            columns: List of column definitions.
-            base_url: Optional override for the NocoDB API base URL.
+            title: The display title for the new table.
+            table_name: The physical database table name (optional).
+            columns: A list of column definitions to create immediately with the table.
+                     Each column dict should specify 'title' and 'uidt' (or 'type').
+                     
+                     Supported 'uidt' / 'type' values:
+                     - Text: 'SingleLineText', 'LongText', 'Email', 'URL', 'PhoneNumber'
+                     - Numeric: 'Number', 'Decimal', 'Currency', 'Percent'
+                     - Date/Time: 'Date', 'DateTime', 'Time', 'Year', 'Duration'
+                     - Choice: 'Checkbox', 'Rating'
+                     - Selects: 'SingleSelect', 'MultiSelect' (Requires 'dtxp' options string, e.g., 'Option1,Option2')
+                     - Specialized: 'Formula', 'Rollup', 'Lookup', 'Attachment', 'JSON', 'Geometry'
+                     - System: 'CreatedTime', 'LastModifiedTime', 'CreatedBy', 'LastModifiedBy'
 
         Returns:
-            dict[str, Any]: The created table object.
+            dict: The created table object containing 'id', 'title', 'fields', etc.
+
+        Raises:
+            HTTPError: If the API request fails (e.g., 400 Bad Request if fields are invalid).
+
+        Example:
+            await app.create_table(
+                title="Customers",
+                columns=[
+                    {'title': 'Name', 'uidt': 'SingleLineText'},
+                    {'title': 'Status', 'uidt': 'SingleSelect', 'dtxp': 'Active,Inactive'}
+                ]
+            )
 
         Tags:
-            table, create, important
+            create, table, meta, important
         """
-        if not base_id:
-             raise ValueError("Missing 'base_id'.")
-        if not title:
-            raise ValueError("Missing 'title'.")
+        url = f"{self.base_url}/api/v3/meta/bases/{FIXED_BASE_ID}/tables"
+        fields_payload = []
+        for col in (columns or []):
+            new_col = col.copy()
+            if "type" not in new_col and "uidt" in new_col:
+                new_col["type"] = new_col["uidt"]
+            fields_payload.append(new_col)
 
-        url = f"{base_url or self.base_url}/bases/{base_id}/tables"
         data = {
             "title": title,
             "table_name": table_name or title,
-            "columns": columns or []
+            "fields": fields_payload,
+            **kwargs
         }
-        
         response = await self._apost(url, data=data)
         response.raise_for_status()
         return response.json()
 
-    # ==================== Field (Column) Operations ====================
-
-    async def list_fields(self, base_id: str, table_id: str, base_url: str = None) -> list[dict[str, Any]]:
+    async def delete_table(self, table_id: str) -> dict[str, Any]:
         """
-        Lists all fields (columns) for a specific table.
-        Fetches table schema and extracts fields/columns.
+        Delete a table by its ID from the fixed base.
 
         Args:
-            base_id: The ID of the base.
-            table_id: The ID of the table.
-            base_url: Optional override for the NocoDB API base URL.
+            table_id: The ID of the table to delete.
 
         Returns:
-            list[dict[str, Any]]: List of field objects.
+            dict: The deletion confirmation.
+
+        Raises:
+            HTTPError: If the table does not exist or deletion fails.
 
         Tags:
-            field, column, list
+            delete, table, meta, destructive
         """
-        table_meta = await self.get_table(base_id, table_id, base_url=base_url)
-        # V3 usually returns 'columns' or 'fields'. We check both.
-        return table_meta.get("columns") or table_meta.get("fields") or []
-
-    async def get_field(self, base_id: str, field_id: str, base_url: str = None) -> dict[str, Any]:
-        """
-        Retrieves metadata for a specific field (column).
-
-        Args:
-            base_id: The ID of the base.
-            field_id: The unique ID of the field/column.
-            base_url: Optional override for the NocoDB API base URL.
-
-        Returns:
-            dict[str, Any]: Field metadata.
-
-        Tags:
-            field, column, get
-        """
-        if not base_id:
-            raise ValueError("Missing 'base_id'.")
-        if not field_id:
-             raise ValueError("Missing 'field_id'.")
-
-        url = f"{base_url or self.base_url}/bases/{base_id}/fields/{field_id}"
-        response = await self._aget(url)
+        url = f"{self.base_url}/api/v3/meta/bases/{FIXED_BASE_ID}/tables/{table_id}"
+        response = await self._adelete(url)
         response.raise_for_status()
         return response.json()
 
-    async def create_field(
+    async def create_column(
         self,
-        base_id: str,
         table_id: str,
         title: str,
-        uidt: str = "SingleLineText",
+        uidt: NocoDBFieldType = "SingleLineText",
         column_name: str = None,
-        base_url: str = None,
         **kwargs
     ) -> dict[str, Any]:
         """
-        Creates a new field (column) in a table.
+        Create a new column (field) in an existing table.
 
         Args:
-            base_id: The ID of the base.
             table_id: The ID of the table.
-            title: The display title of the field.
-            uidt: UI Data Type.
-            column_name: Database column name.
-            base_url: Optional override for the NocoDB API base URL.
-            **kwargs: Additional properties.
+            title: Display title for the column.
+            uidt: UI Data Type. See `create_table` for full list of supported types.
+                  Common types: 'SingleLineText', 'Number', 'Checkbox', 'Date', 'SingleSelect'.
+            column_name: Database column name (optional).
 
         Returns:
-            dict[str, Any]: The created field object.
+            dict: The created column object containing 'id', 'title', 'uidt', etc.
+
+        Raises:
+            HTTPError: If column creation fails.
+
+        Example:
+            await app.create_column(
+                table_id="table456",
+                title="Priority",
+                uidt="SingleSelect",
+                dtxp="High,Medium,Low"
+            )
 
         Tags:
-            field, column, create
+            create, column, field, meta
         """
-        if not base_id:
-             raise ValueError("Missing 'base_id'.")
-        if not table_id:
-            raise ValueError("Missing 'table_id'.")
-
-        # Create endpoint often at /bases/{baseId}/tables/{tableId}/columns in V3?
-        # Checked doc: typically POST /bases/{baseId}/tables/{tableId}/columns
-        url = f"{base_url or self.base_url}/bases/{base_id}/tables/{table_id}/columns"
+        url = f"{self.base_url}/api/v3/meta/bases/{FIXED_BASE_ID}/tables/{table_id}/fields"
         data = {
             "title": title,
             "column_name": column_name or title,
             "uidt": uidt,
+            "type": uidt, # Sending both just in case
             **kwargs
         }
-        
         response = await self._apost(url, data=data)
         response.raise_for_status()
         return response.json()
 
+    async def delete_column(self, table_id: str, column_id: str) -> dict[str, Any]:
+        """
+        Delete a column (field) by its ID.
+
+        Args:
+            table_id: The ID of the table.
+            column_id: The ID of the column to delete.
+
+        Returns:
+            dict: The deletion confirmation.
+
+        Raises:
+            HTTPError: If the column does not exist or deletion fails.
+
+        Tags:
+            delete, column, field, meta, destructive
+        """
+        url = f"{self.base_url}/api/v3/meta/bases/{FIXED_BASE_ID}/tables/{table_id}/fields/{column_id}"
+        response = await self._adelete(url)
+        response.raise_for_status()
+        return response.json()
+
+    # ==================== Data Operations (V3) ====================
+
+    async def list_records(
+        self,
+        table_id: str,
+        limit: int = 25,
+        offset: int = 0,
+        view_id: str = None,
+        where: str = None,
+        fields: List[str] = None,
+        sort: List[str] = None
+    ) -> dict[str, Any]:
+        """
+        List records from a table with pagination and filtering.
+
+        Args:
+            table_id: The ID of the table.
+            limit: Number of records to return (default: 25).
+            offset: Number of records to skip (default: 0).
+            view_id: The ID of the view to scope the request.
+            where: Filter string (NocoDB filter syntax).
+            fields: List of specific field names to retrieve.
+            sort: List of fields to sort by (e.g., ["-CreatedAt"]).
+
+        Returns:
+            dict: A dictionary containing 'list' (array of records) and 'pageInfo'.
+                  Note: In V3, the key for records is 'records'.
+
+        Tags:
+            read, list, data, records
+        """
+        url = f"{self.base_url}/api/v3/data/{FIXED_BASE_ID}/{table_id}/records"
+        params = {"limit": limit, "offset": offset, "viewId": view_id, "where": where}
+        if fields: params["fields"] = ",".join(fields)
+        if sort: params["sort"] = ",".join(sort)
+        params = {k: v for k, v in params.items() if v is not None}
+        response = await self._aget(url, params=params)
+        response.raise_for_status()
+        return response.json()
+
+    async def create_records(
+        self,
+        table_id: str,
+        data: List[dict[str, Any]] | dict[str, Any]
+    ) -> dict[str, Any] | List[dict[str, Any]]:
+        """
+        Create one or more records in a table.
+
+        Args:
+            table_id: The ID of the table.
+            data: A dictionary (single record) or list of dictionaries (multiple records).
+                  Keys should match column titles or names.
+
+        Returns:
+            dict | List: The created record(s).
+                         If input is a list, returns a list of created records.
+                         If input is a dict, returns the single created record dict.
+
+        Tags:
+            create, data, records
+        """
+        url = f"{self.base_url}/api/v3/data/{FIXED_BASE_ID}/{table_id}/records"
+        is_bulk = isinstance(data, list)
+        payload = data
+        
+        if is_bulk:
+            payload = [{"fields": item} if 'fields' not in item else item for item in data]
+        elif isinstance(data, dict):
+            if 'fields' not in data: payload = {"fields": data}
+            
+        response = await self._apost(url, data=payload)
+        response.raise_for_status()
+        res_json = response.json()
+        
+        # Normalize response
+        if isinstance(res_json, dict) and 'records' in res_json:
+             records = res_json['records']
+             if is_bulk:
+                 return records
+             elif records:
+                 return records[0]
+            
+        return res_json
+
+    async def get_record(
+        self,
+        table_id: str,
+        record_id: str,
+        fields: List[str] = None
+    ) -> dict[str, Any]:
+        """
+        Retrieve a single record by ID.
+
+        Args:
+            table_id: The ID of the table.
+            record_id: The ID of the record.
+            fields: List of specific field names to retrieve.
+
+        Returns:
+            dict: The record object.
+
+        Tags:
+            read, get, data, records
+        """
+        url = f"{self.base_url}/api/v3/data/{FIXED_BASE_ID}/{table_id}/records/{record_id}"
+        params = {}
+        if fields: params["fields"] = ",".join(fields)
+        response = await self._aget(url, params=params)
+        response.raise_for_status()
+        return response.json()
+
+    async def update_records(
+        self,
+        table_id: str,
+        data: List[dict[str, Any]] | dict[str, Any]
+    ) -> dict[str, Any] | List[dict[str, Any]]:
+        """
+        Update one or more records.
+
+        Args:
+            table_id: The ID of the table.
+            data: A dictionary or list of dictionaries. NOT containing 'id' or 'Id' key.
+                  The 'id' should be part of the object if possible, or handled by logic.
+
+        Returns:
+            dict | List: The updated record(s).
+
+        Tags:
+            update, data, records
+        """
+        url = f"{self.base_url}/api/v3/data/{FIXED_BASE_ID}/{table_id}/records"
+        def wrap(item):
+            rid = item.get("Id") or item.get("id")
+            if not rid: raise ValueError("Missing Id/id")
+            flds = {k: v for k, v in item.items() if k not in ["Id", "id"]}
+            return {"id": rid, "fields": flds}
+        
+        is_bulk = isinstance(data, list)
+        payload = [wrap(i) for i in data] if is_bulk else wrap(data)
+        
+        response = await self._apatch(url, data=payload)
+        response.raise_for_status()
+        res_json = response.json()
+        
+        if is_bulk and isinstance(res_json, dict) and 'records' in res_json:
+            return res_json['records']
+            
+        return res_json
+
+    async def delete_records(
+        self,
+        table_id: str,
+        record_ids: List[dict[str, Any]] | dict[str, Any]
+    ) -> dict[str, Any]:
+        """
+        Delete one or more records.
+
+        Args:
+            table_id: The ID of the table.
+            record_ids: A list of dicts with 'id', or a single dict with 'id'.
+
+        Returns:
+            dict: The deletion result.
+
+        Tags:
+            delete, data, records, destructive
+        """
+        url = f"{self.base_url}/api/v3/data/{FIXED_BASE_ID}/{table_id}/records"
+        def wrap(item):
+            if isinstance(item, (int, str)): return {"id": item}
+            rid = item.get("id") or item.get("Id")
+            return {"id": rid}
+        
+        payload = [wrap(i) for i in record_ids] if isinstance(record_ids, list) else wrap(record_ids)
+        if isinstance(record_ids, (int, str)): payload = [{"id": record_ids}]
+        
+        async with self.get_async_client() as client:
+            response = await client.request("DELETE", url, json=payload)
+        response.raise_for_status()
+        return response.json()
+
+    async def get_record_count(
+        self,
+        table_id: str,
+        view_id: str = None,
+        where: str = None
+    ) -> dict[str, Any]:
+        """
+        Get the count of records in a table (or view).
+
+        Args:
+            table_id: The ID of the table.
+            view_id: Optional View ID to count within.
+            where: Optional filter.
+
+        Returns:
+            dict: Object containing 'count'.
+
+        Tags:
+            read, count, data, records
+        """
+        url = f"{self.base_url}/api/v3/data/{FIXED_BASE_ID}/{table_id}/count"
+        params = {"viewId": view_id, "where": where}
+        params = {k: v for k, v in params.items() if v is not None}
+        response = await self._aget(url, params=params)
+        response.raise_for_status()
+        return response.json()
+
     def list_tools(self):
-        """Returns list of available NocoDB API tools."""
         return [
-            # Workspaces
-            self.list_workspaces,
-            self.get_workspace,
-            # Bases
-            self.list_bases,
-            self.get_base,
-            self.create_base,
-            # Tables
             self.list_tables,
-            self.get_table,
-            self.create_table,
-            # Fields
-            self.list_fields,
-            self.get_field,
-            self.create_field,
+            self.create_table, 
+            self.delete_table,
+            self.create_column, 
+            self.delete_column,
+            self.list_records, 
+            self.create_records, 
+            self.get_record,
+            self.update_records, 
+            self.delete_records, 
+            self.get_record_count
         ]
