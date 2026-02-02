@@ -27,7 +27,7 @@ class HttpToolsApp(APIApplication):
             logger.warning(f"Response is not JSON, returning text. Content-Type: {response.headers.get('content-type')}")
             return {"text": response.text, "status_code": response.status_code, "headers": dict(response.headers)}
 
-    def http_get(self, url: str, headers: dict | None = None, query_params: dict | None = None, timeout: float = 30.0):
+    async def http_get(self, url: str, headers: dict | None = None, query_params: dict | None = None, timeout: float = 30.0):
         """
         Executes an HTTP GET request to a given URL with optional headers and query parameters. It handles HTTP errors by raising an exception and processes the response, returning parsed JSON or a dictionary with the raw text and status details if JSON is unavailable.
 
@@ -43,7 +43,8 @@ class HttpToolsApp(APIApplication):
             get, important
         """
         logger.debug(f"GET request to {url} with headers {headers} and query params {query_params}")
-        response = httpx.get(url, params=query_params, headers=headers, timeout=timeout)
+        async with httpx.AsyncClient(timeout=timeout) as client:
+            response = await client.get(url, params=query_params, headers=headers)
         response.raise_for_status()
         return self._handle_response(response)
 
@@ -68,7 +69,7 @@ class HttpToolsApp(APIApplication):
         response.raise_for_status()
         return self._handle_response(response)
 
-    def http_put(self, url: str, headers: dict | None = None, body: dict | None = None, timeout: float = 30.0):
+    async def http_put(self, url: str, headers: dict | None = None, body: dict | None = None, timeout: float = 30.0):
         """
         Performs an HTTP PUT request to update or replace a resource at a specified URL. It accepts an optional JSON body and headers, raises an exception for error responses, and returns the parsed JSON response or a dictionary with the raw text and status details.
 
@@ -84,11 +85,12 @@ class HttpToolsApp(APIApplication):
             put, important
         """
         logger.debug(f"PUT request to {url} with headers {headers} and body {body}")
-        response = httpx.put(url, json=body, headers=headers, timeout=timeout)
+        async with httpx.AsyncClient(timeout=timeout) as client:
+            response = await client.put(url, json=body, headers=headers)
         response.raise_for_status()
         return self._handle_response(response)
 
-    def http_delete(self, url: str, headers: dict | None = None, body: dict | None = None, timeout: float = 30.0):
+    async def http_delete(self, url: str, headers: dict | None = None, body: dict | None = None, timeout: float = 30.0):
         """
         Sends an HTTP DELETE request to a URL with optional headers and a JSON body. Raises an exception for HTTP error statuses and returns the parsed JSON response. If the response isn't JSON, it returns the text content, status code, and headers.
 
@@ -104,11 +106,12 @@ class HttpToolsApp(APIApplication):
             delete, important
         """
         logger.debug(f"DELETE request to {url} with headers {headers} and body {body}")
-        response = httpx.delete(url, headers=headers, timeout=timeout)
+        async with httpx.AsyncClient(timeout=timeout) as client:
+            response = await client.delete(url, headers=headers)
         response.raise_for_status()
         return self._handle_response(response)
 
-    def http_patch(self, url: str, headers: dict | None = None, body: dict | None = None, timeout: float = 30.0):
+    async def http_patch(self, url: str, headers: dict | None = None, body: dict | None = None, timeout: float = 30.0):
         """
         Sends an HTTP PATCH request to apply partial modifications to a resource at a given URL. It accepts optional headers and a JSON body. It returns the parsed JSON response, or the raw text with status details if the response is not valid JSON.
 
@@ -124,7 +127,8 @@ class HttpToolsApp(APIApplication):
             patch, important
         """
         logger.debug(f"PATCH request to {url} with headers {headers} and body {body}")
-        response = httpx.patch(url, json=body, headers=headers, timeout=timeout)
+        async with httpx.AsyncClient(timeout=timeout) as client:
+            response = await client.patch(url, json=body, headers=headers)
         response.raise_for_status()
         return self._handle_response(response)
 
