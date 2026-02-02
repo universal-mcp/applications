@@ -27,7 +27,7 @@ class HttpToolsApp(APIApplication):
             logger.warning(f"Response is not JSON, returning text. Content-Type: {response.headers.get('content-type')}")
             return {"text": response.text, "status_code": response.status_code, "headers": dict(response.headers)}
 
-    async def http_get(self, url: str, headers: dict | None = None, query_params: dict | None = None):
+    def http_get(self, url: str, headers: dict | None = None, query_params: dict | None = None, timeout: float = 30.0):
         """
         Executes an HTTP GET request to a given URL with optional headers and query parameters. It handles HTTP errors by raising an exception and processes the response, returning parsed JSON or a dictionary with the raw text and status details if JSON is unavailable.
 
@@ -35,6 +35,7 @@ class HttpToolsApp(APIApplication):
             url (str): The URL to send the GET request to. Example: "https://api.example.com/data"
             headers (dict, optional): Optional HTTP headers to include in the request. Example: {"Authorization": "Bearer token"}
             query_params (dict, optional): Optional dictionary of query parameters to include in the request. Example: {"page": 1}
+            timeout (float, optional): Request timeout in seconds. Default is 30.0 seconds. Use higher values for long-running operations.
 
         Returns:
             dict: The JSON response from the GET request, or text if not JSON.
@@ -42,11 +43,11 @@ class HttpToolsApp(APIApplication):
             get, important
         """
         logger.debug(f"GET request to {url} with headers {headers} and query params {query_params}")
-        response = httpx.get(url, params=query_params, headers=headers)
+        response = httpx.get(url, params=query_params, headers=headers, timeout=timeout)
         response.raise_for_status()
         return self._handle_response(response)
 
-    async def http_post(self, url: str, headers: dict | None = None, body: dict | None = None):
+    async def http_post(self, url: str, headers: dict | None = None, body: dict | None = None, timeout: float = 30.0):
         """
         Sends an HTTP POST request to a URL with an optional JSON body and headers. It returns the parsed JSON response or raw text if parsing fails and raises an exception for HTTP errors. It is used for creating new resources, unlike http_get which retrieves data.
 
@@ -54,6 +55,7 @@ class HttpToolsApp(APIApplication):
             url (str): The URL to send the POST request to. Example: "https://api.example.com/data"
             headers (dict, optional): Optional HTTP headers to include in the request. Example: {"Content-Type": "application/json"}
             body (dict, optional): Optional JSON body to include in the request. Example: {"name": "John"}
+            timeout (float, optional): Request timeout in seconds. Default is 30.0 seconds. Use higher values for long-running operations.
 
         Returns:
             dict: The JSON response from the POST request, or text if not JSON.
@@ -61,11 +63,12 @@ class HttpToolsApp(APIApplication):
             post, important
         """
         logger.debug(f"POST request to {url} with headers {headers} and body {body}")
-        response = httpx.post(url, json=body, headers=headers)
+        async with httpx.AsyncClient(timeout=timeout) as client:
+            response = await client.post(url, json=body, headers=headers)
         response.raise_for_status()
         return self._handle_response(response)
 
-    async def http_put(self, url: str, headers: dict | None = None, body: dict | None = None):
+    def http_put(self, url: str, headers: dict | None = None, body: dict | None = None, timeout: float = 30.0):
         """
         Performs an HTTP PUT request to update or replace a resource at a specified URL. It accepts an optional JSON body and headers, raises an exception for error responses, and returns the parsed JSON response or a dictionary with the raw text and status details.
 
@@ -73,6 +76,7 @@ class HttpToolsApp(APIApplication):
             url (str): The URL to send the PUT request to. Example: "https://api.example.com/data/1"
             headers (dict, optional): Optional HTTP headers to include in the request. Example: {"Authorization": "Bearer token"}
             body (dict, optional): Optional JSON body to include in the request. Example: {"name": "Jane"}
+            timeout (float, optional): Request timeout in seconds. Default is 30.0 seconds. Use higher values for long-running operations.
 
         Returns:
             dict: The JSON response from the PUT request, or text if not JSON.
@@ -80,11 +84,11 @@ class HttpToolsApp(APIApplication):
             put, important
         """
         logger.debug(f"PUT request to {url} with headers {headers} and body {body}")
-        response = httpx.put(url, json=body, headers=headers)
+        response = httpx.put(url, json=body, headers=headers, timeout=timeout)
         response.raise_for_status()
         return self._handle_response(response)
 
-    async def http_delete(self, url: str, headers: dict | None = None, body: dict | None = None):
+    def http_delete(self, url: str, headers: dict | None = None, body: dict | None = None, timeout: float = 30.0):
         """
         Sends an HTTP DELETE request to a URL with optional headers and a JSON body. Raises an exception for HTTP error statuses and returns the parsed JSON response. If the response isn't JSON, it returns the text content, status code, and headers.
 
@@ -92,6 +96,7 @@ class HttpToolsApp(APIApplication):
             url (str): The URL to send the DELETE request to. Example: "https://api.example.com/data/1"
             headers (dict, optional): Optional HTTP headers to include in the request. Example: {"Authorization": "Bearer token"}
             body (dict, optional): Optional JSON body to include in the request. Example: {"reason": "obsolete"}
+            timeout (float, optional): Request timeout in seconds. Default is 30.0 seconds. Use higher values for long-running operations.
 
         Returns:
             dict: The JSON response from the DELETE request, or text if not JSON.
@@ -99,11 +104,11 @@ class HttpToolsApp(APIApplication):
             delete, important
         """
         logger.debug(f"DELETE request to {url} with headers {headers} and body {body}")
-        response = httpx.delete(url, headers=headers)
+        response = httpx.delete(url, headers=headers, timeout=timeout)
         response.raise_for_status()
         return self._handle_response(response)
 
-    async def http_patch(self, url: str, headers: dict | None = None, body: dict | None = None):
+    def http_patch(self, url: str, headers: dict | None = None, body: dict | None = None, timeout: float = 30.0):
         """
         Sends an HTTP PATCH request to apply partial modifications to a resource at a given URL. It accepts optional headers and a JSON body. It returns the parsed JSON response, or the raw text with status details if the response is not valid JSON.
 
@@ -111,6 +116,7 @@ class HttpToolsApp(APIApplication):
             url (str): The URL to send the PATCH request to. Example: "https://api.example.com/data/1"
             headers (dict, optional): Optional HTTP headers to include in the request. Example: {"Authorization": "Bearer token"}
             body (dict, optional): Optional JSON body to include in the request. Example: {"status": "active"}
+            timeout (float, optional): Request timeout in seconds. Default is 30.0 seconds. Use higher values for long-running operations.
 
         Returns:
             dict: The JSON response from the PATCH request, or text if not JSON.
@@ -118,7 +124,7 @@ class HttpToolsApp(APIApplication):
             patch, important
         """
         logger.debug(f"PATCH request to {url} with headers {headers} and body {body}")
-        response = httpx.patch(url, json=body, headers=headers)
+        response = httpx.patch(url, json=body, headers=headers, timeout=timeout)
         response.raise_for_status()
         return self._handle_response(response)
 
