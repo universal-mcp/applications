@@ -55,6 +55,7 @@ ALL_APPS = [
     "miro",
     "ms_teams",
     "neon",
+    "nocodb",
     "notion",
     "onedrive",
     "openai",

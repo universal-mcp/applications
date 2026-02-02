@@ -13,14 +13,14 @@ NocoDBFieldType = Literal[
 FIXED_BASE_ID = "prx1mkflfxn86fg" 
 TOKEN = "9wEYlDWJc4W8bgAY28PnV_k5fPTsIovHCxlHQtd8" 
 
-class NocodbV3App(APIApplication):
+class NocodbApp(APIApplication):
     """
     NocoDB Application using ONLY V3 API endpoints for all operations.
     Includes 6 Data operations and 4 Meta operations.
     """
 
     def __init__(self, integration: Integration = None, base_url: str = None, **kwargs) -> None:
-        super().__init__(name="nocodb_v3", integration=integration, **kwargs)
+        super().__init__(name="nocodb", integration=integration, **kwargs)
         self.base_url = base_url or "https://nocodb.agentr.dev"
 
     async def _aget_headers(self) -> dict:
