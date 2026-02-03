@@ -3,43 +3,164 @@ from typing import Any, List, Literal
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
-NocoDBFieldType = Literal[
+RuzodbFieldType = Literal[
     "SingleLineText", "LongText", "Number", "Checkbox", "MultiSelect", "SingleSelect", 
     "Date", "DateTime", "Year", "Time", "PhoneNumber", "Email", "URL", "Decimal", 
     "Currency", "Percent", "Duration", "Rating", "Formula", "Rollup", "Lookup", 
     "Attachment", "JSON", "Geometry", "CreatedTime", "LastModifiedTime", "CreatedBy", "LastModifiedBy"
 ]
 
-FIXED_BASE_ID = "prx1mkflfxn86fg" 
-TOKEN = "9wEYlDWJc4W8bgAY28PnV_k5fPTsIovHCxlHQtd8" 
-
-class NocodbApp(APIApplication):
+class RuzodbApp(APIApplication):
     """
-    NocoDB Application using ONLY V3 API endpoints for all operations.
+    Ruzodb Application using ONLY V3 API endpoints for all operations.
     Includes 6 Data operations and 4 Meta operations.
     """
 
     def __init__(self, integration: Integration = None, base_url: str = None, **kwargs) -> None:
-        super().__init__(name="nocodb", integration=integration, **kwargs)
+        super().__init__(name="ruzodb", integration=integration, **kwargs)
         self.base_url = base_url or "https://nocodb.agentr.dev"
 
+        self._workspace_id = None
+
+    async def _get_workspace_id(self) -> str:
+        if self._workspace_id:
+            return self._workspace_id
+        
+        credentials = await self.integration.get_credentials_async()
+        self._workspace_id = credentials.get("workspace_id")
+        return self._workspace_id
+
     async def _aget_headers(self) -> dict:
+        credentials = await self.integration.get_credentials_async()
+        token = credentials.get("token") or credentials.get("xc-token")
         return {
-            "xc-token": TOKEN,
+            "xc-token": token,
             "Content-Type": "application/json"
         }
 
     # ==================== Meta Operations (V3) ====================
 
+    async def list_bases(self) -> dict[str, Any]:
+        """
+        List all bases in a specific workspace.
+
+        Returns:
+            dict: Dictionary with 'list' (array of bases).
+
+        Tags:
+            read, list, base, meta
+        """
+        workspace_id = await self._get_workspace_id()
+        url = f"{self.base_url}/api/v3/meta/workspaces/{workspace_id}/bases"
+        response = await self._aget(url)
+        response.raise_for_status()
+        return response.json()
+
+
+    async def get_base(self, base_id: str) -> dict[str, Any]:
+        """
+        Get details of a specific base.
+
+        Args:
+            base_id: The ID of the base.
+
+        Returns:
+            dict: The base object.
+
+        Tags:
+            read, get, base, meta
+        """
+        url = f"{self.base_url}/api/v3/meta/bases/{base_id}"
+        response = await self._aget(url)
+        response.raise_for_status()
+        return response.json()
+
+
+    async def create_base(
+        self,
+        title: str,
+        type: str = "documentation",
+        **kwargs
+    ) -> dict[str, Any]:
+        """
+        Create a new base in a specific workspace.
+
+        Args:
+            title: The title of the new base.
+            type: Type of the base (default: 'documentation').
+
+        Returns:
+            dict: The created base object.
+
+        Raises:
+            HTTPError: If creation fails.
+
+        Tags:
+            create, base, meta
+        """
+        workspace_id = await self._get_workspace_id()
+        url = f"{self.base_url}/api/v3/meta/workspaces/{workspace_id}/bases"
+        data = {
+            "title": title,
+            "type": type,
+            **kwargs
+        }
+        response = await self._apost(url, data=data)
+        response.raise_for_status()
+        return response.json()
+
+    async def update_base(
+        self,
+        base_id: str,
+        **kwargs
+    ) -> dict[str, Any]:
+        """
+        Update a base's metadata.
+
+        Args:
+            base_id: The ID of the base to update.
+            **kwargs: Fields to update (e.g., title, color, etc.).
+
+        Returns:
+            dict: The updated base object.
+
+        Tags:
+            update, base, meta
+        """
+        url = f"{self.base_url}/api/v3/meta/bases/{base_id}"
+        response = await self._apatch(url, data=kwargs)
+        response.raise_for_status()
+        return response.json()
+
+    async def delete_base(self, base_id: str) -> dict[str, Any]:
+        """
+        Delete a base.
+
+        Args:
+            base_id: The ID of the base to delete.
+
+        Returns:
+            dict: The deletion confirmation.
+
+        Tags:
+            delete, base, meta, destructive
+        """
+        url = f"{self.base_url}/api/v3/meta/bases/{base_id}"
+        response = await self._adelete(url)
+        response.raise_for_status()
+        return response.json()
+
     async def list_tables(
         self,
+        base_id: str,
         limit: int = 50,
         offset: int = 0
     ) -> dict[str, Any]:
         """
-        List all tables in the fixed base.
+        List all tables in a specific base.
 
         Args:
+            base_id: The ID of the base.
             limit: Number of tables to return (default: 50).
             offset: Number of tables to skip (default: 0).
 
@@ -49,7 +170,7 @@ class NocodbApp(APIApplication):
         Tags:
             read, list, table, meta, important
         """
-        url = f"{self.base_url}/api/v3/meta/bases/{FIXED_BASE_ID}/tables"
+        url = f"{self.base_url}/api/v3/meta/bases/{base_id}/tables"
         params = {"limit": limit, "offset": offset}
         response = await self._aget(url, params=params)
         response.raise_for_status()
@@ -57,15 +178,17 @@ class NocodbApp(APIApplication):
 
     async def create_table(
         self,
+        base_id: str,
         title: str,
         table_name: str = None,
         columns: List[dict[str, Any]] = None,
         **kwargs
     ) -> dict[str, Any]:
         """
-        Create a new table in the fixed base with optional initial columns.
+        Create a new table in a specific base with optional initial columns.
 
         Args:
+            base_id: The ID of the base.
             title: The display title for the new table.
             table_name: The physical database table name (optional).
             columns: A list of column definitions to create immediately with the table.
@@ -88,6 +211,7 @@ class NocodbApp(APIApplication):
 
         Example:
             await app.create_table(
+                base_id="base123",
                 title="Customers",
                 columns=[
                     {'title': 'Name', 'uidt': 'SingleLineText'},
@@ -98,7 +222,7 @@ class NocodbApp(APIApplication):
         Tags:
             create, table, meta, important
         """
-        url = f"{self.base_url}/api/v3/meta/bases/{FIXED_BASE_ID}/tables"
+        url = f"{self.base_url}/api/v3/meta/bases/{base_id}/tables"
         fields_payload = []
         for col in (columns or []):
             new_col = col.copy()
@@ -116,11 +240,12 @@ class NocodbApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    async def delete_table(self, table_id: str) -> dict[str, Any]:
+    async def delete_table(self, base_id: str, table_id: str) -> dict[str, Any]:
         """
-        Delete a table by its ID from the fixed base.
+        Delete a table by its ID from a specific base.
 
         Args:
+            base_id: The ID of the base.
             table_id: The ID of the table to delete.
 
         Returns:
@@ -132,16 +257,17 @@ class NocodbApp(APIApplication):
         Tags:
             delete, table, meta, destructive
         """
-        url = f"{self.base_url}/api/v3/meta/bases/{FIXED_BASE_ID}/tables/{table_id}"
+        url = f"{self.base_url}/api/v3/meta/bases/{base_id}/tables/{table_id}"
         response = await self._adelete(url)
         response.raise_for_status()
         return response.json()
 
     async def create_column(
         self,
+        base_id: str,
         table_id: str,
         title: str,
-        uidt: NocoDBFieldType = "SingleLineText",
+        uidt: RuzodbFieldType = "SingleLineText",
         column_name: str = None,
         **kwargs
     ) -> dict[str, Any]:
@@ -149,6 +275,7 @@ class NocodbApp(APIApplication):
         Create a new column (field) in an existing table.
 
         Args:
+            base_id: The ID of the base.
             table_id: The ID of the table.
             title: Display title for the column.
             uidt: UI Data Type. See `create_table` for full list of supported types.
@@ -163,6 +290,7 @@ class NocodbApp(APIApplication):
 
         Example:
             await app.create_column(
+                base_id="base123",
                 table_id="table456",
                 title="Priority",
                 uidt="SingleSelect",
@@ -172,7 +300,8 @@ class NocodbApp(APIApplication):
         Tags:
             create, column, field, meta
         """
-        url = f"{self.base_url}/api/v3/meta/bases/{FIXED_BASE_ID}/tables/{table_id}/fields"
+        url = f"{self.base_url}/api/v3/meta/bases/{base_id}/tables/{table_id}/fields"
+
         data = {
             "title": title,
             "column_name": column_name or title,
@@ -184,11 +313,12 @@ class NocodbApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    async def delete_column(self, table_id: str, column_id: str) -> dict[str, Any]:
+    async def delete_column(self, base_id: str, table_id: str, column_id: str) -> dict[str, Any]:
         """
         Delete a column (field) by its ID.
 
         Args:
+            base_id: The ID of the base.
             table_id: The ID of the table.
             column_id: The ID of the column to delete.
 
@@ -201,7 +331,7 @@ class NocodbApp(APIApplication):
         Tags:
             delete, column, field, meta, destructive
         """
-        url = f"{self.base_url}/api/v3/meta/bases/{FIXED_BASE_ID}/tables/{table_id}/fields/{column_id}"
+        url = f"{self.base_url}/api/v3/meta/bases/{base_id}/tables/{table_id}/fields/{column_id}"
         response = await self._adelete(url)
         response.raise_for_status()
         return response.json()
@@ -210,6 +340,7 @@ class NocodbApp(APIApplication):
 
     async def list_records(
         self,
+        base_id: str,
         table_id: str,
         limit: int = 25,
         offset: int = 0,
@@ -222,11 +353,12 @@ class NocodbApp(APIApplication):
         List records from a table with pagination and filtering.
 
         Args:
+            base_id: The ID of the base.
             table_id: The ID of the table.
             limit: Number of records to return (default: 25).
             offset: Number of records to skip (default: 0).
             view_id: The ID of the view to scope the request.
-            where: Filter string (NocoDB filter syntax).
+            where: Filter string (Ruzodb filter syntax).
             fields: List of specific field names to retrieve.
             sort: List of fields to sort by (e.g., ["-CreatedAt"]).
 
@@ -237,7 +369,7 @@ class NocodbApp(APIApplication):
         Tags:
             read, list, data, records
         """
-        url = f"{self.base_url}/api/v3/data/{FIXED_BASE_ID}/{table_id}/records"
+        url = f"{self.base_url}/api/v3/data/{base_id}/{table_id}/records"
         params = {"limit": limit, "offset": offset, "viewId": view_id, "where": where}
         if fields: params["fields"] = ",".join(fields)
         if sort: params["sort"] = ",".join(sort)
@@ -248,6 +380,7 @@ class NocodbApp(APIApplication):
 
     async def create_records(
         self,
+        base_id: str,
         table_id: str,
         data: List[dict[str, Any]] | dict[str, Any]
     ) -> dict[str, Any] | List[dict[str, Any]]:
@@ -255,6 +388,7 @@ class NocodbApp(APIApplication):
         Create one or more records in a table.
 
         Args:
+            base_id: The ID of the base.
             table_id: The ID of the table.
             data: A dictionary (single record) or list of dictionaries (multiple records).
                   Keys should match column titles or names.
@@ -267,7 +401,7 @@ class NocodbApp(APIApplication):
         Tags:
             create, data, records
         """
-        url = f"{self.base_url}/api/v3/data/{FIXED_BASE_ID}/{table_id}/records"
+        url = f"{self.base_url}/api/v3/data/{base_id}/{table_id}/records"
         is_bulk = isinstance(data, list)
         payload = data
         
@@ -292,6 +426,7 @@ class NocodbApp(APIApplication):
 
     async def get_record(
         self,
+        base_id: str,
         table_id: str,
         record_id: str,
         fields: List[str] = None
@@ -300,6 +435,7 @@ class NocodbApp(APIApplication):
         Retrieve a single record by ID.
 
         Args:
+            base_id: The ID of the base.
             table_id: The ID of the table.
             record_id: The ID of the record.
             fields: List of specific field names to retrieve.
@@ -310,7 +446,7 @@ class NocodbApp(APIApplication):
         Tags:
             read, get, data, records
         """
-        url = f"{self.base_url}/api/v3/data/{FIXED_BASE_ID}/{table_id}/records/{record_id}"
+        url = f"{self.base_url}/api/v3/data/{base_id}/{table_id}/records/{record_id}"
         params = {}
         if fields: params["fields"] = ",".join(fields)
         response = await self._aget(url, params=params)
@@ -319,6 +455,7 @@ class NocodbApp(APIApplication):
 
     async def update_records(
         self,
+        base_id: str,
         table_id: str,
         data: List[dict[str, Any]] | dict[str, Any]
     ) -> dict[str, Any] | List[dict[str, Any]]:
@@ -326,6 +463,7 @@ class NocodbApp(APIApplication):
         Update one or more records.
 
         Args:
+            base_id: The ID of the base.
             table_id: The ID of the table.
             data: A dictionary or list of dictionaries. NOT containing 'id' or 'Id' key.
                   The 'id' should be part of the object if possible, or handled by logic.
@@ -336,7 +474,7 @@ class NocodbApp(APIApplication):
         Tags:
             update, data, records
         """
-        url = f"{self.base_url}/api/v3/data/{FIXED_BASE_ID}/{table_id}/records"
+        url = f"{self.base_url}/api/v3/data/{base_id}/{table_id}/records"
         def wrap(item):
             rid = item.get("Id") or item.get("id")
             if not rid: raise ValueError("Missing Id/id")
@@ -357,6 +495,7 @@ class NocodbApp(APIApplication):
 
     async def delete_records(
         self,
+        base_id: str,
         table_id: str,
         record_ids: List[dict[str, Any]] | dict[str, Any]
     ) -> dict[str, Any]:
@@ -364,6 +503,7 @@ class NocodbApp(APIApplication):
         Delete one or more records.
 
         Args:
+            base_id: The ID of the base.
             table_id: The ID of the table.
             record_ids: A list of dicts with 'id', or a single dict with 'id'.
 
@@ -373,7 +513,7 @@ class NocodbApp(APIApplication):
         Tags:
             delete, data, records, destructive
         """
-        url = f"{self.base_url}/api/v3/data/{FIXED_BASE_ID}/{table_id}/records"
+        url = f"{self.base_url}/api/v3/data/{base_id}/{table_id}/records"
         def wrap(item):
             if isinstance(item, (int, str)): return {"id": item}
             rid = item.get("id") or item.get("Id")
@@ -389,6 +529,7 @@ class NocodbApp(APIApplication):
 
     async def get_record_count(
         self,
+        base_id: str,
         table_id: str,
         view_id: str = None,
         where: str = None
@@ -397,6 +538,7 @@ class NocodbApp(APIApplication):
         Get the count of records in a table (or view).
 
         Args:
+            base_id: The ID of the base.
             table_id: The ID of the table.
             view_id: Optional View ID to count within.
             where: Optional filter.
@@ -407,7 +549,8 @@ class NocodbApp(APIApplication):
         Tags:
             read, count, data, records
         """
-        url = f"{self.base_url}/api/v3/data/{FIXED_BASE_ID}/{table_id}/count"
+        url = f"{self.base_url}/api/v3/data/{base_id}/{table_id}/count"
+
         params = {"viewId": view_id, "where": where}
         params = {k: v for k, v in params.items() if v is not None}
         response = await self._aget(url, params=params)
@@ -416,6 +559,11 @@ class NocodbApp(APIApplication):
 
     def list_tools(self):
         return [
+            self.list_bases,
+            self.get_base,
+            self.create_base,
+            self.update_base,
+            self.delete_base,
             self.list_tables,
             self.create_table, 
             self.delete_table,
