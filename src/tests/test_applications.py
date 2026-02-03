@@ -55,7 +55,6 @@ ALL_APPS = [
     "miro",
     "ms_teams",
     "neon",
-    "nocodb",
     "notion",
     "onedrive",
     "openai",
@@ -67,6 +66,7 @@ ALL_APPS = [
     "resend",
     "retell",
     "rocketlane",
+    "ruzodb",
     "scraper",
     "semanticscholar",
     # "semrush",  # not seeded
