@@ -2,8 +2,11 @@
 Video Tools Application
 
 Provides video manipulation capabilities including stitching, trimming, resizing, audio extraction/addition, and more.
+Supports both local file paths and remote URLs for input files.
 """
 import os
+import tempfile
+import urllib.parse
 from pathlib import Path
 from typing import Any, List, Tuple, Optional
 from universal_mcp.applications.application import APIApplication
@@ -16,30 +19,125 @@ class VideoToolsApp(APIApplication):
 
     Supports video stitching, trimming, resizing, audio operations, format conversion,
     and other transformations using moviepy library.
+    Accepts both local file paths and remote URLs for input files.
     """
 
     def __init__(self, integration: Integration = None, **kwargs) -> None:
         super().__init__(name="video_tools", integration=integration, **kwargs)
         self.supported_formats = {'.mp4', '.avi', '.mov', '.mkv', '.flv', '.wmv', '.webm', '.m4v', '.mpg', '.mpeg'}
+        self._temp_files = []  # Track temporary downloaded files for cleanup
 
-    def _validate_video_path(self, video_path: str) -> Path:
+    def _is_url(self, path: str) -> bool:
         """
-        Validates that the video path exists and is a supported format.
+        Checks if a path is a URL.
 
         Args:
-            video_path: Path to the video file
+            path: Path or URL string to check
 
         Returns:
-            Path: Validated Path object
+            bool: True if the path is a URL, False otherwise
+        """
+        try:
+            result = urllib.parse.urlparse(path)
+            return all([result.scheme, result.netloc]) and result.scheme in ['http', 'https']
+        except Exception:
+            return False
+
+    async def _download_file(self, url: str, suffix: str = None) -> Path:
+        """
+        Downloads a file from a URL to a temporary location.
+
+        Args:
+            url: URL of the file to download
+            suffix: Optional file extension (e.g., '.mp4'). If not provided, inferred from URL
+
+        Returns:
+            Path: Path to the downloaded temporary file
 
         Raises:
-            ValueError: If the video doesn't exist or has unsupported format
+            ValueError: If the URL is invalid or download fails
+            IOError: If the file cannot be written
         """
-        path = Path(video_path)
-        if not path.exists():
-            raise ValueError(f"Video file not found: {video_path}")
+        try:
+            import httpx
+        except ImportError:
+            raise ImportError(
+                "httpx library is required for downloading files from URLs. "
+                "Install it with: pip install httpx"
+            )
+
+        # Infer suffix from URL if not provided
+        if suffix is None:
+            parsed_url = urllib.parse.urlparse(url)
+            path_part = parsed_url.path
+            suffix = Path(path_part).suffix
+            if not suffix:
+                suffix = '.tmp'
+
+        # Create temporary file
+        temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=suffix)
+        temp_path = Path(temp_file.name)
+        temp_file.close()
+
+        # Track for cleanup
+        self._temp_files.append(temp_path)
+
+        try:
+            # Download file
+            async with httpx.AsyncClient(timeout=300.0) as client:  # 5 minute timeout
+                response = await client.get(url, follow_redirects=True)
+                response.raise_for_status()
+
+                # Write to temp file
+                temp_path.write_bytes(response.content)
+
+            return temp_path
+
+        except Exception as e:
+            # Clean up on error
+            if temp_path.exists():
+                temp_path.unlink()
+            if temp_path in self._temp_files:
+                self._temp_files.remove(temp_path)
+            raise ValueError(f"Failed to download file from URL: {url}. Error: {str(e)}")
+
+    def _cleanup_temp_files(self):
+        """Removes all temporary downloaded files."""
+        for temp_file in self._temp_files:
+            try:
+                if temp_file.exists():
+                    temp_file.unlink()
+            except Exception:
+                pass  # Ignore cleanup errors
+        self._temp_files.clear()
+
+    async def _validate_video_url(self, video_url: str) -> Path:
+        """
+        Validates that the video URL (mandatory) and downloads it.
+
+        Args:
+            video_url: URL to the video file
+
+        Returns:
+            Path: Validated Path object (temporary file)
+
+        Raises:
+            ValueError: If input is not a URL or download fails or format is unsupported
+        """
+        # Check if it's a URL
+        if self._is_url(video_url):
+             path = await self._download_file(video_url)
+        else:
+             raise ValueError(f"Video input must be a URL. Local file paths are not supported: {video_url}")
 
         if path.suffix.lower() not in self.supported_formats:
+            # Cleanup downloaded file if invalid format
+            if path in self._temp_files:
+                 try:
+                     os.unlink(path)
+                     self._temp_files.remove(path)
+                 except: pass
+
             raise ValueError(
                 f"Unsupported video format: {path.suffix}. "
                 f"Supported formats: {', '.join(self.supported_formats)}"
@@ -63,7 +161,7 @@ class VideoToolsApp(APIApplication):
 
     async def stitch_videos(
         self,
-        input_paths: List[str],
+        video_urls: List[str],
         output_path: str,
         method: str = "concatenate",
         transition_duration: float = 0.0,
@@ -73,9 +171,10 @@ class VideoToolsApp(APIApplication):
         Stitches multiple video files together into a single video file in the order provided.
         Videos can be concatenated directly or with optional crossfade transitions between clips.
         The output video resolution can match the first video, largest video, or smallest video.
+        **Supports ONLY URLs for input videos.**
 
         Args:
-            input_paths: List of paths to input video files in the order they should be stitched. Must contain at least 2 videos. Example: ['/path/to/video1.mp4', '/path/to/video2.mp4', '/path/to/video3.mp4']
+            video_urls: List of URLs to input video files in the order they should be stitched. Must contain at least 2 videos. Example: ['https://example.com/video1.mp4', 'https://example.com/video2.mp4']
             output_path: Path where the stitched video will be saved. Example: '/path/to/output.mp4'
             method: Stitching method. Options: 'concatenate' (direct join, default), 'crossfade' (smooth transition). Example: 'concatenate'
             transition_duration: Duration of crossfade transition in seconds (only used if method='crossfade'). Example: 1.0 for 1 second fade. Default: 0.0
@@ -91,7 +190,7 @@ class VideoToolsApp(APIApplication):
                 - 'method' (str): Stitching method used
 
         Raises:
-            ValueError: Raised when input_paths has fewer than 2 videos, any video doesn't exist, or format is unsupported.
+            ValueError: Raised when input_paths has fewer than 2 videos, any video doesn't exist, URL is invalid, or format is unsupported.
             IOError: Raised when videos cannot be opened or output cannot be saved.
             ImportError: Raised when moviepy library is not installed.
 
@@ -99,7 +198,7 @@ class VideoToolsApp(APIApplication):
             video, stitch, concatenate, merge, join, important, slow
         """
         # Validate input
-        if len(input_paths) < 2:
+        if len(video_urls) < 2:
             raise ValueError("At least 2 videos are required for stitching")
 
         # Import moviepy (lazy import)
@@ -111,8 +210,12 @@ class VideoToolsApp(APIApplication):
                 "Install it with: pip install moviepy"
             )
 
-        # Validate all input paths
-        validated_paths = [self._validate_video_path(path) for path in input_paths]
+        # Validate paths (and download)
+        validated_paths = []
+        for path in video_urls:
+            input_path_obj = await self._validate_video_url(path)
+            validated_paths.append(input_path_obj)
+        
         output_path_obj = self._ensure_output_directory(output_path)
 
         # Load all video clips
@@ -164,11 +267,14 @@ class VideoToolsApp(APIApplication):
             final_clip.close()
             for clip in clips:
                 clip.close()
+            
+            # Clean up temporary downloaded files
+            self._cleanup_temp_files()
 
             return {
                 "success": True,
                 "output_path": str(output_path_obj),
-                "num_videos": len(input_paths),
+                "num_videos": len(video_urls),
                 "total_duration": round(total_duration, 2),
                 "output_resolution": output_resolution,
                 "method": method,
@@ -181,11 +287,13 @@ class VideoToolsApp(APIApplication):
                     clip.close()
                 except:
                     pass
+            # Clean up temporary downloaded files
+            self._cleanup_temp_files()
             raise
 
     async def trim_video(
         self,
-        input_path: str,
+        video_url: str,
         output_path: str,
         start_time: float = 0.0,
         end_time: Optional[float] = None,
@@ -194,9 +302,10 @@ class VideoToolsApp(APIApplication):
         """
         Trims a video to a specific time range, creating a shorter clip from the original video.
         You can specify either the end time or the duration, but not both.
+        **Supports ONLY URLs for input video.**
 
         Args:
-            input_path: Path to the input video file. Example: '/path/to/video.mp4'
+            video_url: URL to the input video file. Example: 'https://example.com/video.mp4'
             output_path: Path where the trimmed video will be saved. Example: '/path/to/trimmed.mp4'
             start_time: Start time in seconds. Example: 10.0 for starting at 10 seconds. Default: 0.0
             end_time: End time in seconds (optional, cannot be used with duration). Example: 30.0 for ending at 30 seconds
@@ -236,8 +345,8 @@ class VideoToolsApp(APIApplication):
                 "Install it with: pip install moviepy"
             )
 
-        # Validate paths
-        input_path_obj = self._validate_video_path(input_path)
+        # Validate paths (may download from URL)
+        input_path_obj = await self._validate_video_url(video_url)
         output_path_obj = self._ensure_output_directory(output_path)
 
         # Load video
@@ -281,6 +390,9 @@ class VideoToolsApp(APIApplication):
             # Cleanup
             trimmed_clip.close()
             clip.close()
+            
+            # Clean up temporary downloaded files
+            self._cleanup_temp_files()
 
             return {
                 "success": True,
@@ -294,18 +406,21 @@ class VideoToolsApp(APIApplication):
 
         except Exception as e:
             clip.close()
+            # Clean up temporary downloaded files
+            self._cleanup_temp_files()
             raise
 
     async def get_video_info(
         self,
-        input_path: str,
+        input_url: str,
     ) -> dict[str, Any]:
         """
         Retrieves detailed information about a video file including duration, resolution, fps, codec, and file size.
         Useful for understanding video properties before performing transformations.
+        **Supports ONLY URLs.**
 
         Args:
-            input_path: Path to the input video file. Example: '/path/to/video.mp4'
+            input_url: URL to the input video file. Example: 'https://example.com/video.mp4'
 
         Returns:
             dict[str, Any]: Video information containing:
@@ -337,8 +452,8 @@ class VideoToolsApp(APIApplication):
                 "Install it with: pip install moviepy"
             )
 
-        # Validate path
-        input_path_obj = self._validate_video_path(input_path)
+        # Validate path (may download from URL)
+        input_path_obj = await self._validate_video_url(input_url)
 
         # Get file size
         file_size_bytes = input_path_obj.stat().st_size
@@ -362,6 +477,10 @@ class VideoToolsApp(APIApplication):
             }
 
             clip.close()
+            
+            # Clean up temporary downloaded files
+            self._cleanup_temp_files()
+            
             return info
 
         except Exception as e:
@@ -370,7 +489,7 @@ class VideoToolsApp(APIApplication):
 
     async def resize_video(
         self,
-        input_path: str,
+        input_url: str,
         output_path: str,
         width: Optional[int] = None,
         height: Optional[int] = None,
@@ -380,9 +499,10 @@ class VideoToolsApp(APIApplication):
         """
         Resizes a video to specified dimensions or scale factor with optional aspect ratio preservation.
         You can specify width/height, or use a scale factor (e.g., 0.5 for half size, 2.0 for double size).
+        **Supports ONLY URLs.**
 
         Args:
-            input_path: Path to the input video file. Example: '/path/to/video.mp4'
+            input_url: URL to the input video file. Example: 'https://example.com/video.mp4'
             output_path: Path where the resized video will be saved. Example: '/path/to/resized.mp4'
             width: Target width in pixels (optional if height or scale provided). Example: 1920
             height: Target height in pixels (optional if width or scale provided). Example: 1080
@@ -420,7 +540,7 @@ class VideoToolsApp(APIApplication):
             )
 
         # Validate paths
-        input_path_obj = self._validate_video_path(input_path)
+        input_path_obj = await self._validate_video_url(input_url)
         output_path_obj = self._ensure_output_directory(output_path)
 
         # Load video
@@ -478,6 +598,9 @@ class VideoToolsApp(APIApplication):
             # Cleanup
             resized_clip.close()
             clip.close()
+            
+            # Clean up temporary downloaded files
+            self._cleanup_temp_files()
 
             return {
                 "success": True,
@@ -490,20 +613,23 @@ class VideoToolsApp(APIApplication):
 
         except Exception as e:
             clip.close()
+            # Clean up temporary downloaded files
+            self._cleanup_temp_files()
             raise
 
     async def extract_audio(
         self,
-        input_path: str,
+        input_url: str,
         output_path: str,
         audio_format: str = "mp3",
     ) -> dict[str, Any]:
         """
         Extracts the audio track from a video file and saves it as a separate audio file.
         Supports multiple audio formats including MP3, WAV, AAC, and FLAC.
+        **Supports ONLY URLs.**
 
         Args:
-            input_path: Path to the input video file. Example: '/path/to/video.mp4'
+            input_url: URL to the input video file. Example: 'https://example.com/video.mp4'
             output_path: Path where the extracted audio will be saved. Example: '/path/to/audio.mp3'
             audio_format: Output audio format. Options: 'mp3' (default), 'wav', 'aac', 'flac', 'm4a'. Example: 'mp3'
 
@@ -533,7 +659,7 @@ class VideoToolsApp(APIApplication):
             )
 
         # Validate paths
-        input_path_obj = self._validate_video_path(input_path)
+        input_path_obj = await self._validate_video_url(input_url)
         output_path_obj = self._ensure_output_directory(output_path)
 
         # Load video
@@ -567,12 +693,14 @@ class VideoToolsApp(APIApplication):
 
         except Exception as e:
             clip.close()
+            # Clean up temporary downloaded files
+            self._cleanup_temp_files()
             raise
 
     async def add_audio(
         self,
-        video_path: str,
-        audio_path: str,
+        video_url: str,
+        audio_url: str,
         output_path: str,
         replace_audio: bool = True,
     ) -> dict[str, Any]:
@@ -581,8 +709,8 @@ class VideoToolsApp(APIApplication):
         The audio will be trimmed or looped to match the video duration.
 
         Args:
-            video_path: Path to the input video file. Example: '/path/to/video.mp4'
-            audio_path: Path to the audio file to add. Example: '/path/to/audio.mp3'
+            video_url: URL to the input video file. Example: 'https://example.com/video.mp4'
+            audio_url: URL to the audio file to add. Example: 'https://example.com/audio.mp3'
             output_path: Path where the video with new audio will be saved. Example: '/path/to/output.mp4'
             replace_audio: If True, replaces existing audio. If False, mixes with existing audio. Default: True
 
@@ -612,10 +740,16 @@ class VideoToolsApp(APIApplication):
             )
 
         # Validate paths
-        video_path_obj = self._validate_video_path(video_path)
-        audio_path_obj = Path(audio_path)
+        video_path_obj = await self._validate_video_url(video_url)
+        
+        # Validate audio path (must be URL)
+        if self._is_url(audio_url):
+             audio_path_obj = await self._download_file(audio_url)
+        else:
+             raise ValueError(f"Audio input must be a URL. Local file paths are not supported: {audio_url}")
+
         if not audio_path_obj.exists():
-            raise ValueError(f"Audio file not found: {audio_path}")
+            raise ValueError(f"Audio file failed to download: {audio_url}")
 
         output_path_obj = self._ensure_output_directory(output_path)
 
@@ -677,11 +811,13 @@ class VideoToolsApp(APIApplication):
         except Exception as e:
             video_clip.close()
             audio_clip.close()
+            # Clean up temporary downloaded files
+            self._cleanup_temp_files()
             raise
 
     async def convert_video(
         self,
-        input_path: str,
+        input_url: str,
         output_path: str,
         output_format: str = "mp4",
         video_codec: str = "libx264",
@@ -692,7 +828,7 @@ class VideoToolsApp(APIApplication):
         Useful for compatibility, compression, or quality adjustments.
 
         Args:
-            input_path: Path to the input video file. Example: '/path/to/video.avi'
+            input_url: URL to the input video file. Example: 'https://example.com/video.avi'
             output_path: Path where the converted video will be saved. Example: '/path/to/video.mp4'
             output_format: Output video format (inferred from output_path extension, this is for validation). Example: 'mp4'
             video_codec: Video codec to use. Options: 'libx264' (H.264, default), 'libx265' (H.265/HEVC), 'mpeg4', 'libvpx' (VP8), 'libvpx-vp9' (VP9). Example: 'libx264'
@@ -727,7 +863,7 @@ class VideoToolsApp(APIApplication):
             )
 
         # Validate paths
-        input_path_obj = self._validate_video_path(input_path)
+        input_path_obj = await self._validate_video_url(input_url)
         output_path_obj = self._ensure_output_directory(output_path)
 
         # Load video
@@ -763,11 +899,13 @@ class VideoToolsApp(APIApplication):
 
         except Exception as e:
             clip.close()
+            # Clean up temporary downloaded files
+            self._cleanup_temp_files()
             raise
 
     async def change_video_speed(
         self,
-        input_path: str,
+        input_url: str,
         output_path: str,
         speed_factor: float,
         preserve_pitch: bool = True,
@@ -777,7 +915,7 @@ class VideoToolsApp(APIApplication):
         Audio pitch can be preserved or adjusted proportionally with the speed change.
 
         Args:
-            input_path: Path to the input video file. Example: '/path/to/video.mp4'
+            input_url: URL to the input video file. Example: 'https://example.com/video.mp4'
             output_path: Path where the speed-adjusted video will be saved. Example: '/path/to/fast_video.mp4'
             speed_factor: Speed multiplication factor. Values > 1.0 speed up the video (e.g., 2.0 = 2x speed, twice as fast), values < 1.0 slow it down (e.g., 0.5 = half speed, slow motion). Example: 2.0 for double speed
             preserve_pitch: If True, attempts to preserve audio pitch when changing speed. If False, audio pitch changes with speed (chipmunk effect when faster, deep voice when slower). Default: True
@@ -815,7 +953,7 @@ class VideoToolsApp(APIApplication):
             )
 
         # Validate paths
-        input_path_obj = self._validate_video_path(input_path)
+        input_path_obj = await self._validate_video_url(input_url)
         output_path_obj = self._ensure_output_directory(output_path)
 
         # Load video
@@ -871,6 +1009,174 @@ class VideoToolsApp(APIApplication):
 
         except Exception as e:
             clip.close()
+            # Clean up temporary downloaded files
+            self._cleanup_temp_files()
+            raise
+
+    async def create_slideshow_from_images(
+        self,
+        image_urls: List[str],
+        output_path: str,
+        duration_per_image: float = 3.0,
+        fps: int = 24,
+        transition_duration: float = 0.0,
+        resize_mode: str = "first",
+        background_color: Tuple[int, int, int] = (0, 0, 0),
+    ) -> dict[str, Any]:
+        """
+        Creates a video slideshow from a sequence of images with configurable display duration and optional transitions.
+        Each image is displayed for the specified duration, and images can be resized to match a common resolution.
+        Optional crossfade transitions can be added between images for a smoother viewing experience.
+
+        Args:
+            image_urls: List of URLs to input image files in the order they should appear. Must contain at least 1 image. Example: ['https://example.com/img1.jpg', 'https://example.com/img2.png']
+            output_path: Path where the slideshow video will be saved. Example: '/path/to/slideshow.mp4'
+            duration_per_image: Duration each image is displayed in seconds. Example: 3.0 for 3 seconds per image. Default: 3.0
+            fps: Frames per second for the output video. Higher values create smoother transitions. Example: 24 (standard), 30 (smooth). Default: 24
+            transition_duration: Duration of crossfade transition between images in seconds. Set to 0 for no transitions. Example: 0.5 for half-second fade. Default: 0.0
+            resize_mode: How to handle images with different resolutions. Options: 'first' (match first image, default), 'largest' (match largest resolution), 'smallest' (match smallest resolution), 'fixed' (use a fixed resolution like 1920x1080). Example: 'first'
+            background_color: RGB color tuple (R, G, B) for padding/background when images don't match aspect ratio, where each value is 0-255. Example: (0, 0, 0) for black, (255, 255, 255) for white. Default: (0, 0, 0)
+
+        Returns:
+            dict[str, Any]: Operation result containing:
+                - 'success' (bool): Whether the operation succeeded
+                - 'output_path' (str): Path to the slideshow video
+                - 'num_images' (int): Number of images in the slideshow
+                - 'total_duration' (float): Total duration of the video in seconds
+                - 'output_resolution' (tuple): Output video resolution (width, height)
+                - 'fps' (int): Frames per second used
+                - 'transition_duration' (float): Transition duration used in seconds
+
+        Raises:
+            ValueError: Raised when image_paths is empty, any image doesn't exist, or format is unsupported.
+            IOError: Raised when images cannot be opened or output cannot be saved.
+            ImportError: Raised when moviepy library is not installed.
+
+        Tags:
+            video, slideshow, images, create, timelapse, important, slow
+        """
+        # Validate input
+        if len(image_urls) < 1:
+            raise ValueError("At least 1 image is required to create a slideshow")
+
+        if duration_per_image <= 0:
+            raise ValueError(f"duration_per_image must be > 0, got {duration_per_image}")
+
+        # Import moviepy
+        try:
+            from moviepy.editor import ImageClip, concatenate_videoclips, CompositeVideoClip
+        except ImportError:
+            raise ImportError(
+                "moviepy library is required for video operations. "
+                "Install it with: pip install moviepy"
+            )
+
+        # Import PIL for image validation
+        try:
+            from PIL import Image
+        except ImportError:
+            raise ImportError(
+                "PIL/Pillow library is required for image operations. "
+                "Install it with: pip install Pillow"
+            )
+
+        # Validate all image paths
+        validated_paths = []
+        for img_path in image_urls:
+            if self._is_url(img_path):
+                 validated_path = await self._download_file(img_path)
+                 validated_paths.append(validated_path)
+            else:
+                 raise ValueError(f"Image input must be a URL: {img_path}")
+
+        output_path_obj = self._ensure_output_directory(output_path)
+
+        # Get image sizes to determine target resolution
+        image_sizes = []
+        for img_path in validated_paths:
+            with Image.open(img_path) as img:
+                image_sizes.append(img.size)
+
+        # Determine target resolution
+        if resize_mode == "first":
+            target_size = image_sizes[0]
+        elif resize_mode == "largest":
+            target_size = max(image_sizes, key=lambda s: s[0] * s[1])
+        elif resize_mode == "smallest":
+            target_size = min(image_sizes, key=lambda s: s[0] * s[1])
+        elif resize_mode == "fixed":
+            target_size = (1920, 1080)  # Full HD default
+        else:
+            raise ValueError(f"Invalid resize_mode: {resize_mode}. Must be 'first', 'largest', 'smallest', or 'fixed'")
+
+        # Create image clips
+        clips = []
+        for img_path in validated_paths:
+            # Create clip from image
+            clip = ImageClip(str(img_path), duration=duration_per_image)
+            
+            # Resize to target size while maintaining aspect ratio
+            clip = clip.resize(height=target_size[1] if clip.h > clip.w else None,
+                             width=target_size[0] if clip.w >= clip.h else None)
+            
+            # Center the clip on a background of target size if needed
+            if clip.size != target_size:
+                from moviepy.video.VideoClip import ColorClip
+                bg = ColorClip(size=target_size, color=background_color, duration=duration_per_image)
+                clip = CompositeVideoClip([bg, clip.set_position("center")])
+            
+            clip = clip.set_fps(fps)
+            clips.append(clip)
+
+        try:
+            # Concatenate clips
+            if transition_duration > 0:
+                # Apply crossfade transitions
+                final_clip = concatenate_videoclips(clips, method="compose", padding=-transition_duration)
+            else:
+                # Direct concatenation
+                final_clip = concatenate_videoclips(clips, method="compose")
+
+            # Calculate total duration
+            total_duration = final_clip.duration
+
+            # Write output
+            final_clip.write_videofile(
+                str(output_path_obj),
+                codec='libx264',
+                fps=fps,
+                audio=False,  # No audio for slideshow
+                temp_audiofile='temp-audio.m4a',
+                remove_temp=True,
+            )
+
+            # Cleanup
+            final_clip.close()
+            for clip in clips:
+                try:
+                    clip.close()
+                except:
+                    pass
+
+            return {
+                "success": True,
+                "output_path": str(output_path_obj),
+                "num_images": len(image_urls),
+                "total_duration": round(total_duration, 2),
+                "output_resolution": target_size,
+                "fps": fps,
+                "transition_duration": transition_duration,
+            }
+
+        except Exception as e:
+            # Cleanup on error
+            for clip in clips:
+                try:
+                    clip.close()
+                except:
+                    pass
+            # Clean up temporary downloaded files
+            self._cleanup_temp_files()
             raise
 
     def list_tools(self):
@@ -884,4 +1190,5 @@ class VideoToolsApp(APIApplication):
             self.add_audio,
             self.convert_video,
             self.change_video_speed,
+            self.create_slideshow_from_images,
         ]
