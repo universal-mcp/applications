@@ -25,3 +25,4 @@ This is automatically generated from OpenAPI schema for the RuzodbApp API.
 | `update_records` | Update one or more records. |
 | `delete_records` | Delete one or more records. |
 | `get_record_count` | Get the count of records in a table (or view). |
+| `find_existing_values` | Check a list of values against a specific column and return those that already exist, |
