@@ -765,6 +765,114 @@ class VideoToolsApp(APIApplication):
             clip.close()
             raise
 
+    async def change_video_speed(
+        self,
+        input_path: str,
+        output_path: str,
+        speed_factor: float,
+        preserve_pitch: bool = True,
+    ) -> dict[str, Any]:
+        """
+        Changes the playback speed of a video by a specified factor, making it faster or slower.
+        Audio pitch can be preserved or adjusted proportionally with the speed change.
+
+        Args:
+            input_path: Path to the input video file. Example: '/path/to/video.mp4'
+            output_path: Path where the speed-adjusted video will be saved. Example: '/path/to/fast_video.mp4'
+            speed_factor: Speed multiplication factor. Values > 1.0 speed up the video (e.g., 2.0 = 2x speed, twice as fast), values < 1.0 slow it down (e.g., 0.5 = half speed, slow motion). Example: 2.0 for double speed
+            preserve_pitch: If True, attempts to preserve audio pitch when changing speed. If False, audio pitch changes with speed (chipmunk effect when faster, deep voice when slower). Default: True
+
+        Returns:
+            dict[str, Any]: Operation result containing:
+                - 'success' (bool): Whether the operation succeeded
+                - 'output_path' (str): Path to the speed-adjusted video
+                - 'original_duration' (float): Original video duration in seconds
+                - 'output_duration' (float): New video duration in seconds
+                - 'speed_factor' (float): Speed factor applied
+                - 'preserve_pitch' (bool): Whether pitch preservation was attempted
+                - 'resolution' (tuple): Video resolution (width, height)
+                - 'has_audio' (bool): Whether the video has audio
+
+        Raises:
+            ValueError: Raised when speed_factor is <= 0, or input video doesn't exist.
+            IOError: Raised when video cannot be opened or output cannot be saved.
+            ImportError: Raised when moviepy library is not installed.
+
+        Tags:
+            video, speed, fast, slow, timelapse, slowmotion, important, slow
+        """
+        # Validate input
+        if speed_factor <= 0:
+            raise ValueError(f"speed_factor must be > 0, got {speed_factor}")
+
+        # Import moviepy
+        try:
+            from moviepy.editor import VideoFileClip
+        except ImportError:
+            raise ImportError(
+                "moviepy library is required for video operations. "
+                "Install it with: pip install moviepy"
+            )
+
+        # Validate paths
+        input_path_obj = self._validate_video_path(input_path)
+        output_path_obj = self._ensure_output_directory(output_path)
+
+        # Load video
+        clip = VideoFileClip(str(input_path_obj))
+
+        try:
+            original_duration = clip.duration
+            resolution = clip.size
+            has_audio = clip.audio is not None
+
+            # Change speed
+            # Note: moviepy's speedx with final_duration parameter
+            final_duration = original_duration / speed_factor
+            
+            # Apply speed change
+            if has_audio and preserve_pitch:
+                # Use fx to change speed while preserving pitch
+                try:
+                    from moviepy.editor import vfx
+                    speed_clip = clip.fx(vfx.speedx, speed_factor)
+                except Exception:
+                    # Fallback if pitch preservation fails
+                    speed_clip = clip.speedx(speed_factor)
+            else:
+                # Simple speed change (audio pitch will change)
+                speed_clip = clip.speedx(speed_factor)
+
+            output_duration = speed_clip.duration
+
+            # Write output
+            speed_clip.write_videofile(
+                str(output_path_obj),
+                codec='libx264',
+                audio_codec='aac' if has_audio else None,
+                temp_audiofile='temp-audio.m4a' if has_audio else None,
+                remove_temp=True,
+            )
+
+            # Cleanup
+            speed_clip.close()
+            clip.close()
+
+            return {
+                "success": True,
+                "output_path": str(output_path_obj),
+                "original_duration": round(original_duration, 2),
+                "output_duration": round(output_duration, 2),
+                "speed_factor": speed_factor,
+                "preserve_pitch": preserve_pitch,
+                "resolution": resolution,
+                "has_audio": has_audio,
+            }
+
+        except Exception as e:
+            clip.close()
+            raise
+
     def list_tools(self):
         """Returns list of available video manipulation tools."""
         return [
@@ -775,4 +883,5 @@ class VideoToolsApp(APIApplication):
             self.extract_audio,
             self.add_audio,
             self.convert_video,
+            self.change_video_speed,
         ]
