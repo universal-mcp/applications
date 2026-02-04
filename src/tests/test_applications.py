@@ -46,6 +46,7 @@ ALL_APPS = [
     "heygen",
     "http_tools",
     "hubspot",
+    "image_tools",
     "instagram",
     "jira",
     "klaviyo",
@@ -84,6 +85,7 @@ ALL_APPS = [
     "twilio",
     "twitter",
     "twitter_scraper",
+    "video_tools",
     "whatsapp",
     "whatsapp_business",
     "wrike",  # not seeded
