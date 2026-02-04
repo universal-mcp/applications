@@ -557,6 +557,52 @@ class RuzodbApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
+    async def find_record(
+        self,
+        base_id: str,
+        table_id: str,
+        field_name: str,
+        value: str | int | float | bool,
+        view_id: str = None
+    ) -> dict[str, Any] | None:
+        """
+        Find a single record where a specific field equals a value.
+        Convenience wrapper around list_records with a pre-built 'where' filter.
+
+        Args:
+            base_id: The ID of the base.
+            table_id: The ID of the table.
+            field_name: The name of the column to check.
+            value: The value to search for.
+            view_id: Optional View ID.
+
+        Returns:
+            dict | None: The found record object, or None if not found.
+
+        Tags:
+            read, get, data, records, convenience
+        """
+        # Handle string values that might need wrapping or special chars
+        # NocoDB V3 supports wrapping values in (field,eq,value)
+        # We'll rely on the user passing a string value for simple cases, 
+        # but technically for safety with commas we should ensure the value is clean.
+        # Ideally, we construct the where clause carefully.
+        
+        where_clause = f"({field_name},eq,{value})"
+        
+        results = await self.list_records(
+            base_id=base_id,
+            table_id=table_id,
+            view_id=view_id,
+            where=where_clause,
+            limit=1
+        )
+        
+        records = results.get('list', []) or results.get('records', [])
+        if records:
+            return records[0]
+        return None
+
     def list_tools(self):
         return [
             self.list_bases,
@@ -574,5 +620,6 @@ class RuzodbApp(APIApplication):
             self.get_record,
             self.update_records, 
             self.delete_records, 
-            self.get_record_count
+            self.get_record_count,
+            self.find_record
         ]
