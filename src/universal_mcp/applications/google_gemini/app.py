@@ -213,12 +213,511 @@ class GoogleGeminiApp(APIApplication):
         response = client.models.generate_content(model=model, contents=contents)
         return response.text
 
+    async def generate_video(
+        self,
+        prompt: Annotated[str, "The text prompt describing the video to generate. Include audio cues in quotes for dialogue or describe sound effects explicitly."],
+        model: Literal[
+            "veo-3.1-generate-preview",
+            "veo-3.1-fast-generate-preview",
+        ] = "veo-3.1-fast-generate-preview",
+        aspect_ratio: Literal["16:9", "9:16"] = "16:9",
+        resolution: Literal["720p", "1080p", "4k"] = "720p",
+        duration_seconds: Literal["4", "6", "8"] = "4",
+        negative_prompt: Annotated[str, "Description of unwanted elements in the video"] | None = None,
+    ) -> dict:
+        """Generates a video from a text prompt using Google Gemini's Veo model.
+        This is a long-running operation that returns an operation ID. Use check_video_operation to monitor progress.
+
+        The Veo model natively generates audio with video. To include audio:
+        - Use quotation marks for dialogue: 'A person saying "Hello world"'
+        - Explicitly describe sound effects: 'A car engine roaring'
+        - Describe ambient noise: 'Birds chirping in a forest'
+
+        Args:
+            prompt (str): Text description of the video to generate (up to 1,024 tokens). Include audio cues for sound generation.
+            model (str, optional): The Veo model to use. Defaults to "veo-3.1-fast-generate-preview".
+                - "veo-3.1-fast-generate-preview": Optimized for speed with audio (default)
+                - "veo-3.1-generate-preview": Higher quality with audio support
+            aspect_ratio (str, optional): Video orientation. Defaults to "16:9". Options: "16:9" (landscape), "9:16" (portrait).
+            resolution (str, optional): Video resolution. Defaults to "720p". Higher resolutions have longer latency.
+            duration_seconds (str, optional): Video duration. Defaults to "4". Note: 1080p and 4k require "8" seconds.
+            negative_prompt (str, optional): Description of unwanted elements to avoid in the video.
+
+        Returns:
+            dict: Operation information containing:
+                - 'operation_name' (str): The operation ID to use with check_video_operation
+                - 'status' (str): Current status (typically "RUNNING")
+                - 'message' (str): Instructions for checking status
+
+        Raises:
+            ValueError: If the API key is not found or parameters are invalid.
+            Exception: If the API call fails.
+
+        Tags:
+            video, generate, veo, long-running, important
+        """
+        client = await self.get_genai_client()
+
+        config = {
+            "aspectRatio": aspect_ratio,
+            "resolution": resolution,
+            "durationSeconds": duration_seconds,
+        }
+        if negative_prompt:
+            config["negativePrompt"] = negative_prompt
+
+        response = client.models.generate_videos(
+            model=model,
+            prompt=prompt,
+            config=types.GenerateVideosConfig(**config),
+        )
+
+        return {
+            "operation_name": response.name,
+            "status": "RUNNING",
+            "message": f"Video generation started. Use check_video_operation with operation_name='{response.name}' to monitor progress.",
+        }
+
+    async def generate_video_from_image(
+        self,
+        prompt: Annotated[str, "The text prompt describing how to animate the image. Include audio cues for sound generation."],
+        image_url: Annotated[str, "URL or local path to the image to use as the first frame of the video"],
+        model: Literal[
+            "veo-3.1-generate-preview",
+            "veo-3.1-fast-generate-preview",
+        ] = "veo-3.1-fast-generate-preview",
+        aspect_ratio: Literal["16:9", "9:16"] = "16:9",
+        resolution: Literal["720p", "1080p", "4k"] = "720p",
+        duration_seconds: Literal["4", "6", "8"] = "4",
+        negative_prompt: Annotated[str, "Description of unwanted elements"] | None = None,
+    ) -> dict:
+        """Generates a video by animating a reference image as the first frame.
+        This is a long-running operation that returns an operation ID. Use check_video_operation to monitor progress.
+
+        The reference image becomes the starting frame, and the video animates from there based on your prompt.
+        Audio is natively generated - include audio cues in your prompt for dialogue or sound effects.
+
+        Args:
+            prompt (str): Text description of how to animate the image. Include audio cues for sound.
+            image_url (str): URL or local file path to the reference image for the first frame.
+            model (str, optional): The Veo model to use. Defaults to "veo-3.1-fast-generate-preview".
+            aspect_ratio (str, optional): Video orientation. Defaults to "16:9".
+            resolution (str, optional): Video resolution. Defaults to "720p".
+            duration_seconds (str, optional): Video duration. Defaults to "4".
+            negative_prompt (str, optional): Description of unwanted elements.
+
+        Returns:
+            dict: Operation information containing:
+                - 'operation_name' (str): The operation ID to use with check_video_operation
+                - 'status' (str): Current status
+                - 'message' (str): Instructions for checking status
+
+        Raises:
+            requests.exceptions.RequestException: If there's an issue fetching the remote image.
+            FileNotFoundError: If the local image path is invalid.
+            Exception: If the API call fails.
+
+        Tags:
+            video, generate, image-to-video, animate, veo, long-running, important
+        """
+        client = await self.get_genai_client()
+
+        # Load the image
+        if image_url.startswith(("http://", "https://")):
+            import requests
+            response = requests.get(image_url)
+            response.raise_for_status()
+            image = Image.open(io.BytesIO(response.content))
+        else:
+            image = Image.open(image_url)
+
+        config = {
+            "aspectRatio": aspect_ratio,
+            "resolution": resolution,
+            "durationSeconds": duration_seconds,
+        }
+        if negative_prompt:
+            config["negativePrompt"] = negative_prompt
+
+        response = client.models.generate_videos(
+            model=model,
+            prompt=prompt,
+            image=image,
+            config=types.GenerateVideosConfig(**config),
+        )
+
+        return {
+            "operation_name": response.name,
+            "status": "RUNNING",
+            "message": f"Video generation from image started. Use check_video_operation with operation_name='{response.name}' to monitor progress.",
+        }
+
+    async def generate_video_with_frames(
+        self,
+        prompt: Annotated[str, "The text prompt describing the video content between the two frames. Include audio cues for sound."],
+        first_frame_url: Annotated[str, "URL or local path to the image for the first frame"],
+        last_frame_url: Annotated[str, "URL or local path to the image for the last frame"],
+        model: Literal[
+            "veo-3.1-generate-preview",
+            "veo-3.1-fast-generate-preview",
+        ] = "veo-3.1-fast-generate-preview",
+        aspect_ratio: Literal["16:9", "9:16"] = "16:9",
+        resolution: Literal["720p", "1080p", "4k"] = "720p",
+        duration_seconds: Literal["4", "6", "8"] = "4",
+        negative_prompt: Annotated[str, "Description of unwanted elements"] | None = None,
+    ) -> dict:
+        """Generates a video by interpolating between a first frame and last frame.
+        This is a long-running operation that returns an operation ID. Use check_video_operation to monitor progress.
+
+        The model creates smooth transitions between your specified start and end frames.
+        Audio is natively generated - include audio cues in your prompt.
+
+        Args:
+            prompt (str): Text description of the video content and motion between frames. Include audio cues.
+            first_frame_url (str): URL or local path to the starting frame image.
+            last_frame_url (str): URL or local path to the ending frame image.
+            model (str, optional): The Veo model to use. Defaults to "veo-3.1-fast-generate-preview".
+            aspect_ratio (str, optional): Video orientation. Defaults to "16:9".
+            resolution (str, optional): Video resolution. Defaults to "720p".
+            duration_seconds (str, optional): Video duration. Defaults to "4".
+            negative_prompt (str, optional): Description of unwanted elements.
+
+        Returns:
+            dict: Operation information containing:
+                - 'operation_name' (str): The operation ID to use with check_video_operation
+                - 'status' (str): Current status
+                - 'message' (str): Instructions for checking status
+
+        Raises:
+            requests.exceptions.RequestException: If there's an issue fetching remote images.
+            FileNotFoundError: If local image paths are invalid.
+            Exception: If the API call fails.
+
+        Tags:
+            video, generate, interpolation, frame-to-frame, veo, long-running, important
+        """
+        client = await self.get_genai_client()
+
+        # Load first frame
+        if first_frame_url.startswith(("http://", "https://")):
+            import requests
+            response = requests.get(first_frame_url)
+            response.raise_for_status()
+            first_frame = Image.open(io.BytesIO(response.content))
+        else:
+            first_frame = Image.open(first_frame_url)
+
+        # Load last frame
+        if last_frame_url.startswith(("http://", "https://")):
+            import requests
+            response = requests.get(last_frame_url)
+            response.raise_for_status()
+            last_frame = Image.open(io.BytesIO(response.content))
+        else:
+            last_frame = Image.open(last_frame_url)
+
+        config = {
+            "aspectRatio": aspect_ratio,
+            "resolution": resolution,
+            "durationSeconds": duration_seconds,
+            "lastFrame": last_frame,
+        }
+        if negative_prompt:
+            config["negativePrompt"] = negative_prompt
+
+        response = client.models.generate_videos(
+            model=model,
+            prompt=prompt,
+            image=first_frame,
+            config=types.GenerateVideosConfig(**config),
+        )
+
+        return {
+            "operation_name": response.name,
+            "status": "RUNNING",
+            "message": f"Video generation with frame interpolation started. Use check_video_operation with operation_name='{response.name}' to monitor progress.",
+        }
+
+    async def generate_video_with_reference_images(
+        self,
+        prompt: Annotated[str, "The text prompt describing the video. The reference images' subject will appear in the generated video. Include audio cues for sound."],
+        reference_image_urls: Annotated[list[str], "List of 1-3 URLs or local paths to images of the same person, character, or product to preserve in the video"],
+        model: Literal[
+            "veo-3.1-generate-preview",
+            "veo-3.1-fast-generate-preview",
+        ] = "veo-3.1-fast-generate-preview",
+        aspect_ratio: Literal["16:9", "9:16"] = "16:9",
+        resolution: Literal["720p", "1080p", "4k"] = "720p",
+        duration_seconds: Literal["4", "6", "8"] = "4",
+        negative_prompt: Annotated[str, "Description of unwanted elements"] | None = None,
+    ) -> dict:
+        """Generates a video while preserving the appearance of a subject from reference images.
+        This is a long-running operation that returns an operation ID. Use check_video_operation to monitor progress.
+
+        Provide up to 3 reference images of a single person, character, or product. The model will preserve
+        the subject's appearance throughout the generated video. All reference images must show the same subject.
+        Audio is natively generated - include audio cues in your prompt.
+
+        Args:
+            prompt (str): Text description of the video. The subject from reference images will appear. Include audio cues.
+            reference_image_urls (list[str]): List of 1-3 image URLs or local paths showing the same subject (person/character/product).
+            model (str, optional): The Veo model to use. Defaults to "veo-3.1-fast-generate-preview".
+            aspect_ratio (str, optional): Video orientation. Defaults to "16:9".
+            resolution (str, optional): Video resolution. Defaults to "720p".
+            duration_seconds (str, optional): Video duration. Defaults to "4".
+            negative_prompt (str, optional): Description of unwanted elements.
+
+        Returns:
+            dict: Operation information containing:
+                - 'operation_name' (str): The operation ID to use with check_video_operation
+                - 'status' (str): Current status
+                - 'message' (str): Instructions for checking status
+
+        Raises:
+            ValueError: If reference_image_urls contains more than 3 images.
+            requests.exceptions.RequestException: If there's an issue fetching remote images.
+            FileNotFoundError: If local image paths are invalid.
+            Exception: If the API call fails.
+
+        Tags:
+            video, generate, reference-images, asset-consistency, veo, long-running, important
+        """
+        if len(reference_image_urls) > 3:
+            raise ValueError("Maximum 3 reference images allowed")
+
+        client = await self.get_genai_client()
+
+        # Load reference images
+        reference_images = []
+        for image_url in reference_image_urls:
+            if image_url.startswith(("http://", "https://")):
+                import requests
+                response = requests.get(image_url)
+                response.raise_for_status()
+                image = Image.open(io.BytesIO(response.content))
+            else:
+                image = Image.open(image_url)
+            reference_images.append(image)
+
+        config = {
+            "aspectRatio": aspect_ratio,
+            "resolution": resolution,
+            "durationSeconds": duration_seconds,
+            "referenceImages": reference_images,
+        }
+        if negative_prompt:
+            config["negativePrompt"] = negative_prompt
+
+        response = client.models.generate_videos(
+            model=model,
+            prompt=prompt,
+            config=types.GenerateVideosConfig(**config),
+        )
+
+        return {
+            "operation_name": response.name,
+            "status": "RUNNING",
+            "message": f"Video generation with reference images started. Use check_video_operation with operation_name='{response.name}' to monitor progress.",
+        }
+
+    async def extend_video(
+        self,
+        prompt: Annotated[str, "The text prompt describing how to extend the video. Include audio cues for sound generation."],
+        video_url: Annotated[str, "URL or local path to the Veo-generated video to extend (must be 720p, ≤141s, 9:16 or 16:9)"],
+        model: Literal[
+            "veo-3.1-generate-preview",
+            "veo-3.1-fast-generate-preview",
+        ] = "veo-3.1-fast-generate-preview",
+        negative_prompt: Annotated[str, "Description of unwanted elements"] | None = None,
+    ) -> dict:
+        """Extends a previously generated Veo video by 7 seconds (can be repeated up to 20 times).
+        This is a long-running operation that returns an operation ID. Use check_video_operation to monitor progress.
+
+        Requirements for input video:
+        - Must be generated by Veo (not external videos)
+        - Must be 141 seconds or less
+        - Must be 720p resolution
+        - Must be 9:16 or 16:9 aspect ratio
+        - Videos are stored on server for 2 days only
+
+        Audio is natively generated - include audio cues in your prompt.
+
+        Args:
+            prompt (str): Text description of how to extend the video. Include audio cues for sound.
+            video_url (str): URL or local path to the Veo-generated video file.
+            model (str, optional): The Veo model to use. Defaults to "veo-3.1-fast-generate-preview".
+            negative_prompt (str, optional): Description of unwanted elements.
+
+        Returns:
+            dict: Operation information containing:
+                - 'operation_name' (str): The operation ID to use with check_video_operation
+                - 'status' (str): Current status
+                - 'message' (str): Instructions for checking status
+
+        Raises:
+            requests.exceptions.RequestException: If there's an issue fetching the remote video.
+            FileNotFoundError: If the local video path is invalid.
+            Exception: If the API call fails or video doesn't meet requirements.
+
+        Tags:
+            video, extend, veo, long-running, important
+        """
+        client = await self.get_genai_client()
+
+        # Load the video
+        if video_url.startswith(("http://", "https://")):
+            import requests
+            response = requests.get(video_url)
+            response.raise_for_status()
+            video_data = response.content
+        else:
+            with open(video_url, "rb") as f:
+                video_data = f.read()
+
+        # Create video object
+        video = types.Video(data=video_data)
+
+        config = {"video": video}
+        if negative_prompt:
+            config["negativePrompt"] = negative_prompt
+
+        response = client.models.generate_videos(
+            model=model,
+            prompt=prompt,
+            config=types.GenerateVideosConfig(**config),
+        )
+
+        return {
+            "operation_name": response.name,
+            "status": "RUNNING",
+            "message": f"Video extension started. Use check_video_operation with operation_name='{response.name}' to monitor progress.",
+        }
+
+    async def check_video_operation(
+        self,
+        operation_name: Annotated[str, "The operation name returned from a video generation function"],
+    ) -> dict:
+        """Checks the status of a long-running video generation operation.
+
+        Poll this function to monitor the progress of video generation. When the operation is complete,
+        the result will contain the generated video data (base64 encoded).
+
+        Args:
+            operation_name (str): The operation name/ID returned from generate_video, generate_video_from_image,
+                generate_video_with_frames, generate_video_with_reference_images, or extend_video.
+
+        Returns:
+            dict: Operation status containing:
+                - 'done' (bool): True if operation is complete
+                - 'status' (str): "RUNNING", "COMPLETED", or "FAILED"
+                - 'video_data' (str, optional): Base64 encoded video data when done=True and status="COMPLETED"
+                - 'video_uri' (str, optional): Original download URL from Gemini API
+                - 'mime_type' (str, optional): Video MIME type when done=True (e.g., "video/mp4")
+                - 'file_name' (str, optional): Suggested filename when done=True
+                - 'error' (str, optional): Error message if status="FAILED"
+                - 'message' (str): Human-readable status message
+
+        Raises:
+            ValueError: If the operation_name is invalid.
+            Exception: If the API call fails.
+
+        Tags:
+            video, operation, status, check, long-running, important
+        """
+        client = await self.get_genai_client()
+
+        # Make a direct API call to get operation status
+        import requests
+
+        credentials = await self.integration.get_credentials_async()
+        api_key = credentials.get("api_key") or credentials.get("API_KEY") or credentials.get("apiKey")
+
+        url = f"https://generativelanguage.googleapis.com/v1beta/{operation_name}"
+        headers = {"x-goog-api-key": api_key}
+
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()
+        operation_data = response.json()
+
+        # Check if operation is complete
+        done = operation_data.get("done", False)
+
+        if not done:
+            return {
+                "done": False,
+                "status": "RUNNING",
+                "message": f"Video generation is still in progress. Poll this function again to check status.",
+            }
+
+        # Check if operation failed
+        if "error" in operation_data:
+            error_msg = operation_data["error"].get("message", "Unknown error")
+            return {
+                "done": True,
+                "status": "FAILED",
+                "error": error_msg,
+                "message": f"Video generation failed: {error_msg}",
+            }
+
+        # Operation completed successfully
+        if "response" in operation_data:
+            response_data = operation_data["response"]
+
+            # Handle the actual response format from the API
+            if "generateVideoResponse" in response_data:
+                generate_video_response = response_data["generateVideoResponse"]
+                if "generatedSamples" in generate_video_response and len(generate_video_response["generatedSamples"]) > 0:
+                    video_info = generate_video_response["generatedSamples"][0]
+                    video_data_obj = video_info.get("video", {})
+
+                    # Download the video from the URI and return as base64
+                    if "uri" in video_data_obj:
+                        video_uri = video_data_obj["uri"]
+
+                        # Download the video
+                        video_response = requests.get(video_uri, headers=headers)
+                        video_response.raise_for_status()
+                        video_bytes = video_response.content
+
+                        # Encode as base64
+                        video_base64 = base64.b64encode(video_bytes).decode("utf-8")
+                        file_name = f"{uuid.uuid4()}.mp4"
+
+                        return {
+                            "done": True,
+                            "status": "COMPLETED",
+                            "video_data": video_base64,
+                            "video_uri": video_uri,
+                            "mime_type": "video/mp4",
+                            "file_name": file_name,
+                            "message": f"Video generation completed successfully. Save the video_data to '{file_name}'.",
+                        }
+                    else:
+                        return {
+                            "done": True,
+                            "status": "UNKNOWN",
+                            "message": "Video URI not found in response.",
+                        }
+
+        # Unexpected state
+        return {
+            "done": True,
+            "status": "UNKNOWN",
+            "message": "Operation completed but response format was unexpected.",
+        }
+
     def list_tools(self):
         return [
             self.generate_text,
             self.generate_image,
             self.analyze_image,
             self.generate_audio,
+            self.generate_video,
+            self.generate_video_from_image,
+            self.generate_video_with_frames,
+            self.generate_video_with_reference_images,
+            self.extend_video,
+            self.check_video_operation,
         ]
 
 
