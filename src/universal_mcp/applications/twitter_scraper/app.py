@@ -19,12 +19,12 @@ class TwitterScraperApp(APIApplication):
         super().__init__(name="twitter_scraper", integration=integration, **kwargs)
         self.base_url = "https://api.apify.com/v2"
 
-    def _get_api_token(self) -> str:
+    async def _get_api_token(self) -> str:
         """Get the Apify API token from environment variable."""
-        api_token = os.getenv("APIFY_API_TOKEN")
+        credentials = await self.integration.get_credentials_async()
+        api_token = credentials.get("token")
         if not api_token:
-            logger.error("TwitterScraperApp: APIFY_API_TOKEN environment variable is not set.")
-            raise ValueError("TwitterScraperApp: APIFY_API_TOKEN environment variable is required.")
+            raise ValueError("token is missing")
         return api_token
 
     async def list_tweets_scraper(
@@ -53,7 +53,7 @@ class TwitterScraperApp(APIApplication):
         if not list_id:
             raise ValueError("Missing required parameter 'list_id'.")
 
-        api_token = self._get_api_token()
+        api_token = await self._get_api_token()
 
         url = f"{self.base_url}/acts/{self.ACTOR_ID}/run-sync-get-dataset-items"
 

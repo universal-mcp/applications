@@ -83,6 +83,7 @@ ALL_APPS = [
     "trello",
     "twilio",
     "twitter",
+    "twitter_scraper",
     "whatsapp",
     "whatsapp_business",
     "wrike",  # not seeded
