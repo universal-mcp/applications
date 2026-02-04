@@ -61,6 +61,7 @@ class GoogleGeminiApp(APIApplication):
         self,
         prompt: Annotated[str, "The prompt to generate image from"],
         images: Annotated[list[str], "The reference image URLs"] | None = None,
+        aspect_ratio: Literal["1:1", "3:4", "4:3", "9:16", "16:9"] = "1:1",
         model: Literal["gemini-3-pro-image-preview", "gemini-2.5-flash-image"] = "gemini-2.5-flash-image",
     ) -> dict:
         """
@@ -71,6 +72,7 @@ class GoogleGeminiApp(APIApplication):
         Args:
             prompt (str): The descriptive text prompt to guide the image generation. For example: "A futuristic city at sunset with flying cars."
             images (list[str], optional): An optional list of URLs to reference images. These images will be used as a basis for the generation.
+            aspect_ratio (str, optional): The aspect ratio of the generated image. Supported values are "1:1" (square), "3:4" (portrait for ads/social), "4:3" (landscape for TV/photography), "9:16" (tall portrait), and "16:9" (wide landscape). Defaults to "1:1".
             model (str, optional): The Gemini model to use for image generation. Defaults to "gemini-2.5-flash-image".
 
         Returns:
@@ -102,7 +104,20 @@ class GoogleGeminiApp(APIApplication):
                 else:
                     image = Image.open(image)
                 contents.append(image)
-        response = client.models.generate_content(model=model, contents=contents)
+        
+        # Create config with aspect ratio
+        config = types.GenerateContentConfig(
+            response_modalities=["IMAGE"],
+            image_config=types.ImageConfig(
+                aspect_ratio=aspect_ratio
+            )
+        )
+        
+        response = client.models.generate_content(
+            model=model, 
+            contents=contents,
+            config=config
+        )
         candidate = response.candidates[0]
         text = ""
         for part in candidate.content.parts:
@@ -224,7 +239,11 @@ class GoogleGeminiApp(APIApplication):
 
 async def test_google_gemini():
     app = GoogleGeminiApp()
-    await app.generate_image("A beautiful women potrait with red green hair color")
+    # Test with 16:9 aspect ratio for a landscape image
+    await app.generate_image(
+        "A beautiful women portrait with red green hair color",
+        aspect_ratio="16:9"
+    )
 
 
 if __name__ == "__main__":
