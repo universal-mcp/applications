@@ -273,18 +273,17 @@ class GoogleGeminiApp(APIApplication):
         """
         client = await self.get_genai_client()
 
-        config = {
-            "aspectRatio": aspect_ratio,
-            "resolution": resolution,
-            "durationSeconds": duration_seconds,
-        }
-        if negative_prompt:
-            config["negativePrompt"] = negative_prompt
+        config = types.GenerateVideosConfig(
+            aspect_ratio=aspect_ratio,
+            resolution=resolution,
+            duration_seconds=duration_seconds,
+            negative_prompt=negative_prompt if negative_prompt else None
+        )
 
         response = client.models.generate_videos(
             model=model,
             prompt=prompt,
-            config=types.GenerateVideosConfig(**config),
+            config=config,
         )
 
         return {
@@ -337,28 +336,44 @@ class GoogleGeminiApp(APIApplication):
         """
         client = await self.get_genai_client()
 
-        # Load the image
+        # Load and encode the image
         if image_url.startswith(("http://", "https://")):
             import requests
             response = requests.get(image_url)
             response.raise_for_status()
-            image = Image.open(io.BytesIO(response.content))
+            image_bytes = response.content
         else:
-            image = Image.open(image_url)
+            with open(image_url, "rb") as f:
+                image_bytes = f.read()
 
-        config = {
-            "aspectRatio": aspect_ratio,
-            "resolution": resolution,
-            "durationSeconds": duration_seconds,
-        }
-        if negative_prompt:
-            config["negativePrompt"] = negative_prompt
+        # Determine MIME type
+        if image_url.lower().endswith(".png"):
+            mime_type = "image/png"
+        elif image_url.lower().endswith((".jpg", ".jpeg")):
+            mime_type = "image/jpeg"
+        elif image_url.lower().endswith(".webp"):
+            mime_type = "image/webp"
+        else:
+            mime_type = "image/png"  # default
+
+        # Create types.Image with base64 encoding
+        image = types.Image(
+            image_bytes=image_bytes,
+            mime_type=mime_type
+        )
+
+        config = types.GenerateVideosConfig(
+            aspect_ratio=aspect_ratio,
+            resolution=resolution,
+            duration_seconds=duration_seconds,
+            negative_prompt=negative_prompt if negative_prompt else None
+        )
 
         response = client.models.generate_videos(
             model=model,
             prompt=prompt,
             image=image,
-            config=types.GenerateVideosConfig(**config),
+            config=config,
         )
 
         return {
@@ -413,38 +428,48 @@ class GoogleGeminiApp(APIApplication):
         """
         client = await self.get_genai_client()
 
-        # Load first frame
-        if first_frame_url.startswith(("http://", "https://")):
-            import requests
-            response = requests.get(first_frame_url)
-            response.raise_for_status()
-            first_frame = Image.open(io.BytesIO(response.content))
-        else:
-            first_frame = Image.open(first_frame_url)
+        # Helper to load and convert image
+        def load_image_as_types_image(image_url: str) -> types.Image:
+            if image_url.startswith(("http://", "https://")):
+                import requests
+                response = requests.get(image_url)
+                response.raise_for_status()
+                image_bytes = response.content
+            else:
+                with open(image_url, "rb") as f:
+                    image_bytes = f.read()
 
-        # Load last frame
-        if last_frame_url.startswith(("http://", "https://")):
-            import requests
-            response = requests.get(last_frame_url)
-            response.raise_for_status()
-            last_frame = Image.open(io.BytesIO(response.content))
-        else:
-            last_frame = Image.open(last_frame_url)
+            # Determine MIME type
+            if image_url.lower().endswith(".png"):
+                mime_type = "image/png"
+            elif image_url.lower().endswith((".jpg", ".jpeg")):
+                mime_type = "image/jpeg"
+            elif image_url.lower().endswith(".webp"):
+                mime_type = "image/webp"
+            else:
+                mime_type = "image/png"
 
-        config = {
-            "aspectRatio": aspect_ratio,
-            "resolution": resolution,
-            "durationSeconds": duration_seconds,
-            "lastFrame": last_frame,
-        }
-        if negative_prompt:
-            config["negativePrompt"] = negative_prompt
+            return types.Image(
+                image_bytes=image_bytes,
+                mime_type=mime_type
+            )
+
+        # Load both frames as types.Image
+        first_frame = load_image_as_types_image(first_frame_url)
+        last_frame = load_image_as_types_image(last_frame_url)
+
+        # Note: When using last_frame for interpolation, other config parameters
+        # (aspect_ratio, resolution, duration_seconds) are not supported
+        config = types.GenerateVideosConfig(
+            last_frame=last_frame,
+            negative_prompt=negative_prompt if negative_prompt else None
+        )
 
         response = client.models.generate_videos(
             model=model,
             prompt=prompt,
             image=first_frame,
-            config=types.GenerateVideosConfig(**config),
+            config=config,
         )
 
         return {
@@ -502,31 +527,49 @@ class GoogleGeminiApp(APIApplication):
 
         client = await self.get_genai_client()
 
-        # Load reference images
-        reference_images = []
-        for image_url in reference_image_urls:
+        # Helper function to load image and convert to types.Image
+        def load_and_encode_image(image_url: str) -> types.Image:
             if image_url.startswith(("http://", "https://")):
                 import requests
                 response = requests.get(image_url)
                 response.raise_for_status()
-                image = Image.open(io.BytesIO(response.content))
+                image_bytes = response.content
             else:
-                image = Image.open(image_url)
-            reference_images.append(image)
+                with open(image_url, "rb") as f:
+                    image_bytes = f.read()
 
-        config = {
-            "aspectRatio": aspect_ratio,
-            "resolution": resolution,
-            "durationSeconds": duration_seconds,
-            "referenceImages": reference_images,
-        }
-        if negative_prompt:
-            config["negativePrompt"] = negative_prompt
+            # Determine MIME type
+            if image_url.lower().endswith(".png"):
+                mime_type = "image/png"
+            elif image_url.lower().endswith((".jpg", ".jpeg")):
+                mime_type = "image/jpeg"
+            elif image_url.lower().endswith(".webp"):
+                mime_type = "image/webp"
+            else:
+                mime_type = "image/png"  # default
+
+            return types.Image(
+                image_bytes=image_bytes,
+                mime_type=mime_type
+            )
+
+        # Load reference images
+        reference_images = []
+        for image_url in reference_image_urls:
+            reference_images.append(load_and_encode_image(image_url))
+
+        config = types.GenerateVideosConfig(
+            aspect_ratio=aspect_ratio,
+            resolution=resolution,
+            duration_seconds=duration_seconds,
+            reference_images=reference_images,
+            negative_prompt=negative_prompt if negative_prompt else None
+        )
 
         response = client.models.generate_videos(
             model=model,
             prompt=prompt,
-            config=types.GenerateVideosConfig(**config),
+            config=config,
         )
 
         return {
@@ -592,14 +635,15 @@ class GoogleGeminiApp(APIApplication):
         # Create video object
         video = types.Video(data=video_data)
 
-        config = {"video": video}
-        if negative_prompt:
-            config["negativePrompt"] = negative_prompt
+        config = types.GenerateVideosConfig(
+            video=video,
+            negative_prompt=negative_prompt if negative_prompt else None
+        )
 
         response = client.models.generate_videos(
             model=model,
             prompt=prompt,
-            config=types.GenerateVideosConfig(**config),
+            config=config,
         )
 
         return {
@@ -681,6 +725,17 @@ class GoogleGeminiApp(APIApplication):
             # Handle the actual response format from the API
             if "generateVideoResponse" in response_data:
                 generate_video_response = response_data["generateVideoResponse"]
+
+                # Check if content was filtered
+                if "raiMediaFilteredCount" in generate_video_response and generate_video_response["raiMediaFilteredCount"] > 0:
+                    filter_reasons = generate_video_response.get("raiMediaFilteredReasons", ["Content filtered"])
+                    return {
+                        "done": True,
+                        "status": "FAILED",
+                        "error": "; ".join(filter_reasons),
+                        "message": f"Video generation blocked by content filter: {'; '.join(filter_reasons)}",
+                    }
+
                 if "generatedSamples" in generate_video_response and len(generate_video_response["generatedSamples"]) > 0:
                     video_info = generate_video_response["generatedSamples"][0]
                     video_data_obj = video_info.get("video", {})
@@ -714,11 +769,14 @@ class GoogleGeminiApp(APIApplication):
                             "message": "Video URI not found in response.",
                         }
 
-        # Unexpected state
+        # Unexpected state - log the actual response for debugging
+        import json
+        response_json = json.dumps(operation_data, indent=2)
         return {
             "done": True,
             "status": "UNKNOWN",
-            "message": "Operation completed but response format was unexpected.",
+            "message": f"Operation completed but response format was unexpected. Response: {response_json[:500]}...",
+            "raw_response": operation_data
         }
 
     def list_tools(self):

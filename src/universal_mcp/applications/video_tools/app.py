@@ -4,6 +4,7 @@ Video Tools Application
 Provides video manipulation capabilities including stitching, trimming, resizing, audio extraction/addition, and more.
 Supports both local file paths and remote URLs for input files.
 """
+
 import os
 import tempfile
 import urllib.parse
@@ -24,7 +25,7 @@ class VideoToolsApp(APIApplication):
 
     def __init__(self, integration: Integration = None, **kwargs) -> None:
         super().__init__(name="video_tools", integration=integration, **kwargs)
-        self.supported_formats = {'.mp4', '.avi', '.mov', '.mkv', '.flv', '.wmv', '.webm', '.m4v', '.mpg', '.mpeg'}
+        self.supported_formats = {".mp4", ".avi", ".mov", ".mkv", ".flv", ".wmv", ".webm", ".m4v", ".mpg", ".mpeg"}
         self._temp_files = []  # Track temporary downloaded files for cleanup
 
     def _is_url(self, path: str) -> bool:
@@ -39,7 +40,7 @@ class VideoToolsApp(APIApplication):
         """
         try:
             result = urllib.parse.urlparse(path)
-            return all([result.scheme, result.netloc]) and result.scheme in ['http', 'https']
+            return all([result.scheme, result.netloc]) and result.scheme in ["http", "https"]
         except Exception:
             return False
 
@@ -61,10 +62,7 @@ class VideoToolsApp(APIApplication):
         try:
             import httpx
         except ImportError:
-            raise ImportError(
-                "httpx library is required for downloading files from URLs. "
-                "Install it with: pip install httpx"
-            )
+            raise ImportError("httpx library is required for downloading files from URLs. Install it with: pip install httpx")
 
         # Infer suffix from URL if not provided
         if suffix is None:
@@ -72,7 +70,7 @@ class VideoToolsApp(APIApplication):
             path_part = parsed_url.path
             suffix = Path(path_part).suffix
             if not suffix:
-                suffix = '.tmp'
+                suffix = ".tmp"
 
         # Create temporary file
         temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=suffix)
@@ -126,22 +124,24 @@ class VideoToolsApp(APIApplication):
         """
         # Check if it's a URL
         if self._is_url(video_url):
-             path = await self._download_file(video_url)
+            path = await self._download_file(video_url)
+        elif Path(video_url).exists():
+            path = Path(video_url)
+            if not path.is_file():
+                raise ValueError(f"Path exists but is not a file: {video_url}")
         else:
-             raise ValueError(f"Video input must be a URL. Local file paths are not supported: {video_url}")
+            raise ValueError(f"Video input must be a URL. Local file paths are not supported: {video_url}")
 
         if path.suffix.lower() not in self.supported_formats:
             # Cleanup downloaded file if invalid format
             if path in self._temp_files:
-                 try:
-                     os.unlink(path)
-                     self._temp_files.remove(path)
-                 except: pass
+                try:
+                    os.unlink(path)
+                    self._temp_files.remove(path)
+                except:
+                    pass
 
-            raise ValueError(
-                f"Unsupported video format: {path.suffix}. "
-                f"Supported formats: {', '.join(self.supported_formats)}"
-            )
+            raise ValueError(f"Unsupported video format: {path.suffix}. Supported formats: {', '.join(self.supported_formats)}")
 
         return path
 
@@ -205,17 +205,14 @@ class VideoToolsApp(APIApplication):
         try:
             from moviepy.editor import VideoFileClip, concatenate_videoclips, CompositeVideoClip
         except ImportError:
-            raise ImportError(
-                "moviepy library is required for video operations. "
-                "Install it with: pip install moviepy"
-            )
+            raise ImportError("moviepy library is required for video operations. Install it with: pip install moviepy")
 
         # Validate paths (and download)
         validated_paths = []
         for path in video_urls:
             input_path_obj = await self._validate_video_url(path)
             validated_paths.append(input_path_obj)
-        
+
         output_path_obj = self._ensure_output_directory(output_path)
 
         # Load all video clips
@@ -257,9 +254,9 @@ class VideoToolsApp(APIApplication):
             # Write output
             final_clip.write_videofile(
                 str(output_path_obj),
-                codec='libx264',
-                audio_codec='aac',
-                temp_audiofile='temp-audio.m4a',
+                codec="libx264",
+                audio_codec="aac",
+                temp_audiofile="temp-audio.m4a",
                 remove_temp=True,
             )
 
@@ -267,7 +264,7 @@ class VideoToolsApp(APIApplication):
             final_clip.close()
             for clip in clips:
                 clip.close()
-            
+
             # Clean up temporary downloaded files
             self._cleanup_temp_files()
 
@@ -340,10 +337,7 @@ class VideoToolsApp(APIApplication):
         try:
             from moviepy.editor import VideoFileClip
         except ImportError:
-            raise ImportError(
-                "moviepy library is required for video operations. "
-                "Install it with: pip install moviepy"
-            )
+            raise ImportError("moviepy library is required for video operations. Install it with: pip install moviepy")
 
         # Validate paths (may download from URL)
         input_path_obj = await self._validate_video_url(video_url)
@@ -364,14 +358,10 @@ class VideoToolsApp(APIApplication):
                 raise ValueError(f"start_time must be >= 0, got {start_time}")
 
             if end_time > original_duration:
-                raise ValueError(
-                    f"end_time ({end_time}s) exceeds video duration ({original_duration}s)"
-                )
+                raise ValueError(f"end_time ({end_time}s) exceeds video duration ({original_duration}s)")
 
             if start_time >= end_time:
-                raise ValueError(
-                    f"start_time ({start_time}s) must be less than end_time ({end_time}s)"
-                )
+                raise ValueError(f"start_time ({start_time}s) must be less than end_time ({end_time}s)")
 
             # Trim video
             trimmed_clip = clip.subclip(start_time, end_time)
@@ -381,16 +371,16 @@ class VideoToolsApp(APIApplication):
             # Write output
             trimmed_clip.write_videofile(
                 str(output_path_obj),
-                codec='libx264',
-                audio_codec='aac',
-                temp_audiofile='temp-audio.m4a',
+                codec="libx264",
+                audio_codec="aac",
+                temp_audiofile="temp-audio.m4a",
                 remove_temp=True,
             )
 
             # Cleanup
             trimmed_clip.close()
             clip.close()
-            
+
             # Clean up temporary downloaded files
             self._cleanup_temp_files()
 
@@ -447,10 +437,7 @@ class VideoToolsApp(APIApplication):
         try:
             from moviepy.editor import VideoFileClip
         except ImportError:
-            raise ImportError(
-                "moviepy library is required for video operations. "
-                "Install it with: pip install moviepy"
-            )
+            raise ImportError("moviepy library is required for video operations. Install it with: pip install moviepy")
 
         # Validate path (may download from URL)
         input_path_obj = await self._validate_video_url(input_url)
@@ -477,10 +464,10 @@ class VideoToolsApp(APIApplication):
             }
 
             clip.close()
-            
+
             # Clean up temporary downloaded files
             self._cleanup_temp_files()
-            
+
             return info
 
         except Exception as e:
@@ -534,10 +521,7 @@ class VideoToolsApp(APIApplication):
         try:
             from moviepy.editor import VideoFileClip
         except ImportError:
-            raise ImportError(
-                "moviepy library is required for video operations. "
-                "Install it with: pip install moviepy"
-            )
+            raise ImportError("moviepy library is required for video operations. Install it with: pip install moviepy")
 
         # Validate paths
         input_path_obj = await self._validate_video_url(input_url)
@@ -589,16 +573,16 @@ class VideoToolsApp(APIApplication):
             # Write output
             resized_clip.write_videofile(
                 str(output_path_obj),
-                codec='libx264',
-                audio_codec='aac',
-                temp_audiofile='temp-audio.m4a',
+                codec="libx264",
+                audio_codec="aac",
+                temp_audiofile="temp-audio.m4a",
                 remove_temp=True,
             )
 
             # Cleanup
             resized_clip.close()
             clip.close()
-            
+
             # Clean up temporary downloaded files
             self._cleanup_temp_files()
 
@@ -653,10 +637,7 @@ class VideoToolsApp(APIApplication):
         try:
             from moviepy.editor import VideoFileClip
         except ImportError:
-            raise ImportError(
-                "moviepy library is required for video operations. "
-                "Install it with: pip install moviepy"
-            )
+            raise ImportError("moviepy library is required for video operations. Install it with: pip install moviepy")
 
         # Validate paths
         input_path_obj = await self._validate_video_url(input_url)
@@ -677,7 +658,7 @@ class VideoToolsApp(APIApplication):
             audio = clip.audio
             audio.write_audiofile(
                 str(output_path_obj),
-                codec='libmp3lame' if audio_format == 'mp3' else None,
+                codec="libmp3lame" if audio_format == "mp3" else None,
             )
 
             # Cleanup
@@ -734,19 +715,16 @@ class VideoToolsApp(APIApplication):
         try:
             from moviepy.editor import VideoFileClip, AudioFileClip
         except ImportError:
-            raise ImportError(
-                "moviepy library is required for video operations. "
-                "Install it with: pip install moviepy"
-            )
+            raise ImportError("moviepy library is required for video operations. Install it with: pip install moviepy")
 
         # Validate paths
         video_path_obj = await self._validate_video_url(video_url)
-        
+
         # Validate audio path (must be URL)
         if self._is_url(audio_url):
-             audio_path_obj = await self._download_file(audio_url)
+            audio_path_obj = await self._download_file(audio_url)
         else:
-             raise ValueError(f"Audio input must be a URL. Local file paths are not supported: {audio_url}")
+            raise ValueError(f"Audio input must be a URL. Local file paths are not supported: {audio_url}")
 
         if not audio_path_obj.exists():
             raise ValueError(f"Audio file failed to download: {audio_url}")
@@ -771,6 +749,7 @@ class VideoToolsApp(APIApplication):
                 # Loop audio
                 num_loops = int(video_duration / audio_duration) + 1
                 from moviepy.audio.AudioClip import concatenate_audioclips
+
                 audio_clip = concatenate_audioclips([audio_clip] * num_loops).subclip(0, video_duration)
                 audio_adjusted = True
 
@@ -781,6 +760,7 @@ class VideoToolsApp(APIApplication):
                 # Mix audio (if video has existing audio)
                 if video_clip.audio is not None:
                     from moviepy.audio.AudioClip import CompositeAudioClip
+
                     mixed_audio = CompositeAudioClip([video_clip.audio, audio_clip])
                     final_clip = video_clip.set_audio(mixed_audio)
                 else:
@@ -789,9 +769,9 @@ class VideoToolsApp(APIApplication):
             # Write output
             final_clip.write_videofile(
                 str(output_path_obj),
-                codec='libx264',
-                audio_codec='aac',
-                temp_audiofile='temp-audio.m4a',
+                codec="libx264",
+                audio_codec="aac",
+                temp_audiofile="temp-audio.m4a",
                 remove_temp=True,
             )
 
@@ -857,10 +837,7 @@ class VideoToolsApp(APIApplication):
         try:
             from moviepy.editor import VideoFileClip
         except ImportError:
-            raise ImportError(
-                "moviepy library is required for video operations. "
-                "Install it with: pip install moviepy"
-            )
+            raise ImportError("moviepy library is required for video operations. Install it with: pip install moviepy")
 
         # Validate paths
         input_path_obj = await self._validate_video_url(input_url)
@@ -879,7 +856,7 @@ class VideoToolsApp(APIApplication):
                 str(output_path_obj),
                 codec=video_codec,
                 audio_codec=audio_codec,
-                temp_audiofile='temp-audio.m4a',
+                temp_audiofile="temp-audio.m4a",
                 remove_temp=True,
             )
 
@@ -947,10 +924,7 @@ class VideoToolsApp(APIApplication):
         try:
             from moviepy.editor import VideoFileClip
         except ImportError:
-            raise ImportError(
-                "moviepy library is required for video operations. "
-                "Install it with: pip install moviepy"
-            )
+            raise ImportError("moviepy library is required for video operations. Install it with: pip install moviepy")
 
         # Validate paths
         input_path_obj = await self._validate_video_url(input_url)
@@ -967,12 +941,13 @@ class VideoToolsApp(APIApplication):
             # Change speed
             # Note: moviepy's speedx with final_duration parameter
             final_duration = original_duration / speed_factor
-            
+
             # Apply speed change
             if has_audio and preserve_pitch:
                 # Use fx to change speed while preserving pitch
                 try:
                     from moviepy.editor import vfx
+
                     speed_clip = clip.fx(vfx.speedx, speed_factor)
                 except Exception:
                     # Fallback if pitch preservation fails
@@ -986,9 +961,9 @@ class VideoToolsApp(APIApplication):
             # Write output
             speed_clip.write_videofile(
                 str(output_path_obj),
-                codec='libx264',
-                audio_codec='aac' if has_audio else None,
-                temp_audiofile='temp-audio.m4a' if has_audio else None,
+                codec="libx264",
+                audio_codec="aac" if has_audio else None,
+                temp_audiofile="temp-audio.m4a" if has_audio else None,
                 remove_temp=True,
             )
 
@@ -1066,28 +1041,22 @@ class VideoToolsApp(APIApplication):
         try:
             from moviepy.editor import ImageClip, concatenate_videoclips, CompositeVideoClip
         except ImportError:
-            raise ImportError(
-                "moviepy library is required for video operations. "
-                "Install it with: pip install moviepy"
-            )
+            raise ImportError("moviepy library is required for video operations. Install it with: pip install moviepy")
 
         # Import PIL for image validation
         try:
             from PIL import Image
         except ImportError:
-            raise ImportError(
-                "PIL/Pillow library is required for image operations. "
-                "Install it with: pip install Pillow"
-            )
+            raise ImportError("PIL/Pillow library is required for image operations. Install it with: pip install Pillow")
 
         # Validate all image paths
         validated_paths = []
         for img_path in image_urls:
             if self._is_url(img_path):
-                 validated_path = await self._download_file(img_path)
-                 validated_paths.append(validated_path)
+                validated_path = await self._download_file(img_path)
+                validated_paths.append(validated_path)
             else:
-                 raise ValueError(f"Image input must be a URL: {img_path}")
+                raise ValueError(f"Image input must be a URL: {img_path}")
 
         output_path_obj = self._ensure_output_directory(output_path)
 
@@ -1114,17 +1083,17 @@ class VideoToolsApp(APIApplication):
         for img_path in validated_paths:
             # Create clip from image
             clip = ImageClip(str(img_path), duration=duration_per_image)
-            
+
             # Resize to target size while maintaining aspect ratio
-            clip = clip.resize(height=target_size[1] if clip.h > clip.w else None,
-                             width=target_size[0] if clip.w >= clip.h else None)
-            
+            clip = clip.resize(height=target_size[1] if clip.h > clip.w else None, width=target_size[0] if clip.w >= clip.h else None)
+
             # Center the clip on a background of target size if needed
             if clip.size != target_size:
                 from moviepy.video.VideoClip import ColorClip
+
                 bg = ColorClip(size=target_size, color=background_color, duration=duration_per_image)
                 clip = CompositeVideoClip([bg, clip.set_position("center")])
-            
+
             clip = clip.set_fps(fps)
             clips.append(clip)
 
@@ -1143,10 +1112,10 @@ class VideoToolsApp(APIApplication):
             # Write output
             final_clip.write_videofile(
                 str(output_path_obj),
-                codec='libx264',
+                codec="libx264",
                 fps=fps,
                 audio=False,  # No audio for slideshow
-                temp_audiofile='temp-audio.m4a',
+                temp_audiofile="temp-audio.m4a",
                 remove_temp=True,
             )
 

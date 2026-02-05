@@ -3,9 +3,15 @@
 set -e
 set -x
 
+# Conditionally create virtual environment if it doesn't exist
+if [ ! -d ".venv" ]; then
+    echo "Creating virtual environment..."
+    uv venv
+fi
+
 # Ensure dependencies are installed
 echo "Syncing dependencies..."
-uv sync --all-extras
+uv sync --all-extras --dev
 
 # Run tests with pytest
 echo "Running tests with pytest..."
@@ -25,7 +31,7 @@ IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT_VERSION"
 # Remove any rc suffix from PATCH if it exists
 PATCH_NUM=$(echo $PATCH | sed 's/-rc[0-9]*//')
 
-if [ "$BRANCH" = "master" ] || [ "$BRANCH" = "main" ]; then
+if [ "$BRANCH" = "master" ]; then
     # On main branch - bump patch version
     if [[ $PATCH == *"-rc"* ]]; then
         NEW_VERSION="$MAJOR.$MINOR.$PATCH_NUM"
@@ -49,8 +55,14 @@ else
     fi
 fi
 
-# Update version in pyproject.toml
-sed -i '' "s/^version = ".*"/version = \"$NEW_VERSION\"/" pyproject.toml
+# Update version in pyproject.toml (platform-agnostic)
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    # macOS requires empty string after -i
+    sed -i '' "s/^version = ".*"/version = \"$NEW_VERSION\"/" pyproject.toml
+else
+    # Linux and other Unix-like systems
+    sed -i "s/^version = ".*"/version = \"$NEW_VERSION\"/" pyproject.toml
+fi
 
 echo "Version bumped from $CURRENT_VERSION to $NEW_VERSION"
 
@@ -91,6 +103,3 @@ if [ "$1" = "release" ]; then
 else
     echo "Skipping release steps"
 fi
-
-
- 
