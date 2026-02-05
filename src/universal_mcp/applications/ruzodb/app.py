@@ -241,39 +241,6 @@ class RuzodbApp(APIApplication):
 
         return result
 
-    async def get_shared_view(
-        self,
-        base_id: str,
-        table_id: str,
-        view_id: str
-    ) -> dict[str, Any]:
-        """
-        Get the shared view details for a specific view.
-
-        Args:
-            base_id: The ID of the base (not used in V2 API, kept for compatibility).
-            table_id: The ID of the table (not used in V2 API, kept for compatibility).
-            view_id: The ID of the view.
-
-        Returns:
-            dict: The shared view object with 'uuid' and sharing details.
-                  Returns empty dict if view is not shared.
-
-        Tags:
-            read, get, share, view, meta
-        """
-        # Shared views API uses V2, not V3
-        url = f"{self.base_url}/api/v2/meta/views/{view_id}/share"
-        response = await self._aget(url)
-        response.raise_for_status()
-        result = response.json()
-
-        # Add the shareable URL if uuid exists
-        if result and "uuid" in result:
-            result["shareable_url"] = f"{self.base_url}/dashboard/#/nc/view/{result['uuid']}"
-
-        return result
-
     async def delete_shared_view(
         self,
         base_id: str,
@@ -301,7 +268,7 @@ class RuzodbApp(APIApplication):
         return response.json()
 
     async def create_table(
-        self, base_id: str, title: str, table_name: str = None, columns: List[dict[str, Any]] = None, **kwargs
+        self, base_id: str, title: str, columns: List[dict[str, Any]] = None, **kwargs
     ) -> dict[str, Any]:
         """
         Create a new table in a specific base with optional initial columns.
@@ -309,7 +276,6 @@ class RuzodbApp(APIApplication):
         Args:
             base_id: The ID of the base.
             title: The display title for the new table.
-            table_name: The physical database table name (optional).
             columns: A list of column definitions to create immediately with the table.
                      Each column dict should specify 'title' and 'uidt' (or 'type').
 
@@ -323,7 +289,7 @@ class RuzodbApp(APIApplication):
                      - System: 'CreatedTime', 'LastModifiedTime', 'CreatedBy', 'LastModifiedBy'
 
         Returns:
-            dict: The created table object containing 'id', 'title', 'fields', etc.
+            dict: The created table object containing 'id', 'title', 'fields', 'public_view_url' which is the shareable url of the table.
 
         Raises:
             HTTPError: If the API request fails (e.g., 400 Bad Request if fields are invalid).
@@ -349,10 +315,13 @@ class RuzodbApp(APIApplication):
                 new_col["type"] = new_col["uidt"]
             fields_payload.append(new_col)
 
-        data = {"title": title, "table_name": table_name or title, "fields": fields_payload, **kwargs}
+        data = {"title": title, "fields": fields_payload, **kwargs}
         response = await self._apost(url, data=data)
         response.raise_for_status()
-        return response.json()
+        result = response.json()
+        url = await self.create_shared_view(base_id=base_id, table_id=result["id"], view_id=result["views"][0]["id"])
+        result["public_view_url"] = url["shareable_url"]
+        return result
 
     async def delete_table(self, base_id: str, table_id: str) -> dict[str, Any]:
         """
@@ -719,7 +688,6 @@ class RuzodbApp(APIApplication):
             self.list_tables,
             self.list_views,
             self.create_shared_view,
-            self.get_shared_view,
             self.delete_shared_view,
             self.create_table,
             self.delete_table,
