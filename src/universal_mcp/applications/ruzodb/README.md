@@ -15,6 +15,9 @@ This is automatically generated from OpenAPI schema for the RuzodbApp API.
 | `update_base` | Update a base's metadata. |
 | `delete_base` | Delete a base. |
 | `list_tables` | List all tables in a specific base. |
+| `list_views` | List all views for a specific table. |
+| `create_shared_view` | Create a shared (public) view for a table view and get a shareable link. |
+| `delete_shared_view` | Delete (unshare) a shared view. |
 | `create_table` | Create a new table in a specific base with optional initial columns. |
 | `delete_table` | Delete a table by its ID from a specific base. |
 | `create_column` | Create a new column (field) in an existing table. |
