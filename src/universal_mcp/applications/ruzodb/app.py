@@ -177,6 +177,25 @@ class RuzodbApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
+    async def get_table(self, base_id: str, table_id: str) -> dict[str, Any]:
+        """
+        Get the schema and metadata of a specific table.
+
+        Args:
+            base_id: The ID of the base.
+            table_id: The ID of the table.
+
+        Returns:
+            dict: The table object containing schema details.
+
+        Tags:
+            read, get, table, meta
+        """
+        url = f"{self.base_url}/api/v3/meta/bases/{base_id}/tables/{table_id}"
+        response = await self._aget(url)
+        response.raise_for_status()
+        return response.json()
+
     async def list_views(self, base_id: str, table_id: str) -> dict[str, Any]:
         """
         List all views for a specific table.
@@ -268,10 +287,16 @@ class RuzodbApp(APIApplication):
         return response.json()
 
     async def create_table(
-        self, base_id: str, title: str, columns: List[dict[str, Any]] = None, **kwargs
+        self,
+        base_id: str,
+        title: str,
+        columns: List[dict[str, Any]] = None,
+        description: str = None,
+        meta: dict[str, Any] = None,
+        **kwargs
     ) -> dict[str, Any]:
         """
-        Create a new table in a specific base with optional initial columns.
+        Create a new table in a specific base with optional initial columns, description and metadata.
 
         Args:
             base_id: The ID of the base.
@@ -287,6 +312,9 @@ class RuzodbApp(APIApplication):
                      - Selects: 'SingleSelect', 'MultiSelect' (Requires 'dtxp' options string, e.g., 'Option1,Option2')
                      - Specialized: 'Formula', 'Rollup', 'Lookup', 'Attachment', 'JSON', 'Geometry'
                      - System: 'CreatedTime', 'LastModifiedTime', 'CreatedBy', 'LastModifiedBy'
+            description: Optional description for the table.
+            meta: Optional metadata for the table (e.g. icon, color).
+            **kwargs: Additional fields for table creation.
 
         Returns:
             dict: The created table object containing 'id', 'title', 'fields', 'public_view_url' which is the shareable url of the table.
@@ -298,6 +326,7 @@ class RuzodbApp(APIApplication):
             await app.create_table(
                 base_id="base123",
                 title="Customers",
+                description="Customer data",
                 columns=[
                     {'title': 'Name', 'uidt': 'SingleLineText'},
                     {'title': 'Status', 'uidt': 'SingleSelect', 'dtxp': 'Active,Inactive'}
@@ -316,12 +345,61 @@ class RuzodbApp(APIApplication):
             fields_payload.append(new_col)
 
         data = {"title": title, "fields": fields_payload, **kwargs}
+        if description:
+            data["description"] = description
+        if meta:
+            data["meta"] = meta
+
         response = await self._apost(url, data=data)
         response.raise_for_status()
         result = response.json()
-        url = await self.create_shared_view(base_id=base_id, table_id=result["id"], view_id=result["views"][0]["id"])
-        result["public_view_url"] = url["shareable_url"]
+        
+        # Only create shared view if views exist in response (usually they do)
+        if "views" in result and result["views"]:
+            url = await self.create_shared_view(base_id=base_id, table_id=result["id"], view_id=result["views"][0]["id"])
+            result["public_view_url"] = url["shareable_url"]
+            
         return result
+
+    async def update_table(
+        self,
+        base_id: str,
+        table_id: str,
+        title: str = None,
+        description: str = None,
+        meta: dict[str, Any] = None,
+        **kwargs
+    ) -> dict[str, Any]:
+        """
+        Update a table's metadata (title, description, etc.).
+
+        Args:
+            base_id: The ID of the base.
+            table_id: The ID of the table to update.
+            title: New title for the table (optional).
+            description: New description for the table (optional).
+            meta: New metadata (e.g., icon) for the table (optional).
+            **kwargs: Additional fields to update.
+
+        Returns:
+            dict: The updated table object or confirmation.
+
+        Tags:
+            update, table, meta
+        """
+        url = f"{self.base_url}/api/v3/meta/bases/{base_id}/tables/{table_id}"
+        
+        data = {**kwargs}
+        if title:
+            data["title"] = title
+        if description:
+            data["description"] = description
+        if meta:
+            data["meta"] = meta
+            
+        response = await self._apatch(url, data=data)
+        response.raise_for_status()
+        return response.json()
 
     async def delete_table(self, base_id: str, table_id: str) -> dict[str, Any]:
         """
@@ -690,6 +768,8 @@ class RuzodbApp(APIApplication):
             self.create_shared_view,
             self.delete_shared_view,
             self.create_table,
+            self.update_table,
+            self.get_table,
             self.delete_table,
             self.create_column,
             self.delete_column,
