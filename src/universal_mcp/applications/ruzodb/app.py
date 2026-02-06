@@ -196,96 +196,6 @@ class RuzodbApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    async def list_views(self, base_id: str, table_id: str) -> dict[str, Any]:
-        """
-        List all views for a specific table.
-
-        Args:
-            base_id: The ID of the base (not used in V2 API, kept for compatibility).
-            table_id: The ID of the table.
-
-        Returns:
-            dict: Dictionary with 'list' (array of views).
-
-        Tags:
-            read, list, view, meta
-        """
-        # Views API uses V2, not V3
-        url = f"{self.base_url}/api/v2/meta/tables/{table_id}/views"
-        response = await self._aget(url)
-        response.raise_for_status()
-        return response.json()
-
-    async def create_shared_view(
-        self,
-        base_id: str,
-        table_id: str,
-        view_id: str,
-        password: str = None,
-        **kwargs
-    ) -> dict[str, Any]:
-        """
-        Create a shared (public) view for a table view and get a shareable link.
-
-        Args:
-            base_id: The ID of the base (not used in V2 API, kept for compatibility).
-            table_id: The ID of the table (not used in V2 API, kept for compatibility).
-            view_id: The ID of the view to share.
-            password: Optional password to protect the shared view.
-            **kwargs: Additional sharing options (e.g., meta, survey_mode, etc.).
-
-        Returns:
-            dict: The shared view object containing 'uuid' and shareable URL.
-                  The shareable URL format: {base_url}/nc/view/{uuid}
-
-        Raises:
-            HTTPError: If shared view creation fails.
-
-        Tags:
-            create, share, view, meta
-        """
-        # Shared views API uses V2, not V3
-        url = f"{self.base_url}/api/v2/meta/views/{view_id}/share"
-        data = {**kwargs}
-        if password:
-            data["password"] = password
-
-        response = await self._apost(url, data=data)
-        response.raise_for_status()
-        result = response.json()
-
-        # Add the shareable URL to the result for convenience
-        if "uuid" in result:
-            result["shareable_url"] = f"{self.base_url}/dashboard/#/nc/view/{result['uuid']}"
-
-        return result
-
-    async def delete_shared_view(
-        self,
-        base_id: str,
-        table_id: str,
-        view_id: str
-    ) -> dict[str, Any]:
-        """
-        Delete (unshare) a shared view.
-
-        Args:
-            base_id: The ID of the base (not used in V2 API, kept for compatibility).
-            table_id: The ID of the table (not used in V2 API, kept for compatibility).
-            view_id: The ID of the view to unshare.
-
-        Returns:
-            dict: The deletion confirmation.
-
-        Tags:
-            delete, share, view, meta
-        """
-        # Shared views API uses V2, not V3
-        url = f"{self.base_url}/api/v2/meta/views/{view_id}/share"
-        response = await self._adelete(url)
-        response.raise_for_status()
-        return response.json()
-
     async def create_table(
         self,
         base_id: str,
@@ -419,6 +329,96 @@ class RuzodbApp(APIApplication):
             delete, table, meta, destructive
         """
         url = f"{self.base_url}/api/v3/meta/bases/{base_id}/tables/{table_id}"
+        response = await self._adelete(url)
+        response.raise_for_status()
+        return response.json()
+
+    async def list_views(self, base_id: str, table_id: str) -> dict[str, Any]:
+        """
+        List all views for a specific table.
+
+        Args:
+            base_id: The ID of the base (not used in V2 API, kept for compatibility).
+            table_id: The ID of the table.
+
+        Returns:
+            dict: Dictionary with 'list' (array of views).
+
+        Tags:
+            read, list, view, meta
+        """
+        # Views API uses V2, not V3
+        url = f"{self.base_url}/api/v2/meta/tables/{table_id}/views"
+        response = await self._aget(url)
+        response.raise_for_status()
+        return response.json()
+
+    async def create_shared_view(
+        self,
+        base_id: str,
+        table_id: str,
+        view_id: str,
+        password: str = None,
+        **kwargs
+    ) -> dict[str, Any]:
+        """
+        Create a shared (public) view for a table view and get a shareable link.
+
+        Args:
+            base_id: The ID of the base (not used in V2 API, kept for compatibility).
+            table_id: The ID of the table (not used in V2 API, kept for compatibility).
+            view_id: The ID of the view to share.
+            password: Optional password to protect the shared view.
+            **kwargs: Additional sharing options (e.g., meta, survey_mode, etc.).
+
+        Returns:
+            dict: The shared view object containing 'uuid' and shareable URL.
+                  The shareable URL format: {base_url}/nc/view/{uuid}
+
+        Raises:
+            HTTPError: If shared view creation fails.
+
+        Tags:
+            create, share, view, meta
+        """
+        # Shared views API uses V2, not V3
+        url = f"{self.base_url}/api/v2/meta/views/{view_id}/share"
+        data = {**kwargs}
+        if password:
+            data["password"] = password
+
+        response = await self._apost(url, data=data)
+        response.raise_for_status()
+        result = response.json()
+
+        # Add the shareable URL to the result for convenience
+        if "uuid" in result:
+            result["shareable_url"] = f"{self.base_url}/dashboard/#/nc/view/{result['uuid']}"
+
+        return result
+
+    async def delete_shared_view(
+        self,
+        base_id: str,
+        table_id: str,
+        view_id: str
+    ) -> dict[str, Any]:
+        """
+        Delete (unshare) a shared view.
+
+        Args:
+            base_id: The ID of the base (not used in V2 API, kept for compatibility).
+            table_id: The ID of the table (not used in V2 API, kept for compatibility).
+            view_id: The ID of the view to unshare.
+
+        Returns:
+            dict: The deletion confirmation.
+
+        Tags:
+            delete, share, view, meta
+        """
+        # Shared views API uses V2, not V3
+        url = f"{self.base_url}/api/v2/meta/views/{view_id}/share"
         response = await self._adelete(url)
         response.raise_for_status()
         return response.json()
@@ -764,13 +764,13 @@ class RuzodbApp(APIApplication):
             self.update_base,
             self.delete_base,
             self.list_tables,
-            self.list_views,
-            self.create_shared_view,
-            self.delete_shared_view,
             self.create_table,
             self.update_table,
             self.get_table,
             self.delete_table,
+            self.list_views,
+            self.create_shared_view,
+            self.delete_shared_view,
             self.create_column,
             self.delete_column,
             self.list_records,
