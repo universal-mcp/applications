@@ -263,12 +263,6 @@ class RuzodbApp(APIApplication):
         response = await self._apost(url, data=data)
         response.raise_for_status()
         result = response.json()
-        
-        # Only create shared view if views exist in response (usually they do)
-        if "views" in result and result["views"]:
-            url = await self.create_shared_view(base_id=base_id, table_id=result["id"], view_id=result["views"][0]["id"])
-            result["public_view_url"] = url["shareable_url"]
-            
         return result
 
     async def update_table(
@@ -422,6 +416,39 @@ class RuzodbApp(APIApplication):
         response = await self._adelete(url)
         response.raise_for_status()
         return response.json()
+
+    async def share_base(self, base_id: str) -> dict[str, Any]:
+        """
+        Enable shared base link (using V1 API).
+
+        Args:
+            base_id: The ID of the base (project).
+
+        Returns:
+            dict: The shared base object containing 'uuid' and corrected 'url'.
+
+        Tags:
+            create, share, base, meta
+        """
+        # User requested V1 endpoint for sharing base
+        url = f"{self.base_url}/api/v1/db/meta/projects/{base_id}/shared"
+        
+        # PATCH request with empty body
+        response = await self._apatch(url, data={})
+        response.raise_for_status()
+        result = response.json()
+        
+        # Logic to fix the URL: remove 'nc' and replace 'null' with uuid
+        # Target format: {base_url}/#/base/{uuid}
+        if "uuid" in result:
+             clean_base_url = self.base_url.rstrip("/")
+             # Ensure we don't have /nc in base_url if it was passed that way, 
+             # but assuming standard base_url "https://nocodb.agentr.dev"
+             new_url = f"{clean_base_url}/#/base/{result['uuid']}"
+             result["url"] = new_url
+             result["shareable_url"] = new_url
+             
+        return result
 
     async def create_column(
         self, base_id: str, table_id: str, title: str, uidt: RuzodbFieldType = "SingleLineText", column_name: str = None, **kwargs
@@ -637,8 +664,12 @@ class RuzodbApp(APIApplication):
         response.raise_for_status()
         res_json = response.json()
 
-        if is_bulk and isinstance(res_json, dict) and "records" in res_json:
-            return res_json["records"]
+        if isinstance(res_json, dict) and "records" in res_json:
+            records = res_json["records"]
+            if is_bulk:
+                return records
+            elif records:
+                return records[0]
 
         return res_json
 
@@ -780,4 +811,5 @@ class RuzodbApp(APIApplication):
             self.delete_records,
             self.get_record_count,
             self.find_existing_values,
+            self.share_base,
         ]

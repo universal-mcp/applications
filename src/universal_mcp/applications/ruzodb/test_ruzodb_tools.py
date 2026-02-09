@@ -7,42 +7,27 @@ integration = AgentrIntegration(client=client, name="ruzodb")
 app = RuzodbApp(integration=integration)
 
 async def main():
-    base_id = "prx1mkflfxn86fg"
+    base_id = "ptavpu80q5x0pv4"
     
-    # 1. Create table with description
-    print("Creating table...")
-    table = await app.create_table(
-        base_id=base_id, 
-        title="Test Table", 
-        description="Initial description"
-    )
-    table_id = table["id"]
-    print(f"Created table: {table_id}")
-
-    # 2. Verify description using get_table
-    print("Verifying initial state...")
-    fetched_table = await app.get_table(base_id=base_id, table_id=table_id)
-    print(f"Initial Title: {fetched_table.get('title')}")
-    print(f"Initial Description: {fetched_table.get('description')}")
-
-    # 3. Update table (Title only)
-    print("Updating title...")
-    await app.update_table(base_id=base_id, table_id=table_id, title="Updated Title")
-    
-    # 4. Update table (Description only)
-    print("Updating description...")
-    await app.update_table(base_id=base_id, table_id=table_id, description="Updated description")
-
-    # 5. Verify updates
-    print("Verifying updates...")
-    updated_table = await app.get_table(base_id=base_id, table_id=table_id)
-    print(f"Updated Title: {updated_table.get('title')}")
-    print(f"Updated Description: {updated_table.get('description')}")
-    
-    # 6. Cleanup
-    print("Cleaning up...")
-    await app.delete_table(base_id=base_id, table_id=table_id)
-    print("Table deleted.")
+    print(f"Testing share_base for base: {base_id}")
+    try:
+        result = await app.share_base(base_id=base_id)
+        print("Share Base Result:")
+        print(result)
+        
+        # Verify URL format logic
+        if "url" in result and "shareable_url" in result:
+            print(f"Original URL (implied): {result.get('url')}")
+            print(f"Shareable URL: {result['shareable_url']}")
+            
+            # Simple check
+            if "/nc" not in result['shareable_url'] and "/#/base/" in result['shareable_url']:
+                print("URL format check: PASS")
+            else:
+                print("URL format check: FAIL")
+                
+    except Exception as e:
+        print(f"Error: {e}")
 
 if __name__ == "__main__":  
     asyncio.run(main())
