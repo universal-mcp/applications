@@ -59,102 +59,11 @@ class RuzodbApp(APIApplication):
         token = credentials.get("token") or credentials.get("xc-token")
         return {"xc-token": token, "Content-Type": "application/json"}
 
-    # ==================== Meta Operations (V3) ====================
-
-    async def list_bases(self) -> dict[str, Any]:
-        """
-        List all bases in a specific workspace.
-
-        Returns:
-            dict: Dictionary with 'list' (array of bases).
-
-        Tags:
-            read, list, base, meta
-        """
-        workspace_id = await self._get_workspace_id()
-        url = f"{self.base_url}/api/v3/meta/workspaces/{workspace_id}/bases"
-        response = await self._aget(url)
+    def _raise_for_status(self, response):
+        if response.status_code >= 400:
+            print(f"Error {response.status_code}: {response.text}")
         response.raise_for_status()
-        return response.json()
 
-    async def get_base(self, base_id: str) -> dict[str, Any]:
-        """
-        Get details of a specific base.
-
-        Args:
-            base_id: The ID of the base.
-
-        Returns:
-            dict: The base object.
-
-        Tags:
-            read, get, base, meta
-        """
-        url = f"{self.base_url}/api/v3/meta/bases/{base_id}"
-        response = await self._aget(url)
-        response.raise_for_status()
-        return response.json()
-
-    async def create_base(self, title: str, type: str = "documentation", **kwargs) -> dict[str, Any]:
-        """
-        Create a new base in a specific workspace.
-
-        Args:
-            title: The title of the new base.
-            type: Type of the base (default: 'documentation').
-
-        Returns:
-            dict: The created base object.
-
-        Raises:
-            HTTPError: If creation fails.
-
-        Tags:
-            create, base, meta
-        """
-        workspace_id = await self._get_workspace_id()
-        url = f"{self.base_url}/api/v3/meta/workspaces/{workspace_id}/bases"
-        data = {"title": title, "type": type, **kwargs}
-        response = await self._apost(url, data=data)
-        response.raise_for_status()
-        return response.json()
-
-    async def update_base(self, base_id: str, **kwargs) -> dict[str, Any]:
-        """
-        Update a base's metadata.
-
-        Args:
-            base_id: The ID of the base to update.
-            **kwargs: Fields to update (e.g., title, color, etc.).
-
-        Returns:
-            dict: The updated base object.
-
-        Tags:
-            update, base, meta
-        """
-        url = f"{self.base_url}/api/v3/meta/bases/{base_id}"
-        response = await self._apatch(url, data=kwargs)
-        response.raise_for_status()
-        return response.json()
-
-    async def delete_base(self, base_id: str) -> dict[str, Any]:
-        """
-        Delete a base.
-
-        Args:
-            base_id: The ID of the base to delete.
-
-        Returns:
-            dict: The deletion confirmation.
-
-        Tags:
-            delete, base, meta, destructive
-        """
-        url = f"{self.base_url}/api/v3/meta/bases/{base_id}"
-        response = await self._adelete(url)
-        response.raise_for_status()
-        return response.json()
 
     async def list_tables(self, base_id: str, limit: int = 50, offset: int = 0) -> dict[str, Any]:
         """
@@ -174,7 +83,7 @@ class RuzodbApp(APIApplication):
         url = f"{self.base_url}/api/v3/meta/bases/{base_id}/tables"
         params = {"limit": limit, "offset": offset}
         response = await self._aget(url, params=params)
-        response.raise_for_status()
+        self._raise_for_status(response)
         return response.json()
 
     async def get_table(self, base_id: str, table_id: str) -> dict[str, Any]:
@@ -193,7 +102,7 @@ class RuzodbApp(APIApplication):
         """
         url = f"{self.base_url}/api/v3/meta/bases/{base_id}/tables/{table_id}"
         response = await self._aget(url)
-        response.raise_for_status()
+        self._raise_for_status(response)
         return response.json()
 
     async def create_table(
@@ -261,7 +170,7 @@ class RuzodbApp(APIApplication):
             data["meta"] = meta
 
         response = await self._apost(url, data=data)
-        response.raise_for_status()
+        self._raise_for_status(response)
         result = response.json()
         return result
 
@@ -302,7 +211,7 @@ class RuzodbApp(APIApplication):
             data["meta"] = meta
             
         response = await self._apatch(url, data=data)
-        response.raise_for_status()
+        self._raise_for_status(response)
         return response.json()
 
     async def delete_table(self, base_id: str, table_id: str) -> dict[str, Any]:
@@ -324,131 +233,8 @@ class RuzodbApp(APIApplication):
         """
         url = f"{self.base_url}/api/v3/meta/bases/{base_id}/tables/{table_id}"
         response = await self._adelete(url)
-        response.raise_for_status()
+        self._raise_for_status(response)
         return response.json()
-
-    async def list_views(self, base_id: str, table_id: str) -> dict[str, Any]:
-        """
-        List all views for a specific table.
-
-        Args:
-            base_id: The ID of the base (not used in V2 API, kept for compatibility).
-            table_id: The ID of the table.
-
-        Returns:
-            dict: Dictionary with 'list' (array of views).
-
-        Tags:
-            read, list, view, meta
-        """
-        # Views API uses V2, not V3
-        url = f"{self.base_url}/api/v2/meta/tables/{table_id}/views"
-        response = await self._aget(url)
-        response.raise_for_status()
-        return response.json()
-
-    async def create_shared_view(
-        self,
-        base_id: str,
-        table_id: str,
-        view_id: str,
-        password: str = None,
-        **kwargs
-    ) -> dict[str, Any]:
-        """
-        Create a shared (public) view for a table view and get a shareable link.
-
-        Args:
-            base_id: The ID of the base (not used in V2 API, kept for compatibility).
-            table_id: The ID of the table (not used in V2 API, kept for compatibility).
-            view_id: The ID of the view to share.
-            password: Optional password to protect the shared view.
-            **kwargs: Additional sharing options (e.g., meta, survey_mode, etc.).
-
-        Returns:
-            dict: The shared view object containing 'uuid' and shareable URL.
-                  The shareable URL format: {base_url}/nc/view/{uuid}
-
-        Raises:
-            HTTPError: If shared view creation fails.
-
-        Tags:
-            create, share, view, meta
-        """
-        # Shared views API uses V2, not V3
-        url = f"{self.base_url}/api/v2/meta/views/{view_id}/share"
-        data = {**kwargs}
-        if password:
-            data["password"] = password
-
-        response = await self._apost(url, data=data)
-        response.raise_for_status()
-        result = response.json()
-
-        # Add the shareable URL to the result for convenience
-        if "uuid" in result:
-            result["shareable_url"] = f"{self.base_url}/dashboard/#/nc/view/{result['uuid']}"
-
-        return result
-
-    async def delete_shared_view(
-        self,
-        base_id: str,
-        table_id: str,
-        view_id: str
-    ) -> dict[str, Any]:
-        """
-        Delete (unshare) a shared view.
-
-        Args:
-            base_id: The ID of the base (not used in V2 API, kept for compatibility).
-            table_id: The ID of the table (not used in V2 API, kept for compatibility).
-            view_id: The ID of the view to unshare.
-
-        Returns:
-            dict: The deletion confirmation.
-
-        Tags:
-            delete, share, view, meta
-        """
-        # Shared views API uses V2, not V3
-        url = f"{self.base_url}/api/v2/meta/views/{view_id}/share"
-        response = await self._adelete(url)
-        response.raise_for_status()
-        return response.json()
-
-    async def share_base(self, base_id: str) -> dict[str, Any]:
-        """
-        Enable shared base link (using V1 API).
-
-        Args:
-            base_id: The ID of the base (project).
-
-        Returns:
-            dict: The shared base object containing 'uuid' and corrected 'url'.
-
-        Tags:
-            create, share, base, meta
-        """
-        # User requested V1 endpoint for sharing base
-        url = f"{self.base_url}/api/v1/db/meta/projects/{base_id}/shared"
-        
-        # PATCH request with empty body
-        response = await self._apatch(url, data={})
-        response.raise_for_status()
-        result = response.json()
-        
-        # Logic to fix the URL: remove 'nc' and replace 'null' with uuid
-        # Target format: {base_url}/#/base/{uuid}
-        if "uuid" in result:
-             clean_base_url = self.base_url.rstrip("/")
-             # Ensure we don't have /nc in base_url if it was passed that way, 
-             # but assuming standard base_url "https://nocodb.agentr.dev"
-             new_url = f"{clean_base_url}/#/base/{result['uuid']}"
-             result["url"] = new_url
-             result["shareable_url"] = new_url
-             
-        return result
 
     async def create_column(
         self, base_id: str, table_id: str, title: str, uidt: RuzodbFieldType = "SingleLineText", column_name: str = None, **kwargs
@@ -492,7 +278,7 @@ class RuzodbApp(APIApplication):
             **kwargs,
         }
         response = await self._apost(url, data=data)
-        response.raise_for_status()
+        self._raise_for_status(response)
         return response.json()
 
     async def delete_column(self, base_id: str, table_id: str, column_id: str) -> dict[str, Any]:
@@ -515,7 +301,7 @@ class RuzodbApp(APIApplication):
         """
         url = f"{self.base_url}/api/v3/meta/bases/{base_id}/tables/{table_id}/fields/{column_id}"
         response = await self._adelete(url)
-        response.raise_for_status()
+        self._raise_for_status(response)
         return response.json()
 
     # ==================== Data Operations (V3) ====================
@@ -556,10 +342,21 @@ class RuzodbApp(APIApplication):
         if fields:
             params["fields"] = ",".join(fields)
         if sort:
-            params["sort"] = ",".join(sort)
+            # NocoDB V3 expects sort as JSON string: [{"field": "column_name", "direction": "asc|desc"}]
+            sort_list = []
+            for s in sort:
+                direction = "asc"
+                field = s
+                if s.startswith("-"):
+                    direction = "desc"
+                    field = s[1:]
+                sort_list.append({"field": field, "direction": direction})
+            import json
+            params["sort"] = json.dumps(sort_list)
+            
         params = {k: v for k, v in params.items() if v is not None}
         response = await self._aget(url, params=params)
-        response.raise_for_status()
+        self._raise_for_status(response)
         return response.json()
 
     async def create_records(
@@ -592,19 +389,38 @@ class RuzodbApp(APIApplication):
             if "fields" not in data:
                 payload = {"fields": data}
 
-        response = await self._apost(url, data=payload)
-        response.raise_for_status()
-        res_json = response.json()
+        chunk_size = 10
+        all_records = []
+        
+        # If not bulk, payload is a dict, just make one call
+        if not is_bulk:
+            response = await self._apost(url, data=payload)
+            self._raise_for_status(response)
+            res_json = response.json()
+            if isinstance(res_json, dict) and "records" in res_json:
+                 # It's a single record creation but wrapped in records list sometimes? 
+                 # Actually single creation usually returns the record directly or a list of 1.
+                 # Let's keep existing logic for single record but use new flow.
+                 pass
+            return res_json
 
-        # Normalize response
-        if isinstance(res_json, dict) and "records" in res_json:
-            records = res_json["records"]
-            if is_bulk:
-                return records
-            elif records:
-                return records[0]
+        # Bulk creation
+        for i in range(0, len(payload), chunk_size):
+            chunk = payload[i : i + chunk_size]
+            response = await self._apost(url, data=chunk)
+            self._raise_for_status(response)
+            res_json = response.json()
+            
+            if isinstance(res_json, dict) and "records" in res_json:
+                all_records.extend(res_json["records"])
+            elif isinstance(res_json, list):
+                all_records.extend(res_json)
+            else:
+                # Unexpected format, maybe just append the whole thing?
+                # Or if it's a single object, append it.
+                all_records.append(res_json)
 
-        return res_json
+        return all_records
 
     async def get_record(self, base_id: str, table_id: str, record_id: str, fields: List[str] = None) -> dict[str, Any]:
         """
@@ -627,7 +443,7 @@ class RuzodbApp(APIApplication):
         if fields:
             params["fields"] = ",".join(fields)
         response = await self._aget(url, params=params)
-        response.raise_for_status()
+        self._raise_for_status(response)
         return response.json()
 
     async def update_records(
@@ -660,18 +476,28 @@ class RuzodbApp(APIApplication):
         is_bulk = isinstance(data, list)
         payload = [wrap(i) for i in data] if is_bulk else wrap(data)
 
-        response = await self._apatch(url, data=payload)
-        response.raise_for_status()
-        res_json = response.json()
+        if not is_bulk:
+            response = await self._apatch(url, data=payload)
+            self._raise_for_status(response)
+            return response.json()
 
-        if isinstance(res_json, dict) and "records" in res_json:
-            records = res_json["records"]
-            if is_bulk:
-                return records
-            elif records:
-                return records[0]
+        chunk_size = 10
+        all_records = []
 
-        return res_json
+        for i in range(0, len(payload), chunk_size):
+            chunk = payload[i : i + chunk_size]
+            response = await self._apatch(url, data=chunk)
+            self._raise_for_status(response)
+            res_json = response.json()
+
+            if isinstance(res_json, dict) and "records" in res_json:
+                all_records.extend(res_json["records"])
+            elif isinstance(res_json, list):
+                all_records.extend(res_json)
+            else:
+                all_records.append(res_json)
+
+        return all_records
 
     async def delete_records(self, base_id: str, table_id: str, record_ids: List[dict[str, Any]] | dict[str, Any]) -> dict[str, Any]:
         """
@@ -700,10 +526,22 @@ class RuzodbApp(APIApplication):
         if isinstance(record_ids, (int, str)):
             payload = [{"id": record_ids}]
 
+        chunk_size = 10
+        results = []
+        
         async with self.get_async_client() as client:
-            response = await client.request("DELETE", url, json=payload)
-        response.raise_for_status()
-        return response.json()
+            for i in range(0, len(payload), chunk_size):
+                chunk = payload[i : i + chunk_size]
+                response = await client.request("DELETE", url, json=chunk)
+                
+                if response.status_code >= 400:
+                    self._raise_for_status(response)
+                    
+                results.append(response.json())
+                
+        # Return the last result or a consolidated one. 
+        # For simplicity returning the last one or the first if available.
+        return results[-1] if results else {}
 
     async def get_record_count(self, base_id: str, table_id: str, view_id: str = None, where: str = None) -> dict[str, Any]:
         """
@@ -726,10 +564,10 @@ class RuzodbApp(APIApplication):
         params = {"viewId": view_id, "where": where}
         params = {k: v for k, v in params.items() if v is not None}
         response = await self._aget(url, params=params)
-        response.raise_for_status()
+        self._raise_for_status(response)
         return response.json()
 
-    async def find_existing_values(
+    async def find_duplicates(
         self, base_id: str, table_id: str, field_name: str, values: List[str | int | float | bool], view_id: str = None
     ) -> List[dict[str, Any]]:
         """
@@ -771,7 +609,7 @@ class RuzodbApp(APIApplication):
                 view_id=view_id,
                 where=where_clause,
                 fields=[field_name, "Id", "id"],  # Request ID explicitly to be safe
-                limit=100,
+                limit=1000,
             )
 
             records = results.get("list", []) or results.get("records", [])
@@ -787,21 +625,59 @@ class RuzodbApp(APIApplication):
 
         return existing_values
 
+    async def query_database(
+        self,
+        base_id: str,
+        table_id: str,
+        filter: str = None,
+        sort: List[str] = None,
+        fields: List[str] = None,
+        limit: int = 25,
+        offset: int = 0,
+        view_id: str = None,
+    ) -> List[dict[str, Any]]:
+        """
+        Query the database table with flexible filtering, sorting, and field selection.
+        This is a powerful general-purpose tool for retrieving specific data.
+
+        Args:
+            base_id: The ID of the base.
+            table_id: The ID of the table.
+            filter: NocoDB filter syntax (e.g., "(Name,eq,John)").
+                    Use logical operators like ~or, ~and.
+            sort: List of fields to sort by (e.g., ["-CreatedAt", "Name"]).
+            fields: List of specific field names to retrieve.
+            limit: Number of records to return (default: 25).
+            offset: Number of records to skip (default: 0).
+            view_id: Optional View ID to scope the query.
+
+        Returns:
+            List[dict]: A list of records matching the query.
+            
+        Tags:
+            read, query, search, filter, data
+        """
+        # Map generic 'filter' arg to NocoDB 'where' param
+        response = await self.list_records(
+            base_id=base_id,
+            table_id=table_id,
+            where=filter,
+            sort=sort,
+            fields=fields,
+            limit=limit,
+            offset=offset,
+            view_id=view_id,
+        )
+        # Handle V3 response structure
+        return response.get("list", []) or response.get("records", [])
+
     def list_tools(self):
         return [
-            self.list_bases,
-            self.get_base,
-            self.create_base,
-            self.update_base,
-            self.delete_base,
             self.list_tables,
             self.create_table,
             self.update_table,
             self.get_table,
             self.delete_table,
-            self.list_views,
-            self.create_shared_view,
-            self.delete_shared_view,
             self.create_column,
             self.delete_column,
             self.list_records,
@@ -810,6 +686,6 @@ class RuzodbApp(APIApplication):
             self.update_records,
             self.delete_records,
             self.get_record_count,
-            self.find_existing_values,
-            self.share_base,
+            self.find_duplicates,
+            self.query_database,
         ]
