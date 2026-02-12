@@ -362,7 +362,7 @@ class RuzodbApp(APIApplication):
                   - Bulk input (list): Returns a list of record objects [{'id': ..., 'fields': {...}}, ...]
 
         Tags:
-            create, data, records, batch
+            create, data, records, batch, important
         """
         base_id = await self._get_base_id()
 
