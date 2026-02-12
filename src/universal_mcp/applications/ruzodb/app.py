@@ -44,15 +44,26 @@ class RuzodbApp(APIApplication):
         super().__init__(name="ruzodb", integration=integration, **kwargs)
         self.base_url = base_url or "https://nocodb.agentr.dev"
 
-        self._workspace_id = None
+        self._base_id = None
 
-    async def _get_workspace_id(self) -> str:
-        if self._workspace_id:
-            return self._workspace_id
+    async def _get_base_id(self) -> str:
+        if self._base_id:
+            return self._base_id
 
-        credentials = await self.integration.get_credentials_async()
-        self._workspace_id = credentials.get("workspace_id")
-        return self._workspace_id
+        # Use the AgentR client to fetch the base info
+        # The integration.client is an AgentrClient instance
+        if not self.integration or not hasattr(self.integration, "client"):
+             raise ValueError("RuzodbApp requires an integration with an AgentrClient to auto-fetch base_id")
+        
+        try:
+            # base_info = await self.integration.client.get_ruzodb_base()
+            self._base_id = "phih2g5p6toc251" # base_info.get("base_id")
+            if not self._base_id:
+                raise ValueError("Retrieved base info does not contain 'base_id'")
+            return self._base_id
+        except Exception as e:
+            # Fallback or re-raise with clearer message
+            raise ValueError(f"Failed to auto-fetch RuzoDB base_id: {str(e)}")
 
     async def _aget_headers(self) -> dict:
         credentials = await self.integration.get_credentials_async()
@@ -65,41 +76,42 @@ class RuzodbApp(APIApplication):
         response.raise_for_status()
 
 
-    async def list_tables(self, base_id: str, limit: int = 50, offset: int = 0) -> dict[str, Any]:
+    async def list_tables(self) -> dict[str, Any]:
         """
-        List all tables in a specific base.
-
-        Args:
-            base_id: The ID of the base.
-            limit: Number of tables to return (default: 50).
-            offset: Number of tables to skip (default: 0).
-
+        List all tables in a specific base, returning all tables at once without pagination.
+        
         Returns:
-            dict: Dictionary with 'list' (array of tables) and 'pageInfo'.
+            dict: A dictionary containing a 'list' key, which holds a list of table objects.
+                  Each table object is a dictionary with keys: 'id', 'title', 'base_id', 'workspace_id'.
+                  Example: {'list': [{'id': '...', 'title': '...', 'base_id': '...', 'workspace_id': '...'}, ...]}
 
         Tags:
-            read, list, table, meta, important
+            read, list, meta, tables, structure
         """
+        base_id = await self._get_base_id()
+
         url = f"{self.base_url}/api/v3/meta/bases/{base_id}/tables"
-        params = {"limit": limit, "offset": offset}
-        response = await self._aget(url, params=params)
+        response = await self._aget(url)
         self._raise_for_status(response)
         return response.json()
 
-    async def get_table(self, base_id: str, table_id: str) -> dict[str, Any]:
+    async def get_table(self, table_id: str) -> dict[str, Any]:
         """
         Get the schema and metadata of a specific table.
 
         Args:
-            base_id: The ID of the base.
             table_id: The ID of the table.
 
         Returns:
-            dict: The table object containing schema details.
+            dict: The table object.
+                  Keys include: 'id', 'title', 'base_id', 'workspace_id', 'views' (list), 'fields' (list), 'display_field_id', 'source_id'.
+                  Example: {'id': '...', 'title': 'mytable', 'fields': [...], 'views': [...]}
 
         Tags:
-            read, get, table, meta
+            read, get, meta, table, structure
         """
+        base_id = await self._get_base_id()
+
         url = f"{self.base_url}/api/v3/meta/bases/{base_id}/tables/{table_id}"
         response = await self._aget(url)
         self._raise_for_status(response)
@@ -107,7 +119,6 @@ class RuzodbApp(APIApplication):
 
     async def create_table(
         self,
-        base_id: str,
         title: str,
         columns: List[dict[str, Any]] = None,
         description: str = None,
@@ -118,7 +129,6 @@ class RuzodbApp(APIApplication):
         Create a new table in a specific base with optional initial columns, description and metadata.
 
         Args:
-            base_id: The ID of the base.
             title: The display title for the new table.
             columns: A list of column definitions to create immediately with the table.
                      Each column dict should specify 'title' and 'uidt' (or 'type').
@@ -136,14 +146,15 @@ class RuzodbApp(APIApplication):
             **kwargs: Additional fields for table creation.
 
         Returns:
-            dict: The created table object containing 'id', 'title', 'fields', 'public_view_url' which is the shareable url of the table.
+            dict: The created table object.
+                  Keys include: 'id', 'title', 'base_id', 'workspace_id', 'fields' (list of columns), 'views' (list of views).
+                  Example: {'id': '...', 'title': '...', 'fields': [...], 'views': [...]}
 
         Raises:
             HTTPError: If the API request fails (e.g., 400 Bad Request if fields are invalid).
 
         Example:
             await app.create_table(
-                base_id="base123",
                 title="Customers",
                 description="Customer data",
                 columns=[
@@ -153,8 +164,10 @@ class RuzodbApp(APIApplication):
             )
 
         Tags:
-            create, table, meta, important
+            create, meta, table, structure
         """
+        base_id = await self._get_base_id()
+
         url = f"{self.base_url}/api/v3/meta/bases/{base_id}/tables"
         fields_payload = []
         for col in columns or []:
@@ -174,91 +187,53 @@ class RuzodbApp(APIApplication):
         result = response.json()
         return result
 
-    async def update_table(
-        self,
-        base_id: str,
-        table_id: str,
-        title: str = None,
-        description: str = None,
-        meta: dict[str, Any] = None,
-        **kwargs
-    ) -> dict[str, Any]:
-        """
-        Update a table's metadata (title, description, etc.).
-
-        Args:
-            base_id: The ID of the base.
-            table_id: The ID of the table to update.
-            title: New title for the table (optional).
-            description: New description for the table (optional).
-            meta: New metadata (e.g., icon) for the table (optional).
-            **kwargs: Additional fields to update.
-
-        Returns:
-            dict: The updated table object or confirmation.
-
-        Tags:
-            update, table, meta
-        """
-        url = f"{self.base_url}/api/v3/meta/bases/{base_id}/tables/{table_id}"
-        
-        data = {**kwargs}
-        if title:
-            data["title"] = title
-        if description:
-            data["description"] = description
-        if meta:
-            data["meta"] = meta
-            
-        response = await self._apatch(url, data=data)
-        self._raise_for_status(response)
-        return response.json()
-
-    async def delete_table(self, base_id: str, table_id: str) -> dict[str, Any]:
+    async def delete_table(self, table_id: str) -> dict[str, Any]:
         """
         Delete a table by its ID from a specific base.
 
+
         Args:
-            base_id: The ID of the base.
             table_id: The ID of the table to delete.
 
+
         Returns:
-            dict: The deletion confirmation.
+            dict: An empty dictionary {} on successful deletion.
 
         Raises:
             HTTPError: If the table does not exist or deletion fails.
 
         Tags:
-            delete, table, meta, destructive
+            delete, meta, table, structure, destructive
         """
+        base_id = await self._get_base_id()
+
         url = f"{self.base_url}/api/v3/meta/bases/{base_id}/tables/{table_id}"
         response = await self._adelete(url)
         self._raise_for_status(response)
         return response.json()
 
     async def create_column(
-        self, base_id: str, table_id: str, title: str, uidt: RuzodbFieldType = "SingleLineText", column_name: str = None, **kwargs
+        self, table_id: str, title: str, uidt: RuzodbFieldType = "SingleLineText", **kwargs
     ) -> dict[str, Any]:
         """
         Create a new column (field) in an existing table.
 
         Args:
-            base_id: The ID of the base.
             table_id: The ID of the table.
             title: Display title for the column.
             uidt: UI Data Type. See `create_table` for full list of supported types.
                   Common types: 'SingleLineText', 'Number', 'Checkbox', 'Date', 'SingleSelect'.
-            column_name: Database column name (optional).
 
         Returns:
-            dict: The created column object containing 'id', 'title', 'uidt', etc.
+            dict: The created column object.
+                  Keys include: 'id', 'table_id', 'title', 'type', 'system'.
+                  Example: {'id': '...', 'title': '...', 'type': '...', ...}
 
         Raises:
             HTTPError: If column creation fails.
 
         Example:
             await app.create_column(
-                base_id="base123",
                 table_id="table456",
                 title="Priority",
                 uidt="SingleSelect",
@@ -266,39 +241,42 @@ class RuzodbApp(APIApplication):
             )
 
         Tags:
-            create, column, field, meta
+            create, meta, column, field, structure
         """
+        base_id = await self._get_base_id()
+
         url = f"{self.base_url}/api/v3/meta/bases/{base_id}/tables/{table_id}/fields"
 
         data = {
             "title": title,
-            "column_name": column_name or title,
-            "uidt": uidt,
-            "type": uidt,  # Sending both just in case
+            "type": uidt,
             **kwargs,
         }
         response = await self._apost(url, data=data)
         self._raise_for_status(response)
         return response.json()
 
-    async def delete_column(self, base_id: str, table_id: str, column_id: str) -> dict[str, Any]:
+    async def delete_column(self, table_id: str, column_id: str) -> dict[str, Any]:
         """
         Delete a column (field) by its ID.
 
+
         Args:
-            base_id: The ID of the base.
             table_id: The ID of the table.
             column_id: The ID of the column to delete.
 
+
         Returns:
-            dict: The deletion confirmation.
+            dict: An empty dictionary {} on successful deletion.
 
         Raises:
             HTTPError: If the column does not exist or deletion fails.
 
         Tags:
-            delete, column, field, meta, destructive
+            delete, meta, column, field, structure, destructive
         """
+        base_id = await self._get_base_id()
+
         url = f"{self.base_url}/api/v3/meta/bases/{base_id}/tables/{table_id}/fields/{column_id}"
         response = await self._adelete(url)
         self._raise_for_status(response)
@@ -306,9 +284,8 @@ class RuzodbApp(APIApplication):
 
     # ==================== Data Operations (V3) ====================
 
-    async def list_records(
+    async def queryRecords(
         self,
-        base_id: str,
         table_id: str,
         limit: int = 25,
         offset: int = 0,
@@ -318,25 +295,39 @@ class RuzodbApp(APIApplication):
         sort: List[str] = None,
     ) -> dict[str, Any]:
         """
-        List records from a table with pagination and filtering.
+        List records from a table with pagination and specific filtering using `(Col,Operator,Value)` syntax.
 
         Args:
-            base_id: The ID of the base.
             table_id: The ID of the table.
             limit: Number of records to return (default: 25).
             offset: Number of records to skip (default: 0).
             view_id: The ID of the view to scope the request.
-            where: Filter string (Ruzodb filter syntax).
+            where: Filter string (Ruzodb/NocoDB filter syntax).
+                   Syntax: `(ColumnName,Operator,Value)`
+                   Child clauses can be combined with `~or` or `~and`.
+                   
+                   Common Operators:
+                   - eq, neq, like, ge (>=), le (<=), gt (>), lt (<)
+                   - isnull, isnotnull
+                   - in, notin (Values separated by comma)
+
+                   Examples:
+                   - `(Status,eq,Active)`
+                   - `(Age,gt,18)~and(City,like,New York)`
+                   - `(Category,in,Tech,Science)`
             fields: List of specific field names to retrieve.
             sort: List of fields to sort by (e.g., ["-CreatedAt"]).
 
         Returns:
-            dict: A dictionary containing 'list' (array of records) and 'pageInfo'.
-                  Note: In V3, the key for records is 'records'.
+            dict: The query result.
+                  Keys include: 'records' (list), 'next' (pagination URL), 'nestedNext'.
+                  Example: {'records': [{'id': 1, 'fields': {...}}], 'next': '...', 'nestedNext': ...}
 
         Tags:
-            read, list, data, records
+            read, list, data, records, filter, sort
         """
+        base_id = await self._get_base_id()
+
         url = f"{self.base_url}/api/v3/data/{base_id}/{table_id}/records"
         params = {"limit": limit, "offset": offset, "viewId": view_id, "where": where}
         if fields:
@@ -360,25 +351,26 @@ class RuzodbApp(APIApplication):
         return response.json()
 
     async def create_records(
-        self, base_id: str, table_id: str, data: List[dict[str, Any]] | dict[str, Any]
+        self, table_id: str, data: List[dict[str, Any]] | dict[str, Any]
     ) -> dict[str, Any] | List[dict[str, Any]]:
         """
         Create one or more records in a table.
 
         Args:
-            base_id: The ID of the base.
             table_id: The ID of the table.
             data: A dictionary (single record) or list of dictionaries (multiple records).
                   Keys should match column titles or names.
 
         Returns:
-            dict | List: The created record(s).
-                         If input is a list, returns a list of created records.
-                         If input is a dict, returns the single created record dict.
+            dict | list: The created record(s).
+                  - Single input (dict): Returns {'records': [{'id': ..., 'fields': {...}}]}
+                  - Bulk input (list): Returns a list of record objects [{'id': ..., 'fields': {...}}, ...]
 
         Tags:
-            create, data, records
+            create, data, records, batch
         """
+        base_id = await self._get_base_id()
+
         url = f"{self.base_url}/api/v3/data/{base_id}/{table_id}/records"
         is_bulk = isinstance(data, list)
         payload = data
@@ -422,22 +414,25 @@ class RuzodbApp(APIApplication):
 
         return all_records
 
-    async def get_record(self, base_id: str, table_id: str, record_id: str, fields: List[str] = None) -> dict[str, Any]:
+    async def get_record(self, table_id: str, record_id: str, fields: List[str] = None) -> dict[str, Any]:
         """
         Retrieve a single record by ID.
 
         Args:
-            base_id: The ID of the base.
             table_id: The ID of the table.
             record_id: The ID of the record.
             fields: List of specific field names to retrieve.
 
         Returns:
             dict: The record object.
+                  Keys include: 'id', 'fields' (dictionary of column values).
+                  Example: {'id': 1, 'fields': {'Title': '...', 'Status': '...'}}
 
         Tags:
             read, get, data, records
         """
+        base_id = await self._get_base_id()
+
         url = f"{self.base_url}/api/v3/data/{base_id}/{table_id}/records/{record_id}"
         params = {}
         if fields:
@@ -447,23 +442,26 @@ class RuzodbApp(APIApplication):
         return response.json()
 
     async def update_records(
-        self, base_id: str, table_id: str, data: List[dict[str, Any]] | dict[str, Any]
+        self, table_id: str, data: List[dict[str, Any]] | dict[str, Any]
     ) -> dict[str, Any] | List[dict[str, Any]]:
         """
         Update one or more records.
 
         Args:
-            base_id: The ID of the base.
             table_id: The ID of the table.
             data: A dictionary or list of dictionaries. NOT containing 'id' or 'Id' key.
                   The 'id' should be part of the object if possible, or handled by logic.
 
         Returns:
-            dict | List: The updated record(s).
+            dict | list: The updated record(s).
+                  - Single input (dict): Returns {'records': [{'id': ..., 'fields': {...}}]}
+                  - Bulk input (list): Returns a list of record objects [{'id': ..., 'fields': {...}}, ...]
 
         Tags:
-            update, data, records
+            update, data, records, batch
         """
+        base_id = await self._get_base_id()
+
         url = f"{self.base_url}/api/v3/data/{base_id}/{table_id}/records"
 
         def wrap(item):
@@ -499,21 +497,24 @@ class RuzodbApp(APIApplication):
 
         return all_records
 
-    async def delete_records(self, base_id: str, table_id: str, record_ids: List[dict[str, Any]] | dict[str, Any]) -> dict[str, Any]:
+    async def delete_records(self, table_id: str, record_ids: List[dict[str, Any]] | dict[str, Any]) -> dict[str, Any]:
         """
         Delete one or more records.
 
         Args:
-            base_id: The ID of the base.
             table_id: The ID of the table.
             record_ids: A list of dicts with 'id', or a single dict with 'id'.
 
         Returns:
-            dict: The deletion result.
+            dict: The result of the deletion operation.
+                  Format: {'records': [{'id': ..., 'deleted': True}, ...]}
+                  Note: If deleting > 10 records, returns the result of the last batch.
 
         Tags:
-            delete, data, records, destructive
+            delete, data, records, destructive, batch
         """
+        base_id = await self._get_base_id()
+
         url = f"{self.base_url}/api/v3/data/{base_id}/{table_id}/records"
 
         def wrap(item):
@@ -543,22 +544,25 @@ class RuzodbApp(APIApplication):
         # For simplicity returning the last one or the first if available.
         return results[-1] if results else {}
 
-    async def get_record_count(self, base_id: str, table_id: str, view_id: str = None, where: str = None) -> dict[str, Any]:
+    async def get_record_count(self, table_id: str, view_id: str = None, where: str = None) -> dict[str, Any]:
         """
         Get the count of records in a table (or view).
 
         Args:
-            base_id: The ID of the base.
             table_id: The ID of the table.
             view_id: Optional View ID to count within.
             where: Optional filter.
 
         Returns:
-            dict: Object containing 'count'.
+            dict: The count object.
+                  Keys include: 'count'.
+                  Example: {'count': 42}
 
         Tags:
             read, count, data, records
         """
+        base_id = await self._get_base_id()
+
         url = f"{self.base_url}/api/v3/data/{base_id}/{table_id}/count"
 
         params = {"viewId": view_id, "where": where}
@@ -568,27 +572,29 @@ class RuzodbApp(APIApplication):
         return response.json()
 
     async def find_duplicates(
-        self, base_id: str, table_id: str, field_name: str, values: List[str | int | float | bool], view_id: str = None
+        self, table_id: str, field_name: str, values: List[str | int | float | bool], view_id: str = None
     ) -> List[dict[str, Any]]:
         """
-        Check a list of values against a specific column and return those that already exist,
-        along with their Record ID.
+        Check a list of values against a specific column and return those that already exist along with their Record ID.
 
         Args:
-            base_id: The ID of the base.
             table_id: The ID of the table.
             field_name: The name of the column to check.
             values: A list of values to check for existence.
             view_id: Optional View ID.
 
         Returns:
-            List[dict]: A list of dicts found: `[{"value": <val>, "record_id": <id>}, ...]`
+            List[dict]: A list of dictionaries representing found duplicates.
+                        Keys include: 'value', 'record_id'.
+                        Example: [{'value': 'Dup1', 'record_id': 123}, ...]
 
         Tags:
-            read, list, data, records, convenience, batch
+            read, list, data, records, convenience, batch, search
         """
         if not values:
             return []
+
+        base_id = await self._get_base_id()
 
         existing_values = []
         chunk_size = 40  # Conservative limit to avoid URL length issues
@@ -603,8 +609,7 @@ class RuzodbApp(APIApplication):
             where_clause = "~or".join(conditions)
 
             # We need the specific field AND the ID
-            results = await self.list_records(
-                base_id=base_id,
+            results = await self.queryRecords(
                 table_id=table_id,
                 view_id=view_id,
                 where=where_clause,
@@ -625,67 +630,19 @@ class RuzodbApp(APIApplication):
 
         return existing_values
 
-    async def query_database(
-        self,
-        base_id: str,
-        table_id: str,
-        filter: str = None,
-        sort: List[str] = None,
-        fields: List[str] = None,
-        limit: int = 25,
-        offset: int = 0,
-        view_id: str = None,
-    ) -> List[dict[str, Any]]:
-        """
-        Query the database table with flexible filtering, sorting, and field selection.
-        This is a powerful general-purpose tool for retrieving specific data.
-
-        Args:
-            base_id: The ID of the base.
-            table_id: The ID of the table.
-            filter: NocoDB filter syntax (e.g., "(Name,eq,John)").
-                    Use logical operators like ~or, ~and.
-            sort: List of fields to sort by (e.g., ["-CreatedAt", "Name"]).
-            fields: List of specific field names to retrieve.
-            limit: Number of records to return (default: 25).
-            offset: Number of records to skip (default: 0).
-            view_id: Optional View ID to scope the query.
-
-        Returns:
-            List[dict]: A list of records matching the query.
-            
-        Tags:
-            read, query, search, filter, data
-        """
-        # Map generic 'filter' arg to NocoDB 'where' param
-        response = await self.list_records(
-            base_id=base_id,
-            table_id=table_id,
-            where=filter,
-            sort=sort,
-            fields=fields,
-            limit=limit,
-            offset=offset,
-            view_id=view_id,
-        )
-        # Handle V3 response structure
-        return response.get("list", []) or response.get("records", [])
-
     def list_tools(self):
         return [
             self.list_tables,
-            self.create_table,
-            self.update_table,
             self.get_table,
+            self.create_table,
             self.delete_table,
             self.create_column,
             self.delete_column,
-            self.list_records,
+            self.queryRecords,
             self.create_records,
             self.get_record,
             self.update_records,
             self.delete_records,
             self.get_record_count,
             self.find_duplicates,
-            self.query_database,
         ]
