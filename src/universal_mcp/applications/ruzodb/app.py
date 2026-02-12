@@ -57,8 +57,8 @@ class RuzodbApp(APIApplication):
              raise ValueError("RuzodbApp requires an integration with an AgentrClient to auto-fetch base_id")
         
         try:
-            # base_info = await self.integration.client.get_ruzodb_base()
-            self._base_id = "phih2g5p6toc251" # base_info.get("base_id")
+            base_info = await self.integration.client.get_ruzodb_base()
+            self._base_id = base_info.get("base_id")
             if not self._base_id:
                 raise ValueError("Retrieved base info does not contain 'base_id'")
             return self._base_id
