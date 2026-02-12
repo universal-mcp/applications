@@ -79,12 +79,6 @@ class RuzodbApp(APIApplication):
         token = credentials.get("token") or credentials.get("xc-token")
         return {"xc-token": token, "Content-Type": "application/json"}
 
-    def _raise_for_status(self, response):
-        if response.status_code >= 400:
-            print(f"Error {response.status_code}: {response.text}")
-        response.raise_for_status()
-
-
     async def getTablesList(self) -> dict[str, Any]:
         """
         List tables accessible by user.
@@ -101,8 +95,7 @@ class RuzodbApp(APIApplication):
 
         url = f"{self.base_url}/api/v3/meta/bases/{base_id}/tables"
         response = await self._aget(url)
-        self._raise_for_status(response)
-        return response.json()
+        return self._handle_response(response)
 
     async def getTableSchema(self, tableId: str) -> dict[str, Any]:
         """
@@ -123,8 +116,7 @@ class RuzodbApp(APIApplication):
 
         url = f"{self.base_url}/api/v3/meta/bases/{base_id}/tables/{tableId}"
         response = await self._aget(url)
-        self._raise_for_status(response)
-        return response.json()
+        return self._handle_response(response)
 
     async def createTable(
         self,
@@ -192,9 +184,7 @@ class RuzodbApp(APIApplication):
             data["meta"] = meta
 
         response = await self._apost(url, data=data)
-        self._raise_for_status(response)
-        result = response.json()
-        return result
+        return self._handle_response(response)
 
     async def deleteTable(self, tableId: str) -> dict[str, Any]:
         """
@@ -218,8 +208,7 @@ class RuzodbApp(APIApplication):
 
         url = f"{self.base_url}/api/v3/meta/bases/{base_id}/tables/{tableId}"
         response = await self._adelete(url)
-        self._raise_for_status(response)
-        return response.json()
+        return self._handle_response(response)
 
     async def createColumn(
         self, tableId: str, title: str, uidt: RuzodbFieldType = "SingleLineText", **kwargs
@@ -262,8 +251,7 @@ class RuzodbApp(APIApplication):
             **kwargs,
         }
         response = await self._apost(url, data=data)
-        self._raise_for_status(response)
-        return response.json()
+        return self._handle_response(response)
 
     async def deleteColumn(self, tableId: str, columnId: str) -> dict[str, Any]:
         """
@@ -288,8 +276,7 @@ class RuzodbApp(APIApplication):
 
         url = f"{self.base_url}/api/v3/meta/bases/{base_id}/tables/{tableId}/fields/{columnId}"
         response = await self._adelete(url)
-        self._raise_for_status(response)
-        return response.json()
+        return self._handle_response(response)
 
     # ==================== Data Operations (V3) ====================
 
@@ -356,8 +343,7 @@ class RuzodbApp(APIApplication):
             
         params = {k: v for k, v in params.items() if v is not None}
         response = await self._aget(url, params=params)
-        self._raise_for_status(response)
-        return response.json()
+        return self._handle_response(response)
 
     async def createRecords(
         self, tableId: str, records: List[dict[str, Any]] | dict[str, Any]
@@ -398,8 +384,7 @@ class RuzodbApp(APIApplication):
         # If not bulk, payload is a dict, just make one call
         if not is_bulk:
             response = await self._apost(url, data=payload)
-            self._raise_for_status(response)
-            res_json = response.json()
+            res_json = self._handle_response(response)
             if isinstance(res_json, dict) and "records" in res_json:
                  # It's a single record creation but wrapped in records list sometimes? 
                  # Actually single creation usually returns the record directly or a list of 1.
@@ -411,8 +396,7 @@ class RuzodbApp(APIApplication):
         for i in range(0, len(payload), chunk_size):
             chunk = payload[i : i + chunk_size]
             response = await self._apost(url, data=chunk)
-            self._raise_for_status(response)
-            res_json = response.json()
+            res_json = self._handle_response(response)
             
             if isinstance(res_json, dict) and "records" in res_json:
                 all_records.extend(res_json["records"])
@@ -449,8 +433,7 @@ class RuzodbApp(APIApplication):
         if fields:
             params["fields"] = ",".join(fields)
         response = await self._aget(url, params=params)
-        self._raise_for_status(response)
-        return response.json()
+        return self._handle_response(response)
 
     async def updateRecords(
         self, tableId: str, records: List[dict[str, Any]] | dict[str, Any]
@@ -491,8 +474,7 @@ class RuzodbApp(APIApplication):
 
         if not is_bulk:
             response = await self._apatch(url, data=payload)
-            self._raise_for_status(response)
-            return response.json()
+            return self._handle_response(response)
 
         chunk_size = 10
         all_records = []
@@ -500,8 +482,7 @@ class RuzodbApp(APIApplication):
         for i in range(0, len(payload), chunk_size):
             chunk = payload[i : i + chunk_size]
             response = await self._apatch(url, data=chunk)
-            self._raise_for_status(response)
-            res_json = response.json()
+            res_json = self._handle_response(response)
 
             if isinstance(res_json, dict) and "records" in res_json:
                 all_records.extend(res_json["records"])
@@ -552,10 +533,7 @@ class RuzodbApp(APIApplication):
                 chunk = payload[i : i + chunk_size]
                 response = await client.request("DELETE", url, json=chunk)
                 
-                if response.status_code >= 400:
-                    self._raise_for_status(response)
-                    
-                results.append(response.json())
+                results.append(self._handle_response(response))
                 
         # Return the last result or a consolidated one. 
         # For simplicity returning the last one or the first if available.
@@ -585,8 +563,7 @@ class RuzodbApp(APIApplication):
         params = {"viewId": viewId, "where": where}
         params = {k: v for k, v in params.items() if v is not None}
         response = await self._aget(url, params=params)
-        self._raise_for_status(response)
-        return response.json()
+        return self._handle_response(response)
 
     async def findDuplicates(
         self, tableId: str, fieldName: str, values: List[str | int | float | bool], viewId: str = None
@@ -731,41 +708,41 @@ class RuzodbApp(APIApplication):
                 
             try:
                 response = await self._aget(url, params=params)
-                if response.status_code == 200:
-                    data = response.json()
-                    # data is like {"Score": 25} or {} or {"Id": null}
-                    
-                    val = None
-                    if data:
-                        val = next(iter(data.values()))
-                    
-                    # Special handling for COUNT on ID returning null (NocoDB bug/quirk?)
-                    # If we tried to count ID and got None, try counting the first non-system field?
-                    if val is None and agg_type == "count" and field_name in ["Id", "id"]:
-                         # Find a fallback field (e.g. Title field)
-                         non_id_fields = [f for f in schema.get("fields", []) if f.get("title") not in ["Id", "id"]]
-                         if non_id_fields:
-                             fallback_field = non_id_fields[0]
-                             fallback_id = fallback_field.get("id")
-                             fallback_agg = [{"field": fallback_id, "type": "count"}]
-                             
-                             params["aggregation"] = json.dumps(fallback_agg)
-                             resp_retry = await self._aget(url, params=params)
-                             if resp_retry.status_code == 200:
-                                 data_retry = resp_retry.json()
-                                 if data_retry:
-                                     val = next(iter(data_retry.values()))
+                data = self._handle_response(response)
+                
+                if isinstance(data, dict) and data.get("status") == "error":
+                    final_results[key] = data
+                    continue
 
-                    # Store result using Alias (if provided) or Field Name (as requested)
-                    key = alias if alias else field_name
-                    final_results[key] = val
-                else:
-                    # Log warning or just store None?
-                    # For now, if one fails, we just don't add it to results
-                    pass
-            except Exception:
-                # Ignore failures for individual aggregations to keep partial success?
-                pass
+                # data is like {"Score": 25} or {"Id": null}
+                val = None
+                if data:
+                    val = next(iter(data.values()))
+                
+                # Special handling for COUNT on ID returning null (NocoDB bug/quirk?)
+                if val is None and agg_type == "count" and field_name in ["Id", "id"]:
+                    # Find a fallback field (e.g. Title field)
+                    non_id_fields = [f for f in schema.get("fields", []) if f.get("title") not in ["Id", "id"]]
+                    if non_id_fields:
+                        fallback_field = non_id_fields[0]
+                        fallback_id = fallback_field.get("id")
+                        fallback_agg = [{"field": fallback_id, "type": "count"}]
+                        
+                        params["aggregation"] = json.dumps(fallback_agg)
+                        resp_retry = await self._aget(url, params=params)
+                        data_retry = self._handle_response(resp_retry)
+                        
+                        if isinstance(data_retry, dict) and data_retry.get("status") == "error":
+                            val = data_retry
+                        elif data_retry:
+                            val = next(iter(data_retry.values()))
+
+                # Store result
+                final_results[key] = val
+
+            except Exception as e:
+                logger.error(f"Unexpected error in aggregation for {field_name}: {str(e)}")
+                final_results[key] = {"status": "error", "text": str(e)}
                 
         return final_results
 
