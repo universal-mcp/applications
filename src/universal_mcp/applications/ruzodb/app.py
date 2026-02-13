@@ -138,11 +138,7 @@ class RuzodbApp(APIApplication):
         Tags:
             read, list, meta, tables, structure
         """
-        base_id = await self._get_base_id()
-
-        url = f"{self.base_url}/api/v3/meta/bases/{base_id}/tables"
-        response = await self._aget(url)
-        return self._handle_response(response)
+        return {"list": await self._call_backend("GET", "/ruzodb/tables")}
 
     async def getTableSchema(self, tableId: str) -> dict[str, Any]:
         """
