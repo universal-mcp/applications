@@ -1,5 +1,6 @@
 from typing import Any, List, Literal
 import json
+from loguru import logger
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
@@ -47,17 +48,50 @@ class RuzodbApp(APIApplication):
 
         self._base_id = None
 
-    async def _get_base_id(self) -> str:
+    async def _resolve_internal_id(self, tableId: str) -> str:
+        """Resolve external NocoDB Table ID to backend's RuzodbTable ID."""
+        if not tableId:
+            return tableId
+        if tableId.startswith("ruzodb-table"):
+            return tableId
+
+        try:
+            async with self.integration.client.aclient() as client:
+                response = await client.request("GET", "/ruzodb/tables")
+                if response.status_code == 200:
+                    tables = response.json()
+                    for t in tables:
+                        if t.get("table_id") == tableId:
+                            return t.get("id")
+        except Exception as e:
+            logger.warning(f"Failed to resolve internal ID for {tableId}: {e}")
+        
+        return tableId
+
+    async def _call_backend(self, method: str, path: str, json_data: dict = None) -> dict[str, Any]:
+        """Helper to call AgentR backend endpoints."""
+        async with self.integration.client.aclient() as client:
+            response = await client.request(method, path, json=json_data)
+            return self._handle_response(response)
+
+    async def _get_base_id(self, table_id: str | None = None) -> str:
         if self._base_id:
             return self._base_id
 
         # Use the AgentR client to fetch the base info
-        # The integration.client is an AgentrClient instance
         if not self.integration or not hasattr(self.integration, "client"):
              raise ValueError("RuzodbApp requires an integration with an AgentrClient to auto-fetch base_id")
         
         try:
-            base_info = await self.integration.client.get_ruzodb_base()
+            # Note: handle both signatures if client version varies
+            if table_id:
+                try:
+                    base_info = await self.integration.client.get_ruzodb_base(table_id)
+                except TypeError:
+                    base_info = await self.integration.client.get_ruzodb_base()
+            else:
+                base_info = await self.integration.client.get_ruzodb_base()
+                
             self._base_id = base_info.get("base_id")
             if not self._base_id:
                 raise ValueError("Retrieved base info does not contain 'base_id'")
@@ -167,24 +201,8 @@ class RuzodbApp(APIApplication):
         Tags:
             create, meta, table, structure
         """
-        base_id = await self._get_base_id()
-
-        url = f"{self.base_url}/api/v3/meta/bases/{base_id}/tables"
-        fields_payload = []
-        for col in columns or []:
-            new_col = col.copy()
-            if "type" not in new_col and "uidt" in new_col:
-                new_col["type"] = new_col["uidt"]
-            fields_payload.append(new_col)
-
-        data = {"title": title, "fields": fields_payload, **kwargs}
-        if description:
-            data["description"] = description
-        if meta:
-            data["meta"] = meta
-
-        response = await self._apost(url, data=data)
-        return self._handle_response(response)
+        payload = {"title": title, "columns": columns or []}
+        return await self._call_backend("POST", "/ruzodb/tables", json_data=payload)
 
     async def deleteTable(self, tableId: str) -> dict[str, Any]:
         """
@@ -192,7 +210,7 @@ class RuzodbApp(APIApplication):
 
 
         Args:
-            tableId: The ID of the table to delete.
+            tableId: The ID of the table to delete
 
 
         Returns:
@@ -204,11 +222,26 @@ class RuzodbApp(APIApplication):
         Tags:
             delete, meta, table, structure, destructive
         """
-        base_id = await self._get_base_id()
+        internal_id = await self._resolve_internal_id(tableId)
+        return await self._call_backend("DELETE", f"/ruzodb/tables/{internal_id}")
 
-        url = f"{self.base_url}/api/v3/meta/bases/{base_id}/tables/{tableId}"
-        response = await self._adelete(url)
-        return self._handle_response(response)
+    async def updateTable(self, tableId: str, title: str) -> dict[str, Any]:
+        """
+        Update a table (e.g. rename) via backend endpoint to maintain sync.
+
+        Args:
+            tableId: The ID of the table to update
+            title: The new title for the table.
+
+        Returns:
+            dict: The updated table object.
+
+        Tags:
+            update, meta, table, structure
+        """
+        internal_id = await self._resolve_internal_id(tableId)
+        payload = {"title": title}
+        return await self._call_backend("PATCH", f"/ruzodb/tables/{internal_id}", json_data=payload)
 
     async def createColumn(
         self, tableId: str, title: str, uidt: RuzodbFieldType = "SingleLineText", **kwargs
@@ -741,7 +774,6 @@ class RuzodbApp(APIApplication):
                 final_results[key] = val
 
             except Exception as e:
-                logger.error(f"Unexpected error in aggregation for {field_name}: {str(e)}")
                 final_results[key] = {"status": "error", "text": str(e)}
                 
         return final_results
