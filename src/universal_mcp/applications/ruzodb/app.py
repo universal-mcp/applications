@@ -74,44 +74,29 @@ class RuzodbApp(APIApplication):
             response = await client.request(method, path, json=json_data)
             return self._handle_response(response)
 
-    async def _get_base_id(self, table_id: str | None = None) -> str:
-        # If no table_id is provided, try to return the cached user base_id
-        if not table_id and self._base_id:
-            return self._base_id
-
+    async def _get_base_id(self, table_id: str) -> str:
+        """Resolve base_id for a given table_id."""
+        if not table_id:
+            raise ValueError("Table ID is required to perform this operation.")
+            
         if not self.integration or not hasattr(self.integration, "client"):
              raise ValueError("RuzodbApp requires an integration with an AgentrClient to auto-fetch base_id")
         
         try:
             async with self.integration.client.aclient() as client:
-                if table_id:
-                    # Resolve base_id for specific table (potentially shared)
-                    # We accept table_id which could be internal (ruzodb-table_...) or external
-                    # The backend endpoint /ruzodb/tables/{table_id} handles resolution and auth
-                    response = await client.request("GET", f"/ruzodb/tables/{table_id}")
-                    if response.status_code == 200:
-                        data = response.json()
-                        return data.get("base_id")
-                    elif response.status_code == 404:
-                         # Fallback for external IDs that might not be in our DB yet? 
-                         # Or just standard error if table not found.
-                         # If we can't resolve it, maybe it's a new table creation flow? 
-                         # But for existing tables it should be found.
-                         pass
+                # Resolve base_id for specific table (potentially shared)
+                # The backend endpoint /ruzodb/tables/{table_id} handles resolution and auth
+                response = await client.request("GET", f"/ruzodb/tables/{table_id}")
+                if response.status_code == 200:
+                    data = response.json()
+                    return data.get("base_id")
                 
-                # Fallback to getting user's default base if table_id not provided or resolution failed (and client permits)
-                # But for shared tables, falling back to user base is WRONG if the table is remote.
-                if not table_id:
-                    base_info = await self.integration.client.get_ruzodb_base()
-                    self._base_id = base_info.get("base_id")
-                    if not self._base_id:
-                        raise ValueError("Retrieved base info does not contain 'base_id'")
-                    return self._base_id
-                
-                raise ValueError(f"Could not resolve base_id for table {table_id}")
+                # If backend resolution fails, we can't proceed because we don't know which base to use.
+                # Falling back to user's default base is dangerous for shared tables.
+                raise ValueError(f"Could not resolve base_id for table {table_id} (Status {response.status_code})")
 
         except Exception as e:
-            raise ValueError(f"Failed to auto-fetch RuzoDB base_id: {str(e)}")
+            raise ValueError(f"Failed to resolve RuzoDB base_id: {str(e)}")
 
     def _get_column_id(self, schema: dict, field_name: str) -> str:
         """Helper to find column ID by name from schema."""
