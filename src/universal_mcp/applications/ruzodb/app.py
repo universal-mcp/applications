@@ -75,29 +75,42 @@ class RuzodbApp(APIApplication):
             return self._handle_response(response)
 
     async def _get_base_id(self, table_id: str | None = None) -> str:
-        if self._base_id:
+        # If no table_id is provided, try to return the cached user base_id
+        if not table_id and self._base_id:
             return self._base_id
 
-        # Use the AgentR client to fetch the base info
         if not self.integration or not hasattr(self.integration, "client"):
              raise ValueError("RuzodbApp requires an integration with an AgentrClient to auto-fetch base_id")
         
         try:
-            # Note: handle both signatures if client version varies
-            if table_id:
-                try:
-                    base_info = await self.integration.client.get_ruzodb_base(table_id)
-                except TypeError:
-                    base_info = await self.integration.client.get_ruzodb_base()
-            else:
-                base_info = await self.integration.client.get_ruzodb_base()
+            async with self.integration.client.aclient() as client:
+                if table_id:
+                    # Resolve base_id for specific table (potentially shared)
+                    # We accept table_id which could be internal (ruzodb-table_...) or external
+                    # The backend endpoint /ruzodb/tables/{table_id} handles resolution and auth
+                    response = await client.request("GET", f"/ruzodb/tables/{table_id}")
+                    if response.status_code == 200:
+                        data = response.json()
+                        return data.get("base_id")
+                    elif response.status_code == 404:
+                         # Fallback for external IDs that might not be in our DB yet? 
+                         # Or just standard error if table not found.
+                         # If we can't resolve it, maybe it's a new table creation flow? 
+                         # But for existing tables it should be found.
+                         pass
                 
-            self._base_id = base_info.get("base_id")
-            if not self._base_id:
-                raise ValueError("Retrieved base info does not contain 'base_id'")
-            return self._base_id
+                # Fallback to getting user's default base if table_id not provided or resolution failed (and client permits)
+                # But for shared tables, falling back to user base is WRONG if the table is remote.
+                if not table_id:
+                    base_info = await self.integration.client.get_ruzodb_base()
+                    self._base_id = base_info.get("base_id")
+                    if not self._base_id:
+                        raise ValueError("Retrieved base info does not contain 'base_id'")
+                    return self._base_id
+                
+                raise ValueError(f"Could not resolve base_id for table {table_id}")
+
         except Exception as e:
-            # Fallback or re-raise with clearer message
             raise ValueError(f"Failed to auto-fetch RuzoDB base_id: {str(e)}")
 
     def _get_column_id(self, schema: dict, field_name: str) -> str:
@@ -146,7 +159,7 @@ class RuzodbApp(APIApplication):
         Tags:
             read, get, meta, table, structure
         """
-        base_id = await self._get_base_id()
+        base_id = await self._get_base_id(tableId)
 
         url = f"{self.base_url}/api/v3/meta/bases/{base_id}/tables/{tableId}"
         response = await self._aget(url)
@@ -274,7 +287,7 @@ class RuzodbApp(APIApplication):
         Tags:
             create, meta, column, field, structure
         """
-        base_id = await self._get_base_id()
+        base_id = await self._get_base_id(tableId)
 
         url = f"{self.base_url}/api/v3/meta/bases/{base_id}/tables/{tableId}/fields"
 
@@ -305,7 +318,7 @@ class RuzodbApp(APIApplication):
         Tags:
             delete, meta, column, field, structure, destructive
         """
-        base_id = await self._get_base_id()
+        base_id = await self._get_base_id(tableId)
 
         url = f"{self.base_url}/api/v3/meta/bases/{base_id}/tables/{tableId}/fields/{columnId}"
         response = await self._adelete(url)
@@ -355,7 +368,7 @@ class RuzodbApp(APIApplication):
         Tags:
             read, list, data, records, filter, sort
         """
-        base_id = await self._get_base_id()
+        base_id = await self._get_base_id(tableId)
 
         url = f"{self.base_url}/api/v3/data/{base_id}/{tableId}/records"
         params = {"limit": limit, "offset": offset, "viewId": viewId, "where": where}
@@ -397,7 +410,7 @@ class RuzodbApp(APIApplication):
         Tags:
             create, data, records, batch, important
         """
-        base_id = await self._get_base_id()
+        base_id = await self._get_base_id(tableId)
 
         url = f"{self.base_url}/api/v3/data/{base_id}/{tableId}/records"
         data = records
@@ -459,7 +472,7 @@ class RuzodbApp(APIApplication):
         Tags:
             read, get, data, records
         """
-        base_id = await self._get_base_id()
+        base_id = await self._get_base_id(tableId)
 
         url = f"{self.base_url}/api/v3/data/{base_id}/{tableId}/records/{recordId}"
         params = {}
@@ -487,7 +500,7 @@ class RuzodbApp(APIApplication):
         Tags:
             update, data, records, batch
         """
-        base_id = await self._get_base_id()
+        base_id = await self._get_base_id(tableId)
 
         url = f"{self.base_url}/api/v3/data/{base_id}/{tableId}/records"
         data = records
@@ -543,7 +556,7 @@ class RuzodbApp(APIApplication):
         Tags:
             delete, data, records, destructive, batch
         """
-        base_id = await self._get_base_id()
+        base_id = await self._get_base_id(tableId)
 
         url = f"{self.base_url}/api/v3/data/{base_id}/{tableId}/records"
         record_ids = records
@@ -589,7 +602,7 @@ class RuzodbApp(APIApplication):
         Tags:
             read, count, data, records
         """
-        base_id = await self._get_base_id()
+        base_id = await self._get_base_id(tableId)
 
         url = f"{self.base_url}/api/v3/data/{base_id}/{tableId}/count"
 
@@ -621,7 +634,7 @@ class RuzodbApp(APIApplication):
         if not values:
             return []
 
-        base_id = await self._get_base_id()
+        base_id = await self._get_base_id(tableId)
 
         existing_values = []
         chunk_size = 40  # Conservative limit to avoid URL length issues
@@ -701,7 +714,7 @@ class RuzodbApp(APIApplication):
                 target_view_id = views[0]["id"]
             else:
                 # Try fetching views explicitly if schema didn't have them
-                base_id = await self._get_base_id()
+                base_id = await self._get_base_id(tableId)
                 url_views = f"{self.base_url}/api/v3/meta/bases/{base_id}/tables/{tableId}/views"
                 resp_views = await self._aget(url_views)
                 if resp_views.status_code == 200:
