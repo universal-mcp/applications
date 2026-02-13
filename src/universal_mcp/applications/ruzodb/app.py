@@ -784,6 +784,7 @@ class RuzodbApp(APIApplication):
             self.getTableSchema,
             self.createTable,
             self.deleteTable,
+            self.updateTable,
             self.createColumn,
             self.deleteColumn,
             self.queryRecords,
