@@ -48,25 +48,6 @@ class RuzodbApp(APIApplication):
 
         self._base_id = None
 
-    async def _resolve_internal_id(self, tableId: str) -> str:
-        """Resolve external NocoDB Table ID to backend's RuzodbTable ID."""
-        if not tableId:
-            return tableId
-        if tableId.startswith("ruzodb-table"):
-            return tableId
-
-        try:
-            async with self.integration.client.aclient() as client:
-                response = await client.request("GET", "/ruzodb/tables")
-                if response.status_code == 200:
-                    tables = response.json()
-                    for t in tables:
-                        if t.get("table_id") == tableId:
-                            return t.get("id")
-        except Exception as e:
-            logger.warning(f"Failed to resolve internal ID for {tableId}: {e}")
-        
-        return tableId
 
     async def _call_backend(self, method: str, path: str, json_data: dict = None) -> dict[str, Any]:
         """Helper to call AgentR backend endpoints."""
@@ -83,20 +64,18 @@ class RuzodbApp(APIApplication):
              raise ValueError("RuzodbApp requires an integration with an AgentrClient to auto-fetch base_id")
         
         try:
-            async with self.integration.client.aclient() as client:
-                # Resolve base_id for specific table (potentially shared)
-                # The backend endpoint /ruzodb/tables/{table_id} handles resolution and auth
-                response = await client.request("GET", f"/ruzodb/tables/{table_id}")
-                if response.status_code == 200:
-                    data = response.json()
-                    return data.get("base_id")
-                
-                # If backend resolution fails, we can't proceed because we don't know which base to use.
-                # Falling back to user's default base is dangerous for shared tables.
-                raise ValueError(f"Could not resolve base_id for table {table_id} (Status {response.status_code})")
+            # We can now just ask the backend for table details using the external ID
+            # The backend handles the lookup and validation
+            response = await self._call_backend("GET", f"/ruzodb/tables/{table_id}")
+            
+            # The _call_backend helper already handles errors and returns the dict
+            if isinstance(response, dict):
+                 return response.get("base_id")
+            
+            raise ValueError(f"Unexpected response format when resolving base_id for {table_id}")
 
         except Exception as e:
-            raise ValueError(f"Failed to resolve RuzoDB base_id: {str(e)}")
+            raise ValueError(f"Failed to resolve RuzoDB base_id for table {table_id}: {str(e)}")
 
     def _get_column_id(self, schema: dict, field_name: str) -> str:
         """Helper to find column ID by name from schema."""
@@ -216,8 +195,7 @@ class RuzodbApp(APIApplication):
         Tags:
             delete, meta, table, structure, destructive
         """
-        internal_id = await self._resolve_internal_id(tableId)
-        return await self._call_backend("DELETE", f"/ruzodb/tables/{internal_id}")
+        return await self._call_backend("DELETE", f"/ruzodb/tables/{tableId}")
 
     async def updateTable(self, tableId: str, title: str) -> dict[str, Any]:
         """
@@ -233,9 +211,8 @@ class RuzodbApp(APIApplication):
         Tags:
             update, meta, table, structure
         """
-        internal_id = await self._resolve_internal_id(tableId)
         payload = {"title": title}
-        return await self._call_backend("PATCH", f"/ruzodb/tables/{internal_id}", json_data=payload)
+        return await self._call_backend("PATCH", f"/ruzodb/tables/{tableId}", json_data=payload)
 
     async def createColumn(
         self, tableId: str, title: str, uidt: RuzodbFieldType = "SingleLineText", **kwargs
