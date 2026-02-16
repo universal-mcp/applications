@@ -1,15 +1,18 @@
-# ScraperApp MCP Server
+---
+name: scraper
+description: Application for interacting with LinkedIn API. Provides a simplified interface for LinkedIn search operations.
+---
 
-An MCP Server for the ScraperApp API.
+# Scraper Integration
 
-## 🛠️ Tool List
+Application for interacting with LinkedIn API. Provides a simplified interface for LinkedIn search operations.
 
-This is automatically generated from OpenAPI schema for the ScraperApp API.
-
+## Available Tools
 
 | Tool | Description |
 |------|-------------|
 | `linkedin_list_profile_posts` | Fetches a paginated list of posts from a specific user or company profile using its provider ID. The `is_company` flag must specify the entity type. Unlike `linkedin_search_posts`, this function directly retrieves content from a known profile's feed instead of performing a global keyword search. |
+| `linkedin_list_profile_comments` | Retrieves a list of comments made by a specific user using their provider ID. |
 | `linkedin_retrieve_profile` | Fetches a specific LinkedIn user's profile using their public or internal ID. Unlike `linkedin_search_people`, which discovers multiple users via keywords, this function targets and retrieves detailed data for a single, known individual based on a direct identifier. |
 | `linkedin_list_post_comments` | Fetches a paginated list of comments for a specified LinkedIn post. It can retrieve either top-level comments or threaded replies if an optional `comment_id` is provided. This is a read-only operation, distinct from functions that search for posts or list user-specific content. |
 | `linkedin_search_people` | Performs a paginated search for people on LinkedIn, distinct from searches for companies or jobs. It filters results using keywords, location, industry, and company, internally converting filter names like 'United States' into their required API IDs before making the request. |

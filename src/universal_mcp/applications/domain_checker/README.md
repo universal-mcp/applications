@@ -1,11 +1,13 @@
-# DomainCheckerApp MCP Server
+---
+name: domain-checker
+description: Base class for Universal MCP Applications.
+---
 
-An MCP Server for the DomainCheckerApp API.
+# DomainChecker Integration
 
-## 🛠️ Tool List
+Base class for Universal MCP Applications.
 
-This is automatically generated from OpenAPI schema for the DomainCheckerApp API.
-
+## Available Tools
 
 | Tool | Description |
 |------|-------------|

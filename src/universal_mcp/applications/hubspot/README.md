@@ -1,22 +1,24 @@
-# HubspotApp MCP Server
+---
+name: hubspot
+description: Base class for applications interacting with RESTful HTTP APIs. Extends `BaseApplication` to provide functionalities specific to API-based integrations. This includes managing an `httpx.Client` for making HTTP requests, handling authentication headers, processing responses, and offering convenient methods for common HTTP verbs (GET, POST, PUT, DELETE, PATCH). Attributes: name (str): The name of the application. integration (Integration | None): An optional Integration object responsible for managing authentication and credentials. default_timeout (int): The default timeout in seconds for HTTP requests. base_url (str): The base URL for the API endpoint. This should be set by the subclass. _client (httpx.Client | None): The internal httpx client instance.
+---
 
-An MCP Server for the HubspotApp API.
+# Hubspot Integration
 
-## 🛠️ Tool List
+Base class for applications interacting with RESTful HTTP APIs. Extends `BaseApplication` to provide functionalities specific to API-based integrations. This includes managing an `httpx.Client` for making HTTP requests, handling authentication headers, processing responses, and offering convenient methods for common HTTP verbs (GET, POST, PUT, DELETE, PATCH). Attributes: name (str): The name of the application. integration (Integration | None): An optional Integration object responsible for managing authentication and credentials. default_timeout (int): The default timeout in seconds for HTTP requests. base_url (str): The base URL for the API endpoint. This should be set by the subclass. _client (httpx.Client | None): The internal httpx client instance.
 
-This is automatically generated from OpenAPI schema for the HubspotApp API.
-
+## Available Tools
 
 | Tool | Description |
 |------|-------------|
 | `add_a_note` | Create a note in HubSpot with the given properties and associations. |
 | `fetch_multiple_lists` | Fetch multiple lists in a single request by ILS list ID. The response will include the definitions of all lists that exist for the listIds provided. |
 | `fetch_list_memberships` | Fetch the memberships of a list in order sorted by the recordId of the records in the list. |
-| `create_list` | Create a new list in HubSpot with the specified object type, processing type, and name. |
+| `create_list` | Create a new list in HubSpot with the specified object type, processing type, and name. Optionally use this to provide membership settings, custom properties, a folder ID, list permissions, and a filter branch to further configure the list. |
 | `get_list_by_id` | Fetch a single list by ILS list ID. |
 | `delete_list_by_id` | Delete a list by ILS list ID. Lists deleted through this endpoint can be restored for up to 90 days. After 90 days, the list is permanently purged and cannot be restored |
-| `add_records_to_list` | Add the records provided to the list. Records that do not exist or that are already members of the list are ignored. |
-| `remove_records_from_list` | Remove the records provided from the list. Records that are not members of the list are ignored. |
+| `add_records_to_list` | Add the records provided to the list. Records that do not exist or that are already members of the list are ignored. This only works for lists that have a processingType of MANUAL or SNAPSHOT. |
+| `remove_records_from_list` | Remove the records provided from the list. Records that are not members of the list are ignored. This only works for lists that have a processingType of MANUAL or SNAPSHOT. |
 | `search_lists` | Search lists by list name or page through all lists by providing an empty query value. |
 | `fetch_list_by_name` | Fetch a list by its name and object type ID. |
 | `batch_read_emails` | Retrieves a batch of emails from a CRM system using the "POST" method allowing optional filtering by archived status, and returns the results in a multipart response. |

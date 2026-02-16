@@ -1,16 +1,18 @@
-# GoogleDriveApp MCP Server
+---
+name: google-drive
+description: Application for interacting with Google Drive API. Provides tools to manage files, folders, and access Drive information.
+---
 
-An MCP Server for the GoogleDriveApp API.
+# GoogleDrive Integration
 
-## 🛠️ Tool List
+Application for interacting with Google Drive API. Provides tools to manage files, folders, and access Drive information.
 
-This is automatically generated from OpenAPI schema for the GoogleDriveApp API.
-
+## Available Tools
 
 | Tool | Description |
 |------|-------------|
 | `get_drive_info` | Fetches key user and storage quota information for the authenticated Google Drive account. This streamlined function offers a focused alternative to `get_about_info`, which queries the same endpoint but exposes all available API parameters, providing a simpler way to get essential account details. |
-| `search_files` | Searches for files in Google Drive, allowing for powerful filtering, sorting, and pagination. |
+| `search_files` | Searches for files in Google Drive, allowing for powerful filtering, sorting, and pagination. This streamlined function offers a more user-friendly alternative to the comprehensive search_files_advanced method, making it ideal for targeted queries like finding files by name, type, or parent folder. |
 | `create_text_file` | Creates a file in Google Drive using an in-memory text string. Unlike `upload_file_from_path`, which reads from a local file, this function first creates the file's metadata (name, parent) and then uploads the provided string content, returning the new file's complete metadata upon completion. |
 | `upload_file_from_path` | Uploads a local file to Google Drive by reading its binary content from a path. It creates the file's metadata, uploads the content, and returns the new file's metadata. This differs from `create_text_file` which uses in-memory string content instead of a local file path. |
 | `find_folder_id_by_name` | Searches for a non-trashed folder by its exact name, returning the ID of the first match. As a utility for `create_folder`, it resolves parent names to IDs and returns None if the folder isn't found or an API error occurs, logging the failure internally. |

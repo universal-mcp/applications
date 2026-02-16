@@ -1,11 +1,13 @@
-# HashnodeApp MCP Server
+---
+name: hashnode
+description: Base class for applications interacting with GraphQL APIs. Extends `BaseApplication` to facilitate interactions with services that provide a GraphQL endpoint. It manages a `gql.Client` for executing queries and mutations, handles authentication headers similarly to `APIApplication`, and provides dedicated methods for GraphQL operations. Attributes: name (str): The name of the application. base_url (str): The complete URL of the GraphQL endpoint. integration (Integration | None): An optional Integration object for managing authentication. _client (GraphQLClient | None): The internal `gql.Client` instance.
+---
 
-An MCP Server for the HashnodeApp API.
+# Hashnode Integration
 
-## 🛠️ Tool List
+Base class for applications interacting with GraphQL APIs. Extends `BaseApplication` to facilitate interactions with services that provide a GraphQL endpoint. It manages a `gql.Client` for executing queries and mutations, handles authentication headers similarly to `APIApplication`, and provides dedicated methods for GraphQL operations. Attributes: name (str): The name of the application. base_url (str): The complete URL of the GraphQL endpoint. integration (Integration | None): An optional Integration object for managing authentication. _client (GraphQLClient | None): The internal `gql.Client` instance.
 
-This is automatically generated from OpenAPI schema for the HashnodeApp API.
-
+## Available Tools
 
 | Tool | Description |
 |------|-------------|

@@ -1,11 +1,13 @@
-# WhatsappApp MCP Server
+---
+name: whatsapp
+description: Base class for Universal MCP Applications.
+---
 
-An MCP Server for the WhatsappApp API.
+# Whatsapp Integration
 
-## 🛠️ Tool List
+Base class for Universal MCP Applications.
 
-This is automatically generated from OpenAPI schema for the WhatsappApp API.
-
+## Available Tools
 
 | Tool | Description |
 |------|-------------|

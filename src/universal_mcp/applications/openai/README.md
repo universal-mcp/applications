@@ -1,11 +1,13 @@
-# OpenaiApp MCP Server
+---
+name: openai
+description: Application for interacting with the OpenAI API (api.openai.com) to generate chat completions, manage files, and create images. Requires an OpenAI API key configured via integration. Optionally, organization ID and project ID can also be configured.
+---
 
-An MCP Server for the OpenaiApp API.
+# Openai Integration
 
-## 🛠️ Tool List
+Application for interacting with the OpenAI API (api.openai.com) to generate chat completions, manage files, and create images. Requires an OpenAI API key configured via integration. Optionally, organization ID and project ID can also be configured.
 
-This is automatically generated from OpenAPI schema for the OpenaiApp API.
-
+## Available Tools
 
 | Tool | Description |
 |------|-------------|

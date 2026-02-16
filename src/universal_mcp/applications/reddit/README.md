@@ -1,16 +1,18 @@
-# RedditApp MCP Server
+---
+name: reddit
+description: Base class for applications interacting with RESTful HTTP APIs. Extends `BaseApplication` to provide functionalities specific to API-based integrations. This includes managing an `httpx.Client` for making HTTP requests, handling authentication headers, processing responses, and offering convenient methods for common HTTP verbs (GET, POST, PUT, DELETE, PATCH). Attributes: name (str): The name of the application. integration (Integration | None): An optional Integration object responsible for managing authentication and credentials. default_timeout (int): The default timeout in seconds for HTTP requests. base_url (str): The base URL for the API endpoint. This should be set by the subclass. _client (httpx.Client | None): The internal httpx client instance.
+---
 
-An MCP Server for the RedditApp API.
+# Reddit Integration
 
-## 🛠️ Tool List
+Base class for applications interacting with RESTful HTTP APIs. Extends `BaseApplication` to provide functionalities specific to API-based integrations. This includes managing an `httpx.Client` for making HTTP requests, handling authentication headers, processing responses, and offering convenient methods for common HTTP verbs (GET, POST, PUT, DELETE, PATCH). Attributes: name (str): The name of the application. integration (Integration | None): An optional Integration object responsible for managing authentication and credentials. default_timeout (int): The default timeout in seconds for HTTP requests. base_url (str): The base URL for the API endpoint. This should be set by the subclass. _client (httpx.Client | None): The internal httpx client instance.
 
-This is automatically generated from OpenAPI schema for the RedditApp API.
-
+## Available Tools
 
 | Tool | Description |
 |------|-------------|
 | `get_subreddit_posts` | Fetches a specified number of top-rated posts from a particular subreddit, allowing results to be filtered by a specific timeframe (e.g., 'day', 'week'). This is a simplified version compared to `get_subreddit_top_posts`, which uses more complex pagination parameters instead of a direct time filter. |
-| `search_subreddits` | Searches for subreddits by name and description using a query string, with results sortable by relevance or activity. Unlike the broader `search_reddit` function, this method exclusively discovers subreddits, not posts, comments, or users. |
+| `search_subreddits` | Finds subreddits based on a query string, searching their names and descriptions. Results can be sorted by relevance or activity. This function is for discovering communities and does not search for posts or users, unlike the more general `search_reddit` function. |
 | `get_post_flairs` | Fetches a list of available post flairs (tags) for a specified subreddit. This is primarily used to discover the correct `flair_id` needed to categorize a new submission when using the `create_post` function. It returns flair details or a message if none are available. |
 | `create_post` | Creates a new Reddit post in a specified subreddit. It supports text ('self') or link posts, requiring a title and corresponding content (text or URL). An optional flair can be assigned. Returns the API response or a formatted error message on failure. |
 | `get_comment_by_id` | Retrieves a single Reddit comment's data, such as author and score, using its unique 't1_' prefixed ID. Unlike `get_post_comments_details` which fetches all comments for a post, this function targets one specific comment directly, returning an error dictionary if it is not found. |

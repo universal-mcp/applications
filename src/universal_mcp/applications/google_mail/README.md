@@ -1,11 +1,13 @@
-# GoogleMailApp MCP Server
+---
+name: google-mail
+description: Gmail integration for email management and communication. Send, read, search, and manage emails, drafts, labels, and filters with full message control. Supports thread replies, HTML/plain text formatting, attachments, and advanced filtering. Ideal for email automation, inbox management, message organization, and communication workflows.
+---
 
-An MCP Server for the GoogleMailApp API.
+# GoogleMail Integration
 
-## 🛠️ Tool List
+Gmail integration for email management and communication. Send, read, search, and manage emails, drafts, labels, and filters with full message control. Supports thread replies, HTML/plain text formatting, attachments, and advanced filtering. Ideal for email automation, inbox management, message organization, and communication workflows.
 
-This is automatically generated from OpenAPI schema for the GoogleMailApp API.
-
+## Available Tools
 
 | Tool | Description |
 |------|-------------|

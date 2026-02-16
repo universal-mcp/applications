@@ -1,11 +1,13 @@
-# E2bApp MCP Server
+---
+name: e2b
+description: Application for interacting with the E2B (Code Interpreter Sandbox) platform. Provides tools to execute Python code in a sandboxed environment. Authentication is handled by the configured Integration, fetching the API key.
+---
 
-An MCP Server for the E2bApp API.
+# E2b Integration
 
-## 🛠️ Tool List
+Application for interacting with the E2B (Code Interpreter Sandbox) platform. Provides tools to execute Python code in a sandboxed environment. Authentication is handled by the configured Integration, fetching the API key.
 
-This is automatically generated from OpenAPI schema for the E2bApp API.
-
+## Available Tools
 
 | Tool | Description |
 |------|-------------|

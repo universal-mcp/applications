@@ -1,11 +1,13 @@
-# FirefliesApp MCP Server
+---
+name: fireflies
+description: Application for interacting with the Fireflies.ai GraphQL API.
+---
 
-An MCP Server for the FirefliesApp API.
+# Fireflies Integration
 
-## 🛠️ Tool List
+Application for interacting with the Fireflies.ai GraphQL API.
 
-This is automatically generated from OpenAPI schema for the FirefliesApp API.
-
+## Available Tools
 
 | Tool | Description |
 |------|-------------|

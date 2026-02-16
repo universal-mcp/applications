@@ -1,11 +1,13 @@
-# AirtableApp MCP Server
+---
+name: airtable
+description: A comprehensive interface for interacting with the Airtable API. This application allows for the management of bases, tables, records, and fields, enabling automation of data entry, retrieval, and schema modifications. It requires a configured Airtable integration with a valid API key.
+---
 
-An MCP Server for the AirtableApp API.
+# Airtable Integration
 
-## 🛠️ Tool List
+A comprehensive interface for interacting with the Airtable API. This application allows for the management of bases, tables, records, and fields, enabling automation of data entry, retrieval, and schema modifications. It requires a configured Airtable integration with a valid API key.
 
-This is automatically generated from OpenAPI schema for the AirtableApp API.
-
+## Available Tools
 
 | Tool | Description |
 |------|-------------|

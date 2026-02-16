@@ -1,15 +1,17 @@
-# LinkedinApp MCP Server
+---
+name: linkedin
+description: Base class for Universal MCP Applications.
+---
 
-An MCP Server for the LinkedinApp API.
+# Linkedin Integration
 
-## 🛠️ Tool List
+Base class for Universal MCP Applications.
 
-This is automatically generated from OpenAPI schema for the LinkedinApp API.
-
+## Available Tools
 
 | Tool | Description |
 |------|-------------|
-| `start_new_chat` | Starts a new chat conversation with a specified user by sending an initial message. |
+| `start_new_chat` | Starts a new chat conversation with a specified user by sending an initial message. This function constructs a multipart/form-data request using the `files` parameter to ensure correct formatting and headers, working around potential issues in the underlying request method. |
 | `list_all_chats` | Retrieves a paginated list of all chat conversations across linked accounts. Supports filtering by unread status, date range, and account provider, distinguishing it from functions listing messages within a single chat. |
 | `list_chat_messages` | Retrieves messages from a specific chat identified by `chat_id`. Supports pagination and filtering by date or sender. Unlike `list_all_messages`, which fetches from all chats, this function targets the contents of a single conversation. |
 | `send_chat_message` | Sends a text message to a specific chat conversation using its `chat_id`. This function creates a new message via a POST request, distinguishing it from read-only functions like `list_chat_messages`. It returns the API's response, which typically confirms the successful creation of the message. |
@@ -35,6 +37,8 @@ This is automatically generated from OpenAPI schema for the LinkedinApp API.
 | `list_received_invitations` | Retrieves a paginated list of all received connection invitations. This function allows for reviewing and processing incoming connection requests to the specified account. |
 | `handle_received_invitation` | Accepts or declines a received LinkedIn connection invitation using its ID and a required shared secret. This function performs a POST request to update the invitation's status, distinguishing it from read-only functions like `list_received_invitations`. |
 | `list_followers` | Retrieves a paginated list of all followers for the current user's account. This function is distinct from `list_following` as it shows who follows the user, not who the user follows. |
+| `list_following` | Retrieves a paginated list of all accounts that the current user is following. This function is the counterpart to `list_followers`, focusing on the user's outgoing connections rather than incoming ones. |
+| `list_relations` | Retrieves a paginated list of all relations (connections) for the current user's account. This list can be compared with sent invitations to detect accepted connection requests. |
 | `list_job_postings` | Retrieve the job offers you have posted on LinkedIn whether they are open, closed, or still drafts. |
 | `create_job_posting` | Create a new job offer draft. |
 | `close_job_posting` | Close a job offer you have posted. |
