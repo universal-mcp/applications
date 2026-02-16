@@ -55,27 +55,42 @@ class RuzodbApp(APIApplication):
             response = await client.request(method, path, json=json_data)
             return self._handle_response(response)
 
-    async def _get_base_id(self, table_id: str) -> str:
-        """Resolve base_id for a given table_id."""
-        if not table_id:
-            raise ValueError("Table ID is required to perform this operation.")
+    async def _resolve_external_id(self, human_readable_id: str) -> dict[str, str]:
+        """
+        Resolve internal human-readable ID to external NocoDB ID and Base ID.
+        Returns a dict with 'table_id' (external) and 'base_id'.
+        """
+        if not human_readable_id:
+            raise ValueError("Table ID is required.")
             
         if not self.integration or not hasattr(self.integration, "client"):
-             raise ValueError("RuzodbApp requires an integration with an AgentrClient to auto-fetch base_id")
+             raise ValueError("RuzodbApp requires an integration with an AgentrClient")
         
         try:
-            # We can now just ask the backend for table details using the external ID
-            # The backend handles the lookup and validation
-            response = await self._call_backend("GET", f"/ruzodb/tables/{table_id}")
+            # Call backend to get details. Backend returns internal ID as 'table_id' 
+            # and external ID as 'external_table_id' (as per my backend update).
+            response = await self._call_backend("GET", f"/ruzodb/tables/{human_readable_id}")
             
-            # The _call_backend helper already handles errors and returns the dict
             if isinstance(response, dict):
-                 return response.get("base_id")
+                 # Backend returns:
+                 # table_id: internal
+                 # external_table_id: external (added in last backend step)
+                 # base_id: external
+                 return {
+                     "table_id": response.get("external_table_id"),
+                     "base_id": response.get("base_id")
+                 }
             
-            raise ValueError(f"Unexpected response format when resolving base_id for {table_id}")
+            raise ValueError(f"Unexpected response format for table {human_readable_id}")
 
         except Exception as e:
-            raise ValueError(f"Failed to resolve RuzoDB base_id for table {table_id}: {str(e)}")
+            raise ValueError(f"Failed to resolve ID for table {human_readable_id}: {str(e)}")
+
+    async def _get_base_id(self, table_id: str) -> str:
+        """Resolve base_id for a given table_id (internal)."""
+        # We can reuse _resolve_external_id but we just want base_id
+        resolved = await self._resolve_external_id(table_id)
+        return resolved["base_id"]
 
     def _get_column_id(self, schema: dict, field_name: str) -> str:
         """Helper to find column ID by name from schema."""
@@ -90,38 +105,33 @@ class RuzodbApp(APIApplication):
         token = credentials.get("token") or credentials.get("xc-token")
         return {"xc-token": token, "Content-Type": "application/json"}
 
-    async def getTablesList(self) -> dict[str, Any]:
+    async def getTablesList(self, limit: int = 7, offset: int = 0) -> dict[str, Any]:
         """
         List tables accessible by user.
 
-        Returns:
-            dict: A dictionary containing a 'list' key, which holds a list of table objects.
-                  Each table object is a dictionary with keys: 'id', 'title', 'base_id', 'workspace_id'.
-                  Example: {'list': [{'id': '...', 'title': '...', 'base_id': '...', 'workspace_id': '...'}, ...]}
+        Args:
+            limit: Maximum number of tables to return (default: 7).
+            offset: Number of tables to skip (default: 0).
 
-        Tags:
-            read, list, meta, tables, structure
+        Returns:
+            dict: A dictionary containing 'items' (list of tables) and 'total'.
+                  Each table object has 'table_id' (internal), 'title', 'base_id', etc.
         """
-        return {"list": await self._call_backend("GET", "/ruzodb/tables")}
+        return await self._call_backend("GET", f"/ruzodb/tables?limit={limit}&offset={offset}")
 
     async def getTableSchema(self, tableId: str) -> dict[str, Any]:
         """
         Get the table schema including fields and views information.
 
         Args:
-            tableId: Table Id.
-
-        Returns:
-            dict: The table object.
-                  Keys include: 'id', 'title', 'base_id', 'workspace_id', 'views' (list), 'fields' (list), 'display_field_id', 'source_id'.
-                  Example: {'id': '...', 'title': 'mytable', 'fields': [...], 'views': [...]}
-
-        Tags:
-            read, get, meta, table, structure
+            tableId: Table Id (Internal Human-Readable).
         """
-        base_id = await self._get_base_id(tableId)
+        # Resolve internal ID to external ID and Base ID
+        resolved = await self._resolve_external_id(tableId)
+        external_table_id = resolved["table_id"]
+        base_id = resolved["base_id"]
 
-        url = f"{self.base_url}/api/v3/meta/bases/{base_id}/tables/{tableId}"
+        url = f"{self.base_url}/api/v3/meta/bases/{base_id}/tables/{external_table_id}"
         response = await self._aget(url)
         return self._handle_response(response)
 
@@ -221,33 +231,14 @@ class RuzodbApp(APIApplication):
         Create a new column (field) in an existing table.
 
         Args:
-            tableId: The ID of the table.
-            title: Display title for the column.
-            uidt: UI Data Type. See `createTable` for full list of supported types.
-                  Common types: 'SingleLineText', 'Number', 'Checkbox', 'Date', 'SingleSelect'.
-
-        Returns:
-            dict: The created column object.
-                  Keys include: 'id', 'table_id', 'title', 'type', 'system'.
-                  Example: {'id': '...', 'title': '...', 'type': '...', ...}
-
-        Raises:
-            HTTPError: If column creation fails.
-
-        Example:
-            await app.create_column(
-                table_id="table456",
-                title="Priority",
-                uidt="SingleSelect",
-                dtxp="High,Medium,Low"
-            )
-
-        Tags:
-            create, meta, column, field, structure
+            tableId: The ID of the table (Internal).
         """
-        base_id = await self._get_base_id(tableId)
+        # Resolve
+        resolved = await self._resolve_external_id(tableId)
+        external_table_id = resolved["table_id"]
+        base_id = resolved["base_id"]
 
-        url = f"{self.base_url}/api/v3/meta/bases/{base_id}/tables/{tableId}/fields"
+        url = f"{self.base_url}/api/v3/meta/bases/{base_id}/tables/{external_table_id}/fields"
 
         data = {
             "title": title,
@@ -261,24 +252,15 @@ class RuzodbApp(APIApplication):
         """
         Delete a column (field) by its ID.
 
-
         Args:
-            tableId: The ID of the table.
-            columnId: The ID of the column to delete.
-
-
-        Returns:
-            dict: An empty dictionary {} on successful deletion.
-
-        Raises:
-            HTTPError: If the column does not exist or deletion fails.
-
-        Tags:
-            delete, meta, column, field, structure, destructive
+            tableId: The ID of the table (Internal).
         """
-        base_id = await self._get_base_id(tableId)
+        # Resolve
+        resolved = await self._resolve_external_id(tableId)
+        external_table_id = resolved["table_id"]
+        base_id = resolved["base_id"]
 
-        url = f"{self.base_url}/api/v3/meta/bases/{base_id}/tables/{tableId}/fields/{columnId}"
+        url = f"{self.base_url}/api/v3/meta/bases/{base_id}/tables/{external_table_id}/fields/{columnId}"
         response = await self._adelete(url)
         return self._handle_response(response)
 
@@ -298,37 +280,14 @@ class RuzodbApp(APIApplication):
         List records from a table with pagination and specific filtering using `(Col,Operator,Value)` syntax.
 
         Args:
-            tableId: Table ID.
-            limit: Number of records to return (default: 25).
-            offset: Number of records to skip (default: 0).
-            viewId: The ID of the view to scope the request.
-            where: Filter string (Ruzodb/NocoDB filter syntax).
-                   Syntax: `(ColumnName,Operator,Value)`
-                   Child clauses can be combined with `~or` or `~and`.
-                   
-                   Common Operators:
-                   - eq, neq, like, ge (>=), le (<=), gt (>), lt (<)
-                   - isnull, isnotnull
-                   - in, notin (Values separated by comma)
-
-                   Examples:
-                   - `(Status,eq,Active)`
-                   - `(Age,gt,18)~and(City,like,New York)`
-                   - `(Category,in,Tech,Science)`
-            fields: List of specific field names to retrieve.
-            sort: List of fields to sort by (e.g., ["-CreatedAt"]).
-
-        Returns:
-            dict: The query result.
-                  Keys include: 'records' (list), 'next' (pagination URL), 'nestedNext'.
-                  Example: {'records': [{'id': 1, 'fields': {...}}], 'next': '...', 'nestedNext': ...}
-
-        Tags:
-            read, list, data, records, filter, sort
+            tableId: Table ID (Internal).
         """
-        base_id = await self._get_base_id(tableId)
+        # Resolve
+        resolved = await self._resolve_external_id(tableId)
+        external_table_id = resolved["table_id"]
+        base_id = resolved["base_id"]
 
-        url = f"{self.base_url}/api/v3/data/{base_id}/{tableId}/records"
+        url = f"{self.base_url}/api/v3/data/{base_id}/{external_table_id}/records"
         params = {"limit": limit, "offset": offset, "viewId": viewId, "where": where}
         if fields:
             params["fields"] = ",".join(fields)
@@ -356,21 +315,14 @@ class RuzodbApp(APIApplication):
         Create records in a table.
 
         Args:
-            tableId: Table ID.
-            records: Array of records, each with a `fields` object containing key-value pairs.
-                     (Note: Single record dict is also supported for convenience)
-
-        Returns:
-            dict | list: The created record(s).
-                  - Single input (dict): Returns {'records': [{'id': ..., 'fields': {...}}]}
-                  - Bulk input (list): Returns a list of record objects [{'id': ..., 'fields': {...}}, ...]
-
-        Tags:
-            create, data, records, batch, important
+            tableId: Table ID (Internal).
         """
-        base_id = await self._get_base_id(tableId)
+        # Resolve
+        resolved = await self._resolve_external_id(tableId)
+        external_table_id = resolved["table_id"]
+        base_id = resolved["base_id"]
 
-        url = f"{self.base_url}/api/v3/data/{base_id}/{tableId}/records"
+        url = f"{self.base_url}/api/v3/data/{base_id}/{external_table_id}/records"
         data = records
         is_bulk = isinstance(data, list)
 
@@ -418,21 +370,14 @@ class RuzodbApp(APIApplication):
         Fetch a record by ID.
 
         Args:
-            tableId: Table ID.
-            recordId: Record ID or primary key value.
-            fields: List of specific field names to retrieve.
-
-        Returns:
-            dict: The record object.
-                  Keys include: 'id', 'fields' (dictionary of column values).
-                  Example: {'id': 1, 'fields': {'Title': '...', 'Status': '...'}}
-
-        Tags:
-            read, get, data, records
+            tableId: Table ID (Internal).
         """
-        base_id = await self._get_base_id(tableId)
+        # Resolve
+        resolved = await self._resolve_external_id(tableId)
+        external_table_id = resolved["table_id"]
+        base_id = resolved["base_id"]
 
-        url = f"{self.base_url}/api/v3/data/{base_id}/{tableId}/records/{recordId}"
+        url = f"{self.base_url}/api/v3/data/{base_id}/{external_table_id}/records/{recordId}"
         params = {}
         if fields:
             params["fields"] = ",".join(fields)
@@ -446,21 +391,14 @@ class RuzodbApp(APIApplication):
         Update records in a table.
 
         Args:
-            tableId: Table ID.
-            records: Array of records, each with `id` and `fields` to update.
-                     (Note: Single record dict is also supported)
-
-        Returns:
-            dict | list: The updated record(s).
-                  - Single input (dict): Returns {'records': [{'id': ..., 'fields': {...}}]}
-                  - Bulk input (list): Returns a list of record objects [{'id': ..., 'fields': {...}}, ...]
-
-        Tags:
-            update, data, records, batch
+            tableId: Table ID (Internal).
         """
-        base_id = await self._get_base_id(tableId)
+        # Resolve
+        resolved = await self._resolve_external_id(tableId)
+        external_table_id = resolved["table_id"]
+        base_id = resolved["base_id"]
 
-        url = f"{self.base_url}/api/v3/data/{base_id}/{tableId}/records"
+        url = f"{self.base_url}/api/v3/data/{base_id}/{external_table_id}/records"
         data = records
 
         is_bulk = isinstance(data, list)
@@ -502,21 +440,14 @@ class RuzodbApp(APIApplication):
         Delete records in a table.
 
         Args:
-            tableId: Table ID.
-            records: Array of records with `id` property to delete.
-                     (Note: Single record dict or ID list is also supported)
-
-        Returns:
-            dict: The result of the deletion operation.
-                  Format: {'records': [{'id': ..., 'deleted': True}, ...]}
-                  Note: If deleting > 10 records, returns the result of the last batch.
-
-        Tags:
-            delete, data, records, destructive, batch
+            tableId: Table ID (Internal).
         """
-        base_id = await self._get_base_id(tableId)
+        # Resolve
+        resolved = await self._resolve_external_id(tableId)
+        external_table_id = resolved["table_id"]
+        base_id = resolved["base_id"]
 
-        url = f"{self.base_url}/api/v3/data/{base_id}/{tableId}/records"
+        url = f"{self.base_url}/api/v3/data/{base_id}/{external_table_id}/records"
         record_ids = records
 
         def wrap(item):
@@ -548,21 +479,14 @@ class RuzodbApp(APIApplication):
         Count Records in a Table.
 
         Args:
-            tableId: Table ID.
-            viewId: Optional View ID to count within.
-            where: Optional filter.
-
-        Returns:
-            dict: The count object.
-                  Keys include: 'count'.
-                  Example: {'count': 42}
-
-        Tags:
-            read, count, data, records
+            tableId: Table ID (Internal).
         """
-        base_id = await self._get_base_id(tableId)
+        # Resolve
+        resolved = await self._resolve_external_id(tableId)
+        external_table_id = resolved["table_id"]
+        base_id = resolved["base_id"]
 
-        url = f"{self.base_url}/api/v3/data/{base_id}/{tableId}/count"
+        url = f"{self.base_url}/api/v3/data/{base_id}/{external_table_id}/count"
 
         params = {"viewId": viewId, "where": where}
         params = {k: v for k, v in params.items() if v is not None}
@@ -576,55 +500,39 @@ class RuzodbApp(APIApplication):
         Check a list of values against a specific column and return those that already exist along with their Record ID.
 
         Args:
-            tableId: The ID of the table.
-            fieldName: The name of the column to check.
-            values: A list of values to check for existence.
-            viewId: Optional View ID.
-
-        Returns:
-            List[dict]: A list of dictionaries representing found duplicates.
-                        Keys include: 'value', 'record_id'.
-                        Example: [{'value': 'Dup1', 'record_id': 123}, ...]
-
-        Tags:
-            read, list, data, records, convenience, batch, search
+            tableId: The ID of the table (Internal).
         """
         if not values:
             return []
 
-        base_id = await self._get_base_id(tableId)
-
         existing_values = []
-        chunk_size = 40  # Conservative limit to avoid URL length issues
-
-        # Helper to chunk the list
+        chunk_size = 40
+        
         for i in range(0, len(values), chunk_size):
             chunk = values[i : i + chunk_size]
-
-            # Construct where clause: (field,eq,val1)~or(field,eq,val2)...
-            # We sanitize by ensuring basic string conversion
+            # Construct where clause for (col,eq,val) OR ...
             conditions = [f"({fieldName},eq,{v})" for v in chunk]
             where_clause = "~or".join(conditions)
 
-            # We need the specific field AND the ID
+            # queryRecords handles ID resolution internally
             results = await self.queryRecords(
                 tableId=tableId,
                 viewId=viewId,
                 where=where_clause,
-                fields=[fieldName, "Id", "id"],  # Request ID explicitly to be safe
+                fields=[fieldName, "Id", "id"],
                 limit=1000,
             )
-
+            
             records = results.get("list", []) or results.get("records", [])
             for record in records:
-                # NocoDB V3 wraps data in 'fields'
                 data = record.get("fields", record)
-
-                # Try to get ID from top-level record or nested data
                 rid = record.get("Id") or record.get("id") or data.get("Id") or data.get("id")
-
-                if fieldName in data:
-                    existing_values.append({"value": data[fieldName], "record_id": rid})
+                
+                # Check if value matches (formatting might differ, e.g. string vs int)
+                # But we queried for it, so it should be there.
+                val_in_record = data.get(fieldName)
+                if val_in_record is not None:
+                     existing_values.append({"value": val_in_record, "record_id": rid})
 
         return existing_values
 
@@ -636,33 +544,20 @@ class RuzodbApp(APIApplication):
         where: str = None,
     ) -> dict[str, Any]:
         """
-        Perform aggregations on a table with a filter condition. This allows you to compute summary statistics across your data.
+        Perform aggregations.
 
         Args:
-            tableId: The ID of the table to aggregate data from.
-            aggregations: Array of aggregation operations to perform. Each object must have:
-                          - `field`: The field/column ID (or Title) to aggregate.
-                          - `type`: The aggregation type to perform.
-                          - `alias`: Optional alias for the result key.
-                          
-                          Supported Types:
-                          - Numerical: `sum`, `min`, `max`, `avg`, `median`, `std_dev`, `range`
-                          - All Types: `count`, `count_empty`, `count_filled`, `count_unique`, `percent_empty`, `percent_filled`, `percent_unique`
-                          - Boolean: `checked`, `unchecked`, `percent_checked`, `percent_unchecked`
-                          - Date: `earliest_date`, `latest_date`, `date_range`, `month_range`
-            viewId: Optional View ID. (Required for V2 API, auto-fetched if None)
-            where: Filter condition using NocoDB syntax (e.g., `(status,eq,completed)`).
-
-        Returns:
-            dict: The aggregation results.
-                  Keys are Field Names (or provided aliases).
-                  Example: {'revenue': 5000, 'customer_id': 150}
-
-        Tags:
-            read, data, records, aggregate, batch, statistics
+            tableId: The ID of the table (Internal).
         """
-        # 1. Fetch Schema to map Field Names to IDs and get default View ID
         schema = await self.getTableSchema(tableId)
+        
+        resolved = await self._resolve_external_id(tableId)
+        external_table_id = resolved["table_id"]
+        if not external_table_id: 
+             raise ValueError("Failed to resolve external table ID")
+
+        # 1. Fetch Schema (using Internal ID as getTableSchema expects)
+        # Note: getTableSchema already resolves ID internally, but we need it here for column IDs
         
         # 2. Resolve View ID
         target_view_id = viewId
@@ -671,44 +566,33 @@ class RuzodbApp(APIApplication):
             if views:
                 target_view_id = views[0]["id"]
             else:
-                # Try fetching views explicitly if schema didn't have them
-                base_id = await self._get_base_id(tableId)
-                url_views = f"{self.base_url}/api/v3/meta/bases/{base_id}/tables/{tableId}/views"
+                # If schema doesn't have views, fetch them manually using external ID
+                base_id = resolved["base_id"]
+                url_views = f"{self.base_url}/api/v3/meta/bases/{base_id}/tables/{external_table_id}/views"
                 resp_views = await self._aget(url_views)
                 if resp_views.status_code == 200:
-                     views = resp_views.json().get("list", [])
-                     if views:
-                         target_view_id = views[0]["id"]
+                    views = resp_views.json().get("list", [])
+                    if views:
+                        target_view_id = views[0]["id"]
         
         if not target_view_id:
-             raise ValueError("Could not determine a View ID for aggregation. Please provide 'viewId'.")
+             raise ValueError("Could not determine a View ID for aggregation.")
 
-        # 3. Map Aggregations (Field Name -> Column ID) and Prepare Sequential Execution
-        # NocoDB V2 has a limitation where multiple aggregations on the same field clobber each other in the response 
-        # (e.g. {"Score": 25} overwrites {"Score": 100}). Also, aliases are ignored in the response keys.
-        # To robustly support multiple aggregations and aliases, we must execute them sequentially or grouped by field.
-        # For simplicity and reliability, we will execute them sequentially.
-        
         final_results = {}
         
         for agg in aggregations:
             field_name = agg.get("field")
             col_id = self._get_column_id(schema, field_name)
             agg_type = agg.get("type")
-            alias = agg.get("alias")
+            key = agg.get("alias") or f"{field_name or 'count'}_{agg_type}"
             
-            # Construct single-item aggregation payload
-            single_agg = [{
-                "field": col_id,
-                "type": agg_type
-            }]
+            single_agg = [{"field": col_id, "type": agg_type}]
             
-            # Call V2 API
-            url = f"{self.base_url}/api/v2/tables/{tableId}/aggregate"
+            # Use EXTERNAL Table ID here for V2 aggregation endpoint
+            url = f"{self.base_url}/api/v2/tables/{external_table_id}/aggregate"
             params = {"aggregation": json.dumps(single_agg), "viewId": target_view_id}
             
-            if where:
-                params["where"] = where
+            if where: params["where"] = where
                 
             try:
                 response = await self._aget(url, params=params)
@@ -718,30 +602,17 @@ class RuzodbApp(APIApplication):
                     final_results[key] = data
                     continue
 
-                # data is like {"Score": 25} or {"Id": null}
                 val = None
-                if data:
-                    val = next(iter(data.values()))
+                if data: val = next(iter(data.values()))
                 
-                # Special handling for COUNT on ID returning null (NocoDB bug/quirk?)
                 if val is None and agg_type == "count" and field_name in ["Id", "id"]:
-                    # Find a fallback field (e.g. Title field)
                     non_id_fields = [f for f in schema.get("fields", []) if f.get("title") not in ["Id", "id"]]
                     if non_id_fields:
-                        fallback_field = non_id_fields[0]
-                        fallback_id = fallback_field.get("id")
-                        fallback_agg = [{"field": fallback_id, "type": "count"}]
-                        
+                        fallback_agg = [{"field": non_id_fields[0].get("id"), "type": "count"}]
                         params["aggregation"] = json.dumps(fallback_agg)
-                        resp_retry = await self._aget(url, params=params)
-                        data_retry = self._handle_response(resp_retry)
-                        
-                        if isinstance(data_retry, dict) and data_retry.get("status") == "error":
-                            val = data_retry
-                        elif data_retry:
-                            val = next(iter(data_retry.values()))
+                        data_retry = self._handle_response(await self._aget(url, params=params))
+                        if data_retry: val = next(iter(data_retry.values()))
 
-                # Store result
                 final_results[key] = val
 
             except Exception as e:
