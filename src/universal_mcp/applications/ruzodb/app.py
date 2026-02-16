@@ -107,24 +107,52 @@ class RuzodbApp(APIApplication):
 
     async def getTablesList(self, limit: int = 7, offset: int = 0) -> dict[str, Any]:
         """
-        List tables accessible by user.
+        List all tables accessible by the user with pagination support.
 
         Args:
             limit: Maximum number of tables to return (default: 7).
             offset: Number of tables to skip (default: 0).
 
         Returns:
-            dict: A dictionary containing 'items' (list of tables) and 'total'.
-                  Each table object has 'table_id' (internal), 'title', 'base_id', etc.
+            dict: The list of tables and pagination metadata.
+            - total (int): Total number of tables available.
+            - items (List[dict]): List of table objects.
+                - table_id (str): The unique identifier for the table.
+                - title (str): The display name of the table.
+                - base_id (str): The ID of the base this table belongs to.
+                - is_shared (bool): Whether the table is shared.
+                - is_owner (bool): Whether the user owns this table.
+                - share_url (str, optional): The URL to share the table, if applicable.
+
+        Tags:
+            read, meta, tables, structure, list
         """
         return await self._call_backend("GET", f"/ruzodb/tables?limit={limit}&offset={offset}")
 
     async def getTableSchema(self, tableId: str) -> dict[str, Any]:
         """
-        Get the table schema including fields and views information.
+        Retrieve the detailed schema of a specific table including fields and views.
 
         Args:
-            tableId: Table Id (Internal Human-Readable).
+            tableId: Table ID (Internal Human-Readable).
+
+        Returns:
+            dict: The complete schema definition of the table.
+            - id (str): The unique identifier of the table.
+            - title (str): The name of the table.
+            - base_id (str): The ID of the base this table belongs to.
+            - workspace_id (str): The ID of the workspace.
+            - fields (List[dict]): List of field (column) definitions.
+                - id (str): Field ID.
+                - title (str): Field name.
+                - type (str): Field type definition.
+                - system (bool): Whether it is a system field.
+            - views (List[dict]): List of views defined for this table.
+                - id (str): View ID.
+                - title (str): View name.
+
+        Tags:
+            read, meta, table, schema, structure
         """
         # Resolve internal ID to external ID and Base ID
         resolved = await self._resolve_external_id(tableId)
@@ -144,7 +172,7 @@ class RuzodbApp(APIApplication):
         **kwargs
     ) -> dict[str, Any]:
         """
-        Create a new table in a specific base with optional initial columns, description and metadata.
+        Create a new table within the user's base with optional columns and metadata.
 
         Args:
             title: The display title for the new table.
@@ -164,9 +192,13 @@ class RuzodbApp(APIApplication):
             **kwargs: Additional fields for table creation.
 
         Returns:
-            dict: The created table object.
-                  Keys include: 'id', 'title', 'base_id', 'workspace_id', 'fields' (list of columns), 'views' (list of views).
-                  Example: {'id': '...', 'title': '...', 'fields': [...], 'views': [...]}
+            dict: The created table metadata.
+            - table_id (str): The unique identifier for the new table.
+            - title (str): The table name.
+            - base_id (str): The ID of the base.
+            - is_shared (bool): Sharing status.
+            - is_owner (bool): Ownership status.
+            - share_url (str, optional): URL for sharing.
 
         Raises:
             HTTPError: If the API request fails (e.g., 400 Bad Request if fields are invalid).
@@ -182,22 +214,21 @@ class RuzodbApp(APIApplication):
             )
 
         Tags:
-            create, meta, table, structure
+            create, meta, table, structure, important
         """
         payload = {"title": title, "columns": columns or []}
         return await self._call_backend("POST", "/ruzodb/tables", json_data=payload)
 
     async def deleteTable(self, tableId: str) -> dict[str, Any]:
         """
-        Delete a table by its ID from a specific base.
-
+        Permanently delete a table by its ID.
 
         Args:
             tableId: The ID of the table to delete
 
-
         Returns:
-            dict: An empty dictionary {} on successful deletion.
+            dict: Response containing deletion details.
+            - detail (str): message confirming deletion or status.
 
         Raises:
             HTTPError: If the table does not exist or deletion fails.
@@ -209,14 +240,18 @@ class RuzodbApp(APIApplication):
 
     async def updateTable(self, tableId: str, title: str) -> dict[str, Any]:
         """
-        Update a table (e.g. rename) via backend endpoint to maintain sync.
+        Update a table's metadata such as its title.
 
         Args:
             tableId: The ID of the table to update
             title: The new title for the table.
 
         Returns:
-            dict: The updated table object.
+            dict: The updated table metadata.
+            - table_id (str): The unique identifier.
+            - title (str): The updated name.
+            - base_id (str): The base ID.
+            - is_shared (bool): Sharing status.
 
         Tags:
             update, meta, table, structure
@@ -228,10 +263,24 @@ class RuzodbApp(APIApplication):
         self, tableId: str, title: str, uidt: RuzodbFieldType = "SingleLineText", **kwargs
     ) -> dict[str, Any]:
         """
-        Create a new column (field) in an existing table.
+        Add a new column (field) to an existing table.
 
         Args:
             tableId: The ID of the table (Internal).
+            title: Name of the new column.
+            uidt: Type of the column (e.g., 'SingleLineText', 'Number').
+            **kwargs: Type-specific options.
+
+        Returns:
+            dict: The created field definition.
+            - id (str): Unique identifier for the new column.
+            - table_id (str): The ID of the table containing this column.
+            - title (str): The name of the column.
+            - type (str): The data type code.
+            - system (bool): Whether it is a system column.
+
+        Tags:
+            create, meta, column, structure
         """
         # Resolve
         resolved = await self._resolve_external_id(tableId)
@@ -250,10 +299,17 @@ class RuzodbApp(APIApplication):
 
     async def deleteColumn(self, tableId: str, columnId: str) -> dict[str, Any]:
         """
-        Delete a column (field) by its ID.
+        Permanently remove a column from a table.
 
         Args:
             tableId: The ID of the table (Internal).
+            columnId: The ID of the column to delete.
+
+        Returns:
+            dict: An empty dictionary upon successful deletion, or dict with keys for details.
+
+        Tags:
+            delete, meta, column, structure, destructive
         """
         # Resolve
         resolved = await self._resolve_external_id(tableId)
@@ -277,10 +333,24 @@ class RuzodbApp(APIApplication):
         sort: List[str] = None,
     ) -> dict[str, Any]:
         """
-        List records from a table with pagination and specific filtering using `(Col,Operator,Value)` syntax.
+        Retrieve records from a table with advanced filtering, sorting, and pagination.
 
         Args:
             tableId: Table ID (Internal).
+            limit: Maximum number of records to return (default: 25).
+            offset: Number of records to skip (default: 0).
+            viewId: Optional View ID to scope the query.
+            where: Filter string using `(Col,Operator,Value)` syntax (e.g., `(Name,eq,John)`).
+            fields: List of specific field names to retrieve.
+            sort: List of field names to sort by. Use `-Field` for descending.
+
+        Returns:
+            dict: The query results and pagination info.
+            - records (List[dict]): List of record objects containing field data and metadata (like 'id').
+            - nestedNext (dict or None): Pagination cursor or metadata for next page.
+
+        Tags:
+            read, data, records, list, search
         """
         # Resolve
         resolved = await self._resolve_external_id(tableId)
@@ -312,10 +382,19 @@ class RuzodbApp(APIApplication):
         self, tableId: str, records: List[dict[str, Any]] | dict[str, Any]
     ) -> dict[str, Any] | List[dict[str, Any]]:
         """
-        Create records in a table.
+        Create one or multiple new records in a table.
 
         Args:
             tableId: Table ID (Internal).
+            records: A single dictionary of fields or a list of dictionaries for bulk creation.
+
+        Returns:
+            List[dict]: A list containing the created record objects, even if only one was created.
+            - id (int|str): The ID of the created record.
+            - fields (dict, optional): The field values of the record.
+
+        Tags:
+            create, data, records, batch
         """
         # Resolve
         resolved = await self._resolve_external_id(tableId)
@@ -367,10 +446,20 @@ class RuzodbApp(APIApplication):
 
     async def getRecord(self, tableId: str, recordId: str, fields: List[str] = None) -> dict[str, Any]:
         """
-        Fetch a record by ID.
+        Retrieve a single unique record by its ID.
 
         Args:
             tableId: Table ID (Internal).
+            recordId: The unique ID of the record.
+            fields: Optional list of fields to include in the response.
+
+        Returns:
+            dict: The record object.
+            - id (int|str): The unique ID of the record.
+            - fields (dict, optional): Dictionary of field names and values.
+
+        Tags:
+            read, data, records, detail
         """
         # Resolve
         resolved = await self._resolve_external_id(tableId)
@@ -388,10 +477,19 @@ class RuzodbApp(APIApplication):
         self, tableId: str, records: List[dict[str, Any]] | dict[str, Any]
     ) -> dict[str, Any] | List[dict[str, Any]]:
         """
-        Update records in a table.
+        Update existing records in a table with new value.
 
         Args:
             tableId: Table ID (Internal).
+            records: A single dictionary or list of dictionaries. Each must contain an 'id' or 'Id' key.
+
+        Returns:
+            List[dict]: A list of updated record objects.
+            - id (int|str): The ID of the updated record.
+            - fields (dict, optional): The updated field values.
+
+        Tags:
+            update, data, records, batch
         """
         # Resolve
         resolved = await self._resolve_external_id(tableId)
@@ -437,10 +535,20 @@ class RuzodbApp(APIApplication):
 
     async def deleteRecords(self, tableId: str, records: List[dict[str, Any]] | dict[str, Any]) -> dict[str, Any]:
         """
-        Delete records in a table.
+        Permanently delete one or more records from a table.
 
         Args:
             tableId: Table ID (Internal).
+            records: A single record dictionary/ID, or a list of them. Each item must identify the record to delete.
+
+        Returns:
+            dict: Result of the deletion operation.
+            - records (List[dict]): List of deleted record stubs.
+                - id (int|str): ID of the deleted record.
+                - deleted (bool): Status of deletion.
+
+        Tags:
+            delete, data, records, destructive, batch
         """
         # Resolve
         resolved = await self._resolve_external_id(tableId)
@@ -476,10 +584,19 @@ class RuzodbApp(APIApplication):
 
     async def countRecords(self, tableId: str, viewId: str = None, where: str = None) -> dict[str, Any]:
         """
-        Count Records in a Table.
+        Count the total number of records matching optional filters.
 
         Args:
             tableId: Table ID (Internal).
+            viewId: Optional View ID to restrict scope.
+            where: Optional filter string in `(Col,Operator,Value)` format.
+
+        Returns:
+            dict: The count result.
+            - count (int): The total count of matching records.
+
+        Tags:
+            read, data, records, count
         """
         # Resolve
         resolved = await self._resolve_external_id(tableId)
@@ -497,10 +614,21 @@ class RuzodbApp(APIApplication):
         self, tableId: str, fieldName: str, values: List[str | int | float | bool], viewId: str = None
     ) -> List[dict[str, Any]]:
         """
-        Check a list of values against a specific column and return those that already exist along with their Record ID.
+        Identify existing records that match a specific list of values for a given column.
 
         Args:
             tableId: The ID of the table (Internal).
+            fieldName: The name of the column to check against.
+            values: List of values to check for existence.
+            viewId: Optional View ID to restrict scope.
+
+        Returns:
+            List[dict]: A list of found duplicates.
+            - value (Any): The value that was found in the table.
+            - record_id (int|str): The ID of the existing record containing this value.
+
+        Tags:
+            read, data, records, convenience, search
         """
         if not values:
             return []
@@ -544,10 +672,23 @@ class RuzodbApp(APIApplication):
         where: str = None,
     ) -> dict[str, Any]:
         """
-        Perform aggregations.
+        Perform aggregation calculations (e.g., avg, sum) on table data.
 
         Args:
             tableId: The ID of the table (Internal).
+            aggregations: List of aggregation requests. Each dict must have:
+                          - field: Name of the column.
+                          - type: Function (avg, sum, min, max, count).
+                          - alias: Optional custom key for the result.
+            viewId: Optional View ID.
+            where: Optional filter string.
+
+        Returns:
+            dict: Dictionary where keys are aliases (or generated names) and values are the computed results.
+            Example: {'Age_avg': 25.5, 'Total_Revenue': 5000}
+
+        Tags:
+            read, data, analytics, aggregation
         """
         schema = await self.getTableSchema(tableId)
         
