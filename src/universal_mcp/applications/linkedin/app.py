@@ -1330,8 +1330,7 @@ class LinkedinApp(APIApplication):
             self.list_received_invitations,
             self.handle_received_invitation,
             self.list_followers,
-            # self.list_followers,     missing from unipile
-            self.list_following,
+            # self.list_following,
             self.list_relations,
             self.list_job_postings,
             self.create_job_posting,

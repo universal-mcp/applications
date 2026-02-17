@@ -333,7 +333,7 @@ class RuzodbApp(APIApplication):
         sort: List[str] = None,
     ) -> dict[str, Any]:
         """
-        Retrieve records from a table with advanced filtering, sorting, and pagination.
+        Retrieve records from a table with advanced filtering, sorting, and pagination. Use `~and` and `~or` for combining conditions.
 
         Args:
             tableId: Table ID (Internal).
