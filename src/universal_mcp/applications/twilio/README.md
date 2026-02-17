@@ -1,11 +1,13 @@
-# TwilioApp MCP Server
+---
+name: twilio
+description: Application for interacting with the Twilio Messaging API using the official Python SDK.
+---
 
-An MCP Server for the TwilioApp API.
+# Twilio Integration
 
-## 🛠️ Tool List
+Application for interacting with the Twilio Messaging API using the official Python SDK.
 
-This is automatically generated from OpenAPI schema for the TwilioApp API.
-
+## Available Tools
 
 | Tool | Description |
 |------|-------------|

@@ -1,63 +1,35 @@
-# Twitter MCP Application
+---
+name: twitter
+description: Twitter API integration with essential day-to-day functions.
+---
 
-A streamlined Twitter API integration with essential day-to-day functions for interacting with Twitter/X.
+# Twitter Integration
 
-## Features
+Twitter API integration with essential day-to-day functions.
 
-This application provides a focused set of the most commonly used Twitter API functions, organized by category:
+## Available Tools
 
-### Tweet Operations
-- **create_tweet** - Post tweets with text, media, polls, or as replies/quotes
-- **delete_tweet** - Permanently delete a tweet
-- **get_tweet** - Retrieve detailed tweet information
-- **search_recent_tweets** - Search tweets from the past 7 days
-
-### User Operations
-- **get_authenticated_user** - Get the authenticated user's profile
-- **get_user_by_username** - Look up user by username/handle
-- **get_user_by_id** - Look up user by ID
-- **search_users** - Search for users by query
-
-### Timeline Operations
-- **get_user_tweets** - Get tweets from a user's timeline
-- **get_user_mentions** - Get tweets mentioning a user
-
-### Social Interactions
-- **like_tweet** / **unlike_tweet** - Like/unlike tweets
-- **retweet** / **unretweet** - Retweet/unretweet tweets
-- **get_liked_tweets** - Get tweets liked by a user
-- **get_liking_users** - Get users who liked a tweet
-- **get_retweeters** - Get users who retweeted a tweet
-
-### Follow Operations
-- **follow_user** / **unfollow_user** - Follow/unfollow users
-- **get_followers** - Get a user's followers
-- **get_following** - Get users a user is following
-
-### Direct Messages
-- **send_dm** - Send a direct message
-- **get_dm_events** - Get DM conversations
-
-### Bookmarks
-- **bookmark_tweet** / **remove_bookmark** - Bookmark/unbookmark tweets
-- **get_bookmarks** - Get bookmarked tweets
-
-### Lists
-- **create_list** - Create a new list
-- **get_list** - Get list details
-- **get_list_tweets** - Get tweets from a list
-
-## Authentication
-
-Requires Twitter API credentials configured through the integration system.
-
-## Design Philosophy
-
-This application focuses on the most common day-to-day Twitter operations, excluding:
-- Streaming endpoints (firehose, compliance streams)
-- Advanced analytics and metrics
-- Spaces operations
-- Trend tracking
-- Compliance and batch operations
-
-The goal is to provide a clean, focused API for typical Twitter interactions without the complexity of the full API surface.
+| Tool | Description |
+|------|-------------|
+| `create_tweet` | Posts a new tweet with text, media, polls, or as a reply/quote. Supports various tweet formats including replies, quotes, media attachments, and polls with customizable visibility settings. |
+| `delete_tweet` | Permanently deletes a specific tweet by its unique ID on behalf of the authenticated user. This action cannot be undone and removes the tweet from all timelines. |
+| `get_tweet` | Retrieves detailed information for a single tweet by its unique ID with customizable fields. Allows fetching tweet metrics, media details, author information, and more. |
+| `search_recent_tweets` | Searches for tweets from the past seven days matching a specific query with filtering and pagination. Supports advanced Twitter search operators for precise results. NOTE: This endpoint requires elevated Twitter API access (Pro/Enterprise tier). |
+| `get_authenticated_user` | Retrieves detailed information about the currently authenticated user making the API request. Returns profile data for the account whose credentials are being used. |
+| `get_user_by_username` | Retrieves detailed profile information for a specific user by their username (handle). Fetches public profile data and optionally includes pinned tweets and metrics. |
+| `get_user_by_id` | Retrieves detailed profile information for a specific user by their unique user ID. Fetches public profile data and optionally includes pinned tweets and metrics. |
+| `get_user_tweets` | Retrieves tweets authored by a specific user in reverse chronological order with filtering options. Fetches original tweets, retweets, and replies based on exclude parameters. |
+| `get_user_mentions` | Retrieves tweets mentioning a specific user in reverse chronological order with time-based filtering. Finds all tweets that mention the user's @username. |
+| `get_liked_tweets` | Retrieves tweets liked by a specific user in reverse chronological order with pagination. Shows the user's like history with customizable field selections. |
+| `retweet` | Causes the authenticated user to retweet a specific tweet by its ID. Shares the tweet to the user's followers and appears on their timeline. |
+| `unretweet` | Removes a retweet from the authenticated user's timeline. Reverses a previous retweet action and removes it from the user's profile. |
+| `get_retweeters` | Retrieves a list of users who retweeted a specific tweet with pagination support. Shows who amplified the tweet with customizable user field selections. |
+| `get_liking_users` | Retrieves a list of users who liked a specific tweet with pagination support. Shows who engaged with the tweet through likes with customizable user fields. |
+| `follow_user` | Causes the authenticated user to follow another user by their user ID. Creates a following relationship and adds the target to the user's following list. |
+| `unfollow_user` | Causes the authenticated user to unfollow another user by their user ID. Removes the following relationship and stops seeing their tweets in the timeline. |
+| `bookmark_tweet` | Bookmarks a specific tweet for the authenticated user for later reference. Saves the tweet to the user's private bookmarks collection. |
+| `remove_bookmark` | Removes a bookmarked tweet from the authenticated user's bookmarks collection. Reverses a previous bookmark action and removes the saved tweet. |
+| `get_bookmarks` | Retrieves all bookmarked tweets for the authenticated user with pagination support. Shows the user's saved tweets with customizable field selections. |
+| `create_list` | Creates a new Twitter list with customizable name, description, and privacy settings. Allows organizing users into curated groups for focused timelines. |
+| `get_list` | Retrieves detailed information for a specific Twitter list by its unique ID. Fetches list metadata including name, description, owner, and member count. |
+| `get_list_tweets` | Retrieves tweets from a specific Twitter list's timeline in reverse chronological order. Shows tweets from all list members with pagination and customizable fields. |

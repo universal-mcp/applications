@@ -1,11 +1,13 @@
-# AwsS3App MCP Server
+---
+name: aws-s3
+description: A class to interact with Amazon S3.
+---
 
-An MCP Server for the AwsS3App API.
+# AwsS3 Integration
 
-## 🛠️ Tool List
+A class to interact with Amazon S3.
 
-This is automatically generated from OpenAPI schema for the AwsS3App API.
-
+## Available Tools
 
 | Tool | Description |
 |------|-------------|

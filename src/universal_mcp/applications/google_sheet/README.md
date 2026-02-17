@@ -1,11 +1,13 @@
-# GoogleSheetApp MCP Server
+---
+name: google-sheet
+description: Application for interacting with Google Sheets API. Provides tools to create and manage Google Spreadsheets.
+---
 
-An MCP Server for the GoogleSheetApp API.
+# GoogleSheet Integration
 
-## 🛠️ Tool List
+Application for interacting with Google Sheets API. Provides tools to create and manage Google Spreadsheets.
 
-This is automatically generated from OpenAPI schema for the GoogleSheetApp API.
-
+## Available Tools
 
 | Tool | Description |
 |------|-------------|
@@ -35,3 +37,4 @@ This is automatically generated from OpenAPI schema for the GoogleSheetApp API.
 | `set_basic_filter` | Sets or updates a basic filter on a specified range within a sheet, enabling data sorting and filtering. The filter's target range and optional sort specifications are defined in a dictionary argument. It is the counterpart to `clear_basic_filter`, which removes an existing filter. |
 | `format_cells` | Applies comprehensive formatting to a specified cell range in a worksheet. It modifies visual properties like text style, color, alignment, borders, and can merge cells, without altering the underlying cell values, distinguishing it from data-modification functions like `update_values`. |
 | `batch_update_values` | Updates multiple ranges of values in a spreadsheet in a single batch request. This method allows you to update several disjoint ranges or multiple sheets simultaneously, which is more efficient than making separate calls for each range. |
+| `batch_update_by_data_filter` | Updates multiple ranges of values in a spreadsheet based on data filters. This method allows updating values using criteria like A1 ranges or grid ranges, providing more flexibility than standard batch updates. |

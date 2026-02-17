@@ -8,6 +8,13 @@ from universal_mcp.integrations import Integration
 
 
 class GoogleMailApp(APIApplication):
+    """
+    Gmail integration for email management and communication.
+    Send, read, search, and manage emails, drafts, labels, and filters with full message control.
+    Supports thread replies, HTML/plain text formatting, attachments, and advanced filtering.
+    Ideal for email automation, inbox management, message organization, and communication workflows.
+    """
+
     def __init__(self, integration: Integration) -> None:
         super().__init__(name="google_mail", integration=integration)
         self.base_api_url = "https://gmail.googleapis.com/gmail/v1/users/me"

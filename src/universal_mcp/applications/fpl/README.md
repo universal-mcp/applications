@@ -1,11 +1,13 @@
-# FplApp MCP Server
+---
+name: fpl
+description: Base class for Universal MCP Applications.
+---
 
-An MCP Server for the FplApp API.
+# Fpl Integration
 
-## 🛠️ Tool List
+Base class for Universal MCP Applications.
 
-This is automatically generated from OpenAPI schema for the FplApp API.
-
+## Available Tools
 
 | Tool | Description |
 |------|-------------|

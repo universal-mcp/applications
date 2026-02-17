@@ -74,6 +74,159 @@ def search(
 
 ---
 
+## Application Class Docstrings
+
+The application class docstring is the primary source of information for AI agents to understand what the integration does and when to use it. A well-written docstring helps agents discover the right application for a task and understand its core capabilities at a glance.
+
+### What Makes a Good App Docstring
+
+A good application docstring should:
+1. **Start with a clear, one-sentence summary** - What service does this integrate with and what is its primary purpose?
+2. **Highlight key capabilities** - What are the main things users can do with this app?
+3. **Mention unique features** - What makes this service special or different from alternatives?
+4. **Indicate common use cases** - When should an agent choose this app over others?
+5. **Keep it concise** - Aim for 3-7 lines; agents need to parse this quickly
+
+### Structure Template
+
+```python
+class YourApp(APIApplication):
+    """
+    [Service Name] integration for [primary purpose].
+    [Key capability 1], [key capability 2], and [key capability 3].
+    [Unique feature or differentiator].
+    Ideal for [common use case 1], [common use case 2], and [common use case 3].
+    """
+```
+
+### Examples: Good App Docstrings
+
+**Example 1: Search/Research Service**
+```python
+class PerplexityApp(APIApplication):
+    """
+    Perplexity AI integration for real-time web search and research with citations.
+    Performs searches across the internet and returns natural language answers with source attribution.
+    Supports multiple models including reasoning-focused and deep research modes.
+    Ideal for current events, fact-checking, research tasks, and any query requiring up-to-date information.
+    """
+```
+
+**Example 2: Project Management Service**
+```python
+class AsanaApp(APIApplication):
+    """
+    Asana integration for project and task management.
+    Create, update, and organize tasks, projects, and teams with full workspace management.
+    Supports custom fields, attachments, comments, and project templates.
+    Ideal for tracking work, managing deadlines, coordinating teams, and maintaining project workflows.
+    """
+```
+
+**Example 3: Communication Service**
+```python
+class SlackApp(APIApplication):
+    """
+    Slack integration for team communication and workspace management.
+    Send messages, create channels, manage users, and interact with conversations across workspaces.
+    Supports file uploads, thread replies, reactions, and rich message formatting with blocks.
+    Ideal for team notifications, automated responses, workspace administration, and chat-based workflows.
+    """
+```
+
+**Example 4: File Storage Service**
+```python
+class GoogleDriveApp(APIApplication):
+    """
+    Google Drive integration for cloud file storage and collaboration.
+    Upload, download, search, share, and organize files and folders with full permission management.
+    Supports all file types including Google Docs, Sheets, Slides, and external formats.
+    Ideal for document management, file sharing, backup operations, and collaborative workflows.
+    """
+```
+
+**Example 5: CRM Service**
+```python
+class HubSpotApp(APIApplication):
+    """
+    HubSpot integration for customer relationship management and marketing automation.
+    Manage contacts, companies, deals, tickets, and track customer interactions across the sales pipeline.
+    Supports custom properties, email tracking, workflow automation, and detailed analytics.
+    Ideal for lead management, sales tracking, customer support, and marketing campaigns.
+    """
+```
+
+### Examples: Bad App Docstrings
+
+**❌ BAD: Too vague and generic**
+```python
+class TwitterApp(APIApplication):
+    """Twitter API integration."""
+```
+*Problem: Doesn't explain what you can do with it or why you'd use it.*
+
+**❌ BAD: Too technical, no use cases**
+```python
+class GitHubApp(APIApplication):
+    """
+    Provides programmatic access to the GitHub REST API v3 endpoints.
+    Implements OAuth2 authentication flow with repository and organization scopes.
+    """
+```
+*Problem: Focuses on technical details instead of capabilities and use cases.*
+
+**❌ BAD: Too long and detailed**
+```python
+class NotionApp(APIApplication):
+    """
+    Notion is an all-in-one workspace that combines note-taking, project management,
+    and database functionality. This integration allows you to interact with Notion's
+    API to perform various operations. You can create pages, update content, query
+    databases, add comments, and much more. The API supports both page-level and
+    block-level operations. Pages can contain different types of blocks including
+    text, headings, lists, code blocks, and embeds. Databases support properties
+    like text, numbers, dates, relations, and formulas.
+    """
+```
+*Problem: Too verbose, agent will skip over this. Should be concise.*
+
+**❌ BAD: Lists endpoints instead of capabilities**
+```python
+class StripeApp(APIApplication):
+    """
+    Stripe integration with endpoints for /customers, /charges, /subscriptions,
+    /invoices, /products, and /payment_methods.
+    """
+```
+*Problem: Lists API structure instead of user-facing capabilities.*
+
+### Best Practices for App Docstrings
+
+1. **Start with the service name** - Make it immediately clear which service this integrates with
+2. **Use active, capability-focused language** - "Create, update, manage" not "Provides access to"
+3. **Mention 3-5 key capabilities** - The most important things users can do
+4. **Highlight what makes it unique** - Real-time data, citations, automation, etc.
+5. **Include 3-4 common use cases** - Help agents understand when to use this app
+6. **Avoid marketing language** - Be direct and factual, not promotional
+7. **Don't list all features** - Focus on the most important and commonly used capabilities
+8. **Keep it scannable** - Use consistent structure so agents can quickly parse multiple apps
+
+### Quick Reference Format
+
+For consistency across all applications, follow this format:
+
+```python
+class ServiceNameApp(APIApplication):
+    """
+    [Service] integration for [primary purpose/category].
+    [Verb] [capability 1], [verb] [capability 2], and [verb] [capability 3] with [key feature].
+    Supports [special feature 1], [special feature 2], and [special feature 3].
+    Ideal for [use case 1], [use case 2], [use case 3], and [use case 4].
+    """
+```
+
+---
+
 ## Creating a New Application
 
 This section provides a step-by-step workflow for creating a new API integration application from scratch.
@@ -106,7 +259,12 @@ from universal_mcp.integrations import Integration
 
 
 class YourAppNameApp(APIApplication):
-    """Brief description of what this API integration does."""
+    """
+    [Service Name] integration for [primary purpose].
+    [Key capability 1], [key capability 2], and [key capability 3].
+    Supports [special feature 1], [special feature 2], and [special feature 3].
+    Ideal for [use case 1], [use case 2], and [use case 3].
+    """
 
     def __init__(self, integration: Integration = None, **kwargs) -> None:
         super().__init__(name="your_app_name", integration=integration, **kwargs)
@@ -515,6 +673,7 @@ async def get_my_posts(
 When creating a new application, ensure:
 
 - [ ] Application class inherits from `APIApplication`
+- [ ] Application class has clear, comprehensive docstring (service name, key capabilities, unique features, use cases)
 - [ ] Integration is injected via `__init__` parameter
 - [ ] All tool methods are `async` (except `list_tools`)
 - [ ] Each tool has comprehensive docstring with Args, Returns, Raises, Tags
@@ -539,7 +698,12 @@ from universal_mcp.integrations import Integration
 
 
 class MinimalApp(APIApplication):
-    """Minimal example application demonstrating best practices."""
+    """
+    Minimal Example API integration for demonstrating best practices and serving as a template.
+    Create, retrieve, and manage items with full CRUD operations and user authentication.
+    Supports filtering, custom fields, and authenticated user info retrieval.
+    Ideal for learning the application structure, testing new patterns, and bootstrapping new integrations.
+    """
 
     def __init__(self, integration: Integration = None, **kwargs) -> None:
         super().__init__(name="minimal", integration=integration, **kwargs)

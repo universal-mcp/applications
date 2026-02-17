@@ -1,11 +1,13 @@
-# HttpToolsApp MCP Server
+---
+name: http-tools
+description: Base class for Universal MCP Applications.
+---
 
-An MCP Server for the HttpToolsApp API.
+# HttpTools Integration
 
-## 🛠️ Tool List
+Base class for Universal MCP Applications.
 
-This is automatically generated from OpenAPI schema for the HttpToolsApp API.
-
+## Available Tools
 
 | Tool | Description |
 |------|-------------|

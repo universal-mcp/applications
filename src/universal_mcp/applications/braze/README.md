@@ -1,11 +1,13 @@
-# BrazeApp MCP Server
+---
+name: braze
+description: Base class for applications interacting with RESTful HTTP APIs. Extends `BaseApplication` to provide functionalities specific to API-based integrations. This includes managing an `httpx.Client` for making HTTP requests, handling authentication headers, processing responses, and offering convenient methods for common HTTP verbs (GET, POST, PUT, DELETE, PATCH). Attributes: name (str): The name of the application. integration (Integration | None): An optional Integration object responsible for managing authentication and credentials. default_timeout (int): The default timeout in seconds for HTTP requests. base_url (str): The base URL for the API endpoint. This should be set by the subclass. _client (httpx.Client | None): The internal httpx client instance.
+---
 
-An MCP Server for the BrazeApp API.
+# Braze Integration
 
-## 🛠️ Tool List
+Base class for applications interacting with RESTful HTTP APIs. Extends `BaseApplication` to provide functionalities specific to API-based integrations. This includes managing an `httpx.Client` for making HTTP requests, handling authentication headers, processing responses, and offering convenient methods for common HTTP verbs (GET, POST, PUT, DELETE, PATCH). Attributes: name (str): The name of the application. integration (Integration | None): An optional Integration object responsible for managing authentication and credentials. default_timeout (int): The default timeout in seconds for HTTP requests. base_url (str): The base URL for the API endpoint. This should be set by the subclass. _client (httpx.Client | None): The internal httpx client instance.
 
-This is automatically generated from OpenAPI schema for the BrazeApp API.
-
+## Available Tools
 
 | Tool | Description |
 |------|-------------|
@@ -86,7 +88,7 @@ This is automatically generated from OpenAPI schema for the BrazeApp API.
 | `create_user` | Create New Dashboard User Account |
 | `list_invalid_phone_numbers` | Query Invalid Phone Numbers |
 | `remove_invalid_phone_numbers` | Remove Invalid Phone Numbers |
-| `get_subscription_status` | List User's  Subscription Group Status - SMS |
+| `get_subscription_status` | List User's Subscription Group Status - SMS |
 | `get_subscription_user_status` | List User's Subscription Group - SMS |
 | `set_subscription_status` | Update User's Subscription Group Status - SMS |
 | `set_subscription_status_post` | Update User's Subscription Group Status V2 |
