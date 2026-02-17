@@ -80,7 +80,7 @@ APPS = [
     "trello",
     "twilio",
     "twitter",
-    "unipile",
+
     "whatsapp",
     "whatsapp_business",
     "wrike",

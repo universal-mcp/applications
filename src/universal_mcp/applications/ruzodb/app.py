@@ -332,27 +332,152 @@ class RuzodbApp(APIApplication):
         fields: List[str] = None,
         sort: List[str] = None,
     ) -> dict[str, Any]:
-        """
-        Retrieve records from a table with advanced filtering, sorting, and pagination. Use `~and` and `~or` for combining conditions.
-
-        Args:
-            tableId: Table ID (Internal).
-            limit: Maximum number of records to return (default: 25).
-            offset: Number of records to skip (default: 0).
-            viewId: Optional View ID to scope the query.
-            where: Filter string using `(Col,Operator,Value)` syntax (e.g., `(Name,eq,John)`).
-            fields: List of specific field names to retrieve.
-            sort: List of field names to sort by. Use `-Field` for descending.
-
-        Returns:
-            dict: The query results and pagination info.
-            - records (List[dict]): List of record objects containing field data and metadata (like 'id').
-            - nestedNext (dict or None): Pagination cursor or metadata for next page.
-
-        Tags:
-            read, data, records, list, search
-        """
-        # Resolve
+    """Retrieve records from a table with advanced filtering, sorting, and pagination.
+    FILTERING SYNTAX:
+        Basic: (Column,Operator,Value)
+        Examples:
+            - (Name,eq,John) - Name equals "John"
+            - (Age,gt,18) - Age greater than 18
+            - (Status,neq,Active) - Status not equals "Active"
+            - (Email,is,null) - Email is null/empty
+        
+        Combining Conditions:
+            - AND: (Col1,op,val1)~and(Col2,op,val2)
+            - OR: (Col1,op,val1)~or(Col2,op,val2)
+            - Complex: (A,eq,1)~and((B,eq,2)~or(C,eq,3))
+        
+        Examples:
+            - "(Approved,eq,true)~and(Status,neq,Completed)"
+            - "(Age,gt,18)~or(Country,eq,US)"
+            - "(Qualified,eq,Yes)~and(Owner,is,null)"
+    AVAILABLE OPERATORS:
+        - eq: Equals
+        - neq: Not equals
+        - gt: Greater than
+        - gte: Greater than or equal
+        - lt: Less than
+        - lte: Less than or equal
+        - is: Is (use with 'null' for null checks)
+        - like: Pattern matching (use % as wildcard)
+    PAGINATION:
+        The API returns data in pages to handle large datasets efficiently.
+        
+        How it works:
+            - Set 'limit' to control records per page (min: 1, max: 1000, default: 25)
+            - Use 'offset' to skip records (offset=0 for first page, offset=limit for second page)
+            - Response includes 'next' field with URL if more pages exist
+            - Response includes 'nestedNext' field (usually None)
+        
+        IMPORTANT: The API enforces a hard maximum of 1000 records per request.
+        Requesting limit > 1000 will only return 1000 records.
+        
+        To fetch ALL records with filtering:
+            all_records = []
+            limit = 1000  # Maximum allowed
+            offset = 0
+            max_offset = 20000  # Safety limit
+            
+            while offset < max_offset:
+                response = await ruzodb__queryRecords(
+                    tableId=table_id,
+                    limit=limit,
+                    offset=offset,
+                    where="(Status,eq,Active)"
+                )
+                
+                records = response.get('records', [])
+                if not records:
+                    break  # No more records
+                
+                all_records.extend(records)
+                offset += limit
+        
+        IMPORTANT: Filters are applied BEFORE pagination, so limit/offset work on 
+        filtered results, not all table records.
+    SORTING:
+        - Single field: sort=["Name"]
+        - Descending: sort=["-CreatedAt"]
+        - Multiple: sort=["Status", "-CreatedAt"]
+    Args:
+        tableId: Table ID (Internal). Required.
+        limit: Maximum number of records to return per page.
+            - Minimum: 1
+            - Maximum: 1000 (hard limit enforced by API)
+            - Default: 25 (when not specified, 0, or negative)
+            - Values > 1000 are silently capped at 1000
+        offset: Number of records to skip for pagination (default: 0).
+        viewId: Optional View ID to scope the query to a specific view.
+        where: Filter string using the syntax described above.
+        fields: List of specific field names to retrieve. If None, returns all fields.
+        sort: List of field names to sort by. Prefix with "-" for descending order.
+    Returns:
+        dict: Query results and pagination metadata
+            - records (List[dict]): List of record objects, each containing:
+                - id (int|str): Unique record identifier
+                - fields (dict): Field names and their values
+                - Other metadata fields (CreatedAt, UpdatedAt, etc.)
+            - next (str|None): URL for the next page if more records exist, None otherwise
+            - nestedNext (dict|None): Additional pagination metadata (rarely used)
+    Examples:
+        # Simple filter
+        records = await ruzodb__queryRecords(
+            tableId="table_abc123",
+            where="(Status,eq,Active)",
+            limit=100
+        )
+        
+        # Combined filters with sorting
+        records = await ruzodb__queryRecords(
+            tableId="table_abc123",
+            where="(Approved,eq,true)~and(Lead extracted,neq,true)",
+            sort=["-CreatedAt"],
+            limit=1000  # Use maximum for efficiency
+        )
+        
+        # Pagination loop to fetch all records
+        all_records = []
+        offset = 0
+        while offset < 20000:
+            resp = await ruzodb__queryRecords(
+                tableId="table_abc123",
+                where="(Qualified,is,null)",
+                limit=1000,  # Maximum allowed
+                offset=offset
+            )
+            records = resp.get('records', [])
+            if not records:
+                break
+            all_records.extend(records)
+            offset += 1000
+        
+        # Specific fields only
+        records = await ruzodb__queryRecords(
+            tableId="table_abc123",
+            fields=["Name", "Email", "Status"],
+            limit=50
+        )
+        
+        # Check if any records exist
+        records = await ruzodb__queryRecords(
+            tableId="table_abc123",
+            where="(Status,eq,Pending)",
+            limit=1  # Minimum for existence check
+        )
+        has_pending = len(records.get('records', [])) > 0
+    Limit Recommendations:
+        - Existence check: limit=1
+        - UI pagination: limit=25-100
+        - Batch processing: limit=1000 (optimal - uses maximum allowed)
+        - Never use limit > 1000 (will be capped at 1000 anyway)
+    Notes:
+        - Date filtering in where clause may not work reliably; filter dates in Python after fetching
+        - Some field types may not support where clause filtering; test before production use
+        - Always use limit=1000 for batch operations to minimize API calls
+        - limit=0 or negative values default to 25 records
+        - Always implement pagination for tables with >1000 records
+    Tags:
+        read, data, records, list, search, filter, pagination
+    """
         resolved = await self._resolve_external_id(tableId)
         external_table_id = resolved["table_id"]
         base_id = resolved["base_id"]
