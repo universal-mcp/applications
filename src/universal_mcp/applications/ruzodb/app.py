@@ -1,6 +1,5 @@
 from typing import Any, List, Literal
 import json
-from loguru import logger
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
@@ -42,14 +41,14 @@ class RuzodbApp(APIApplication):
     Includes 6 Data operations and 4 Meta operations.
     """
 
-    def __init__(self, integration: Integration = None, base_url: str = None, **kwargs) -> None:
+    def __init__(self, integration: Integration = None, base_url: str | None = None, **kwargs) -> None:
         super().__init__(name="ruzodb", integration=integration, **kwargs)
         self.base_url = base_url or "https://nocodb.agentr.dev"
 
         self._base_id = None
 
 
-    async def _call_backend(self, method: str, path: str, json_data: dict = None) -> dict[str, Any]:
+    async def _call_backend(self, method: str, path: str, json_data: dict | None = None) -> dict[str, Any]:
         """Helper to call AgentR backend endpoints."""
         async with self.integration.client.aclient() as client:
             response = await client.request(method, path, json=json_data)
@@ -76,9 +75,15 @@ class RuzodbApp(APIApplication):
                  # table_id: internal
                  # external_table_id: external (added in last backend step)
                  # base_id: external
+                 external_table_id = response.get("external_table_id")
+                 base_id = response.get("base_id")
+
+                 if not isinstance(external_table_id, str) or not isinstance(base_id, str):
+                     raise ValueError(f"Invalid response from backend: 'external_table_id' and 'base_id' must be strings. Got: {response}")
+
                  return {
-                     "table_id": response.get("external_table_id"),
-                     "base_id": response.get("base_id")
+                     "table_id": external_table_id,
+                     "base_id": base_id
                  }
             
             raise ValueError(f"Unexpected response format for table {human_readable_id}")
@@ -92,8 +97,10 @@ class RuzodbApp(APIApplication):
         resolved = await self._resolve_external_id(table_id)
         return resolved["base_id"]
 
-    def _get_column_id(self, schema: dict, field_name: str) -> str:
+    def _get_column_id(self, schema: dict, field_name: str | None) -> str | None:
         """Helper to find column ID by name from schema."""
+        if not field_name:
+            return field_name
         fields = schema.get("fields", [])
         for f in fields:
             if f.get("title") == field_name or f.get("column_name") == field_name:
@@ -166,9 +173,9 @@ class RuzodbApp(APIApplication):
     async def createTable(
         self,
         title: str,
-        columns: List[dict[str, Any]] = None,
-        description: str = None,
-        meta: dict[str, Any] = None,
+        columns: List[dict[str, Any]] | None = None,
+        description: str | None = None,
+        meta: dict[str, Any] | None = None,
         **kwargs
     ) -> dict[str, Any]:
         """
@@ -327,10 +334,10 @@ class RuzodbApp(APIApplication):
         tableId: str,
         limit: int = 25,
         offset: int = 0,
-        viewId: str = None,
-        where: str = None,
-        fields: List[str] = None,
-        sort: List[str] = None,
+        viewId: str | None = None,
+        where: str | None = None,
+        fields: List[str] | None = None,
+        sort: List[str] | None = None,
     ) -> dict[str, Any]:
         """Retrieve records from a table with advanced filtering, sorting, and pagination.
         FILTERING SYNTAX:
@@ -518,6 +525,9 @@ class RuzodbApp(APIApplication):
             - id (int|str): The ID of the created record.
             - fields (dict, optional): The field values of the record.
 
+        Raises:
+            ValueError: If the records contain columns that do not exist in the table schema.
+
         Tags:
             create, data, records, batch
         """
@@ -526,9 +536,60 @@ class RuzodbApp(APIApplication):
         external_table_id = resolved["table_id"]
         base_id = resolved["base_id"]
 
-        url = f"{self.base_url}/api/v3/data/{base_id}/{external_table_id}/records"
+        # Validate columns against schema
+        # 1. Extract all unique field names from records
+        input_fields = set()
         data = records
         is_bulk = isinstance(data, list)
+        
+        if is_bulk:
+            for item in data:
+                if isinstance(item, dict):
+                     # Handle both direct dict and {"fields": ...} format just in case, 
+                     # though type hint says dict[str, Any] usually means fields directly or wrapped.
+                     # The code below wraps them if valid, but we need to check keys.
+                     # NocoDB payload usually expects "fields" key if wrapping, or just keys.
+                     # The existing code wraps: payload = [{"fields": item} if "fields" not in item else item ...]
+                     # So input 'records' are likely just dictionaries of field_name: value.
+                     # Let's assume keys of the dict are field names, unless it has "fields" key.
+                     if "fields" in item and isinstance(item["fields"], dict):
+                         input_fields.update(item["fields"].keys())
+                     else:
+                         input_fields.update(item.keys())
+        elif isinstance(data, dict):
+            if "fields" in data and isinstance(data["fields"], dict):
+                input_fields.update(data["fields"].keys())
+            else:
+                input_fields.update(data.keys())
+
+        # 2. Get existing schema fields
+        # usage of getTableSchema requires internal human-readable id or external if we knew it matches validation?
+        # createRecords takes 'tableId' which is internal.
+        try:
+            schema = await self.getTableSchema(tableId)
+            existing_fields = {f.get("title") for f in schema.get("fields", [])}
+            existing_fields.add("id")
+            existing_fields.add("Id")
+            existing_fields.add("created_at")
+            existing_fields.add("updated_at")
+            
+            # 3. Find unknown fields
+            unknown_fields = input_fields - existing_fields
+            
+            if unknown_fields:
+                raise ValueError(f"Unknown columns found in records: {', '.join(unknown_fields)}. Please create these columns first or check your spelling.")
+                
+        except Exception as e:
+            # If schema fetch fails or other error, we should probably let it bubble up 
+            # OR just strictly fail if it was the validation error.
+            if isinstance(e, ValueError):
+                raise e
+            # logging.warning(f"Schema validation failed, proceeding with create: {e}") 
+            # User wants strict error, but if getTableSchema fails (e.g. network), that's also an error.
+            # getTableSchema might raise unrelated errors.
+            raise
+
+        url = f"{self.base_url}/api/v3/data/{base_id}/{external_table_id}/records"
 
         if is_bulk:
             payload = [{"fields": item} if "fields" not in item else item for item in data]
@@ -537,12 +598,14 @@ class RuzodbApp(APIApplication):
                 payload = {"fields": data}
             else:
                 payload = data
+        else:
+            raise ValueError("records must be a list or a dictionary")
 
         chunk_size = 10
         all_records = []
         
         # If not bulk, payload is a dict, just make one call
-        if not is_bulk:
+        if isinstance(payload, dict):
             response = await self._apost(url, data=payload)
             res_json = self._handle_response(response)
             if isinstance(res_json, dict) and "records" in res_json:
@@ -569,7 +632,7 @@ class RuzodbApp(APIApplication):
 
         return all_records
 
-    async def getRecord(self, tableId: str, recordId: str, fields: List[str] = None) -> dict[str, Any]:
+    async def getRecord(self, tableId: str, recordId: str, fields: List[str] | None = None) -> dict[str, Any]:
         """
         Retrieve a single unique record by its ID.
 
@@ -637,7 +700,7 @@ class RuzodbApp(APIApplication):
 
         payload = [wrap(i) for i in data] if is_bulk else wrap(data)
 
-        if not is_bulk:
+        if isinstance(payload, dict):
             response = await self._apatch(url, data=payload)
             return self._handle_response(response)
 
@@ -689,9 +752,12 @@ class RuzodbApp(APIApplication):
             rid = item.get("id") or item.get("Id")
             return {"id": rid}
 
-        payload = [wrap(i) for i in record_ids] if isinstance(record_ids, list) else wrap(record_ids)
-        if isinstance(record_ids, (int, str)):
+        if isinstance(record_ids, list):
+            payload = [wrap(i) for i in record_ids]
+        elif isinstance(record_ids, (int, str)):
             payload = [{"id": record_ids}]
+        else:
+            payload = [wrap(record_ids)]
 
         chunk_size = 10
         results = []
@@ -707,7 +773,7 @@ class RuzodbApp(APIApplication):
         # For simplicity returning the last one or the first if available.
         return results[-1] if results else {}
 
-    async def countRecords(self, tableId: str, viewId: str = None, where: str = None) -> dict[str, Any]:
+    async def countRecords(self, tableId: str, viewId: str | None = None, where: str | None = None) -> dict[str, Any]:
         """
         Count the total number of records matching optional filters.
 
@@ -736,7 +802,7 @@ class RuzodbApp(APIApplication):
         return self._handle_response(response)
 
     async def findDuplicates(
-        self, tableId: str, fieldName: str, values: List[str | int | float | bool], viewId: str = None
+        self, tableId: str, fieldName: str, values: List[str | int | float | bool], viewId: str | None = None
     ) -> List[dict[str, Any]]:
         """
         Identify existing records that match a specific list of values for a given column.
@@ -793,8 +859,8 @@ class RuzodbApp(APIApplication):
         self,
         tableId: str,
         aggregations: List[dict[str, Any]],
-        viewId: str = None,
-        where: str = None,
+        viewId: str | None = None,
+        where: str | None = None,
     ) -> dict[str, Any]:
         """
         Perform aggregation calculations (e.g., avg, sum) on table data.
@@ -844,7 +910,7 @@ class RuzodbApp(APIApplication):
         if not target_view_id:
              raise ValueError("Could not determine a View ID for aggregation.")
 
-        final_results = {}
+        final_results: dict[str, Any] = {}
         
         for agg in aggregations:
             field_name = agg.get("field")
