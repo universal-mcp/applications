@@ -145,8 +145,13 @@ class TwitterApp(APIApplication):
         max_results: int = 10,
         start_time: str = None,
         end_time: str = None,
+        sort_order: str = None,
+        next_token: str = None,
+        pagination_token: str = None,
         tweet_fields: list = None,
         user_fields: list = None,
+        expansions: list = None,
+        place_fields: list = None,
     ) -> dict[str, Any]:
         """
         Searches for tweets from the past seven days matching a specific query with filtering and pagination.
@@ -156,13 +161,18 @@ class TwitterApp(APIApplication):
         Args:
             query: Search query string. Example: 'from:TwitterDev has:media -is:retweet'
             max_results: Maximum number of results to return (10-100). Default: 10
-            start_time: Earliest timestamp for results. Example: '2021-02-01T18:40:40.000Z'
-            end_time: Latest timestamp for results. Example: '2021-02-14T18:40:40.000Z'
+            start_time: Earliest UTC timestamp for results (inclusive). Example: '2021-02-01T18:40:40.000Z'
+            end_time: Newest UTC timestamp for results (exclusive). Example: '2021-02-14T18:40:40.000Z'
+            sort_order: Order in which to return results. Options: 'recency', 'relevancy'. Default: 'recency'
+            next_token: Pagination token from a previous response to fetch the next page of results.
+            pagination_token: Alternate pagination token from a previous response to fetch the next page of results.
             tweet_fields: Tweet fields to include. Example: ['created_at', 'public_metrics', 'author_id']
             user_fields: User fields to include. Example: ['username', 'name', 'verified']
+            expansions: Fields to expand into full objects. Example: ['author_id', 'attachments.media_keys', 'geo.place_id']
+            place_fields: Place fields to include when geo.place_id is expanded. Example: ['full_name', 'country', 'geo']
 
         Returns:
-            dict[str, Any]: Search results with matching tweets and pagination tokens.
+            dict[str, Any]: Search results with 'data' (list of tweets), 'includes' (expanded objects), and 'meta' (pagination tokens and result count).
 
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
@@ -179,8 +189,13 @@ class TwitterApp(APIApplication):
                 ("max_results", max_results),
                 ("start_time", start_time),
                 ("end_time", end_time),
+                ("sort_order", sort_order),
+                ("next_token", next_token),
+                ("pagination_token", pagination_token),
                 ("tweet.fields", tweet_fields),
                 ("user.fields", user_fields),
+                ("expansions", expansions),
+                ("place.fields", place_fields),
             ]
             if v is not None
         }
