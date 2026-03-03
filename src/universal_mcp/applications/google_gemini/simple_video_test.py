@@ -7,7 +7,7 @@ Usage:
 
 import asyncio
 from universal_mcp.applications.google_gemini.app import GoogleGeminiApp
-from universal_mcp.agentr import AgentrIntegration
+from universal_mcp.integrations import Integration
 
 
 async def main():
@@ -15,7 +15,7 @@ async def main():
     print("=" * 60)
 
     # Initialize app with credentials
-    integration = AgentrIntegration(name="google_gemini")
+    integration = Integration(name="google_gemini")
     app = GoogleGeminiApp(integration=integration)
 
     # Simple prompt
@@ -40,6 +40,7 @@ async def main():
     except Exception as e:
         print(f"\n✗ Error: {e}")
         import traceback
+
         traceback.print_exc()
 
 

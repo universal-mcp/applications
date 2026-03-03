@@ -2,19 +2,20 @@
 Comprehensive test script for Video Tools application.
 Tests all video manipulation operations with sample videos.
 """
+
 import asyncio
 import os
 import sys
 import tempfile
 from pathlib import Path
 from typing import Any
-from universal_mcp.agentr import AgentrIntegration
+from universal_mcp.integrations import Integration
 from universal_mcp.applications.video_tools.app import VideoToolsApp
 
 
 class VideoToolsTester:
     def __init__(self):
-        self.integration = AgentrIntegration(name='video_tools')
+        self.integration = Integration(name="video_tools")
         self.app = VideoToolsApp(integration=self.integration)
         self.results = {}
         self.temp_dir = tempfile.mkdtemp()
@@ -30,9 +31,19 @@ class VideoToolsTester:
         if data and success:
             # Show relevant data fields
             if isinstance(data, dict):
-                display_fields = ['output_path', 'duration', 'original_duration', 'total_duration',
-                                'resolution', 'output_resolution', 'original_resolution', 'num_videos',
-                                'fps', 'has_audio', 'file_size_mb']
+                display_fields = [
+                    "output_path",
+                    "duration",
+                    "original_duration",
+                    "total_duration",
+                    "resolution",
+                    "output_resolution",
+                    "original_resolution",
+                    "num_videos",
+                    "fps",
+                    "has_audio",
+                    "file_size_mb",
+                ]
                 display_data = {k: v for k, v in data.items() if k in display_fields}
                 if display_data:
                     print(f"    Data: {display_data}")
@@ -63,8 +74,8 @@ class VideoToolsTester:
             self.test_video1_path = os.path.join(self.temp_dir, "test_video1.mp4")
             clip1.write_videofile(
                 self.test_video1_path,
-                codec='libx264',
-                audio_codec='aac',
+                codec="libx264",
+                audio_codec="aac",
                 fps=24,
                 verbose=False,
                 logger=None,
@@ -85,8 +96,8 @@ class VideoToolsTester:
             self.test_video2_path = os.path.join(self.temp_dir, "test_video2.mp4")
             clip2.write_videofile(
                 self.test_video2_path,
-                codec='libx264',
-                audio_codec='aac',
+                codec="libx264",
+                audio_codec="aac",
                 fps=24,
                 verbose=False,
                 logger=None,
@@ -96,6 +107,7 @@ class VideoToolsTester:
 
             # Create test audio file
             print("Creating test audio...")
+
             def make_frame_audio3(t):
                 return np.sin(2 * np.pi * 220 * t)  # 220 Hz tone
 
@@ -103,7 +115,7 @@ class VideoToolsTester:
             self.test_audio_path = os.path.join(self.temp_dir, "test_audio.mp3")
             audio3.write_audiofile(
                 self.test_audio_path,
-                codec='libmp3lame',
+                codec="libmp3lame",
                 verbose=False,
                 logger=None,
             )
@@ -126,7 +138,7 @@ class VideoToolsTester:
                     "get_video_info",
                     True,
                     f"Retrieved info: {result['width']}x{result['height']} @ {result['fps']}fps, {result['duration']}s ({result['file_size_mb']} MB)",
-                    result
+                    result,
                 )
                 return True
             else:
@@ -148,10 +160,7 @@ class VideoToolsTester:
 
             if result.get("success") and os.path.exists(output_path):
                 self.log_result(
-                    "stitch_videos",
-                    True,
-                    f"Stitched {result['num_videos']} videos, total duration: {result['total_duration']}s",
-                    result
+                    "stitch_videos", True, f"Stitched {result['num_videos']} videos, total duration: {result['total_duration']}s", result
                 )
                 return True
             else:
@@ -173,12 +182,7 @@ class VideoToolsTester:
             )
 
             if result.get("success") and os.path.exists(output_path):
-                self.log_result(
-                    "trim_video",
-                    True,
-                    f"Trimmed from {result['original_duration']}s to {result['output_duration']}s",
-                    result
-                )
+                self.log_result("trim_video", True, f"Trimmed from {result['original_duration']}s to {result['output_duration']}s", result)
                 return True
             else:
                 self.log_result("trim_video", False, "Trim failed or output not created", result)
@@ -200,10 +204,7 @@ class VideoToolsTester:
 
             if result.get("success") and os.path.exists(output_path):
                 self.log_result(
-                    "resize_video",
-                    True,
-                    f"Resized from {result['original_resolution']} to {result['output_resolution']}",
-                    result
+                    "resize_video", True, f"Resized from {result['original_resolution']} to {result['output_resolution']}", result
                 )
                 return True
             else:
@@ -225,10 +226,7 @@ class VideoToolsTester:
 
             if result.get("success") and os.path.exists(output_path):
                 self.log_result(
-                    "extract_audio",
-                    True,
-                    f"Extracted {result['audio_format']} audio from {result['video_duration']}s video",
-                    result
+                    "extract_audio", True, f"Extracted {result['audio_format']} audio from {result['video_duration']}s video", result
                 )
                 return True
             else:
@@ -251,10 +249,7 @@ class VideoToolsTester:
 
             if result.get("success") and os.path.exists(output_path):
                 self.log_result(
-                    "add_audio",
-                    True,
-                    f"Added audio to {result['video_duration']}s video (adjusted: {result['audio_adjusted']})",
-                    result
+                    "add_audio", True, f"Added audio to {result['video_duration']}s video (adjusted: {result['audio_adjusted']})", result
                 )
                 return True
             else:
@@ -280,7 +275,7 @@ class VideoToolsTester:
                     "convert_video",
                     True,
                     f"Converted from {result['original_format']} to {result['output_format']} using {result['video_codec']}",
-                    result
+                    result,
                 )
                 return True
             else:
@@ -292,9 +287,9 @@ class VideoToolsTester:
 
     async def run_all_tests(self):
         """Run all video manipulation tests."""
-        print("\n" + "="*80)
+        print("\n" + "=" * 80)
         print("VIDEO TOOLS APPLICATION TEST")
-        print("="*80 + "\n")
+        print("=" * 80 + "\n")
 
         # Create test videos
         print("Creating test videos and audio...")
@@ -306,23 +301,38 @@ class VideoToolsTester:
         print()
 
         tests = [
-            ("Video Information", [
-                self.test_get_video_info,
-            ]),
-            ("Video Stitching (Primary Feature)", [
-                self.test_stitch_videos,
-            ]),
-            ("Basic Transformations", [
-                self.test_trim_video,
-                self.test_resize_video,
-            ]),
-            ("Audio Operations", [
-                self.test_extract_audio,
-                self.test_add_audio,
-            ]),
-            ("Format Conversion", [
-                self.test_convert_video,
-            ]),
+            (
+                "Video Information",
+                [
+                    self.test_get_video_info,
+                ],
+            ),
+            (
+                "Video Stitching (Primary Feature)",
+                [
+                    self.test_stitch_videos,
+                ],
+            ),
+            (
+                "Basic Transformations",
+                [
+                    self.test_trim_video,
+                    self.test_resize_video,
+                ],
+            ),
+            (
+                "Audio Operations",
+                [
+                    self.test_extract_audio,
+                    self.test_add_audio,
+                ],
+            ),
+            (
+                "Format Conversion",
+                [
+                    self.test_convert_video,
+                ],
+            ),
         ]
 
         for category, test_funcs in tests:
@@ -344,9 +354,9 @@ class VideoToolsTester:
 
     def _print_summary(self):
         """Print test summary."""
-        print("\n" + "="*80)
+        print("\n" + "=" * 80)
         print("TEST SUMMARY")
-        print("="*80)
+        print("=" * 80)
 
         total = len(self.results)
         passed = sum(1 for r in self.results.values() if r["success"])
@@ -355,7 +365,7 @@ class VideoToolsTester:
         print(f"\nTotal Tests: {total}")
         print(f"Passed: {passed} ✓")
         print(f"Failed: {failed} ✗")
-        print(f"Success Rate: {(passed/total*100):.1f}%\n")
+        print(f"Success Rate: {(passed / total * 100):.1f}%\n")
 
         if failed > 0:
             print("Failed Tests:")
@@ -363,7 +373,7 @@ class VideoToolsTester:
                 if not result["success"]:
                     print(f"  - {name}: {result['message']}")
 
-        print("="*80 + "\n")
+        print("=" * 80 + "\n")
 
 
 async def main():
@@ -378,6 +388,7 @@ async def main():
     except Exception as e:
         print(f"\n\nFatal error: {str(e)}")
         import traceback
+
         traceback.print_exc()
         sys.exit(1)
 
