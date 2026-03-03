@@ -1,6 +1,7 @@
 import os
 from collections.abc import Callable
 from typing import Any, Literal
+
 from loguru import logger
 from universal_mcp.applications.application import APIApplication, BaseApplication
 from universal_mcp.integrations import Integration
@@ -119,9 +120,14 @@ class LinkedinApp(APIApplication):
             linkedin, chat, create, start, new, messaging, api, important
         """
         url = f"{self.base_url}/api/v1/chats"
-        form_payload = {"account_id": await self._get_account_id(), "text": text, "attendees_ids": provider_id}
-        response = await self._apost(url, data=form_payload, content_type="multipart/form-data")
-        return self._handle_response(response)
+        files_payload = {
+            "account_id": (None, await self._get_account_id()),
+            "attendees_ids": (None, provider_id),
+            "text": (None, text),
+        }
+        response = await self._apost(url, data={}, files=files_payload, content_type="multipart/form-data")
+        return response.json()
+
 
     async def list_all_chats(
         self,
