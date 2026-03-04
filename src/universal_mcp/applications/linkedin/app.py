@@ -120,13 +120,13 @@ class LinkedinApp(APIApplication):
             linkedin, chat, create, start, new, messaging, api, important
         """
         url = f"{self.base_url}/api/v1/chats"
-        files_payload = {
-            "account_id": (None, await self._get_account_id()),
-            "attendees_ids": (None, provider_id),
-            "text": (None, text),
+        form_data = {
+            "account_id": await self._get_account_id(),
+            "attendees_ids": provider_id,
+            "text": text,
         }
-        response = await self._apost(url, data={}, files=files_payload, content_type="multipart/form-data")
-        return response.json()
+        response = await self._apost(url, data=form_data, content_type="multipart/form-data")
+        return self._handle_response(response)
 
 
     async def list_all_chats(
