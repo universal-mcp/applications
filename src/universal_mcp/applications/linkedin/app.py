@@ -563,12 +563,18 @@ class LinkedinApp(APIApplication):
         response = await self._apost(url, data=params)
         return self._handle_response(response)
 
-    async def retrieve_user_profile(self, public_identifier: str) -> dict[str, Any]:
+    async def retrieve_user_profile(
+        self, public_identifier: str, linkedin_sections: list[str] | None = None
+    ) -> dict[str, Any]:
         """
         Retrieves a specific LinkedIn user's profile using their public or internal ID. Unlike `retrieve_own_profile`, which fetches the authenticated user's details, this function targets and returns data for any specified third-party user profile on the platform.
 
         Args:
             public_identifier: Extract this value from the response of `search_people` tool. The response contains a public_identifier field.For example, for https://www.linkedin.com/in/manojbajaj95/, the identifier is "manojbajaj95".
+            linkedin_sections: Optional list of profile sections to retrieve. 
+                - `["*_preview"]`: Retrieves all available sections with preview entries (e.g., getting only top 3 experiences listed, not 25 detailed ones). Great for overall fast snapshots.
+                - `["*"]`: Retrieves absolutely everything across every available section in exhaustive detail. Caution: Using this triggers deeper queries and scraping delays in the API backend so aggressive rate-limiting can kick in or trigger "empty array throttled data errors" from Unipile/LinkedIn.
+                - Specific List Identifiers e.g. `["experience", "education", "skills"]`. Retrieves comprehensive data solely for specific required segments, lowering total call load footprint.
 
         Returns:
             A dictionary containing the user's profile details.
@@ -581,6 +587,8 @@ class LinkedinApp(APIApplication):
         """
         url = f"{self.base_url}/api/v1/users/{public_identifier}"
         params: dict[str, Any] = {"account_id": await self._get_account_id()}
+        if linkedin_sections is not None:
+            params["linkedin_sections"] = linkedin_sections
         response = await self._aget(url, params=params)
         return self._handle_response(response)
 
@@ -943,7 +951,33 @@ class LinkedinApp(APIApplication):
             params["cursor"] = cursor
         if limit is not None:
             params["limit"] = limit
-        response = self._get(url, params=params)
+        response = await self._aget(url, params=params)
+        return self._handle_response(response)
+
+    async def list_relations(self, cursor: str | None = None, limit: int | None = None) -> dict[str, Any]:
+        """
+        Retrieves a paginated list of all relations (connections) for the current user's account. This list can be compared with sent invitations to detect accepted connection requests.
+
+        Args:
+            cursor: A pagination cursor for retrieving the next page of entries.
+            limit: The number of items to return, ranging from 1 to 1000.
+
+        Returns:
+            A dictionary containing a list of relation objects and pagination details.
+
+        Raises:
+            httpx.HTTPError: If the API request fails.
+
+        Tags:
+            linkedin, user, relations, connections, list, contacts, api
+        """
+        url = f"{self.base_url}/api/v1/users/relations"
+        params: dict[str, Any] = {"account_id": await self._get_account_id()}
+        if cursor:
+            params["cursor"] = cursor
+        if limit is not None:
+            params["limit"] = limit
+        response = await self._aget(url, params=params)
         return self._handle_response(response)
 
     async def list_job_postings(
@@ -1304,7 +1338,8 @@ class LinkedinApp(APIApplication):
             self.list_received_invitations,
             self.handle_received_invitation,
             self.list_followers,
-            # self.list_following       this endpoint is not yet implemented by unipile
+            # self.list_following,
+            self.list_relations,
             self.list_job_postings,
             self.create_job_posting,
             self.close_job_posting,
