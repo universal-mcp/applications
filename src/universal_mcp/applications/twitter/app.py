@@ -4,7 +4,6 @@ from universal_mcp.integrations import Integration
 
 
 class TwitterApp(APIApplication):
-    """Twitter API integration with essential day-to-day functions."""
 
     def __init__(self, integration: Integration = None, **kwargs) -> None:
         super().__init__(name="twitter", integration=integration, **kwargs)
@@ -106,10 +105,10 @@ class TwitterApp(APIApplication):
 
         Args:
             tweet_id: The unique ID of the tweet to retrieve. Example: '1346889436626259968'
-            tweet_fields: Tweet fields to display. Example: ['created_at', 'public_metrics', 'text']
-            expansions: Fields to expand. Example: ['author_id', 'attachments.media_keys']
-            media_fields: Media fields to display. Example: ['url', 'preview_image_url', 'type']
-            user_fields: User fields to display. Example: ['username', 'name', 'profile_image_url']
+            tweet_fields: Tweet fields to display. Example: ['created_at', 'public_metrics', 'text', 'note_tweet'] (Use 'note_tweet' for full text of long tweets). Other options: attachments, author_id, context_annotations, conversation_id, entities, geo, in_reply_to_user_id, lang, non_public_metrics, organic_metrics, promoted_metrics, possibly_sensitive, referenced_tweets, reply_settings, source, withheld.
+            expansions: Fields to expand to get full objects in the 'includes' response. Example: ['author_id', 'attachments.media_keys']. Other options: referenced_tweets.id, in_reply_to_user_id, attachments.poll_ids, geo.place_id, entities.mentions.username, referenced_tweets.id.author_id.
+            media_fields: Media fields to display if media_keys expansion is used. Example: ['url', 'preview_image_url', 'type', 'media_key', 'duration_ms', 'height', 'width', 'public_metrics', 'alt_text'].
+            user_fields: User fields to display if a user expansion (like author_id) is used. Example: ['username', 'name', 'profile_image_url']. Other options: created_at, description, entities, id, location, pinned_tweet_id, protected, public_metrics, url, verified, withheld.
 
         Returns:
             dict[str, Any]: Detailed tweet data including requested fields and expansions.
@@ -166,10 +165,10 @@ class TwitterApp(APIApplication):
             sort_order: Order in which to return results. Options: 'recency', 'relevancy'. Default: 'recency'
             next_token: Pagination token from a previous response to fetch the next page of results.
             pagination_token: Alternate pagination token from a previous response to fetch the next page of results.
-            tweet_fields: Tweet fields to include. Example: ['created_at', 'public_metrics', 'author_id']
-            user_fields: User fields to include. Example: ['username', 'name', 'verified']
-            expansions: Fields to expand into full objects. Example: ['author_id', 'attachments.media_keys', 'geo.place_id']
-            place_fields: Place fields to include when geo.place_id is expanded. Example: ['full_name', 'country', 'geo']
+            tweet_fields: Tweet fields to include. Example: ['created_at', 'public_metrics', 'author_id', 'note_tweet'] (Use 'note_tweet' for full text of long tweets). Other options: attachments, context_annotations, conversation_id, entities, geo, in_reply_to_user_id, lang, possibly_sensitive, referenced_tweets, reply_settings, source, text, withheld.
+            user_fields: User fields to include if a user expansion is used. Example: ['username', 'name', 'verified']. Other options: created_at, description, entities, id, location, pinned_tweet_id, profile_image_url, protected, public_metrics, url, withheld.
+            expansions: Fields to expand into full objects in the 'includes' response. Example: ['author_id', 'attachments.media_keys', 'geo.place_id']. Other options: referenced_tweets.id, in_reply_to_user_id, attachments.poll_ids, entities.mentions.username, referenced_tweets.id.author_id.
+            place_fields: Place fields to include when geo.place_id is expanded. Example: ['full_name', 'country', 'geo']. Other options: contained_within, country_code, id, name, place_type.
 
         Returns:
             dict[str, Any]: Search results with 'data' (list of tweets), 'includes' (expanded objects), and 'meta' (pagination tokens and result count).
@@ -217,9 +216,9 @@ class TwitterApp(APIApplication):
         Returns profile data for the account whose credentials are being used.
 
         Args:
-            user_fields: User fields to display. Example: ['created_at', 'description', 'public_metrics']
-            expansions: Fields to expand. Example: ['pinned_tweet_id']
-            tweet_fields: Tweet fields to display. Example: ['created_at', 'text']
+            user_fields: User fields to display. Example: ['created_at', 'description', 'public_metrics']. Other options: entities, id, location, name, pinned_tweet_id, profile_image_url, protected, url, username, verified, withheld.
+            expansions: Fields to expand to get full objects in the 'includes' response. Example: ['pinned_tweet_id'].
+            tweet_fields: Tweet fields to display if pinned_tweet_id expansion is used. Example: ['created_at', 'text']. Other options: attachments, author_id, context_annotations, conversation_id, entities, geo, id, in_reply_to_user_id, lang, note_tweet, public_metrics, possibly_sensitive, referenced_tweets, reply_settings, source, withheld.
 
         Returns:
             dict[str, Any]: Authenticated user's profile data and requested fields.
@@ -259,9 +258,9 @@ class TwitterApp(APIApplication):
 
         Args:
             username: Twitter username (handle) without the @ symbol. Example: 'TwitterDev'
-            user_fields: User fields to display. Example: ['created_at', 'description', 'public_metrics']
-            expansions: Fields to expand. Example: ['pinned_tweet_id']
-            tweet_fields: Tweet fields to display. Example: ['created_at', 'public_metrics']
+            user_fields: User fields to display. Example: ['created_at', 'description', 'public_metrics']. Other options: entities, id, location, name, pinned_tweet_id, profile_image_url, protected, url, username, verified, withheld.
+            expansions: Fields to expand to get full objects in the 'includes' response. Example: ['pinned_tweet_id'].
+            tweet_fields: Tweet fields to display if pinned_tweet_id expansion is used. Example: ['created_at', 'public_metrics']. Other options: attachments, author_id, context_annotations, conversation_id, entities, geo, id, in_reply_to_user_id, lang, note_tweet, public_metrics, possibly_sensitive, referenced_tweets, reply_settings, source, text, withheld.
 
         Returns:
             dict[str, Any]: User profile data including requested fields.
@@ -303,9 +302,9 @@ class TwitterApp(APIApplication):
 
         Args:
             user_id: Unique Twitter user ID. Example: '2244994945'
-            user_fields: User fields to display. Example: ['created_at', 'description', 'public_metrics']
-            expansions: Fields to expand. Example: ['pinned_tweet_id']
-            tweet_fields: Tweet fields to display. Example: ['created_at', 'public_metrics']
+            user_fields: User fields to display. Example: ['created_at', 'description', 'public_metrics']. Other options: entities, id, location, name, pinned_tweet_id, profile_image_url, protected, url, username, verified, withheld.
+            expansions: Fields to expand to get full objects in the 'includes' response. Example: ['pinned_tweet_id'].
+            tweet_fields: Tweet fields to display if pinned_tweet_id expansion is used. Example: ['created_at', 'public_metrics']. Other options: attachments, author_id, context_annotations, conversation_id, entities, geo, id, in_reply_to_user_id, lang, note_tweet, public_metrics, possibly_sensitive, referenced_tweets, reply_settings, source, text, withheld.
 
         Returns:
             dict[str, Any]: User profile data including requested fields.
@@ -349,8 +348,8 @@ class TwitterApp(APIApplication):
         Args:
             query: Search query to find users. Example: 'developer python'
             max_results: Maximum number of results to return (1-100). Default: 10
-            user_fields: User fields to display. Example: ['description', 'public_metrics', 'verified']
-            expansions: Fields to expand. Example: ['pinned_tweet_id']
+            user_fields: User fields to display. Example: ['description', 'public_metrics', 'verified']. Other options: created_at, entities, id, location, name, pinned_tweet_id, profile_image_url, protected, url, username, withheld.
+            expansions: Fields to expand to get full objects in the 'includes' response. Example: ['pinned_tweet_id'].
 
         Returns:
             dict[str, Any]: List of matching users with their profile data.
@@ -400,8 +399,8 @@ class TwitterApp(APIApplication):
             exclude: Tweet types to exclude. Example: ['retweets', 'replies']
             start_time: Earliest timestamp. Example: '2021-02-01T18:40:40.000Z'
             end_time: Latest timestamp. Example: '2021-02-14T18:40:40.000Z'
-            tweet_fields: Tweet fields to include. Example: ['created_at', 'public_metrics']
-            user_fields: User fields to include. Example: ['username', 'profile_image_url']
+            tweet_fields: Tweet fields to include. Example: ['created_at', 'public_metrics', 'note_tweet']. Other options: attachments, author_id, context_annotations, conversation_id, entities, geo, id, in_reply_to_user_id, lang, possibly_sensitive, referenced_tweets, reply_settings, source, text, withheld.
+            user_fields: User fields to include. Example: ['username', 'profile_image_url']. Other options: created_at, description, entities, id, location, name, pinned_tweet_id, protected, public_metrics, url, verified, withheld.
 
         Returns:
             dict[str, Any]: User's tweets with pagination tokens.
@@ -451,8 +450,8 @@ class TwitterApp(APIApplication):
             max_results: Maximum number of results (5-100). Default: 10
             start_time: Earliest timestamp. Example: '2021-02-01T18:40:40.000Z'
             end_time: Latest timestamp. Example: '2021-02-14T18:40:40.000Z'
-            tweet_fields: Tweet fields to include. Example: ['created_at', 'public_metrics', 'author_id']
-            user_fields: User fields to include. Example: ['username', 'name']
+            tweet_fields: Tweet fields to include. Example: ['created_at', 'public_metrics', 'author_id', 'note_tweet']. Other options: attachments, context_annotations, conversation_id, entities, geo, id, in_reply_to_user_id, lang, possibly_sensitive, referenced_tweets, reply_settings, source, text, withheld.
+            user_fields: User fields to include. Example: ['username', 'name']. Other options: created_at, description, entities, id, location, pinned_tweet_id, profile_image_url, protected, public_metrics, url, verified, withheld.
 
         Returns:
             dict[str, Any]: Tweets mentioning the user with pagination tokens.
@@ -552,8 +551,8 @@ class TwitterApp(APIApplication):
 
         Args:
             max_results: Maximum number of results (5-100). Default: 10
-            tweet_fields: Tweet fields to include. Example: ['created_at', 'public_metrics', 'author_id']
-            user_fields: User fields to include. Example: ['username', 'name']
+            tweet_fields: Tweet fields to include. Example: ['created_at', 'public_metrics', 'author_id', 'note_tweet']. Other options: attachments, context_annotations, conversation_id, entities, geo, id, in_reply_to_user_id, lang, possibly_sensitive, referenced_tweets, reply_settings, source, text, withheld.
+            user_fields: User fields to include. Example: ['username', 'name']. Other options: created_at, description, entities, id, location, pinned_tweet_id, profile_image_url, protected, public_metrics, url, verified, withheld.
 
         Returns:
             dict[str, Any]: List of liked tweets with pagination tokens.
@@ -649,7 +648,7 @@ class TwitterApp(APIApplication):
         Args:
             tweet_id: The unique ID of the tweet. Example: '1346889436626259968'
             max_results: Maximum number of results (1-100). Default: 100
-            user_fields: User fields to include. Example: ['username', 'public_metrics', 'verified']
+            user_fields: User fields to include. Example: ['username', 'public_metrics', 'verified']. Other options: created_at, description, entities, id, location, name, pinned_tweet_id, profile_image_url, protected, url, withheld.
 
         Returns:
             dict[str, Any]: List of users who retweeted with pagination tokens.
@@ -690,7 +689,7 @@ class TwitterApp(APIApplication):
         Args:
             tweet_id: The unique ID of the tweet. Example: '1346889436626259968'
             max_results: Maximum number of results (1-100). Default: 100
-            user_fields: User fields to include. Example: ['username', 'public_metrics', 'verified']
+            user_fields: User fields to include. Example: ['username', 'public_metrics', 'verified']. Other options: created_at, description, entities, id, location, name, pinned_tweet_id, profile_image_url, protected, url, withheld.
 
         Returns:
             dict[str, Any]: List of users who liked the tweet with pagination tokens.
@@ -789,7 +788,7 @@ class TwitterApp(APIApplication):
         Args:
             user_id: The unique ID of the user. Example: '2244994945'
             max_results: Maximum number of results (1-1000). Default: 100
-            user_fields: User fields to include. Example: ['username', 'description', 'public_metrics']
+            user_fields: User fields to include. Example: ['username', 'description', 'public_metrics']. Other options: created_at, entities, id, location, name, pinned_tweet_id, profile_image_url, protected, url, verified, withheld.
 
         Returns:
             dict[str, Any]: List of followers with pagination tokens.
