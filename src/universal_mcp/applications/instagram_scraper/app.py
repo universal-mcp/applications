@@ -12,7 +12,7 @@ class InstagramScraperApp(APIApplication):
     Provides tools to scrape Instagram posts from Instagram accounts.
     """
 
-    ACTOR_ID = "fastcrawler~instagram-list-posts-scraper-0-35-1k-pay-per-result"
+    ACTOR_ID = "apify~instagram-post-scraper"
 
     def __init__(self, integration: Integration = None, **kwargs: Any) -> None:
         super().__init__(name="instagram_scraper", integration=integration, **kwargs)
