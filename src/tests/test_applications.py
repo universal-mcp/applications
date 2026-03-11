@@ -48,6 +48,7 @@ ALL_APPS = [
     "hubspot",
     "image_tools",
     "instagram",
+    "instagram_scraper",
     "jira",
     "klaviyo",
     "linkedin",
