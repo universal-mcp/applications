@@ -49,6 +49,7 @@ dependencies = [
     "twilio>=9.8.0",
     "universal-mcp-agents>=0.1.31",
     "universal-mcp>=0.1.26rc1,<2",
+    "xai-sdk>=1.8.2",
     "yfinance>=0.2.66",
     "youtube-transcript-api==1.2.2",
 ]
