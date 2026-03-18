@@ -375,6 +375,355 @@ class GithubApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
+    async def get_file_contents(self, repo_full_name: str, path: str, ref: str = None) -> dict[str, Any]:
+        """
+        Retrieves the contents of a file or directory in a repository.
+
+        Args:
+            repo_full_name: The full name of the repository in 'owner/repo' format
+            path: The path of the file or directory
+            ref: The name of the commit/branch/tag. Default: the repository's default branch
+
+        Returns:
+            A dictionary containing the file or directory contents (base64 encoded for files)
+
+        Raises:
+            HTTPError: When the GitHub API request fails
+            RequestException: When there are network connectivity issues or other request-related problems
+
+        Tags:
+            read, file, github, api, content, fetch, important
+        """
+        repo_full_name = repo_full_name.strip()
+        url = f"{self.base_api_url}/{repo_full_name}/contents/{path}"
+        params = {}
+        if ref:
+            params["ref"] = ref
+        response = await self._aget(url, params=params)
+        response.raise_for_status()
+        return response.json()
+
+    async def create_or_update_file(
+        self,
+        repo_full_name: str,
+        path: str,
+        message: str,
+        content: str,
+        branch: str = None,
+        sha: str = None,
+    ) -> dict[str, Any]:
+        """
+        Creates a new file or updates an existing file in a repository. The content must be provided as a standard string, not base64 encoded (it will be encoded before transmission).
+
+        Args:
+            repo_full_name: The full name of the repository in 'owner/repo' format
+            path: The path of the file to create or update
+            message: The commit message
+            content: The new file content as a string
+            branch: The branch name. Default: the repository's default branch
+            sha: Required if updating an existing file. The blob SHA of the file being replaced
+
+        Returns:
+            A dictionary containing the commit and content details
+
+        Raises:
+            HTTPError: When the GitHub API request fails (e.g., missing sha when updating)
+            RequestException: When there are network issues
+
+        Tags:
+            create, update, file, write, github, api, content
+        """
+        import base64
+        repo_full_name = repo_full_name.strip()
+        url = f"{self.base_api_url}/{repo_full_name}/contents/{path}"
+        
+        encoded_content = base64.b64encode(content.encode("utf-8")).decode("utf-8")
+        
+        data = {
+            "message": message,
+            "content": encoded_content
+        }
+        if branch:
+            data["branch"] = branch
+        if sha:
+            data["sha"] = sha
+            
+        response = await self._aput(url, data=data)
+        response.raise_for_status()
+        return response.json()
+
+    async def add_issue_label(self, repo_full_name: str, issue_number: int, labels: list[str]) -> list[dict[str, Any]]:
+        """
+        Adds labels to an existing issue in a GitHub repository.
+
+        Args:
+            repo_full_name: The full name of the repository in 'owner/repo' format
+            issue_number: The number of the issue
+            labels: A list of label names to add to the issue
+
+        Returns:
+            A list of dictionaries representing the newly added labels
+
+        Raises:
+            HTTPError: When the GitHub API request fails
+            RequestException: When network connectivity issues occur
+
+        Tags:
+            add, label, issue, github, write, project-management
+        """
+        repo_full_name = repo_full_name.strip()
+        url = f"{self.base_api_url}/{repo_full_name}/issues/{issue_number}/labels"
+        data = {"labels": labels}
+        response = await self._apost(url, data=data)
+        response.raise_for_status()
+        return response.json()
+
+    async def assign_issue(self, repo_full_name: str, issue_number: int, assignees: list[str]) -> dict[str, Any]:
+        """
+        Adds assignees to an existing issue in a GitHub repository.
+
+        Args:
+            repo_full_name: The full name of the repository in 'owner/repo' format
+            issue_number: The number of the issue
+            assignees: A list of GitHub usernames to assign to the issue
+
+        Returns:
+            A dictionary representing the updated issue details
+
+        Raises:
+            HTTPError: When the GitHub API request fails
+            RequestException: When network connectivity issues occur
+
+        Tags:
+            assign, issue, user, github, write, project-management
+        """
+        repo_full_name = repo_full_name.strip()
+        url = f"{self.base_api_url}/{repo_full_name}/issues/{issue_number}/assignees"
+        data = {"assignees": assignees}
+        response = await self._apost(url, data=data)
+        response.raise_for_status()
+        return response.json()
+
+    async def create_issue_comment(self, repo_full_name: str, issue_number: int, body: str) -> dict[str, Any]:
+        """
+        Creates a new comment on an issue or pull request conversation in a GitHub repository.
+
+        Args:
+            repo_full_name: The full name of the repository in 'owner/repo' format
+            issue_number: The number of the issue or pull request
+            body: The contents of the comment
+
+        Returns:
+            A dictionary containing the details of the created comment
+
+        Raises:
+            HTTPError: When the GitHub API request fails
+            RequestException: When network connectivity issues occur
+
+        Tags:
+            create, comment, issue, pull-request, github, write
+        """
+        repo_full_name = repo_full_name.strip()
+        url = f"{self.base_api_url}/{repo_full_name}/issues/{issue_number}/comments"
+        data = {"body": body}
+        response = await self._apost(url, data=data)
+        response.raise_for_status()
+        return response.json()
+
+    async def create_pull_request_comment(
+        self,
+        repo_full_name: str,
+        pull_number: int,
+        body: str,
+        commit_id: str,
+        path: str,
+        line: int,
+        side: str = "RIGHT"
+    ) -> dict[str, Any]:
+        """
+        Creates a review comment on a specific line of code within a pull request diff. For general PR conversation comments, use create_issue_comment instead.
+
+        Args:
+            repo_full_name: The full name of the repository in 'owner/repo' format
+            pull_number: The pull request number
+            body: The text of the review comment
+            commit_id: The SHA of the commit needing a comment
+            path: The relative path to the file that necessitates a comment
+            line: The line index in the diff to comment on
+            side: In a split diff view, the side of the diff (e.g., "LEFT" or "RIGHT") that the pull request's changes appear on. Default is "RIGHT"
+
+        Returns:
+            A dictionary containing the details of the created review comment
+
+        Raises:
+            HTTPError: When the GitHub API request fails
+            RequestException: When network connectivity issues occur
+
+        Tags:
+            create, comment, review, pull-request, diff, github, write
+        """
+        repo_full_name = repo_full_name.strip()
+        url = f"{self.base_api_url}/{repo_full_name}/pulls/{pull_number}/comments"
+        data = {
+            "body": body,
+            "commit_id": commit_id,
+            "path": path,
+            "line": line,
+            "side": side
+        }
+        response = await self._apost(url, data=data)
+        response.raise_for_status()
+        return response.json()
+
+    async def merge_pull_request(
+        self,
+        repo_full_name: str,
+        pull_number: int,
+        commit_title: str = None,
+        commit_message: str = None,
+        merge_method: str = "merge"
+    ) -> dict[str, Any]:
+        """
+        Merges a pull request in a GitHub repository.
+
+        Args:
+            repo_full_name: The full name of the repository in 'owner/repo' format
+            pull_number: The pull request number
+            commit_title: Title for the automatic commit message (optional)
+            commit_message: Extra detail to append to automatic commit message (optional)
+            merge_method: Merge method to use. Can be "merge", "squash", or "rebase". Default is "merge"
+
+        Returns:
+            A dictionary indicating the result of the merge operation (success or failure message)
+
+        Raises:
+            HTTPError: When the GitHub API request fails (e.g., 405 Method Not Allowed if PR cannot be merged)
+            RequestException: When network connectivity issues occur
+
+        Tags:
+            merge, pull-request, github, write, workflow
+        """
+        repo_full_name = repo_full_name.strip()
+        url = f"{self.base_api_url}/{repo_full_name}/pulls/{pull_number}/merge"
+        data = {"merge_method": merge_method}
+        if commit_title:
+            data["commit_title"] = commit_title
+        if commit_message:
+            data["commit_message"] = commit_message
+            
+        response = await self._aput(url, data=data)
+        response.raise_for_status()
+        return response.json()
+
+    async def get_authenticated_user(self) -> dict[str, Any]:
+        """
+        Retrieves detailed profile information for the currently authenticated user.
+
+        Args:
+            None
+
+        Returns:
+            A dictionary containing the user's profile details
+
+        Raises:
+            HTTPError: When the GitHub API request fails or authentication is invalid
+            RequestException: When network connectivity issues occur
+
+        Tags:
+            get, user, profile, authenticated, github, read
+        """
+        url = f"{self.base_url}/user"
+        response = await self._aget(url)
+        response.raise_for_status()
+        return response.json()
+
+    async def trigger_workflow(
+        self,
+        repo_full_name: str,
+        workflow_id: str,
+        ref: str,
+        inputs: dict[str, str] = None
+    ) -> str:
+        """
+        Manually triggers a GitHub Actions workflow dispatch event.
+
+        Args:
+            repo_full_name: The full name of the repository in 'owner/repo' format
+            workflow_id: The ID of the workflow. You can also pass the workflow file name as a string (e.g., 'main.yaml')
+            ref: The git reference for the workflow (e.g., branch or tag name)
+            inputs: Input keys and values configured in the workflow file
+
+        Returns:
+            A success message reflecting the 204 No Content response from the API
+
+        Raises:
+            HTTPError: When the GitHub API request fails
+            RequestException: When network connectivity issues occur
+
+        Tags:
+            trigger, workflow, actions, github, write, automation, execution
+        """
+        repo_full_name = repo_full_name.strip()
+        url = f"{self.base_api_url}/{repo_full_name}/actions/workflows/{workflow_id}/dispatches"
+        data = {"ref": ref}
+        if inputs:
+            data["inputs"] = inputs
+            
+        response = await self._apost(url, data=data)
+        response.raise_for_status()
+        # The API returns 204 No Content for a successful dispatch
+        return f"Successfully triggered workflow '{workflow_id}' on ref '{ref}' for repository {repo_full_name}"
+
+    async def create_release(
+        self,
+        repo_full_name: str,
+        tag_name: str,
+        name: str = None,
+        body: str = None,
+        draft: bool = False,
+        prerelease: bool = False,
+        target_commitish: str = None
+    ) -> dict[str, Any]:
+        """
+        Creates a new release for a repository based on a git tag.
+
+        Args:
+            repo_full_name: The full name of the repository in 'owner/repo' format
+            tag_name: The name of the tag (e.g., 'v1.0.0')
+            name: The name of the release (optional)
+            body: Text describing the contents of the tag (optional)
+            draft: True to create a draft (unpublished) release, False to create a published one. Default: False
+            prerelease: True to identify the release as a prerelease, False to identify it as a full release. Default: False
+            target_commitish: Specifies the commitish value that determines where the Git tag is created from. Default: the repository's default branch
+
+        Returns:
+            A dictionary containing the details of the created release
+
+        Raises:
+            HTTPError: When the GitHub API request fails
+            RequestException: When network connectivity issues occur
+
+        Tags:
+            create, release, tag, github, write, publishing
+        """
+        repo_full_name = repo_full_name.strip()
+        url = f"{self.base_api_url}/{repo_full_name}/releases"
+        data = {
+            "tag_name": tag_name,
+            "draft": draft,
+            "prerelease": prerelease
+        }
+        if name:
+            data["name"] = name
+        if body:
+            data["body"] = body
+        if target_commitish:
+            data["target_commitish"] = target_commitish
+            
+        response = await self._apost(url, data=data)
+        response.raise_for_status()
+        return response.json()
+
     def list_tools(self):
         return [
             self.star_repository,
@@ -387,4 +736,14 @@ class GithubApp(APIApplication):
             self.create_issue,
             self.update_issue,
             self.list_repo_activities,
+            self.get_file_contents,
+            self.create_or_update_file,
+            self.add_issue_label,
+            self.assign_issue,
+            self.create_issue_comment,
+            self.create_pull_request_comment,
+            self.merge_pull_request,
+            self.get_authenticated_user,
+            self.trigger_workflow,
+            self.create_release,
         ]
