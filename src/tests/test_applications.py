@@ -42,6 +42,7 @@ ALL_APPS = [
     "google_mail",
     "google_searchconsole",
     "google_sheet",
+    "grok",
     "hashnode",
     "heygen",
     "http_tools",
