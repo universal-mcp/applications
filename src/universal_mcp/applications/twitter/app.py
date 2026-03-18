@@ -1154,6 +1154,40 @@ class TwitterApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
+    async def add_list_member(
+        self,
+        list_id: str,
+        user_id: str,
+    ) -> dict[str, Any]:
+        """
+        Adds a user as a member of a specific Twitter list.
+
+        Args:
+            list_id: The unique ID of the list you are adding a member to. Example: '84839422'
+            user_id: The unique ID of the user you wish to add as a member of the list. Example: '2244994945'
+
+        Returns:
+            dict[str, Any]: Confirmation response indicating the user was successfully added to the list.
+
+        Raises:
+            HTTPError: Raised when the API request fails (e.g., non-2XX status code).
+            JSONDecodeError: Raised if the response body cannot be parsed as JSON.
+
+        Tags:
+            list, member, add, important
+        """
+        if list_id is None:
+            raise ValueError("Missing required parameter 'list_id'.")
+        if user_id is None:
+            raise ValueError("Missing required parameter 'user_id'.")
+            
+        url = f"{self.base_url}/2/lists/{list_id}/members"
+        request_body_data = {"user_id": user_id}
+        
+        response = await self._apost(url, data=request_body_data, content_type="application/json")
+        response.raise_for_status()
+        return response.json()
+
     def list_tools(self):
         """Returns list of available Twitter API tools for standard access level.
 
@@ -1197,4 +1231,5 @@ class TwitterApp(APIApplication):
             self.create_list,
             self.get_list,
             self.get_list_tweets,
+            self.add_list_member,
         ]
