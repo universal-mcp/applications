@@ -105,8 +105,48 @@ class GrokApp(APIApplication):
 
         return await asyncio.to_thread(_run)
 
+    async def search(
+        self,
+        prompt: str,
+        model: str = "grok-4-1-fast",
+    ) -> str:
+        """
+        Searches X (Twitter) using any free-form prompt via Grok's x_search tool and returns the raw response.
+
+        Args:
+            prompt: The search query or instruction to send to Grok. Example: 'get all the information about https://twitter.com/i/web/status/123'
+            model: Grok model to use. Example: 'grok-4-1-fast'
+
+        Returns:
+            str: Raw text response from Grok based on the prompt.
+
+        Raises:
+            ValueError: Raised when prompt is empty or credentials are missing.
+
+        Tags:
+            grok, x, twitter, search, important
+        """
+        if not prompt:
+            raise ValueError("Missing required parameter 'prompt'.")
+
+        client = await self._get_client()
+
+        logger.debug(f"Running search with prompt='{prompt}' using model={model}")
+
+        def _run() -> str:
+            from xai_sdk.chat import user as xai_user
+            from xai_sdk.tools import x_search
+
+            chat = client.chat.create(model=model, tools=[x_search()])
+            chat.append(xai_user(prompt))
+            response = chat.sample()
+            return response.content
+
+        return await asyncio.to_thread(_run)
+
     def list_tools(self):
         """Returns list of available tools."""
         return [
             self.get_user_tweets,
+            self.search,
         ]
