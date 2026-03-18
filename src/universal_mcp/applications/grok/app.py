@@ -12,6 +12,9 @@ class Engagement(BaseModel):
     likes: int
     reposts: int
     views: int
+    replies: int
+    quotes: int
+    bookmarks: int
 
 
 class Tweet(BaseModel):
@@ -72,7 +75,7 @@ class GrokApp(APIApplication):
 
         Returns:
             list[dict[str, Any]]: List of per-user results, each containing 'username' and a 'tweets' list.
-                Each tweet has 'id', 'date', 'content', 'url', 'has_media', 'engagement' (likes/reposts/views),
+                Each tweet has 'id', 'date', 'content', 'url', 'has_media', 'engagement' (likes/reposts/views/replies/quotes/bookmarks),
                 'is_thread_reply', and optionally 'thread_parent_id'.
 
         Raises:

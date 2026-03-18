@@ -592,7 +592,7 @@ class YoutubeApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    async def get_video_ratings(self, id=None, onBehalfOfContentOwner=None) -> Any:
+    async def get_video_ratings(self,  id: str, part: str = "snippet,statistics,contentDetails") -> Any:
         """
         Retrieves the authenticated user's rating (e.g., 'like', 'dislike') for specified videos. This function fetches existing rating data, distinct from `add_videos_rate` which submits a new rating, and can be performed on behalf of a content owner.
 
@@ -609,8 +609,8 @@ class YoutubeApp(APIApplication):
         Tags:
             check, video-management
         """
-        url = f"{self.base_url}/videos/getRating"
-        query_params = {k: v for k, v in [("id", id), ("onBehalfOfContentOwner", onBehalfOfContentOwner)] if v is not None}
+        url = f"{self.base_url}/videos"
+        query_params = {k: v for k, v in [("id", id), ("part", part)] if v is not None}
         response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
