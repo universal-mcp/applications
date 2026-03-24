@@ -608,6 +608,12 @@ class RuzodbApp(APIApplication):
         if isinstance(payload, dict):
             response = await self._apost(url, data=payload)
             res_json = self._handle_response(response)
+            
+            if isinstance(res_json, dict):
+                if res_json.get("status") == "error" or "message" in res_json or "msg" in res_json or "error" in res_json:
+                    if "records" not in res_json and "id" not in res_json:
+                        raise ValueError(f"Failed to create record: {res_json}")
+            
             if isinstance(res_json, dict) and "records" in res_json:
                  # It's a single record creation but wrapped in records list sometimes? 
                  # Actually single creation usually returns the record directly or a list of 1.
@@ -620,6 +626,11 @@ class RuzodbApp(APIApplication):
             chunk = payload[i : i + chunk_size]
             response = await self._apost(url, data=chunk)
             res_json = self._handle_response(response)
+            
+            if isinstance(res_json, dict):
+                if res_json.get("status") == "error" or "message" in res_json or "msg" in res_json or "error" in res_json:
+                    if "records" not in res_json:
+                        raise ValueError(f"Failed to create batch records: {res_json}")
             
             if isinstance(res_json, dict) and "records" in res_json:
                 all_records.extend(res_json["records"])
@@ -702,7 +713,14 @@ class RuzodbApp(APIApplication):
 
         if isinstance(payload, dict):
             response = await self._apatch(url, data=payload)
-            return self._handle_response(response)
+            res_json = self._handle_response(response)
+            
+            if isinstance(res_json, dict):
+                if res_json.get("status") == "error" or "message" in res_json or "msg" in res_json or "error" in res_json:
+                    if "records" not in res_json and "id" not in res_json:
+                        raise ValueError(f"Failed to update record: {res_json}")
+            
+            return res_json
 
         chunk_size = 10
         all_records = []
@@ -711,6 +729,11 @@ class RuzodbApp(APIApplication):
             chunk = payload[i : i + chunk_size]
             response = await self._apatch(url, data=chunk)
             res_json = self._handle_response(response)
+
+            if isinstance(res_json, dict):
+                if res_json.get("status") == "error" or "message" in res_json or "msg" in res_json or "error" in res_json:
+                    if "records" not in res_json:
+                        raise ValueError(f"Failed to update batch records: {res_json}")
 
             if isinstance(res_json, dict) and "records" in res_json:
                 all_records.extend(res_json["records"])
