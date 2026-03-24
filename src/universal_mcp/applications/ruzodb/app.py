@@ -223,7 +223,31 @@ class RuzodbApp(APIApplication):
         Tags:
             create, meta, table, structure, important
         """
-        payload = {"title": title, "columns": columns or []}
+        formatted_columns = []
+        for col in (columns or []):
+            col_copy = dict(col)
+            col_type = col_copy.get("uidt") or col_copy.get("type")
+            if col_type in ["SingleSelect", "MultiSelect"]:
+                options = col_copy.get("options", {})
+                if "choices" in col_copy and not options.get("choices"):
+                    choices_raw = col_copy.pop("choices")
+                    if isinstance(choices_raw, list):
+                        options["choices"] = [{"title": str(c)} if not isinstance(c, dict) else c for c in choices_raw]
+                    elif isinstance(choices_raw, str):
+                        options["choices"] = [{"title": str(c.strip())} for c in choices_raw.split(",") if c.strip()]
+                elif "dtxp" in col_copy and not options.get("choices"):
+                    choices_raw = col_copy.pop("dtxp")
+                    if isinstance(choices_raw, str):
+                        options["choices"] = [{"title": str(c.strip())} for c in choices_raw.split(",") if c.strip()]
+
+                if options:
+                    col_copy["options"] = options
+                
+                if "dtxp" in col_copy:
+                    col_copy.pop("dtxp")
+            formatted_columns.append(col_copy)
+
+        payload = {"title": title, "columns": formatted_columns}
         return await self._call_backend("POST", "/ruzodb/tables", json_data=payload)
 
     async def deleteTable(self, tableId: str) -> dict[str, Any]:
@@ -301,6 +325,26 @@ class RuzodbApp(APIApplication):
             "type": uidt,
             **kwargs,
         }
+
+        if uidt in ["SingleSelect", "MultiSelect"]:
+            options = data.get("options", {})
+            if "choices" in data and not options.get("choices"):
+                choices_raw = data.pop("choices")
+                if isinstance(choices_raw, list):
+                    options["choices"] = [{"title": str(c)} if not isinstance(c, dict) else c for c in choices_raw]
+                elif isinstance(choices_raw, str):
+                    options["choices"] = [{"title": str(c.strip())} for c in choices_raw.split(",") if c.strip()]
+            elif "dtxp" in data and not options.get("choices"):
+                choices_raw = data.pop("dtxp")
+                if isinstance(choices_raw, str):
+                    options["choices"] = [{"title": str(c.strip())} for c in choices_raw.split(",") if c.strip()]
+
+            if options:
+                data["options"] = options
+                
+            if "dtxp" in data:
+                data.pop("dtxp")
+
         response = await self._apost(url, data=data)
         return self._handle_response(response)
 
