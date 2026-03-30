@@ -80,6 +80,7 @@ ALL_APPS = [
     "shopify",
     "shortcut",
     "slack",
+    "smartlead",
     "spotify",  # not seeded
     "supabase",
     "tavily",
