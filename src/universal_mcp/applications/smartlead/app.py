@@ -171,7 +171,7 @@ class SmartleadApp(APIApplication):
              raise ValueError("Missing required parameter 'name'.")
         json_data = {"name": name, **kwargs}
         url = "/campaigns/create"
-        response = await self._apost(url, json=json_data)
+        response = await self._apost(url, data=json_data)
         response.raise_for_status()
         return response.json()
 
@@ -197,7 +197,7 @@ class SmartleadApp(APIApplication):
         if campaign_id is None: raise ValueError("Missing 'campaign_id'.")
         if not status: raise ValueError("Missing 'status'.")
         url = f"/campaigns/{campaign_id}/status"
-        response = await self._apatch(url, json={"status": status})
+        response = await self._apatch(url, data={"status": status})
         response.raise_for_status()
         return response.json()
 
@@ -221,7 +221,7 @@ class SmartleadApp(APIApplication):
         """
         if campaign_id is None: raise ValueError("Missing 'campaign_id'.")
         url = f"/campaigns/{campaign_id}/schedule"
-        response = await self._apost(url, json=scheduler_cron_value)
+        response = await self._apost(url, data=scheduler_cron_value)
         response.raise_for_status()
         return response.json()
 
@@ -262,7 +262,7 @@ class SmartleadApp(APIApplication):
         """
         if campaign_id is None: raise ValueError("Missing 'campaign_id'.")
         url = f"/campaigns/{campaign_id}/sequences"
-        response = await self._apost(url, json=sequence_data)
+        response = await self._apost(url, data=sequence_data)
         response.raise_for_status()
         return response.json()
 
@@ -303,7 +303,7 @@ class SmartleadApp(APIApplication):
         """
         if campaign_id is None: raise ValueError("Missing 'campaign_id'.")
         url = f"/campaigns/{campaign_id}/email-accounts"
-        response = await self._apost(url, json={"email_account_ids": email_account_ids})
+        response = await self._apost(url, data={"email_account_ids": email_account_ids})
         response.raise_for_status()
         return response.json()
 
@@ -324,7 +324,8 @@ class SmartleadApp(APIApplication):
         """
         if campaign_id is None: raise ValueError("Missing 'campaign_id'.")
         url = f"/campaigns/{campaign_id}/email-accounts"
-        response = await self._adelete(url, json={"email_account_ids": email_account_ids})
+        async with self.get_async_client() as client:
+            response = await client.request("DELETE", url, json={"email_account_ids": email_account_ids})
         response.raise_for_status()
         return response.json()
 
@@ -348,6 +349,110 @@ class SmartleadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
+    async def update_campaign_settings(self, campaign_id: int, **kwargs) -> dict[str, Any]:
+        """Updates general settings of an existing campaign."""
+        url = f"/campaigns/{campaign_id}"
+        response = await self._apost(url, data=kwargs)
+        response.raise_for_status()
+        return response.json()
+
+    async def create_campaign_subsequence(self, campaign_id: int, subsequence_data: dict[str, Any]) -> dict[str, Any]:
+        """Creates a subsequence for conditional branching in a campaign."""
+        url = f"/campaigns/{campaign_id}/subsequences"
+        response = await self._apost(url, data=subsequence_data)
+        response.raise_for_status()
+        return response.json()
+
+    async def forward_campaign_email(self, campaign_id: int, forward_data: dict[str, Any]) -> dict[str, Any]:
+        """Forwards a specific email from a campaign."""
+        url = f"/campaigns/{campaign_id}/forward-email"
+        response = await self._apost(url, data=forward_data)
+        response.raise_for_status()
+        return response.json()
+
+    async def reply_campaign_email_thread(self, campaign_id: int, reply_data: dict[str, Any]) -> dict[str, Any]:
+        """Replies to a specific email thread within a campaign context."""
+        url = f"/campaigns/{campaign_id}/reply-email"
+        response = await self._apost(url, data=reply_data)
+        response.raise_for_status()
+        return response.json()
+
+    async def send_campaign_test_email(self, campaign_id: int, test_data: dict[str, Any]) -> dict[str, Any]:
+        """Sends a test email for a specific campaign to verify layout and variables."""
+        url = f"/campaigns/{campaign_id}/test-email"
+        response = await self._apost(url, data=test_data)
+        response.raise_for_status()
+        return response.json()
+
+    async def update_campaign_team_member(self, campaign_id: int, team_data: dict[str, Any]) -> dict[str, Any]:
+        """Updates team member assignments and permissions for a campaign."""
+        url = f"/campaigns/{campaign_id}/team-members"
+        response = await self._apost(url, data=team_data)
+        response.raise_for_status()
+        return response.json()
+
+    async def create_lead_list(self, name: str) -> dict[str, Any]:
+        """Creates a new static lead list for organizational grouping."""
+        url = "/lead-lists"
+        response = await self._apost(url, data={"name": name})
+        response.raise_for_status()
+        return response.json()
+
+    async def get_all_lead_lists(self) -> List[dict[str, Any]]:
+        """Fetches all lead lists existing within the workspace."""
+        url = "/lead-lists"
+        response = await self._aget(url)
+        response.raise_for_status()
+        return response.json()
+
+    async def get_lead_list_by_id(self, list_id: int) -> dict[str, Any]:
+        """Retrieves the full configuration and details of a specific lead list."""
+        url = f"/lead-lists/{list_id}"
+        response = await self._aget(url)
+        response.raise_for_status()
+        return response.json()
+
+    async def update_lead_list(self, list_id: int, name: str) -> dict[str, Any]:
+        """Updates the name or properties of a lead list."""
+        url = f"/lead-lists/{list_id}"
+        response = await self._aput(url, data={"name": name})
+        response.raise_for_status()
+        return response.json()
+
+    async def delete_lead_list(self, list_id: int) -> dict[str, Any]:
+        """Deletes a lead list (removes grouping, does not delete leads)."""
+        url = f"/lead-lists/{list_id}"
+        response = await self._adelete(url)
+        response.raise_for_status()
+        return response.json()
+
+    async def import_leads_to_list(self, list_id: int, leads: List[dict[str, Any]]) -> dict[str, Any]:
+        """Injects a batch of lead objects directly into a designated lead list."""
+        url = f"/lead-lists/{list_id}/leads"
+        response = await self._apost(url, data={"leads": leads})
+        response.raise_for_status()
+        return response.json()
+
+    async def push_leads_between_lists(self, source_list_id: int, target_list_id: int) -> dict[str, Any]:
+        """Moves or copies leads from one static list to another."""
+        url = "/lead-lists/push"
+        response = await self._apost(url, data={"source_list_id": source_list_id, "target_list_id": target_list_id})
+        response.raise_for_status()
+        return response.json()
+
+    async def push_lead_list_to_campaign(self, list_id: int, campaign_id: int) -> dict[str, Any]:
+        """Enrolls an entire static lead list into an active campaign."""
+        url = f"/lead-lists/{list_id}/campaigns"
+        response = await self._apost(url, data={"campaign_id": campaign_id})
+        response.raise_for_status()
+        return response.json()
+
+    async def assign_tags_to_lead_list(self, list_id: int, tag_ids: List[int]) -> dict[str, Any]:
+        """Bulk assigns workspace tags to all leads inside a specific list."""
+        url = f"/lead-lists/{list_id}/tags"
+        response = await self._apost(url, data={"tag_ids": tag_ids})
+        response.raise_for_status()
+        return response.json()
     # ==================== Lead Operations ====================
 
     async def list_campaign_leads(self, campaign_id: int, limit: int = 100, offset: int = 0) -> dict[str, Any]:
@@ -410,7 +515,7 @@ class SmartleadApp(APIApplication):
         """
         if campaign_id is None: raise ValueError("Missing 'campaign_id'.")
         url = f"/campaigns/{campaign_id}/leads"
-        response = await self._apost(url, json={"lead_list": leads})
+        response = await self._apost(url, data={"lead_list": leads})
         response.raise_for_status()
         return response.json()
 
@@ -431,7 +536,7 @@ class SmartleadApp(APIApplication):
         """
         if contact_id is None: raise ValueError("Missing 'contact_id'.")
         url = f"/leads/{contact_id}"
-        response = await self._aput(url, json=update_data)
+        response = await self._aput(url, data=update_data)
         response.raise_for_status()
         return response.json()
 
@@ -493,7 +598,77 @@ class SmartleadApp(APIApplication):
         """
         if not email_address: raise ValueError("Missing 'email_address'.")
         url = "/leads/unsubscribe-globally"
-        response = await self._apost(url, json={"email": email_address})
+        response = await self._apost(url, data={"email": email_address})
+        response.raise_for_status()
+        return response.json()
+
+    async def get_campaign_lead_by_id(self, campaign_id: int, lead_id: int) -> dict[str, Any]:
+        """Gets specific lead details inside a targeted campaign."""
+        url = f"/campaigns/{campaign_id}/leads/{lead_id}"
+        response = await self._aget(url)
+        response.raise_for_status()
+        return response.json()
+
+    async def get_campaign_lead_history(self, campaign_id: int, lead_id: int) -> dict[str, Any]:
+        """Gets sequence and message history for a specific lead in a campaign."""
+        url = f"/campaigns/{campaign_id}/leads/{lead_id}/history"
+        response = await self._aget(url)
+        response.raise_for_status()
+        return response.json()
+
+    async def get_campaign_leads_history_bulk(self, campaign_id: int) -> List[dict[str, Any]]:
+        """Gets bulk history for all leads within a specific campaign."""
+        url = f"/campaigns/{campaign_id}/leads-history"
+        response = await self._aget(url)
+        response.raise_for_status()
+        return response.json()
+
+    async def get_campaign_all_leads_activities(self, campaign_id: int) -> List[dict[str, Any]]:
+        """Retrieves an activity feed of events (clicks, opens, replies) for campaign leads."""
+        url = f"/campaigns/{campaign_id}/leads-activities"
+        response = await self._aget(url)
+        response.raise_for_status()
+        return response.json()
+
+    async def update_campaign_lead(self, campaign_id: int, lead_id: int, update_data: dict[str, Any]) -> dict[str, Any]:
+        """Updates specific lead data within the context of a single campaign."""
+        url = f"/campaigns/{campaign_id}/leads/{lead_id}"
+        response = await self._apost(url, data=update_data)
+        response.raise_for_status()
+        return response.json()
+
+    async def update_campaign_lead_category(self, campaign_id: int, lead_id: int, category_id: int) -> dict[str, Any]:
+        """Updates the categorization status (e.g. interested) of a lead in a campaign."""
+        url = f"/campaigns/{campaign_id}/leads/{lead_id}/category"
+        response = await self._apost(url, data={"category_id": category_id})
+        response.raise_for_status()
+        return response.json()
+
+    async def update_campaign_lead_email_account(self, campaign_id: int, lead_id: int, email_account_id: int) -> dict[str, Any]:
+        """Assigns or rotates the specific sender email account assigned to a lead."""
+        url = f"/campaigns/{campaign_id}/leads/{lead_id}/email-account"
+        response = await self._apost(url, data={"email_account_id": email_account_id})
+        response.raise_for_status()
+        return response.json()
+
+    async def mark_campaign_lead_complete(self, campaign_id: int, lead_id: int) -> dict[str, Any]:
+        """Marks a lead's sequence as complete within a campaign."""
+        url = f"/campaigns/{campaign_id}/leads/{lead_id}/complete"
+        response = await self._apost(url)
+        response.raise_for_status()
+        return response.json()
+
+    async def unsubscribe_campaign_lead(self, campaign_id: int, lead_id: int) -> dict[str, Any]:
+        """Unsubscribes a lead from a specific campaign only."""
+        url = f"/campaigns/{campaign_id}/leads/{lead_id}/unsubscribe"
+        response = await self._apost(url)
+        response.raise_for_status()
+        return response.json()
+
+    async def delete_campaign_lead(self, campaign_id: int, lead_id: int) -> dict[str, Any]:
+        """Removes a lead from a campaign completely."""
+        url = f"/campaigns/{campaign_id}/leads/{lead_id}"
+        response = await self._adelete(url)
         response.raise_for_status()
         return response.json()
 
@@ -514,7 +689,7 @@ class SmartleadApp(APIApplication):
         """
         if not lead_id or not note: raise ValueError("Missing parameters.")
         url = f"/leads/{lead_id}/notes"
-        response = await self._apost(url, json={"note": note})
+        response = await self._apost(url, data={"note": note})
         response.raise_for_status()
         return response.json()
 
@@ -536,7 +711,7 @@ class SmartleadApp(APIApplication):
         if not lead_id or not title: raise ValueError("Missing parameters.")
         json_data = {"title": title, "due_date": due_date}
         url = f"/leads/{lead_id}/tasks"
-        response = await self._apost(url, json=json_data)
+        response = await self._apost(url, data=json_data)
         response.raise_for_status()
         return response.json()
 
@@ -580,6 +755,72 @@ class SmartleadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
+
+    async def get_leads_by_campaign(self, campaign_id: int) -> List[dict[str, Any]]:
+        """Retrieves a global list of leads filtered by their campaign assignment."""
+        url = "/leads/"
+        response = await self._aget(url, params={"campaign_id": campaign_id})
+        response.raise_for_status()
+        return response.json()
+
+    async def add_lead_to_campaign_globally(self, lead_id: int, campaign_id: int) -> dict[str, Any]:
+        """Enrolls an existing global lead into a specific campaign."""
+        url = f"/leads/{lead_id}/campaigns"
+        response = await self._apost(url, data={"campaign_id": campaign_id})
+        response.raise_for_status()
+        return response.json()
+
+    async def delete_lead_globally(self, lead_id: int) -> dict[str, Any]:
+        """Permanently deletes a lead globally from the workspace."""
+        url = f"/leads/{lead_id}"
+        response = await self._adelete(url)
+        response.raise_for_status()
+        return response.json()
+
+    async def pause_lead_globally(self, lead_id: int) -> dict[str, Any]:
+        """Pauses a lead across all active campaigns simultaneously."""
+        url = f"/leads/{lead_id}/pause"
+        response = await self._apost(url)
+        response.raise_for_status()
+        return response.json()
+
+    async def resume_lead_globally(self, lead_id: int) -> dict[str, Any]:
+        """Resumes outreach for a lead globally."""
+        url = f"/leads/{lead_id}/resume"
+        response = await self._apost(url)
+        response.raise_for_status()
+        return response.json()
+
+    async def get_lead_categories(self) -> List[dict[str, Any]]:
+        """Retrieves all lead categorization labels available in the workspace."""
+        url = "/leads/categories"
+        response = await self._aget(url)
+        response.raise_for_status()
+        return response.json()
+
+    async def get_lead_activities(self, lead_id: int) -> List[dict[str, Any]]:
+        """Fetches the global activity stream for a specific lead."""
+        url = f"/leads/{lead_id}/activities"
+        response = await self._aget(url)
+        response.raise_for_status()
+        return response.json()
+
+
+    async def get_all_lead_notes(self, lead_id: int) -> List[dict[str, Any]]:
+        """Retrieves all internal notes attached to a prospect."""
+        url = f"/leads/{lead_id}/notes"
+        response = await self._aget(url)
+        response.raise_for_status()
+        return response.json()
+
+    async def get_all_lead_tasks(self, lead_id: int) -> List[dict[str, Any]]:
+        """Retrieves all follow-up tasks assigned to a specific lead."""
+        url = f"/leads/{lead_id}/tasks"
+        response = await self._aget(url)
+        response.raise_for_status()
+        return response.json()
+
+
     # ==================== Email Account Operations ====================
 
     async def list_email_accounts(self, tag: Optional[str] = None) -> List[dict[str, Any]]:
@@ -620,7 +861,7 @@ class SmartleadApp(APIApplication):
         if not email: raise ValueError("Missing 'email'.")
         json_data = {"email": email, **kwargs}
         url = "/email-accounts/create"
-        response = await self._apost(url, json=json_data)
+        response = await self._apost(url, data=json_data)
         response.raise_for_status()
         return response.json()
 
@@ -820,7 +1061,7 @@ class SmartleadApp(APIApplication):
             "reply_text": reply_text
         }
         url = "/master-inbox/reply"
-        response = await self._apost(url, json=json_data)
+        response = await self._apost(url, data=json_data)
         response.raise_for_status()
         return response.json()
 
@@ -842,7 +1083,7 @@ class SmartleadApp(APIApplication):
         if not message_id or not forward_to_email: raise ValueError("Missing parameters.")
         json_data = {"message_id": message_id, "forward_to_email": forward_to_email}
         url = "/master-inbox/forward"
-        response = await self._apost(url, json=json_data)
+        response = await self._apost(url, data=json_data)
         response.raise_for_status()
         return response.json()
 
@@ -862,7 +1103,7 @@ class SmartleadApp(APIApplication):
         """
         if not message_id: raise ValueError("Missing 'message_id'.")
         url = "/master-inbox/read-status"
-        response = await self._apost(url, json={"message_id": message_id, "is_read": is_read})
+        response = await self._apost(url, data={"message_id": message_id, "is_read": is_read})
         response.raise_for_status()
         return response.json()
 
@@ -885,7 +1126,7 @@ class SmartleadApp(APIApplication):
         if not campaign_id or not lead_id or category_id is None: raise ValueError("Missing parameters.")
         json_data = {"campaign_id": campaign_id, "lead_id": lead_id, "category_id": category_id}
         url = "/master-inbox/update-lead-category"
-        response = await self._apost(url, json=json_data)
+        response = await self._apost(url, data=json_data)
         response.raise_for_status()
         return response.json()
 
@@ -906,7 +1147,7 @@ class SmartleadApp(APIApplication):
         """
         if not lead_id or revenue_amount is None: raise ValueError("Missing parameters.")
         url = "/master-inbox/update-revenue"
-        response = await self._apost(url, json={"lead_id": lead_id, "revenue": revenue_amount})
+        response = await self._apost(url, data={"lead_id": lead_id, "revenue": revenue_amount})
         response.raise_for_status()
         return response.json()
 
@@ -926,7 +1167,7 @@ class SmartleadApp(APIApplication):
         """
         if not message_id or user_id is None: raise ValueError("Missing parameters.")
         url = "/master-inbox/assign-member"
-        response = await self._apost(url, json={"message_id": message_id, "user_id": user_id})
+        response = await self._apost(url, data={"message_id": message_id, "user_id": user_id})
         response.raise_for_status()
         return response.json()
 
@@ -946,7 +1187,7 @@ class SmartleadApp(APIApplication):
         """
         if not domains: raise ValueError("Missing 'domains'.")
         url = "/master-inbox/block-domains"
-        response = await self._apost(url, json={"domains": domains})
+        response = await self._apost(url, data={"domains": domains})
         response.raise_for_status()
         return response.json()
 
@@ -967,7 +1208,7 @@ class SmartleadApp(APIApplication):
         """
         if not message_id or not reminder_time: raise ValueError("Missing parameters.")
         url = "/master-inbox/set-reminder"
-        response = await self._apost(url, json={"message_id": message_id, "reminder_time": reminder_time})
+        response = await self._apost(url, data={"message_id": message_id, "reminder_time": reminder_time})
         response.raise_for_status()
         return response.json()
 
@@ -989,7 +1230,7 @@ class SmartleadApp(APIApplication):
         """
         if not email_account_ids: raise ValueError("Missing 'email_account_ids'.")
         url = "/smart-delivery/placement-test"
-        response = await self._apost(url, json={"email_account_ids": email_account_ids})
+        response = await self._apost(url, data={"email_account_ids": email_account_ids})
         response.raise_for_status()
         return response.json()
 
@@ -1068,7 +1309,7 @@ class SmartleadApp(APIApplication):
         """
         json_data = {"domain_count": domain_count, "mailbox_per_domain": mailbox_per_domain}
         url = "/smart-senders/auto-generate"
-        response = await self._apost(url, json=json_data)
+        response = await self._apost(url, data=json_data)
         response.raise_for_status()
         return response.json()
 
@@ -1086,7 +1327,7 @@ class SmartleadApp(APIApplication):
             infrastructure, create, order
         """
         url = "/smart-senders/order"
-        response = await self._apost(url, json=order_details)
+        response = await self._apost(url, data=order_details)
         response.raise_for_status()
         return response.json()
 
@@ -1139,7 +1380,7 @@ class SmartleadApp(APIApplication):
         """
         if not target_url or not event_types: raise ValueError("Missing parameters.")
         url = "/webhooks/"
-        response = await self._apost(url, json={"url": target_url, "events": event_types})
+        response = await self._apost(url, data={"url": target_url, "events": event_types})
         response.raise_for_status()
         return response.json()
 
@@ -1179,7 +1420,7 @@ class SmartleadApp(APIApplication):
         """
         if not name: raise ValueError("Missing 'name'.")
         url = "/tags/"
-        response = await self._apost(url, json={"name": name, "color": color_code})
+        response = await self._apost(url, data={"name": name, "color": color_code})
         response.raise_for_status()
         return response.json()
 
@@ -1200,7 +1441,7 @@ class SmartleadApp(APIApplication):
         """
         if not lead_id or not tag_ids: raise ValueError("Missing parameters.")
         url = f"/leads/{lead_id}/tags"
-        response = await self._apost(url, json={"tag_ids": tag_ids})
+        response = await self._apost(url, data={"tag_ids": tag_ids})
         response.raise_for_status()
         return response.json()
 
@@ -1237,7 +1478,7 @@ class SmartleadApp(APIApplication):
             prospecting, search, important
         """
         url = "/smart-prospect/search"
-        response = await self._apost(url, params={"limit": limit}, json=filters)
+        response = await self._apost(url, params={"limit": limit}, data=filters)
         response.raise_for_status()
         return response.json()
 
@@ -1257,7 +1498,7 @@ class SmartleadApp(APIApplication):
         """
         if not contact_ids: raise ValueError("Missing 'contact_ids'.")
         url = "/smart-prospect/fetch-contacts"
-        response = await self._apost(url, json={"contact_ids": contact_ids})
+        response = await self._apost(url, data={"contact_ids": contact_ids})
         response.raise_for_status()
         return response.json()
 
@@ -1279,7 +1520,7 @@ class SmartleadApp(APIApplication):
         if not search_name or not filters: raise ValueError("Missing parameters.")
         json_data = {"name": search_name, "filters": filters}
         url = "/smart-prospect/save-search"
-        response = await self._apost(url, json=json_data)
+        response = await self._apost(url, data=json_data)
         response.raise_for_status()
         return response.json()
 
@@ -1327,7 +1568,7 @@ class SmartleadApp(APIApplication):
             prospecting, enrichment
         """
         url = "/smart-prospect/find-emails"
-        response = await self._apost(url, json={"contacts": contact_details})
+        response = await self._apost(url, data={"contacts": contact_details})
         response.raise_for_status()
         return response.json()
 
@@ -1483,26 +1724,66 @@ class SmartleadApp(APIApplication):
             self.get_campaign,
             self.create_campaign,
             self.update_campaign_status,
+            self.update_campaign_settings,
             self.update_campaign_schedule,
             self.get_campaign_sequences,
             self.save_campaign_sequence,
+            self.create_campaign_subsequence,
             self.list_campaign_email_accounts,
             self.add_campaign_email_account,
             self.remove_campaign_email_account,
+            self.forward_campaign_email,
+            self.reply_campaign_email_thread,
+            self.send_campaign_test_email,
+            self.update_campaign_team_member,
             self.delete_campaign,
             
-            # Leads
-            self.list_campaign_leads,
-            self.get_lead_by_email,
+            # Campaign Leads
             self.add_leads_to_campaign,
-            self.update_lead,
+            self.list_campaign_leads,
+            self.get_campaign_lead_by_id,
+            self.get_campaign_lead_history,
+            self.get_campaign_leads_history_bulk,
+            self.get_campaign_all_leads_activities,
+            self.update_campaign_lead,
+            self.update_campaign_lead_category,
+            self.update_campaign_lead_email_account,
             self.pause_lead_in_campaign,
             self.resume_lead_in_campaign,
-            self.unsubscribe_lead_globally,
-            self.create_lead_note,
-            self.create_lead_task,
-            self.get_lead_message_history,
+            self.mark_campaign_lead_complete,
+            self.unsubscribe_campaign_lead,
+            self.delete_campaign_lead,
             self.export_campaign_leads,
+            
+            # Global Leads
+            self.get_lead_by_email,
+            self.get_leads_by_campaign,
+            self.add_lead_to_campaign_globally,
+            self.update_lead,
+            self.delete_lead_globally,
+            self.pause_lead_globally,
+            self.resume_lead_globally,
+            self.unsubscribe_lead_globally,
+            self.get_lead_categories,
+            self.get_lead_activities,
+            self.get_lead_message_history,
+
+            # Lead Notes & Tasks
+            self.create_lead_note,
+            self.get_all_lead_notes,
+            self.create_lead_task,
+            self.get_all_lead_tasks,
+
+            # Lead Lists
+            self.create_lead_list,
+            self.get_all_lead_lists,
+            self.get_lead_list_by_id,
+            self.update_lead_list,
+            self.delete_lead_list,
+            self.import_leads_to_list,
+            self.push_leads_between_lists,
+            self.push_lead_list_to_campaign,
+            self.assign_tags_to_lead_list,
             
             # Email Accounts
             self.list_email_accounts,
@@ -1563,5 +1844,5 @@ class SmartleadApp(APIApplication):
             self.get_head_counts_api,
             self.get_company_api,
             self.get_job_title_api,
-            self.search_analytics_api,
+            self.search_analytics_api,        
         ]
