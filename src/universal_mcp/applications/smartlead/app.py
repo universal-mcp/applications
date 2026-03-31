@@ -109,9 +109,6 @@ class SmartleadApp(APIApplication):
         params = {
             "include_tags": "true" if include_tags else "false",
             "client_id": client_id,
-            "status": status,
-            "limit": limit,
-            "offset": offset
         }
         params = {k: v for k, v in params.items() if v is not None}
         
@@ -497,7 +494,7 @@ class SmartleadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    async def get_campaign_lead_by_id(self,  campaign_id: int, lead_id: int):
+    async def get_campaign_lead_by_id(self, campaign_id: int, lead_id: int) -> dict[str, Any]:
         """
         Gets specific lead details inside a targeted campaign.
 
@@ -511,7 +508,7 @@ class SmartleadApp(APIApplication):
         Raises:
             httpx.HTTPStatusError: If the API request fails.
         """
-        url = f"/campaigns/{campaign_id}/leads/{lead_id}"
+        url = f"/leads/{lead_id}/campaign-overview"
         response = await self._aget(url)
         response.raise_for_status()
         return response.json()
@@ -530,17 +527,18 @@ class SmartleadApp(APIApplication):
         Raises:
             httpx.HTTPStatusError: If the API request fails.
         """
-        url = f"/campaigns/{campaign_id}/leads/{lead_id}/history"
+        url = f"/campaigns/{campaign_id}/leads/{lead_id}/message-history"
         response = await self._aget(url)
         response.raise_for_status()
         return response.json()
 
-    async def get_campaign_leads_history_bulk(self,  campaign_id: int):
+    async def get_campaign_leads_history_bulk(self,  campaign_id: int, lead_ids: list[int]):
         """
-        Gets bulk history for all leads within a specific campaign.
+        Gets bulk history for specific leads within a campaign.
 
         Args:
-            campaign_id: The campaign_id.
+            campaign_id: The ID of the campaign.
+            lead_ids: A list of lead IDs to fetch history for.
 
         Returns:
             dict: The API response data.
@@ -548,17 +546,20 @@ class SmartleadApp(APIApplication):
         Raises:
             httpx.HTTPStatusError: If the API request fails.
         """
-        url = f"/campaigns/{campaign_id}/leads-history"
-        response = await self._aget(url)
+        url = f"/campaigns/{campaign_id}/message-history-for-leads"
+        response = await self._apost(url, data={"lead_ids": lead_ids})
         response.raise_for_status()
         return response.json()
 
-    async def get_campaign_all_leads_activities(self,  campaign_id: int):
+    async def get_campaign_all_leads_activities(self, limit: int = 100, offset: int = 0, event_time_from: str | int | None = None, event_time_to: str | int | None = None):
         """
-        Retrieves an activity feed of events (clicks, opens, replies) for campaign leads.
+        Retrieves a global activity feed of events (clicks, opens, replies) across all campaigns.
 
         Args:
-            campaign_id: The campaign_id.
+            limit: Max records to return (default 100).
+            offset: Number of records to skip (default 0).
+            event_time_from: Filter events after this ISO timestamp or Unix integer.
+            event_time_to: Filter events before this ISO timestamp or Unix integer.
 
         Returns:
             dict: The API response data.
@@ -566,8 +567,14 @@ class SmartleadApp(APIApplication):
         Raises:
             httpx.HTTPStatusError: If the API request fails.
         """
-        url = f"/campaigns/{campaign_id}/leads-activities"
-        response = await self._aget(url)
+        url = "/campaigns/all-leads-activities"
+        params: dict[str, Any] = {"limit": limit, "offset": offset}
+        if event_time_from:
+            params["event_time_from"] = event_time_from
+        if event_time_to:
+            params["event_time_to"] = event_time_to
+            
+        response = await self._aget(url, params=params)
         response.raise_for_status()
         return response.json()
 
@@ -612,14 +619,15 @@ class SmartleadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    async def update_campaign_lead_email_account(self,  campaign_id: int, lead_id: int, email_account_id: int):
+    async def update_campaign_lead_email_account(self,  campaign_id: int, lead_id: int, email_account_id: int, override_lead_email_account: bool = True):
         """
-        Assigns or updates a dedicated sending email account to contact a single lead.
+        Assigns or updates a dedicated sending email account for a lead in a campaign.
 
         Args:
-            campaign_id: The campaign_id.
-            lead_id: The lead_id.
-            email_account_id: The email_account_id.
+            campaign_id: The ID of the campaign.
+            lead_id: The Campaign Lead Map ID.
+            email_account_id: The ID of the email account to assign.
+            override_lead_email_account: Whether to override existing assignment (default True).
 
         Returns:
             dict: The API response data.
@@ -627,8 +635,14 @@ class SmartleadApp(APIApplication):
         Raises:
             httpx.HTTPStatusError: If the API request fails.
         """
-        url = f"/campaigns/{campaign_id}/leads/{lead_id}/email-account"
-        response = await self._apost(url, data={"email_account_id": email_account_id})
+        url = "/campaigns/update-lead-email-account"
+        data = {
+            "email_account_id": email_account_id,
+            "email_campaign_id": campaign_id,
+            "email_lead_id": lead_id,
+            "override_lead_email_account": override_lead_email_account
+        }
+        response = await self._apost(url, data=data)
         response.raise_for_status()
         return response.json()
 
@@ -647,7 +661,7 @@ class SmartleadApp(APIApplication):
             httpx.HTTPStatusError: If the API request fails.
         """
         url = f"/campaigns/{campaign_id}/leads/{lead_id}/pause"
-        response = await self._apost(url)
+        response = await self._apost(url, data={})
         response.raise_for_status()
         return response.json()
 
@@ -666,17 +680,17 @@ class SmartleadApp(APIApplication):
             httpx.HTTPStatusError: If the API request fails.
         """
         url = f"/campaigns/{campaign_id}/leads/{lead_id}/resume"
-        response = await self._apost(url)
+        response = await self._apost(url, data={})
         response.raise_for_status()
         return response.json()
 
     async def mark_campaign_lead_complete(self,  campaign_id: int, lead_id: int):
         """
-        Marks a lead as successfully completed for this specific campaign.
+        Marks a lead as successfully completed for this specific campaign sequence.
 
         Args:
-            campaign_id: The campaign_id.
-            lead_id: The lead_id.
+            campaign_id: The ID of the campaign.
+            lead_id: The Campaign Lead Map ID.
 
         Returns:
             dict: The API response data.
@@ -684,8 +698,8 @@ class SmartleadApp(APIApplication):
         Raises:
             httpx.HTTPStatusError: If the API request fails.
         """
-        url = f"/campaigns/{campaign_id}/leads/{lead_id}/complete"
-        response = await self._apost(url)
+        url = f"/campaigns/{campaign_id}/leads/{lead_id}/manual-complete"
+        response = await self._apost(url, data={})
         response.raise_for_status()
         return response.json()
 
@@ -704,7 +718,7 @@ class SmartleadApp(APIApplication):
             httpx.HTTPStatusError: If the API request fails.
         """
         url = f"/campaigns/{campaign_id}/leads/{lead_id}/unsubscribe"
-        response = await self._apost(url)
+        response = await self._apost(url, data={})
         response.raise_for_status()
         return response.json()
 
